@@ -14,7 +14,7 @@ nap mx(Supply-Side Platform)는 kt nasmedia가 운영하는 광고 수익화 플
 
 | 방식 | 설명 | 지원 플랫폼 | 지원 네트워크 |
 |------|------|------------|--------------|
-| **SDK** | Android/iOS 앱에 라이브러리 직접 연동 | Android / iOS | NAP, Google AdManager, KakaoAdfit, Pangle, AppLovin, Unity Ads, Mobwith, NaverAdManager, Teads |
+| **SDK** | Android/iOS 앱에 라이브러리 직접 연동 | Android / iOS | NAP, Google, KakaoAdfit, Pangle, AppLovin, Unity Ads |
 | **Script** | 웹뷰/모바일웹에 스크립트 삽입 | M.Web / PC.Web | NAP, Google ADfit, Mobwith |
 | **API** | 서버-서버 직접 API 호출 | Server | NAP, Criteo, Mobwith |
 

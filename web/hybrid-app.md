@@ -1,130 +1,77 @@
 # Hybrid App (WebView 지면)
 
-네이티브 앱의 WebView에서 nap mx Script 광고를 연동하는 방법입니다.
-
-> **필수 설정** — WebView에서 광고가 정상 동작하려면 아래 설정이 반드시 필요합니다.
+> **필수 설정** — Hybrid App(Web View 지면)의 경우, 광고 타겟팅을 위해 **ADID 전송**과 **Google WEB View API 적용**이 필수로 진행되어야 합니다.
 
 ---
 
-## Android WebView 설정
+## 1. WEB Script 연동
 
-```java
-// Java
-WebView webView = findViewById(R.id.webView);
-WebSettings settings = webView.getSettings();
-
-// JavaScript 활성화 (필수)
-settings.setJavaScriptEnabled(true);
-
-// DOM Storage 활성화
-settings.setDomStorageEnabled(true);
-
-// 혼합 콘텐츠 허용 (Android 5.0+)
-if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-    settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-}
-
-// 광고 페이지 로드
-webView.loadUrl("https://your-page.com/ad-page");
-```
-
-```kotlin
-// Kotlin
-val webView: WebView = findViewById(R.id.webView)
-webView.settings.apply {
-    javaScriptEnabled = true
-    domStorageEnabled = true
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-    }
-}
-webView.loadUrl("https://your-page.com/ad-page")
-```
+[WEB Script 연동 가이드](/web/script)를 참고하여 웹 페이지에 Script를 구현합니다.
 
 ---
 
-## iOS WKWebView 설정
+## 2. ADID 전송
 
-```swift
-import WebKit
+ADID 전송 시 사용되는 프로토콜은 아래와 같습니다.
 
-class AdWebViewController: UIViewController {
-
-    var webView: WKWebView!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let config = WKWebViewConfiguration()
-        // JavaScript 허용 (기본값)
-        config.preferences.javaScriptEnabled = true
-        // 미디어 자동재생 허용 (동영상 광고)
-        config.mediaTypesRequiringUserActionForPlayback = []
-
-        webView = WKWebView(frame: view.bounds, configuration: config)
-        view.addSubview(webView)
-
-        let url = URL(string: "https://your-page.com/ad-page")!
-        webView.load(URLRequest(url: url))
-    }
-}
-```
+- **AOS**: [WEB Script - ADID 전송 가이드](/web/script#adid-전송) 참고
+- **iOS**: [WEB Script - iOS 앱 내 웹뷰 ADID 저장 방법](/web/script) 참고
 
 ---
 
-## WEB 페이지 광고 코드
+## 3. Google WEB View API
 
-WebView에 로드되는 HTML 페이지에 nap mx Script를 삽입합니다.
+Google 수익화를 포함하는 경우 적용해주세요.
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.admixer.co.kr/napmx.js" async></script>
-</head>
-<body>
+> 미적용 시 eCPM 및 Fill-Rate에 영향이 있을 수 있습니다.
 
-  <div id="napmx-banner"></div>
+공식 가이드:
+- Android: https://developers.google.com/ad-manager/mobile-ads-sdk/android/browser/webview/api-for-ads?hl=ko
+- iOS: https://developers.google.com/ad-manager/mobile-ads-sdk/ios/browser/webview/api-for-ads?hl=ko
 
-  <script>
-    napmx.cmd.push(function() {
-      napmx.defineSlot('발급받은_ADUNIT_ID', [320, 50], 'napmx-banner')
-           .addService(napmx.pubads());
-      napmx.pubads().enableSingleRequest();
-      napmx.enableServices();
-    });
-  </script>
+### 적용 프로세스
 
-</body>
-</html>
-```
+**1단계. 앱에 Google Ad Manager SDK 적용**
 
----
+웹뷰 태그에서 앱 신호를 활용하기 위해 SDK 적용이 필요합니다.
 
-## AndroidManifest 권한
+**2단계. 앱 설정 파일에 "webview 전용 사용" 값 추가 (초기화 검사 우회)**
+
+- **Android**: `AndroidManifest.xml`에 `<meta-data>` 태그를 추가하여 `APPLICATION_ID` 검사를 우회합니다.
 
 ```xml
-<uses-permission android:name="android.permission.INTERNET" />
+<meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy"/>
 ```
 
----
+- **iOS**: `Info.plist`에 `GADIntegrationManager`를 추가하여 `GADApplicationIdentifier` 검사를 우회합니다.
 
-## 주의사항
+```xml
+<key>GADIntegrationManager</key>
+<string>GAM</string>
+```
 
-- WebView의 `javaScriptEnabled` 설정이 **반드시 `true`** 여야 합니다.
-- 광고 클릭 시 외부 브라우저로 이동하도록 `WebViewClient`를 설정하세요.
+**3단계. 웹 뷰 등록**
+
+해당 WebView를 SDK에 등록하여 광고 이벤트를 SDK가 감지할 수 있도록 설정합니다.
+
+- **Android**: `registerWebView()` 호출
 
 ```java
-webView.setWebViewClient(new WebViewClient() {
-    @Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.startsWith("http")) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(intent);
-            return true;
-        }
-        return false;
-    }
-});
+MobileAds.registerWebView(webView);
 ```
+
+- **iOS**: `register(_:)` 호출
+
+```swift
+GADMobileAds.sharedInstance().register(webView)
+```
+
+**4단계. WebView에서 광고 포함 웹 페이지 로드**
+
+Google 광고 스크립트가 포함된 웹 페이지를 WebView로 로드합니다.
+
+**5단계. 광고 노출**
+
+웹 페이지 내 Google 광고 태그가 실행되어 광고 이벤트가 발생하면, SDK에 등록된 WebView를 통해 앱 신호가 결합된 상태로 광고가 송출됩니다.

@@ -1,51 +1,45 @@
 # 비즈보드 (iOS Native)
 
-비즈보드는 네이버 비즈보드 광고 형식을 지원합니다.  
-`NapBizboardAdView`를 사용합니다.
+KaKao Adfit 비즈보드 연동을 위한 가이드 문서입니다.  
+문의: nap_adx@nasmedia.co.kr
+
+> **비즈보드 지면 정책**
+> - 비즈보드 지면은 비즈보드만 단독 사용 (타사 네트워크 등 미디에이션 불가)
+> - 비즈보드 심사 과정 필수 (앱 내에 비즈보드 테스트 광고가 적용된 지면 스크린샷 전달이 필요합니다.)
 
 ---
 
-## 광고 로드
+## 0. 비즈보드 상품 설명
 
-```swift
-import NapSSP
-
-class BizboardViewController: UIViewController {
-
-    private var bizboardAdView: NapBizboardAdView?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        loadBizboardAd()
-    }
-
-    func loadBizboardAd() {
-        bizboardAdView = NapBizboardAdView(frame: CGRect(x: 0, y: 0,
-                                                         width: view.bounds.width, height: 100))
-        bizboardAdView?.adUnitId = "발급받은_ADUNIT_ID"
-        bizboardAdView?.delegate = self
-        view.addSubview(bizboardAdView!)
-        bizboardAdView?.loadAd()
-    }
-}
-
-extension BizboardViewController: NapBizboardAdViewDelegate {
-
-    func bizboardAdViewDidReceiveAd(_ adView: NapBizboardAdView, adapterName: String) {
-        // 수신 완료
-    }
-
-    func bizboardAdView(_ adView: NapBizboardAdView,
-                        didFailToReceiveAdWithError error: NapAdError) {
-        print("Bizboard error: \(error.code)")
-    }
-}
-```
+- 앱 사용자에게 최적화된 디자인으로 맞춤형 광고를 제공합니다.
+- 철저한 심사를 거쳐 높은 퀄리티의 소재를 보장합니다.
 
 ---
 
-## 주의사항
+## 1. SDK 연동 가이드
 
-- 비즈보드는 **NaverAdManager** 어댑터가 필요합니다.
-- 네이버 성과형DA 계정 및 별도 계약이 필요합니다.
-- 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
+KaKao Adfit iOS SDK 비즈보드 연동 가이드를 참고하여 진행합니다.
+
+- iOS 가이드: https://adfit.github.io/adfit-ios-sdk/documentation/adfitsdk/bizboardtemplate
+
+---
+
+## 2. 비즈보드 코드 발급 및 리포트 매핑
+
+### 코드 발급
+
+운영팀에 문의하여 코드 발급 요청 부탁드립니다.
+
+### 리포트 매핑
+
+1. nap ssp 파트너 사이트에서 애드유닛 이름 **'비즈보드'** 기입 후 리포트용 애드유닛 발급
+   - 포맷/사이즈: **Banner - 320x50** 선택
+2. 발급 후 운영팀에 문의하여 해당 애드유닛에 비즈보드 리포트 매핑 요청
+
+---
+
+## 3. 비즈보드 지면 심사 (중요)
+
+비즈보드 지면은 지면 심사 과정이 필수입니다.
+
+SDK 연동 테스트 과정에서 **비즈보드 테스트 광고가 노출된 실제 지면 캡처 이미지**를 운영팀에 전달해주세요.

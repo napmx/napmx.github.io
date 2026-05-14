@@ -1,44 +1,88 @@
 # 동영상 광고 (iOS Native)
 
-동영상 광고는 `NapVideoAdView`를 사용합니다.
+동영상 광고를 추가하기 전 [iOS SDK 시작하기 - Native](/ios/native/getting-started) 설정을 완료해주세요.
+
+> Interstitial Ad 광고 연동을 희망하시는 경우, [배너 - 전면 배너](/ios/native/banner#2-전면-배너interstitial-광고)를 연동해주세요.
 
 ---
 
-## 광고 로드
+## 1. 동영상(Video) 광고
+
+동영상 광고는 광고 요청 후 즉시 노출하는 방식을 지원합니다.
+
+### 1-1. 동영상 뷰 인스턴스 생성 및 설정
+
+동영상 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMVideoAdView` 인스턴스 변수를 생성합니다.
 
 ```swift
 import NapSSP
 
 class VideoAdViewController: UIViewController {
 
-    private var videoAdView: NapVideoAdView?
+    private var videoAdView: AMMVideoAdView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        videoAdView = NapVideoAdView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 200))
+        videoAdView = AMMVideoAdView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 200))
         videoAdView?.adUnitId = "발급받은_ADUNIT_ID"
         videoAdView?.delegate = self
         view.addSubview(videoAdView!)
-        videoAdView?.loadAd()
     }
 }
+```
 
-extension VideoAdViewController: NapVideoAdViewDelegate {
+### 1-2. 광고 요청 및 노출
 
-    func videoAdViewDidReceiveAd(_ videoAdView: NapVideoAdView, adapterName: String) {
-        // 동영상 수신 완료
+`load()`를 사용하여 동영상 광고를 로드하고 videoView 영역 내에서 보여줍니다.
+
+```swift
+videoAdView?.load()
+```
+
+### 1-3. 리소스 해제
+
+`stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
+
+```swift
+deinit {
+    videoAdView?.stop()
+}
+```
+
+### 1-4. Delegate
+
+동영상 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.  
+델리게이트를 사용하려면 `AMMVideoViewDelegate`를 추가해야 합니다.
+
+| 메서드 | 설명 |
+|--------|------|
+| `onSuccessVideo` | 동영상 광고 로드 성공 |
+| `onFailVideo` | 동영상 광고 로드 실패 |
+| `onSkipVideo` | 동영상 광고 내 skip 버튼 클릭 |
+| `onTapAdViewMore` | 동영상 광고 내 더보기 버튼 클릭 |
+| `onCompleteVideo` | 동영상 광고 재생 완료 |
+
+```swift
+extension VideoAdViewController: AMMVideoViewDelegate {
+
+    func onSuccessVideo(_ videoAdView: AMMVideoAdView) {
+        // 광고 로드 성공
     }
 
-    func videoAdView(_ videoAdView: NapVideoAdView, didFailToReceiveAdWithError error: NapAdError) {
+    func onFailVideo(_ videoAdView: AMMVideoAdView, error: AMMAdError) {
         print("Video error: \(error.code)")
     }
 
-    func videoAdViewDidStartPlaying(_ videoAdView: NapVideoAdView) {
-        // 재생 시작
+    func onSkipVideo(_ videoAdView: AMMVideoAdView) {
+        // skip 버튼 클릭
     }
 
-    func videoAdViewDidCompletePlayback(_ videoAdView: NapVideoAdView) {
+    func onTapAdViewMore(_ videoAdView: AMMVideoAdView) {
+        // 더보기 버튼 클릭
+    }
+
+    func onCompleteVideo(_ videoAdView: AMMVideoAdView) {
         // 재생 완료
     }
 }
@@ -46,15 +90,90 @@ extension VideoAdViewController: NapVideoAdViewDelegate {
 
 ---
 
-## 생명주기 처리
+## 2. 전면 동영상(Interstitial Video) 광고
+
+전면 동영상 광고는 광고 요청 후 받은 뒤, 원하는 시점에 노출하는 방식을 지원합니다.
+
+> 전면 동영상 재생 시 Skip 버튼은 제공되지 않으며, Skip 가능한 시점에 닫기 버튼이 노출됩니다.
+
+### 2-1. 전면 동영상 뷰 인스턴스 생성 및 설정
+
+전면 동영상 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMVideoInterstitial` 인스턴스 변수를 생성합니다.
 
 ```swift
-override func viewWillDisappear(_ animated: Bool) {
-    super.viewWillDisappear(animated)
-    videoAdView?.pause()
-}
+import NapSSP
 
+class VideoInterstitialViewController: UIViewController {
+
+    private var videoInterstitial: AMMVideoInterstitial?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        videoInterstitial = AMMVideoInterstitial()
+        videoInterstitial?.adUnitId = "발급받은_ADUNIT_ID"
+        videoInterstitial?.delegate = self
+    }
+}
+```
+
+### 2-2. 광고 요청
+
+`loadAd()`를 사용하여 전면 동영상 광고를 로드합니다.
+
+```swift
+videoInterstitial?.loadAd()
+```
+
+### 2-3. 광고 노출
+
+`show()`를 사용하여 로드된 전면 동영상 광고를 보여줍니다.
+
+```swift
+videoInterstitial?.show(from: self)
+```
+
+### 2-4. 리소스 해제
+
+```swift
 deinit {
-    videoAdView?.destroy()
+    videoInterstitial?.stop()
+}
+```
+
+### 2-5. Delegate
+
+델리게이트를 사용하려면 `AMMVideoInterstitialDelegate`를 추가해야 합니다.
+
+| 메서드 | 설명 |
+|--------|------|
+| `onSuccessShowVideoInterstitial` | 전면 동영상 광고 노출 성공 |
+| `onFailShowVideoInterstitial` | 전면 동영상 광고 노출 실패 |
+| `onCloseVideoInterstitial` | 전면 동영상 광고 닫기 |
+| `onTapVideoInterstitialViewMore` | 전면 동영상 광고 내 더보기 버튼 클릭 |
+| `onCompleteVideoInterstitial` | 전면 동영상 광고 재생 완료 |
+
+```swift
+extension VideoInterstitialViewController: AMMVideoInterstitialDelegate {
+
+    func onSuccessShowVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial) {
+        // 광고 노출 성공
+    }
+
+    func onFailShowVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial, error: AMMAdError) {
+        print("VideoInterstitial error: \(error.code)")
+    }
+
+    func onCloseVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial) {
+        // 광고 닫힘
+    }
+
+    func onTapVideoInterstitialViewMore(_ videoInterstitial: AMMVideoInterstitial) {
+        // 더보기 버튼 클릭
+    }
+
+    func onCompleteVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial) {
+        // 재생 완료
+    }
 }
 ```

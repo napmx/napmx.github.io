@@ -1,135 +1,103 @@
 # 리포트 API
 
-nap mx 퍼블리셔를 위한 수익 리포트 API입니다.
-
-> 버전: v1.0.0 | 릴리즈: 2024-12-18
-
-문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
+nap ssp 퍼블리셔를 위한 리포트 데이터 API입니다.  
+연동 및 이용 방법 문의: nap_adx@nasmedia.co.kr
 
 ---
 
-## 요청 방식
+## 사전 준비
 
-- **Method**: `HTTP GET`
-- **인증**: HTTP Header에 `apiKey` 포함
-- **파라미터**: 쿼리스트링
+API Key는 **파트너 사이트 → 계정 → 계정관리 → '퍼블리셔 리포트 API KEY'** 에서 확인할 수 있습니다.
 
 ---
 
-## 엔드포인트
+## 1. 개요
 
-```
-GET https://publisher.admixer.co.kr/api/v1/report/daily
-```
+HTTP GET 방식으로 요청하며, `apiKey` 값은 **header**에 넣어야 하고 나머지는 **queryString**으로 요청합니다.
 
----
-
-## 요청 헤더
-
-| 헤더 | 설명 |
-|------|------|
-| `apiKey` | 파트너 사이트에서 발급받은 API Key |
+**리포트 기간 조회 조건:**
+- 최근 6개월 이내
+- 한 번에 최대 30일
 
 ---
 
-## 요청 파라미터
+## 2. 도메인 정보
 
-| 파라미터 | 타입 | 필수 | 설명 |
-|---------|------|------|------|
-| `type` | String | ✅ | `total` / `adunit` |
-| `startDate` | String | ✅ | 조회 시작일 (`YYYY-MM-DD`) |
-| `endDate` | String | ✅ | 조회 종료일 (`YYYY-MM-DD`) |
+| 구분 | URL |
+|------|-----|
+| 상용 | `https://publisher.admixer.co.kr/api/v1/report/daily` |
 
-> - 조회 기간: 최근 **6개월 이내**, 최대 **30일** 범위  
-> - `type=total`: 전체 합산 리포트  
-> - `type=adunit`: Adunit 별 리포트
+---
+
+## 3. 요청 파라미터
+
+| 항목 | 구분 | 필수 | 설명 | 값 |
+|------|------|------|------|-----|
+| `apiKey` | String (header) | ✔️ | 파트너 사이트에서 발급받은 API Key | — |
+| `type` | String (query) | ✔️ | 리포트 유형 | `total`: 일자별 / `adunit`: 애드유닛별 |
+| `startDate` | String (query) | ✔️ | 조회 시작 날짜 | `YYYY-MM-DD` |
+| `endDate` | String (query) | ✔️ | 조회 마지막 날짜 (startDate와 같거나 이후) | `YYYY-MM-DD` |
 
 ### 요청 예시
 
 ```
 GET https://publisher.admixer.co.kr/api/v1/report/daily
     ?type=total&startDate=2024-11-01&endDate=2024-11-30
+
+Header: apiKey: {발급받은_API_KEY}
 ```
 
 ---
 
-## 응답 형식
+## 4. 응답
 
-### type=total
+### 4-1. 기본 객체
 
-```json
-{
-  "status": "ok",
-  "code": 200,
-  "message": "success",
-  "data": {
-    "type": "total",
-    "list": [
-      {
-        "date": "2024-11-01",
-        "impression": 12345,
-        "click": 234,
-        "revenue": 15000.00,
-        "cpm": 1215.43,
-        "ctr": 1.89
-      }
-    ]
-  }
-}
-```
-
-### type=adunit
-
-```json
-{
-  "status": "ok",
-  "code": 200,
-  "message": "success",
-  "data": {
-    "type": "adunit",
-    "list": [
-      {
-        "date": "2024-11-01",
-        "adUnitId": "ADUNIT_001",
-        "adUnitName": "메인_배너",
-        "impression": 5000,
-        "click": 100,
-        "revenue": 6000.00,
-        "cpm": 1200.00,
-        "ctr": 2.00
-      }
-    ]
-  }
-}
-```
-
----
-
-## 응답 필드
-
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `date` | String | 날짜 (`YYYY-MM-DD`) |
-| `impression` | Int | 광고 노출 수 |
-| `click` | Int | 클릭 수 |
-| `revenue` | Float | 수익금 (원) |
-| `cpm` | Float | 1000회 노출당 수익 |
-| `ctr` | Float | 클릭률 (%) |
-
----
-
-## 응답 코드
-
-| code | 설명 |
+| 항목 | 설명 |
 |------|------|
-| `200` | 성공 |
-| `400` | 잘못된 파라미터 (날짜 형식, 범위 초과 등) |
-| `401` | 인증 실패 |
-| `500` | 서버 오류 |
+| `status` | 결과 코드 |
+| `code` | 코드 |
+| `message` | 결과 메세지 |
+| `data` | 리포트 응답 데이터 |
+
+### 4-2. data 객체
+
+| 항목 | 설명 | 비고 |
+|------|------|------|
+| `ymd` | 날짜 | `type=total`인 경우만 노출 |
+| `adunitId` | 애드유닛 ID | `type=adunit`인 경우만 노출 |
+| `adunitName` | 애드유닛 이름 | `type=adunit`인 경우만 노출 |
+| `req` | 요청수 | — |
+| `calcImp` | 노출수 | — |
+| `calcClick` | 클릭수 | — |
+| `ctr` | CTR | — |
+| `ecpmNet` | eCPM (원화) | — |
+| `ecpmNetUsd` | eCPM (달러) | — |
+| `fillrate` | Fillrate | — |
+| `cost` | 수익금 (원화) | — |
+| `costUsd` | 수익금 (달러) | — |
 
 ---
 
-## API Key 발급
+## 5. 결과 코드
 
-파트너 사이트 → 계정 → API Key 발급 메뉴에서 발급받을 수 있습니다.  
-[파트너 사이트 바로가기](https://publisher.admixer.co.kr/)
+### 5-1. 기본 코드
+
+| status | 설명 |
+|--------|------|
+| `200` | 성공 |
+| `400` | 잘못된 요청 |
+| `403` | 권한 없음 |
+| `404` | 리포트를 찾을 수 없음 |
+| `500` | 서버 내부 오류 |
+
+### 5-2. 400 응답 상세 메세지
+
+| 응답 메세지 | 설명 |
+|-----------|------|
+| `유효하지 않은 API KEY 입니다.` | header의 apiKey 검증 실패 |
+| `날짜 형식이 잘못되었습니다. yyyy-MM-dd 형식에 맞게 다시 요청해주세요.` | startDate, endDate 날짜 형식 오류 (예: `2024-10-10`(o), `20241010`(x)) |
+| `endDate는 startDate와 같거나, 그 이후여야 합니다. 다시 요청해주세요.` | endDate가 startDate보다 이전인 경우 |
+| `최근 180일 이내의 데이터만 조회할 수 있습니다. 다시 요청해주세요.` | 조회 일자가 최근 6개월보다 이전인 경우 |
+| `한 번에 최대 30일치 데이터만 조회 가능합니다. 다시 요청해주세요.` | 조회 기간이 30일보다 긴 경우 |
+| `잘못된 요청입니다. 다시 확인해주세요.` | type이 total 또는 adunit이 아닌 경우 |

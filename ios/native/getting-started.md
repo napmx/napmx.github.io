@@ -1,74 +1,136 @@
-# iOS SDK 시작하기 (Native)
+# iOS SDK 시작하기 - Native
+
+nap ssp SDK를 iOS 앱에 연동하기 위한 가이드 문서이며, nap ssp Mediation을 지원합니다.
+
+> 최신 버전의 Admixer SDK와 최신 버전의 Xcode 사용을 권장합니다.  
+> Admixer iOS SDK는 **iOS 13.0 이상**, **Xcode 15.3 이상** 에서 사용하실 수 있으며, CocoaPods와 SPM을 이용한 설치를 지원합니다.  
+> 연동 및 이용 방법 문의: nap_adx@nasmedia.co.kr
+
+---
 
 ## 사전 준비
 
-[파트너 사이트](https://publisher.admixer.co.kr/)에서 **Media Key**와 **Adunit ID**를 발급받아야 합니다.
+[파트너 사이트](https://publisher.admixer.co.kr/)에 가입 후 미디어 등록 및 애드유닛 생성을 완료하면 연동에 필요한 **Media Key**와 **Adunit ID**를 확인할 수 있습니다.
+
+> 하기 네트워크는 연동을 위해 별도 key 값이 필요합니다. 발급은 nap_adx@nasmedia.co.kr로 문의해주세요.
+> - Google App ID / Pangle App ID / Unity Ads App ID
 
 ---
 
-## 1. CocoaPods 설정
+## Step 1. SDK 설치
 
-`Podfile`에 SDK를 추가합니다.
+### 1-1. CocoaPods를 통한 설치
 
-```ruby
-platform :ios, '13.0'
-
-target 'YourApp' do
-  use_frameworks!
-
-  # nap mx 메인 SDK (필수)
-  pod 'NapSSP'
-
-  # --- 선택적 어댑터 ---
-  pod 'NapSSP/GoogleAdManager'   # Google Ad Manager
-  pod 'NapSSP/Pangle'            # ByteDance Pangle
-  pod 'NapSSP/AppLovin'          # AppLovin MAX
-  pod 'NapSSP/KakaoAdfit'        # 카카오 ADfit
-end
-```
+CocoaPods가 없는 경우 설치 후 초기화합니다.
 
 ```bash
-pod install
+sudo gem install cocoapods
+pod init
 ```
+
+초기화 시 생성된 `Podfile`에 nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 아래와 같이 추가합니다.
+
+```ruby
+pod 'NapSSP'
+
+# 미디에이션 네트워크 (선택)
+pod 'NapSSP/GoogleAdManager'
+pod 'NapSSP/Pangle'
+pod 'NapSSP/AppLovin'
+pod 'NapSSP/KakaoAdfit'
+```
+
+pod를 업데이트합니다.
+
+```bash
+pod install --repo-update
+```
+
+### 1-2. SPM을 통한 설치
+
+nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추가합니다.
+
+**Project > Package Dependencies 탭** 이동 후 아래 패키지를 추가합니다.
+
+| 패키지 | 설명 |
+|--------|------|
+| nap ssp Mediation | 필수 |
+| Google AdManager | 선택 |
+| Kakao AdFit | 선택 |
+| Pangle | 선택 |
+| Unity Ads | 선택 (nap ssp Mediation과 함께 사용 시 Google SDK 입찰 광고 소스에서 Unity Ads 제외 — 중복 불가) |
+| AppLovin | 선택 |
+
+### 1-3. Google 네트워크 - SDK 입찰 광고 소스 설정
+
+Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 위해 아래 라이브러리를 추가해주세요.
+
+**CocoaPods** — Podfile에 추가
+
+| Pod | 네트워크 |
+|-----|---------|
+| `GoogleMobileAdsMediationPangle` | Pangle |
+| `GoogleMobileAdsMediationFacebook` | Meta |
+| `GoogleMobileAdsMediationAppLovin` | AppLovin |
+| `GoogleMobileAdsMediationUnity` | Unity Ads |
+| `GoogleMobileAdsMediationVungle` | Liftoff Monetize |
+| `GoogleMobileAdsMediationMintegral` | Mintegral |
+| `GoogleMobileAdsMediationFyber` | DT Exchange |
+| `GoogleMobileAdsMediationInMobi` | InMobi |
+| `GoogleMobileAdsMediationMoloco` | Moloco |
+
+> 버전 고정이 필요한 경우: Pangle `v7.9.600`, AppLovin `v13.5.100`
+
+**SPM** — File > Add Package Dependencies에서 GitHub Repository URL 입력 후 Dependency Rule을 `Up to Next Major Version`(권장)으로 설정합니다.
 
 ---
 
-## 2. 권한 설정 (Info.plist)
+## Step 2. SDK 설정
+
+### 추적 권한 요청 (ATT)
+
+`Info.plist`의 `Privacy - Tracking Usage Description`에 사용자에게 보여줄 문구를 입력합니다.
 
 ```xml
-<!-- 앱 추적 권한 (iOS 14+) -->
 <key>NSUserTrackingUsageDescription</key>
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
-
-<!-- Google AdManager 사용 시 -->
-<key>GADApplicationIdentifier</key>
-<string>발급받은_GAD_APP_ID</string>
 ```
 
----
-
-## 3. 앱 추적 권한 요청 (iOS 14+)
+ATT 팝업 실행 코드는 AppDelegate에 아래와 같이 추가합니다.
 
 ```swift
 import AppTrackingTransparency
 
-func requestTrackingAuthorization() {
-    if #available(iOS 14, *) {
-        ATTrackingManager.requestTrackingAuthorization { status in
-            // 권한 요청 후 SDK 초기화
-            self.initNapSdk()
-        }
-    } else {
-        initNapSdk()
+func applicationDidBecomeActive(_ application: UIApplication) {
+    requestTrackingAuthorization()
+}
+
+private func requestTrackingAuthorization() {
+    Task {
+        _ = await ATTrackingManager.requestTrackingAuthorization()
     }
 }
 ```
 
+### Info.plist 추가 설정
+
+파트너 네트워크의 가이드를 참고하여 SKAdNetwork ID와 연동 전 체크사항들을 확인해주세요.
+
+Google AdManager 사용 시:
+
+```xml
+<!-- Ad Manager 앱 ID (형식: ca-app-pub-################~##########) -->
+<key>GADApplicationIdentifier</key>
+<string>발급받은_GAD_APP_ID</string>
+```
+
+> Google App ID 발급은 nap ssp 운영팀(nap_adx@nasmedia.co.kr)으로 문의해주세요.
+
 ---
 
-## 4. SDK 초기화
+## Step 3. SDK 초기화
 
-`AppDelegate`의 `application(_:didFinishLaunchingWithOptions:)` 또는 첫 화면 진입 시 초기화합니다.
+반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 호출해주세요.
 
 ```swift
 import NapSSP
@@ -79,34 +141,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        NapAdMixer.shared.initialize(mediaKey: "발급받은_MEDIA_KEY")
+        // AMMediation 초기화 (필수)
+        AMMediation.shared.initialize(
+            mediaKey: "발급받은_MEDIA_KEY",
+            adunitID: ["ADUNIT_ID_BANNER", "ADUNIT_ID_INTERSTITIAL", "ADUNIT_ID_NATIVE"]
+        )
+
+        // Google AdManager 초기화 (해당 네트워크 사용 시)
+        MobileAds.shared.start()
+
+        // Pangle 초기화 (해당 네트워크 사용 시)
+        let config = PAGConfig.share()
+        config.appID = "발급받은_PANGLE_APP_ID"
+        PAGSdk.start(with: config) { isSuccess, error in }
+
+        // AppLovin 초기화 (해당 네트워크 사용 시, SDK key 값 적용 필수)
+        // AppLovin SDK Key: nObIkviLd_FQIkP6yMGsTI7vKdDheVRJfwRkxzH7ie0T2o2slTnPIBcbTRelfXPuwGQcPf2bVGKTtaxtTrR0c9
+
         return true
     }
 }
-```
-
-```objc
-// Objective-C
-#import <NapSSP/NapSSP.h>
-
-- (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-    [[NapAdMixer shared] initializeWithMediaKey:@"발급받은_MEDIA_KEY"];
-    return YES;
-}
-```
-
----
-
-## 5. COPPA 설정 (선택)
-
-```swift
-// 아동 대상 앱
-NapAdMixer.shared.tagForChildDirectedTreatment = true
-
-// 일반 앱
-NapAdMixer.shared.tagForChildDirectedTreatment = false
 ```
 
 ---
@@ -114,5 +168,7 @@ NapAdMixer.shared.tagForChildDirectedTreatment = false
 ## 다음 단계
 
 - [배너 광고 연동하기](/ios/native/banner)
-- [전면 광고 연동하기](/ios/native/interstitial)
 - [네이티브 광고 연동하기](/ios/native/native-ad)
+- [리워드 동영상 연동하기](/ios/native/rewarded-video)
+- [동영상 광고 연동하기](/ios/native/video)
+- [비즈보드 연동하기](/ios/native/bizboard)
