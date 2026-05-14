@@ -38,4 +38,4 @@
 2. 문제 광고 스크린샷 및 URL 첨부
 3. 사유 입력 후 제출
 
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)

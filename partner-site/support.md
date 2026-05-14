@@ -16,7 +16,7 @@
 4. 첨부 파일 (스크린샷 등) 추가
 5. **제출** 버튼 클릭
 
-이메일 문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+이메일 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 

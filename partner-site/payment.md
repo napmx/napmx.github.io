@@ -31,4 +31,4 @@
 - [정산 정보 등록하기](/partner-site/signup)
 - 세금계산서는 지급 후 이메일로 발송됩니다.
 
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)

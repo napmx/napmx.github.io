@@ -3,7 +3,7 @@
 nap SSP 광고 연동 API는 **애드믹서 광고(NAP 네트워크)만 송출**하는 API 방식입니다.  
 Google 등 외부 네트워크를 함께 사용하려면 SDK 또는 Script 연동을 권장합니다.
 
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 

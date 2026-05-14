@@ -2,7 +2,7 @@
 
 nap SSP 서비스에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가이드 문서입니다.
 
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 

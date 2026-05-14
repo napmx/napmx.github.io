@@ -30,4 +30,4 @@
 
 ## 문의
 
-연동 및 이용 방법 문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+연동 및 이용 방법 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)

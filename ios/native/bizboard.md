@@ -48,4 +48,4 @@ extension BizboardViewController: NapBizboardAdViewDelegate {
 
 - 비즈보드는 **NaverAdManager** 어댑터가 필요합니다.
 - 네이버 성과형DA 계정 및 별도 계약이 필요합니다.
-- 문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+- 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)

@@ -6,7 +6,7 @@ nap SSP(Supply-Side Platform)는 kt nasmedia가 운영하는 광고 수익화 �
 퍼블리셔는 SDK, Script, API 세 가지 방식으로 연동할 수 있으며, 다수의 광고 네트워크를 단일 SDK로 통합 운영합니다.
 
 파트너 사이트: [publisher.admixer.co.kr](https://publisher.admixer.co.kr/)  
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 

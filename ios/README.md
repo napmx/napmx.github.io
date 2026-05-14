@@ -2,7 +2,7 @@
 
 nap SSP iOS SDK 앱 연동 가이드입니다.
 
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 

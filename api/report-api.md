@@ -4,7 +4,7 @@ nap SSP 퍼블리셔를 위한 수익 리포트 API입니다.
 
 > 버전: v1.0.0 | 릴리즈: 2024-12-18
 
-문의: [nap_adx@nasmedia.co.kr](mailto:nap_adx@nasmedia.co.kr)
+문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 
