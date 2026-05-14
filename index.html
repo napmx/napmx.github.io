@@ -216,18 +216,54 @@
       color: var(--color-primary);
     }
 
-    /* pagination 버튼 */
+    /* pagination */
+    .pagination {
+      border-top: none !important;
+      margin-top: 48px;
+      padding-top: 0 !important;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .pagination-item {
+      flex: 1;
+    }
+    .pagination-item--next {
+      text-align: right;
+    }
     .pagination-item a {
-      color: var(--color-primary) !important;
-      border: 1px solid var(--color-lgrey);
-      border-radius: 4px;
-      padding: 6px 14px;
-      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-dgrey) !important;
+      border: 1px solid #E8E8E8;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      text-decoration: none !important;
+      border-bottom: none !important;
+      transition: all 0.15s;
+      background: var(--color-white);
     }
     .pagination-item a:hover {
       background: var(--color-primary) !important;
       color: var(--color-white) !important;
-      border-color: var(--color-primary);
+      border-color: var(--color-primary) !important;
+    }
+    .pagination-item a .pagination-item-label {
+      font-size: 0.75rem;
+      color: var(--color-lgrey);
+      display: block;
+    }
+    .pagination-item a:hover .pagination-item-label {
+      color: rgba(255,255,255,0.75);
+    }
+    .pagination-item a .pagination-item-title {
+      font-weight: 600;
+      color: var(--color-black);
+    }
+    .pagination-item a:hover .pagination-item-title {
+      color: var(--color-white);
     }
 
     /* copy-code 버튼 */
@@ -256,6 +292,96 @@
     /* 사이드바 토글 */
     .sidebar-toggle { background-color: transparent; }
     .sidebar-toggle span { background-color: var(--color-dgrey); }
+
+    /* ── 기타 디테일 ── */
+
+    /* GitHub 코너 아이콘 제거 */
+    .github-corner { display: none !important; }
+
+    /* 앱 이름 영역 */
+    .app-name {
+      padding: 20px 16px 12px;
+      font-size: 1.05rem;
+    }
+
+    /* 사이드바 섹션 구분 (bold 그룹 위) */
+    .sidebar-nav > ul > li + li {
+      margin-top: 6px;
+    }
+    .sidebar-nav p {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-lgrey);
+      margin: 18px 0 4px 0;
+      padding-left: 2px;
+    }
+
+    /* 네비바 드롭다운 */
+    nav.app-nav li ul {
+      background: var(--color-white);
+      border: 1px solid #E8E8E8;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 6px 0;
+    }
+    nav.app-nav li ul li a {
+      padding: 7px 16px;
+      font-size: 0.88rem;
+    }
+    nav.app-nav li ul li a:hover {
+      background: var(--color-red-light);
+    }
+
+    /* 본문 최상단 여백 */
+    .markdown-section {
+      padding-top: 32px;
+    }
+
+    /* h1 아래 첫 단락 여백 */
+    .markdown-section h1 + p,
+    .markdown-section h1 + blockquote {
+      margin-top: 16px;
+    }
+
+    /* 리스트 */
+    .markdown-section ul li,
+    .markdown-section ol li {
+      line-height: 1.8;
+      color: #333;
+    }
+
+    /* 코드 블록 상단 언어 레이블 */
+    .markdown-section pre[data-lang]::before {
+      content: attr(data-lang);
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 0.72rem;
+      color: var(--color-lgrey);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .markdown-section pre { position: relative; }
+
+    /* 스크롤바 (webkit) */
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--color-lgrey);
+      border-radius: 2px;
+    }
+
+    /* 모바일 반응형 */
+    @media screen and (max-width: 768px) {
+      .pagination {
+        flex-direction: column;
+      }
+      .pagination-item--next {
+        text-align: left;
+      }
+    }
   </style>
 </head>
 <body>
@@ -264,7 +390,7 @@
     window.$docsify = {
       name: '<b>nap mx</b> Guide',
       nameLink: '/',
-      repo: 'https://github.com/napmx/napmx.github.io',
+      repo: '',
       homepage: 'overview.md',
       loadSidebar: true,
       coverpage: false,
