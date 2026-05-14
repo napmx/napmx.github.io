@@ -1,6 +1,6 @@
 # Android SDK 시작하기 - Unity
 
-Unity 프로젝트에서 nap SSP Android SDK를 연동하는 방법입니다.
+Unity 프로젝트에서 nap mx Android SDK를 연동하는 방법입니다.
 
 ---
 
@@ -43,7 +43,7 @@ AppLovin 사용 시 추가:
 
 ```groovy
 dependencies {
-    // nap SSP 메인 SDK (필수)
+    // nap mx 메인 SDK (필수)
     implementation 'io.github.nasmedia-tech:admixer-ssp:1.0.23'
     implementation 'com.google.android.gms:play-services-ads-identifier:18.9.0'
 

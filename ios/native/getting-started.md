@@ -16,7 +16,7 @@ platform :ios, '13.0'
 target 'YourApp' do
   use_frameworks!
 
-  # nap SSP 메인 SDK (필수)
+  # nap mx 메인 SDK (필수)
   pod 'NapSSP'
 
   # --- 선택적 어댑터 ---

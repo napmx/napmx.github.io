@@ -1,6 +1,6 @@
 <!-- _coverpage.md -->
 
-# nap SSP <small>Publisher Guide</small>
+# nap mx <small>Publisher Guide</small>
 
 > 안드로이드 · iOS · Unity 공식 SDK 연동 가이드
 

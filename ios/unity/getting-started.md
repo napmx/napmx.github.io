@@ -1,6 +1,6 @@
 # iOS SDK 시작하기 - Unity
 
-Unity 프로젝트에서 nap SSP iOS SDK를 연동하는 방법입니다.
+Unity 프로젝트에서 nap mx iOS SDK를 연동하는 방법입니다.
 
 ---
 
@@ -35,7 +35,7 @@ AppLovin 사용 시:
 
 ## 2. SDK 설정
 
-Unity Package Manager 또는 `.unitypackage`를 통해 nap SSP Unity Plugin을 설치합니다.
+Unity Package Manager 또는 `.unitypackage`를 통해 nap mx Unity Plugin을 설치합니다.
 
 ```
 Assets > Import Package > Custom Package > NapSSP_Unity.unitypackage

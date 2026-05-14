@@ -57,7 +57,7 @@ repositories {
 
 ```groovy
 dependencies {
-    // nap SSP 메인 SDK (필수)
+    // nap mx 메인 SDK (필수)
     implementation 'io.github.nasmedia-tech:admixer-ssp:1.0.23'
 
     // 광고 ID 수집 (필수)

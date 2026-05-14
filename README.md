@@ -1,6 +1,6 @@
-# nap SSP Publisher Guide
+# nap mx Publisher Guide
 
-nap SSP 서비스에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가이드 문서입니다.
+nap mx 서비스에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가이드 문서입니다.
 
 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
@@ -14,7 +14,7 @@ nap SSP 서비스에서 지원하는 연동 방식 및 광고 포맷에 대한 �
 | **Script** | NAP, Google ADfit, MobWith |
 | **API** | NAP, Criteo, MobWith |
 
-> NAP 네트워크는 nap SSP에 연동된 디맨드(Adpacker, Criteo, Appier 등) 물량을 제공합니다.
+> NAP 네트워크는 nap mx에 연동된 디맨드(Adpacker, Criteo, Appier 등) 물량을 제공합니다.
 
 ---
 

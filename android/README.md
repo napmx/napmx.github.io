@@ -1,6 +1,6 @@
 # Android SDK
 
-nap SSP Android SDK(`admixer-ssp`)는 Maven Central을 통해 배포됩니다.
+nap mx Android SDK(`admixer-ssp`)는 Maven Central을 통해 배포됩니다.
 
 현재 버전: **1.0.23** | Min SDK: **21** | Target SDK: **35**
 
