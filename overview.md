@@ -18,7 +18,7 @@ nap mx(Supply-Side Platform)는 kt nasmedia가 운영하는 광고 수익화 플
 | **Script** | 웹뷰/모바일웹에 스크립트 삽입 | M.Web / PC.Web | NAP, Google ADfit, Mobwith |
 | **API** | 서버-서버 직접 API 호출 | Server | NAP, Criteo, Mobwith |
 
-> **참고**: Google 수익화(AdSense 등)를 함께 사용하는 경우 Script 연동을 권장합니다.
+> **참고**: nap 네트워크는 Adpacker, Criteo, Appier 등 연동된 디멘드 물량을 함께 제공합니다.
 
 ---
 
@@ -26,41 +26,79 @@ nap mx(Supply-Side Platform)는 kt nasmedia가 운영하는 광고 수익화 플
 
 ### Android / iOS SDK
 
-| 포맷 | 사이즈 | 주요 네트워크 |
-|------|--------|--------------|
-| 배너 | 320×50, 320×100, 300×250, 320×480 | NAP, Google, KakaoAdfit, Pangle, AppLovin |
-| 전면 배너 | 320×480 | NAP, Google, Pangle, AppLovin |
-| 네이티브 | 자유 | NAP, Google, KakaoAdfit, Pangle |
-| 동영상 (아웃스트림) | 16:9 | NAP, Pangle, AppLovin |
-| 리워드 동영상 | 전면 | NAP, Google, Pangle, AppLovin, Unity Ads |
+#### 배너
 
-### M.Web
+| 사이즈 | NAP | Google | KakaoAdfit | AppLovin | Pangle | Unity Ads |
+|--------|:---:|:------:|:----------:|:--------:|:------:|:---------:|
+| 320×50 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 320×100 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 300×250 | ✅ | ✅ | ✅ | — | ✅ | ✅ |
+| 320×480 | ✅ | ✅ | ✅ | — | — | ✅ |
 
-| 포맷 | 사이즈 | 주요 네트워크 |
-|------|--------|--------------|
-| 배너 | 100×100, 300×250, 320×50, 320×100, 320×480 | NAP, ADfit, MobWith |
-| 전면 배너 | 320×480 | NAP, MobWith |
-| 네이티브 | 다양 | NAP, MobWith |
-| 리워드 | 300×250, 320×480 | NAP |
+#### 전면 배너
 
-### PC.Web
+| 사이즈 | NAP | Google | KakaoAdfit | AppLovin | Pangle | Unity Ads |
+|--------|:---:|:------:|:----------:|:--------:|:------:|:---------:|
+| 300×250 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 320×480 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-| 포맷 | 사이즈 |
-|------|--------|
-| 배너 | 120×600 등 |
+#### 네이티브
+
+| NAP | Google | KakaoAdfit | Pangle |
+|:---:|:------:|:----------:|:------:|
+| ✅ | ✅ | ✅ | ✅ |
+
+#### 동영상
+
+| 포맷 | NAP | Google | AppLovin | Pangle | Unity Ads |
+|------|:---:|:------:|:--------:|:------:|:---------:|
+| 아웃스트림 (16:9) | ✅ | — | — | — | — |
+| 인스트림 (16:9) | ✅ | — | — | — | — |
+| 리워드 (전면) | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+---
+
+### M.Web (Script)
+
+#### 배너
+
+| 사이즈 | NAP | Google | KakaoAdfit | Mobwith |
+|--------|:---:|:------:|:----------:|:-------:|
+| 100×100 | ✅ | ✅ | — | — |
+| 300×250 | ✅ | ✅ | ✅ | ✅ |
+| 320×50 | ✅ | ✅ | ✅ | ✅ |
+| 320×100 | ✅ | ✅ | ✅ | ✅ |
+| 320×480 | ✅ | ✅ | ✅ | ✅ |
+
+#### 전면 배너 / 리워드 / 네이티브
+
+| 포맷 | 사이즈 | NAP | Google | KakaoAdfit | Mobwith |
+|------|--------|:---:|:------:|:----------:|:-------:|
+| 전면 배너 | 300×250, 320×480 | ✅ | ✅ | ✅ | ✅ |
+| 리워드 | 300×250, 320×480 | ✅ | ✅ | — | — |
+| 네이티브 | 다양 | ✅ | ✅ | — | — |
+
+---
+
+### PC.Web (Script)
+
+| 포맷 | 사이즈 | NAP |
+|------|--------|:---:|
+| 배너 | 120×600 등 | ✅ |
 
 ---
 
 ## 지원 광고 네트워크
 
-| 어댑터명 | 네트워크 | 플랫폼 |
-|---------|---------|--------|
-| `AdMixer` | nap mx 자체 | Android / iOS |
-| `AdManager` | Google Ad Manager | Android / iOS |
-| `KaKao Adfit` | 카카오 ADfit | Android / iOS |
-| `MobWith` | 모비위드 | Android / iOS / Web |
-| `AppLovin` | AppLovin MAX | Android / iOS |
-| `Pangle` | ByteDance Pangle | Android / iOS |
-| `UnityAds` | Unity Ads | Android / iOS (Unity) |
-| `NaverAdManager` | 네이버 성과형DA | Android / iOS |
-| `Teads` | Teads | Android / iOS |
+| 네트워크 | 어댑터 | 플랫폼 |
+|---------|--------|--------|
+| nap mx (자체) | `AdMixer` | Android / iOS / Web |
+| Google Ad Manager | `AdManager` | Android / iOS |
+| 카카오 ADfit | `KakaoAdfit` | Android / iOS / M.Web |
+| Mobwith | `MobWith` | Android / iOS / M.Web |
+| AppLovin MAX | `AppLovin` | Android / iOS |
+| ByteDance Pangle | `Pangle` | Android / iOS |
+| Unity Ads | `UnityAds` | Android / iOS (Unity) |
+| 네이버 성과형DA | `NaverAdManager` | Android / iOS |
+| Teads | `Teads` | Android / iOS |
+| Criteo | — | API |
