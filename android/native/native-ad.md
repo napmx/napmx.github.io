@@ -1,103 +1,308 @@
-# 네이티브 광고 (Android Native)
+# 네이티브 광고
 
-네이티브 광고는 `NativeAdView`를 사용합니다.  
-앱의 UI 스타일에 맞게 자유롭게 레이아웃을 구성할 수 있습니다.
+> **📌 참고** 네이티브 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+
+네이티브 광고는 `NativeAdView`를 사용하여 앱 UI에 자연스럽게 통합된 형태의 광고를 표시합니다. 제공된 asset을 이용해 자유롭게 UI를 구성할 수 있습니다.
 
 ---
 
-## 1. 광고 로드
+## 구성 Asset
+
+네이티브 광고는 아래 6가지 asset으로 구성됩니다.
+
+| Asset | View ID 키 | 설명 | 필수 여부 |
+|-------|-----------|------|----------|
+| 제목 | `"tv_title"` | 광고 제목 (TextView) | AdMixer 단독: 1개 이상 필수 |
+| 아이콘 | `"iv_icon"` | 광고주 아이콘 이미지 (ImageView) | 선택 |
+| 광고주 | `"tv_adv"` | 광고주명 (TextView) | 선택 |
+| 설명 | `"tv_desc"` | 광고 설명 텍스트 (TextView) | 선택 |
+| 메인 | `"iv_main"` | 메인 이미지 또는 동영상 (NativeMainAdView) | AdMixer 단독: 1개 이상 필수 |
+| CTA 버튼 | `"btn_cta"` | 행동 유도 버튼 (Button) | 선택 |
+
+> **⚠️ 주의** **필수 규칙**
+> - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
+> - Google AdManager 사용 시: Google이 요구하는 최소 View를 반드시 설정해야 합니다.
+
+---
+
+## 레이아웃 XML 작성
+
+네이티브 광고 레이아웃을 XML로 먼저 정의합니다.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:padding="12dp">
+
+    <!-- 아이콘 이미지 -->
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop" />
+
+    <!-- 광고 제목 -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/iv_icon"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#222222"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+    <!-- 광고주명 -->
+    <TextView
+        android:id="@+id/tv_adv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_title"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/iv_icon"
+        android:textSize="11sp"
+        android:textColor="#999999" />
+
+    <!-- 광고 설명 -->
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_icon"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        android:textColor="#555555"
+        android:maxLines="3"
+        android:ellipsize="end" />
+
+    <!-- 메인 이미지 / 동영상 (NativeMainAdView 필수) -->
+    <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
+        android:id="@+id/iv_main"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/tv_desc"
+        android:layout_marginTop="8dp">
+
+        <!-- 내부에 ImageView 배치 (메인 이미지용) -->
+        <ImageView
+            android:id="@+id/iv_main_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+    </com.nasmedia.admixerssp.common.nativeads.NativeMainAdView>
+
+    <!-- CTA(행동 유도) 버튼 -->
+    <Button
+        android:id="@+id/btn_cta"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_below="@id/iv_main"
+        android:layout_marginTop="8dp"
+        android:background="#3A86FF"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp" />
+
+</RelativeLayout>
+```
+
+---
+
+## 코드 구현
+
+**Java**
 
 ```java
-// Java
-import com.nasmedia.admixerssp.ads.NativeAdView;
-import com.nasmedia.admixerssp.ads.AdListener;
-import com.nasmedia.admixerssp.ads.AdEvent;
-
-public class MainActivity extends AppCompatActivity {
+public class NativeAdActivity extends AppCompatActivity {
 
     private NativeAdView nativeAdView;
+    private ViewGroup container;
+
+    private final AdListener adListener = new AdListener() {
+        @Override
+        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+            // 광고 수신 성공 — 레이아웃에 추가 후 반드시 showAd() 호출
+            if (nativeAdView != null && nativeAdView.hasAd) {
+                container.removeAllViews();
+                container.addView(nativeAdView);
+                nativeAdView.showAd(); // 광고 소재 렌더링 및 노출 처리 (필수)
+            }
+        }
+
+        @Override
+        public void onFailedToReceiveAd(@Nullable Object adView,
+                @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
+            // 광고 수신 실패
+        }
+
+        @Override
+        public void onEventAd(@NonNull Object adView, @NonNull AdEvent event) {
+            if (event == AdEvent.CLICK) {
+                // 광고 클릭
+            }
+        }
+    };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_native);
 
-        nativeAdView = new NativeAdView(this);
-        nativeAdView.setAdUnitId("발급받은_ADUNIT_ID");
-        nativeAdView.setAdListener(new AdListener() {
-            @Override
-            public void onReceivedAd(String adapterName, Object adView) {
-                // adView를 원하는 컨테이너에 추가
-                ViewGroup container = findViewById(R.id.nativeAdContainer);
-                container.removeAllViews();
-                if (adView instanceof View) {
-                    container.addView((View) adView);
-                }
-            }
+        container = findViewById(R.id.container_native);
 
-            @Override
-            public void onFailedToReceiveAd(Object adView, String adapterName,
-                                             int errorCode, String errorMsg) { }
+        // ① View ID 매핑 — 각 네트워크에 레이아웃 View ID를 알려줍니다
+        Map<String, Integer> adViewIds = new HashMap<>();
+        adViewIds.put("iv_icon", R.id.iv_icon);
+        adViewIds.put("tv_title", R.id.tv_title);
+        adViewIds.put("tv_adv", R.id.tv_adv);
+        adViewIds.put("tv_desc", R.id.tv_desc);
+        adViewIds.put("iv_main", R.id.iv_main);
+        adViewIds.put("btn_cta", R.id.btn_cta);
 
-            @Override
-            public void onEventAd(Object adView, AdEvent event) { }
-        });
-        nativeAdView.loadAd();
+        AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE)
+            // Google, Adfit, Pangle 등 사용하는 어댑터에 동일한 View ID 매핑 전달
+            .setViewIds(AdMixer.ADAPTER_ADMANAGER, adViewIds)
+            .setViewIds(AdMixer.ADAPTER_ADFIT, adViewIds)
+            .setViewIds(AdMixer.ADAPTER_PANGLE, adViewIds)
+            .build();
+
+        // ② NativeAdViewBinder — SDK 내부 렌더링용 레이아웃 바인딩 설정
+        NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+            .setIconImageId(R.id.iv_icon)
+            .setTitleId(R.id.tv_title)
+            .setAdvertiserId(R.id.tv_adv)
+            .setDescriptionId(R.id.tv_desc)
+            .setMainViewId(R.id.iv_main)
+            .setCtaId(R.id.btn_cta)
+            .build();
+
+        // ③ NativeAdView 생성 및 로드
+        nativeAdView = new NativeAdView(this); // Activity context 사용 (Adfit 필수)
+        nativeAdView.setAdInfo(adInfo);
+        nativeAdView.setViewBinder(viewBinder); // ✅ 필수
+        nativeAdView.setAdViewListener(adListener);
+        nativeAdView.loadNativeAd();
+    }
+
+    @Override protected void onResume() { super.onResume(); if (nativeAdView != null) nativeAdView.onResume(); }
+    @Override protected void onPause() { if (nativeAdView != null) nativeAdView.onPause(); super.onPause(); }
+    @Override
+    protected void onDestroy() {
+        if (nativeAdView != null) { nativeAdView.destroy(); nativeAdView = null; }
+        super.onDestroy();
     }
 }
 ```
 
+**Kotlin**
+
 ```kotlin
-// Kotlin
-import com.nasmedia.admixerssp.ads.NativeAdView
+class NativeAdActivity : AppCompatActivity() {
 
-class MainActivity : AppCompatActivity() {
+    private var nativeAdView: NativeAdView? = null
+    private lateinit var container: ViewGroup
 
-    private lateinit var nativeAdView: NativeAdView
+    private val adListener = object : AdListener {
+        override fun onReceivedAd(adapterName: String, adView: Any) {
+            if (nativeAdView?.hasAd == true) {
+                container.removeAllViews()
+                container.addView(nativeAdView)
+                nativeAdView?.showAd() // 광고 소재 렌더링 및 노출 처리 (필수)
+            }
+        }
+        override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
+                                          errorCode: Int, errorMsg: String?) { }
+        override fun onEventAd(adView: Any, event: AdEvent) {
+            if (event == AdEvent.CLICK) { /* 클릭 처리 */ }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_native)
 
-        nativeAdView = NativeAdView(this)
-        nativeAdView.setAdUnitId("발급받은_ADUNIT_ID")
-        nativeAdView.setAdListener(object : AdListener {
-            override fun onReceivedAd(adapterName: String, adView: Any) {
-                val container = findViewById<ViewGroup>(R.id.nativeAdContainer)
-                container.removeAllViews()
-                if (adView is View) container.addView(adView)
-            }
+        container = findViewById(R.id.container_native)
 
-            override fun onFailedToReceiveAd(adView: Any, adapterName: String,
-                                              errorCode: Int, errorMsg: String) { }
+        val adViewIds = mapOf(
+            "iv_icon" to R.id.iv_icon,
+            "tv_title" to R.id.tv_title,
+            "tv_adv" to R.id.tv_adv,
+            "tv_desc" to R.id.tv_desc,
+            "iv_main" to R.id.iv_main,
+            "btn_cta" to R.id.btn_cta
+        )
 
-            override fun onEventAd(adView: Any, event: AdEvent) { }
-        })
-        nativeAdView.loadAd()
+        val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE)
+            .setViewIds(AdMixer.ADAPTER_ADMANAGER, adViewIds)
+            .setViewIds(AdMixer.ADAPTER_ADFIT, adViewIds)
+            .setViewIds(AdMixer.ADAPTER_PANGLE, adViewIds)
+            .build()
+
+        val viewBinder = NativeAdViewBinder.Builder(R.layout.item_native_ad)
+            .setIconImageId(R.id.iv_icon)
+            .setTitleId(R.id.tv_title)
+            .setAdvertiserId(R.id.tv_adv)
+            .setDescriptionId(R.id.tv_desc)
+            .setMainViewId(R.id.iv_main)
+            .setCtaId(R.id.btn_cta)
+            .build()
+
+        nativeAdView = NativeAdView(this).apply {
+            setAdInfo(adInfo)
+            setViewBinder(viewBinder)
+            setAdViewListener(adListener)
+            loadNativeAd()
+        }
+    }
+
+    override fun onResume() { super.onResume(); nativeAdView?.onResume() }
+    override fun onPause() { nativeAdView?.onPause(); super.onPause() }
+    override fun onDestroy() {
+        nativeAdView?.destroy(); nativeAdView = null
+        super.onDestroy()
     }
 }
 ```
 
 ---
 
-## 2. 레이아웃 컨테이너
+## NativeAdViewBinder 옵션
 
-```xml
-<!-- activity_main.xml -->
-<FrameLayout
-    android:id="@+id/nativeAdContainer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
-```
+`NativeAdViewBinder.Builder`에서 설정 가능한 메서드입니다.
+
+| 메서드 | 설명 |
+|--------|------|
+| `new Builder(int layoutResId)` | 네이티브 광고 레이아웃 리소스 ID (필수) |
+| `setIconImageId(int viewId)` | 아이콘 이미지 View ID |
+| `setTitleId(int viewId)` | 제목 TextView ID |
+| `setAdvertiserId(int viewId)` | 광고주명 TextView ID |
+| `setDescriptionId(int viewId)` | 설명 TextView ID |
+| `setMainViewId(int viewId)` | 메인 이미지/동영상 NativeMainAdView ID |
+| `setCtaId(int viewId)` | CTA 버튼 View ID |
 
 ---
 
-## 3. 생명주기 처리
+## 주의사항
 
-```java
-@Override
-protected void onDestroy() {
-    super.onDestroy();
-    if (nativeAdView != null) nativeAdView.destroy();
-}
-```
+> **⚠️ 주의** **Adfit 사용 시**: `NativeAdView`는 반드시 **Activity Context**로 생성하세요. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
+
+> **📌 참고** **레이아웃 구조**: 네이티브 광고 레이아웃에는 `RelativeLayout` 사용을 권장합니다. 다른 레이아웃을 사용해야 하는 경우, 해당 레이아웃을 `RelativeLayout` 안에 넣는 방식으로 구현할 수 있습니다.
+
+> **📌 참고** **`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
+
+---
+
+## 라이프사이클 관리
+
+| Activity 메서드 | NativeAdView 메서드 | 역할 |
+|----------------|---------------------|------|
+| `onResume()` | `nativeAdView.onResume()` | 동영상 재생 재개 |
+| `onPause()` | `nativeAdView.onPause()` | 동영상 재생 일시 정지 |
+| `onDestroy()` | `nativeAdView.destroy()` | 모든 리소스 해제 (필수) |

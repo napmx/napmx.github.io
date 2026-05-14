@@ -1,159 +1,284 @@
-# Android SDK 시작하기 (Native)
+# SDK 시작하기
 
-## 사전 준비
-
-[파트너 사이트](https://publisher.admixer.co.kr/)에서 **Media Key**와 **Adunit ID**를 발급받아야 합니다.
+이 페이지에서는 nap mx Android SDK를 프로젝트에 추가하고 초기화하는 방법을 안내합니다.
 
 ---
 
-## 1. 권한 설정
+## Step 1. Gradle 설정
 
-`AndroidManifest.xml`에 인터넷 권한을 추가합니다.
+### 1-1. 프로젝트 최상위 `build.gradle`
 
-```xml
-<manifest>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <application>
-        ...
-    </application>
-</manifest>
+```gradle
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 ```
 
-Google AdManager 사용 시 추가 설정:
+### 1-2. 앱 모듈 `build.gradle`
+
+> **⚠️ 주의** 라이브러리 버전은 항상 **최신 버전**으로 유지하세요. 구버전 사용 시 광고 수신율이 저하되거나 보안 취약점이 발생할 수 있습니다.
+
+```gradle
+dependencies {
+    // ✅ 필수 — Core SDK
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.0.0'
+    // ✅ 필수 — Google Advertising ID
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+
+    // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:24.8.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.0'           // Kakao Adfit (ads-base:3.21.17 포함)
+    implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'          // Pangle (pag-sdk:7.7.0.2 포함)
+    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.5.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'           // Unity Ads (unity-ads:4.15.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-mobwith:2.0.0'         // Mobwith (mobwithSDK:1.0.68 포함)
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.14.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'           // Teads (teads-sdk:6.1.0 포함)
+}
+```
+
+### 1-3. 네트워크별 추가 Maven 저장소
+
+일부 네트워크는 별도 Maven 저장소 추가가 필요합니다. `settings.gradle`의 `dependencyResolutionManagement` 블록에 추가하세요.
+
+```gradle
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        // Adfit (Kakao) 사용 시 필수
+        maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
+        // Pangle 사용 시 필수
+        maven { url "https://artifact.bytedance.com/repository/pangle/" }
+        // Teads 사용 시 필수
+        maven { url "https://sdk.teads.tv/android/repo" }
+        maven { url "https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod" }
+    }
+}
+```
+
+| 네트워크 | 필요 저장소 |
+|---------|------------|
+| Google AdManager, AppLovin, Unity, Mobwith, NaverAdManager | `google()` / `mavenCentral()` 만으로 해결 |
+| Kakao Adfit | `devrepo.kakao.com` 추가 필요 |
+| Pangle | `artifact.bytedance.com` 추가 필요 |
+| Teads | `sdk.teads.tv`, `teads.jfrog.io` 추가 필요 |
+
+---
+
+## Step 2. AndroidManifest.xml 설정
+
+특정 네트워크를 사용할 경우 `AndroidManifest.xml`에 추가 설정이 필요합니다.
+
+### Google AdManager 사용 시 (필수)
 
 ```xml
 <application>
     <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
-        android:value="발급받은 App ID" />
+        android:value="nap mx 운영팀으로부터 발급받은 Google App ID" />
 </application>
 ```
 
-AppLovin 사용 시 추가 설정:
+### Naver Ad Manager 사용 시 (필수)
 
 ```xml
 <application>
     <meta-data
-        android:name="applovin.sdk.key"
-        android:value="발급받은 키" />
+        android:name="com.naver.gfpsdk.PUBLISHER_ID"
+        android:value="nap mx 운영팀으로부터 발급받은 NaverAdManager Publisher ID" />
 </application>
 ```
 
----
-
-## 2. Gradle 설정
-
-프로젝트 수준 `build.gradle`에 Maven Central 저장소가 포함되어 있는지 확인합니다.
-
-```groovy
-// settings.gradle (또는 build.gradle)
-repositories {
-    google()
-    mavenCentral()
-}
-```
-
-앱 모듈 `build.gradle`에 SDK 의존성을 추가합니다.
-
-```groovy
-dependencies {
-    // nap mx 메인 SDK (필수)
-    implementation 'io.github.nasmedia-tech:admixer-ssp:1.0.23'
-
-    // 광고 ID 수집 (필수)
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
-
-    // --- 선택적 어댑터 (사용하는 네트워크만 추가) ---
-
-    // Google AdManager
-    implementation 'com.google.android.gms:play-services-ads:23.x.x'
-
-    // KakaoAdfit
-    implementation 'com.kakao.adfit:ads-base:3.x.x'
-
-    // AppLovin
-    implementation 'com.applovin:applovin-sdk:12.x.x'
-
-    // Pangle (ByteDance)
-    implementation 'com.pangle.global:pag-sdk:7.x.x'
-}
-```
-
-Pangle 사용 시 `settings.gradle`에 저장소를 추가합니다.
-
-```groovy
-maven { url "https://artifact.bytedance.com/repository/pangle/" }
-```
-
-KakaoAdfit 사용 시 저장소를 추가합니다.
-
-```groovy
-maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
-```
+> **📌 참고** Google App ID와 NaverAdManager Publisher ID는 **nap_mx@nasmedia.co.kr**로 문의하여 발급받으세요.
 
 ---
 
-## 3. SDK 초기화
+## Step 3. SDK 초기화
 
-`Application` 또는 첫 번째 `Activity`의 `onCreate()`에서 초기화합니다.
+> **🚨 주의** SDK 초기화는 광고 호출 전 앱에서 **반드시 1회** 호출해야 합니다. `Application.onCreate()`에서 호출하는 것을 권장합니다.
+
+**Java**
 
 ```java
-// Java
-import com.nasmedia.admixerssp.common.AdMixer;
+// MyApplication.java
+public class MyApplication extends android.app.Application {
 
-public class MyApplication extends Application {
+    // 파트너 사이트에서 발급받은 키값으로 교체하세요
+    public static final String MEDIA_KEY = "발급받은 미디어 키";
+    public static final String ADUNIT_ID_BANNER = "배너 애드유닛 ID";
+    public static final String ADUNIT_ID_INTERSTITIAL = "전면 배너 애드유닛 ID";
+    public static final String ADUNIT_ID_NATIVE = "네이티브 애드유닛 ID";
+    public static final String ADUNIT_ID_REWARD_VIDEO = "리워드 동영상 애드유닛 ID";
+    public static final String ADUNIT_ID_VIDEO = "인라인 동영상 애드유닛 ID";
+
     @Override
     public void onCreate() {
         super.onCreate();
-        AdMixer.getInstance().init(this, "발급받은_MEDIA_KEY");
+
+        // 1. 로그 레벨 설정 (개발 중 VERBOSE, 배포 시 ERROR 권장)
+        AdMixerLog.setLogLevel(AdMixerLog.LogLevel.VERBOSE);
+
+        // 2. 사용할 모든 adunit id를 목록으로 등록
+        ArrayList<String> adUnits = new ArrayList<>(Arrays.asList(
+            ADUNIT_ID_BANNER,
+            ADUNIT_ID_INTERSTITIAL,
+            ADUNIT_ID_NATIVE,
+            ADUNIT_ID_REWARD_VIDEO,
+            ADUNIT_ID_VIDEO
+        ));
+
+        // 3. SDK 초기화 — build.gradle에 추가된 어댑터는 자동으로 등록됩니다
+        AdMixer.getInstance().initialize(this, MEDIA_KEY, adUnits);
+
+        // 4. Pangle 사용 시 별도 초기화 필수
+        if (/* Pangle 사용 시 */ true) {
+            PAGConfig pagConfig = new PAGConfig.Builder()
+                .appId("발급받은 Pangle App ID")
+                .debugLog(BuildConfig.DEBUG)
+                .supportMultiProcess(false)
+                .build();
+            PAGSdk.init(this, pagConfig, new PAGSdk.PAGInitCallback() {
+                @Override public void success() { }
+                @Override public void fail(int code, String msg) { }
+            });
+        }
     }
 }
 ```
+
+**Kotlin**
 
 ```kotlin
-// Kotlin
-import com.nasmedia.admixerssp.common.AdMixer
-
+// MyApplication.kt
 class MyApplication : Application() {
+
+    companion object {
+        const val MEDIA_KEY = "발급받은 미디어 키"
+        const val ADUNIT_ID_BANNER = "배너 애드유닛 ID"
+        const val ADUNIT_ID_INTERSTITIAL = "전면 배너 애드유닛 ID"
+        const val ADUNIT_ID_NATIVE = "네이티브 애드유닛 ID"
+        const val ADUNIT_ID_REWARD_VIDEO = "리워드 동영상 애드유닛 ID"
+        const val ADUNIT_ID_VIDEO = "인라인 동영상 애드유닛 ID"
+    }
+
     override fun onCreate() {
         super.onCreate()
-        AdMixer.getInstance().init(this, "발급받은_MEDIA_KEY")
+
+        // 1. 로그 레벨 설정
+        AdMixerLog.setLogLevel(AdMixerLog.LogLevel.VERBOSE)
+
+        // 2. 사용할 adunit id 목록
+        val adUnits = arrayListOf(
+            ADUNIT_ID_BANNER,
+            ADUNIT_ID_INTERSTITIAL,
+            ADUNIT_ID_NATIVE,
+            ADUNIT_ID_REWARD_VIDEO,
+            ADUNIT_ID_VIDEO
+        )
+
+        // 3. SDK 초기화 — build.gradle에 추가된 어댑터는 자동으로 등록됩니다
+        AdMixer.getInstance().initialize(this, MEDIA_KEY, adUnits)
+
+        // 4. Pangle 사용 시 별도 초기화 필수
+        val pagConfig = PAGConfig.Builder()
+            .appId("발급받은 Pangle App ID")
+            .debugLog(BuildConfig.DEBUG)
+            .supportMultiProcess(false)
+            .build()
+        PAGSdk.init(this, pagConfig, object : PAGSdk.PAGInitCallback {
+            override fun success() {}
+            override fun fail(code: Int, msg: String?) {}
+        })
     }
 }
 ```
 
-> **주의**: `init()`은 앱 실행 중 한 번만 호출해야 합니다.
-
----
-
-## 4. ProGuard 설정
-
-난독화를 사용하는 경우 아래 규칙을 `proguard-rules.pro`에 추가합니다.
-
-```
--keep class com.nasmedia.admixerssp.** { *; }
--keep interface com.nasmedia.admixerssp.** { *; }
--dontwarn com.nasmedia.admixerssp.**
-```
-
----
-
-## 5. COPPA 설정 (선택)
-
-아동 대상 앱의 경우 COPPA 플래그를 설정합니다.
+### 선택 초기화 옵션
 
 ```java
-// 아동 대상 앱
-AdMixer.tagForChildDirectedTreatment = AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE;
-
-// 일반 앱
-AdMixer.tagForChildDirectedTreatment = AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE;
+// COPPA(아동 대상 앱) 여부 설정
+AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);  // 아동 대상
+AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE); // 일반 대상
 ```
 
 ---
 
-## 다음 단계
+## Step 4. ProGuard 설정
 
-- [배너 광고 연동하기](/android/native/banner)
-- [전면 광고 연동하기](/android/native/interstitial)
-- [네이티브 광고 연동하기](/android/native/native-ad)
+릴리즈 빌드에서 ProGuard/R8 난독화를 사용하는 경우 아래 규칙을 `proguard-rules.pro`에 추가하세요.
+
+```proguard
+# ✅ 필수 — AdMixer Core
+-keep class com.nasmedia.admixerssp.** { *; }
+
+# 사용하는 어댑터 모듈만 추가하세요
+-keep class com.nasmedia.admanager.** { *; }       # Google AdManager
+-keep class com.nasmedia.adfit.** { *; }            # Kakao Adfit
+-keep class com.nasmedia.pangle.** { *; }           # Pangle
+-keep class com.nasmedia.applovin.** { *; }         # AppLovin
+-keep class com.nasmedia.unity.** { *; }            # Unity Ads
+-keep class com.nasmedia.mobwith.** { *; }          # Mobwith
+-keep class com.nasmedia.naveradmanager.** { *; }   # Naver Ad Manager
+-keep class com.nasmedia.teads.** { *; }            # Teads
+```
+
+> **📌 참고** 각 네트워크 SDK가 자체 ProGuard 규칙을 `consumerProguardFiles`로 제공하는 경우, 해당 규칙이 자동으로 적용됩니다. 빌드 경고가 발생하면 해당 네트워크의 ProGuard 가이드를 참고하세요.
+
+---
+
+## 네트워크 SDK 중복 예외 처리
+
+이미 자체/타사 솔루션으로 동일한 네트워크 SDK를 운영 중인 경우, `exclude`로 중복을 방지하세요.
+
+```gradle
+dependencies {
+    // 이미 Google AdManager SDK를 직접 사용 중인 경우
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0") {
+        exclude group: "com.google.android.gms", module: "play-services-ads"
+    }
+
+    // 이미 Kakao Adfit SDK를 직접 사용 중인 경우
+    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.0") {
+        exclude group: "com.kakao.adfit", module: "ads-base"
+    }
+
+    // 이미 Pangle SDK를 직접 사용 중인 경우
+    implementation("io.github.nasmedia-tech:admixer-pangle:2.0.0") {
+        exclude group: "com.pangle.global", module: "pag-sdk"
+    }
+}
+```
+
+> **⚠️ 주의** exclude 적용 후 반드시 아래를 확인하세요.
+> 1. Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 포함되어 있는지 확인
+> 2. 빌드 정상 여부 확인
+> 3. nap mx 광고 및 기존 광고 모두 정상 동작 여부 확인
+
+---
+
+## Google SDK 입찰 광고 소스 설정
+
+Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소스 라이브러리를 모두 추가해야 최적 수익화가 가능합니다.
+
+* [Google 공식 가이드 — 네트워크 선택](https://developers.google.com/ad-manager/mobile-ads-sdk/android/choose-networks?hl=ko)
+
+**추가해야 할 광고 소스 (모두 추가 권장):**
+
+| 광고 소스 |
+|-----------|
+| Pangle |
+| AppLovin |
+| DT Exchange |
+| InMobi |
+| Liftoff Monetize |
+| Meta Audience Network |
+| Moloco |
+| Unity Ads |
+| Mintegral |
+
+> **⚠️ 주의** 프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
