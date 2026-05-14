@@ -1,0 +1,6 @@
+- SDK 가이드
+  - [Android SDK](/android/)
+  - [iOS SDK](/ios/)
+- [API 연동](/api/ad-api)
+- [파트너 사이트](/partner-site/signup)
+- [문의](mailto:nap_adx@nasmedia.co.kr)

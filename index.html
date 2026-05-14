@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>nap SSP Publisher Guide</title>
+  <meta name="description" content="nap SSP SDK 공식 연동 가이드">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="icon" href="/_media/favicon.ico">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    :root {
+      --theme-color: #0052CC;
+    }
+    .sidebar-toggle {
+      background-color: transparent;
+    }
+    .app-name-link img {
+      width: 120px;
+    }
+    .cover-main h1 {
+      font-size: 2.5rem;
+      color: #0052CC;
+    }
+    .cover-main blockquote p {
+      font-size: 1.1rem;
+      color: #555;
+    }
+    nav.app-nav a:hover, nav.app-nav a.active {
+      color: #0052CC;
+    }
+    .token.keyword { color: #0052CC; }
+    .markdown-section code {
+      background: #f0f5ff;
+      color: #0052CC;
+      border-radius: 3px;
+    }
+    .tip {
+      border-left: 4px solid #0052CC;
+    }
+    /* badge style for version */
+    .version-badge {
+      display: inline-block;
+      background: #0052CC;
+      color: #fff;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.85em;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: '<b>nap SSP</b> Guide',
+      nameLink: '/',
+      repo: 'https://github.com/napmx/napmx.github.io',
+      loadSidebar: true,
+      coverpage: true,
+      onlyCover: false,
+      loadNavbar: true,
+      auto2top: true,
+      subMaxLevel: 3,
+      maxLevel: 4,
+      themeColor: '#0052CC',
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: '검색...',
+        noData: '검색 결과 없음',
+        depth: 3
+      },
+      copyCode: {
+        buttonText: '복사',
+        errorText: '오류',
+        successText: '완료'
+      },
+      pagination: {
+        previousText: '이전',
+        nextText: '다음',
+        crossChapter: true,
+        crossChapterText: true
+      },
+      plugins: [
+        function(hook) {
+          hook.beforeEach(function(html) {
+            return html;
+          });
+        }
+      ]
+    }
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-kotlin.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-swift.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-groovy.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-xml-doc.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-csharp.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/zoom-image.docsify/build/zoom-image.min.js"></script>
+</body>
+</html>
