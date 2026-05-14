@@ -1,4 +1,4 @@
-# 네이티브 광고
+﻿# 네이티브 광고
 
 > **📌 참고** 네이티브 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
@@ -39,7 +39,7 @@
 
     <!-- 아이콘 이미지 -->
     <ImageView
-        android:id="@+id/iv_icon"
+        android:id="@+id/nap_mx_iv_icon"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentStart="true"
@@ -48,11 +48,11 @@
 
     <!-- 광고 제목 -->
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/nap_mx_tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@id/iv_icon"
+        android:layout_toEndOf="@id/nap_mx_iv_icon"
         android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="#222222"
@@ -61,21 +61,21 @@
 
     <!-- 광고주명 -->
     <TextView
-        android:id="@+id/tv_adv"
+        android:id="@+id/nap_mx_tv_adv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_title"
+        android:layout_below="@id/nap_mx_tv_title"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@id/iv_icon"
+        android:layout_toEndOf="@id/nap_mx_iv_icon"
         android:textSize="11sp"
         android:textColor="#999999" />
 
     <!-- 광고 설명 -->
     <TextView
-        android:id="@+id/tv_desc"
+        android:id="@+id/nap_mx_tv_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/iv_icon"
+        android:layout_below="@id/nap_mx_iv_icon"
         android:layout_marginTop="8dp"
         android:textSize="12sp"
         android:textColor="#555555"
@@ -84,15 +84,15 @@
 
     <!-- 메인 이미지 / 동영상 (NativeMainAdView 필수) -->
     <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
-        android:id="@+id/iv_main"
+        android:id="@+id/nap_mx_iv_main"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@id/tv_desc"
+        android:layout_below="@id/nap_mx_tv_desc"
         android:layout_marginTop="8dp">
 
         <!-- 내부에 ImageView 배치 (메인 이미지용) -->
         <ImageView
-            android:id="@+id/iv_main_image"
+            android:id="@+id/nap_mx_iv_main_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
@@ -101,10 +101,10 @@
 
     <!-- CTA(행동 유도) 버튼 -->
     <Button
-        android:id="@+id/btn_cta"
+        android:id="@+id/nap_mx_btn_cta"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:layout_below="@id/iv_main"
+        android:layout_below="@id/nap_mx_iv_main"
         android:layout_marginTop="8dp"
         android:background="#3A86FF"
         android:textColor="#FFFFFF"
@@ -159,12 +159,12 @@ public class NativeAdActivity extends AppCompatActivity {
 
         // ① View ID 매핑 — 각 네트워크에 레이아웃 View ID를 알려줍니다
         Map<String, Integer> adViewIds = new HashMap<>();
-        adViewIds.put("iv_icon", R.id.iv_icon);
-        adViewIds.put("tv_title", R.id.tv_title);
-        adViewIds.put("tv_adv", R.id.tv_adv);
-        adViewIds.put("tv_desc", R.id.tv_desc);
-        adViewIds.put("iv_main", R.id.iv_main);
-        adViewIds.put("btn_cta", R.id.btn_cta);
+        adViewIds.put("nap_mx_iv_icon", R.id.nap_mx_iv_icon);
+        adViewIds.put("nap_mx_tv_title", R.id.nap_mx_tv_title);
+        adViewIds.put("nap_mx_tv_adv", R.id.nap_mx_tv_adv);
+        adViewIds.put("nap_mx_tv_desc", R.id.nap_mx_tv_desc);
+        adViewIds.put("nap_mx_iv_main", R.id.nap_mx_iv_main);
+        adViewIds.put("nap_mx_btn_cta", R.id.nap_mx_btn_cta);
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE)
             // Google, Adfit, Pangle 등 사용하는 어댑터에 동일한 View ID 매핑 전달
@@ -175,12 +175,12 @@ public class NativeAdActivity extends AppCompatActivity {
 
         // ② NativeAdViewBinder — SDK 내부 렌더링용 레이아웃 바인딩 설정
         NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
-            .setIconImageId(R.id.iv_icon)
-            .setTitleId(R.id.tv_title)
-            .setAdvertiserId(R.id.tv_adv)
-            .setDescriptionId(R.id.tv_desc)
-            .setMainViewId(R.id.iv_main)
-            .setCtaId(R.id.btn_cta)
+            .setIconImageId(R.id.nap_mx_iv_icon)
+            .setTitleId(R.id.nap_mx_tv_title)
+            .setAdvertiserId(R.id.nap_mx_tv_adv)
+            .setDescriptionId(R.id.nap_mx_tv_desc)
+            .setMainViewId(R.id.nap_mx_iv_main)
+            .setCtaId(R.id.nap_mx_btn_cta)
             .build();
 
         // ③ NativeAdView 생성 및 로드
@@ -231,12 +231,12 @@ class NativeAdActivity : AppCompatActivity() {
         container = findViewById(R.id.container_native)
 
         val adViewIds = mapOf(
-            "iv_icon" to R.id.iv_icon,
-            "tv_title" to R.id.tv_title,
-            "tv_adv" to R.id.tv_adv,
-            "tv_desc" to R.id.tv_desc,
-            "iv_main" to R.id.iv_main,
-            "btn_cta" to R.id.btn_cta
+            "iv_icon" to R.id.nap_mx_iv_icon,
+            "tv_title" to R.id.nap_mx_tv_title,
+            "tv_adv" to R.id.nap_mx_tv_adv,
+            "tv_desc" to R.id.nap_mx_tv_desc,
+            "iv_main" to R.id.nap_mx_iv_main,
+            "btn_cta" to R.id.nap_mx_btn_cta
         )
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE)
@@ -246,12 +246,12 @@ class NativeAdActivity : AppCompatActivity() {
             .build()
 
         val viewBinder = NativeAdViewBinder.Builder(R.layout.item_native_ad)
-            .setIconImageId(R.id.iv_icon)
-            .setTitleId(R.id.tv_title)
-            .setAdvertiserId(R.id.tv_adv)
-            .setDescriptionId(R.id.tv_desc)
-            .setMainViewId(R.id.iv_main)
-            .setCtaId(R.id.btn_cta)
+            .setIconImageId(R.id.nap_mx_iv_icon)
+            .setTitleId(R.id.nap_mx_tv_title)
+            .setAdvertiserId(R.id.nap_mx_tv_adv)
+            .setDescriptionId(R.id.nap_mx_tv_desc)
+            .setMainViewId(R.id.nap_mx_iv_main)
+            .setCtaId(R.id.nap_mx_btn_cta)
             .build()
 
         nativeAdView = NativeAdView(this).apply {

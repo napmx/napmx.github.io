@@ -11,6 +11,7 @@
 | 하위 호환 | 기존 Public API 변경 없음 — 대부분 기존 코드 그대로 동작 |
 | 새 기능 | NaverAdManager·Teads 어댑터, 광고 신고 기능 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
+| **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
 | Deprecated | `loadInterstitial()`, `closeInterstitial()`, `onDestroy()` 등 |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
 | Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
@@ -142,6 +143,75 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
     .showReportIcon(true)
     .build();
 ```
+
+---
+
+## Step 7. 네이티브 광고 View ID 업데이트 (필수)
+
+v2.0.0에서 네이티브 광고 레이아웃의 View ID에 `nap_mx_` prefix가 추가되었습니다. 타 라이브러리와의 리소스 ID 충돌을 방지하기 위한 변경입니다.
+
+### 변경 ID 목록
+
+| 기존 (v1.x) | v2.0.0 |
+|------------|--------|
+| `tv_title` | `nap_mx_tv_title` |
+| `iv_icon` | `nap_mx_iv_icon` |
+| `tv_adv` | `nap_mx_tv_adv` |
+| `tv_desc` | `nap_mx_tv_desc` |
+| `iv_main` | `nap_mx_iv_main` |
+| `btn_cta` | `nap_mx_btn_cta` |
+
+### 레이아웃 XML 수정
+
+```xml
+<!-- Before -->
+<TextView android:id="@+id/tv_title" ... />
+<ImageView android:id="@+id/iv_icon" ... />
+
+<!-- After -->
+<TextView android:id="@+id/nap_mx_tv_title" ... />
+<ImageView android:id="@+id/nap_mx_iv_icon" ... />
+```
+
+### NativeAdViewBinder 코드 수정 (Java)
+
+```java
+// Before
+new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+    .setTitleId(R.id.tv_title)
+    .setIconImageId(R.id.iv_icon)
+    .setAdvertiserId(R.id.tv_adv)
+    .setDescriptionId(R.id.tv_desc)
+    .setMainViewId(R.id.iv_main)
+    .setCtaId(R.id.btn_cta)
+    .build();
+
+// After
+new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+    .setTitleId(R.id.nap_mx_tv_title)
+    .setIconImageId(R.id.nap_mx_iv_icon)
+    .setAdvertiserId(R.id.nap_mx_tv_adv)
+    .setDescriptionId(R.id.nap_mx_tv_desc)
+    .setMainViewId(R.id.nap_mx_iv_main)
+    .setCtaId(R.id.nap_mx_btn_cta)
+    .build();
+```
+
+### setViewIds 코드 수정 (Mobwith / Adfit / Pangle 어댑터)
+
+```java
+// Before
+Map<String, Integer> adViewIds = new HashMap<>();
+adViewIds.put("tv_title", R.id.tv_title);
+adViewIds.put("iv_icon",  R.id.iv_icon);
+
+// After
+Map<String, Integer> adViewIds = new HashMap<>();
+adViewIds.put("nap_mx_tv_title", R.id.nap_mx_tv_title);
+adViewIds.put("nap_mx_iv_icon",  R.id.nap_mx_iv_icon);
+```
+
+> **💡 참고** SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
 
 ---
 

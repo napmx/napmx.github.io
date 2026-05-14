@@ -15,6 +15,8 @@
 - **어댑터 자동 등록**: `initialize()` 호출 시 Gradle 의존성에 포함된 어댑터를 자동 탐지·등록 — `registerAdapter()` 수동 호출 불필요
 - **Mobwith 버전 업데이트**: mobwithSDK `1.0.2` → `1.0.68`
 - ProGuard 최적화, 아키텍처 개선 (Delegate 패턴, 생성자 주입)
+- **전면/리워드 비디오 경로 정규화**: Activity 기반 경로로 통일 — back/close 정책 안정성 개선
+- **네이티브 View ID prefix 추가**: `tv_title` 등 → `nap_mx_tv_title` 등으로 변경 — 리소스 충돌 방지 ([마이그레이션 Step 7](migration.md#step-7) 참고)
 
 ### 버그 수정
 
