@@ -12,11 +12,11 @@ nap mx(Supply-Side Platform)는 kt nasmedia가 운영하는 광고 수익화 플
 
 ## 연동 방식
 
-| 방식 | 설명 | 지원 네트워크 |
-|------|------|--------------|
-| **SDK** | Android/iOS 앱에 라이브러리 직접 연동 | NAP, Google AdManager, KakaoAdfit, Pangle, AppLovin, Unity Ads |
-| **Script** | 웹뷰/모바일웹에 스크립트 삽입 | NAP, Google ADfit, MobWith |
-| **API** | 서버-서버 직접 API 호출 | NAP, Criteo, MobWith |
+| 방식 | 설명 | 지원 플랫폼 | 지원 네트워크 |
+|------|------|------------|--------------|
+| **SDK** | Android/iOS 앱에 라이브러리 직접 연동 | Android / iOS | NAP, Google AdManager, KakaoAdfit, Pangle, AppLovin, Unity Ads, Mobwith, NaverAdManager, Teads |
+| **Script** | 웹뷰/모바일웹에 스크립트 삽입 | M.Web / PC.Web | NAP, Google ADfit, Mobwith |
+| **API** | 서버-서버 직접 API 호출 | Server | NAP, Criteo, Mobwith |
 
 > **참고**: Google 수익화(AdSense 등)를 함께 사용하는 경우 Script 연동을 권장합니다.
 
@@ -38,7 +38,7 @@ nap mx(Supply-Side Platform)는 kt nasmedia가 운영하는 광고 수익화 플
 
 | 포맷 | 사이즈 | 주요 네트워크 |
 |------|--------|--------------|
-| 배너 | 320×50 ~ 320×480 | NAP, ADfit, MobWith |
+| 배너 | 100×100, 300×250, 320×50, 320×100, 320×480 | NAP, ADfit, MobWith |
 | 전면 배너 | 320×480 | NAP, MobWith |
 | 네이티브 | 다양 | NAP, MobWith |
 | 리워드 | 300×250, 320×480 | NAP |
