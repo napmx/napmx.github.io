@@ -1,4 +1,4 @@
-- SDK 가이드
+- 연동 가이드
   - [Android SDK](/android/)
   - [iOS SDK](/ios/)
 - [API 연동](/api/ad-api)

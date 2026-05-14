@@ -1,6 +1,6 @@
-# nap mx Publisher Guide
+# nap mx 공식 연동 가이드
 
-nap mx 서비스에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가이드 문서입니다.
+nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가이드 문서입니다.
 
 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
