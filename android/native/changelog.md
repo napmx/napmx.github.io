@@ -14,9 +14,12 @@
 
 - **어댑터 자동 등록**: `initialize()` 호출 시 Gradle 의존성에 포함된 어댑터를 자동 탐지·등록 — `registerAdapter()` 수동 호출 불필요
 - **Mobwith 버전 업데이트**: mobwithSDK `1.0.2` → `1.0.68`
-- ProGuard 최적화, 아키텍처 개선 (Delegate 패턴, 생성자 주입)
+- **ProGuard 최적화**: `NativeAdViewBinder$Builder` R8 난독화 버그 수정, 서버 응답 파싱 클래스 난독화 방지 규칙 강화
+- **아키텍처 개선**: Delegate 패턴 기반 SRP 적용, 생성자 주입 완성
 - **전면/리워드 비디오 경로 정규화**: Activity 기반 경로로 통일 — back/close 정책 안정성 개선
 - **네이티브 View ID prefix 추가**: `tv_title` 등 → `nap_mx_tv_title` 등으로 변경 — 리소스 충돌 방지 ([마이그레이션 Step 7](migration.md#step-7) 참고)
+- **`setViewIds()` 제거 / `setAdapterConfig()` 추가**: 모든 어댑터가 `NativeAdViewBinder` 단일 경로로 통합. 어댑터별 String 파라미터(AppLovin `sdkKey` 등)는 `setAdapterConfig(adapterName, Map<String,String>)` 사용
+- **AppLovin 12.x/13.x 초기화 API 호환성**: SDK 버전별 `builder()` 시그니처 차이를 폴백 처리로 해결
 
 ### 버그 수정
 

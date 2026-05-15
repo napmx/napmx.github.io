@@ -12,6 +12,8 @@
 | 새 기능 | NaverAdManager·Teads 어댑터, 광고 신고 기능 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
+| **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
+| **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
 | Deprecated | `loadInterstitial()`, `closeInterstitial()`, `onDestroy()` 등 |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
 | Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
@@ -197,19 +199,36 @@ new NativeAdViewBinder.Builder(R.layout.item_native_ad)
     .build();
 ```
 
-### setViewIds 코드 수정 (Mobwith 어댑터 전용 추가 필드)
+### setViewIds 제거 (v2.0.0 Breaking Change)
 
-v2.0.0부터 **Adfit·Pangle 어댑터는 `NativeAdViewBinder`를 직접 읽습니다.** `setViewIds()` 호출은 불필요하며, 위의 `NativeAdViewBinder` 설정만으로 동작합니다.
-
-`setViewIds()`는 `NativeAdViewBinder`로 커버되지 않는 **Mobwith 전용 추가 필드**(`iv_image`)에만 사용합니다.
+v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 모든 어댑터가 `NativeAdViewBinder`를 직접 읽으므로, `setViewIds()` 호출을 제거하고 위의 `NativeAdViewBinder` 설정만으로 동작합니다.
 
 ```java
-// Mobwith의 iv_image 필드가 필요한 경우에만
-Map<String, Integer> mobwithExtra = new HashMap<>();
-mobwithExtra.put("iv_image", R.id.my_extra_image_view);
+// Before (v1.x) — 제거하세요
+Map<String, Integer> ids = new HashMap<>();
+ids.put("iv_image", R.id.my_image_view);
+new AdInfo.Builder(ADUNIT_ID)
+    .setViewIds(AdMixer.ADAPTER_MOBWITH, ids)
+    .build();
+
+// After (v2.0.0) — NativeAdViewBinder 설정만으로 충분
+new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+    .setMainViewId(R.id.nap_mx_iv_main)
+    // ... 나머지 View ID 설정
+    .build();
+```
+
+### setAdapterConfig 추가 (어댑터별 초기화 파라미터)
+
+어댑터에 String 타입 초기화 파라미터를 전달해야 하는 경우 `setAdapterConfig()`를 사용합니다. 대표적인 사용 예는 AppLovin SDK Key 재정의입니다.
+
+```java
+// AppLovin SDK Key를 기본값 대신 직접 지정하는 경우
+Map<String, String> applovinConfig = new HashMap<>();
+applovinConfig.put("sdkKey", "YOUR_APPLOVIN_SDK_KEY");
 
 AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-    .setViewIds(AdMixer.ADAPTER_MOBWITH, mobwithExtra)
+    .setAdapterConfig(AdMixer.ADAPTER_APPLOVIN, applovinConfig)
     .build();
 ```
 

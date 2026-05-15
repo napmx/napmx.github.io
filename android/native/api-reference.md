@@ -50,7 +50,8 @@ AdMixer.setTagForChildDirectedTreatment(int id)
 | `showCloseButton(boolean)` | `boolean` | `true` | 전면 광고 닫기 버튼 표시 |
 | `closeButtonDelay(int)` | `int` | `0` | 닫기 버튼 지연 표시 (초) |
 | `showReportIcon(boolean)` | `boolean` | `false` | 신고 아이콘 표시 |
-| `setViewIds(String adapterName, Map<String,Integer> ids)` | - | - | 네이티브 광고 View ID 매핑 |
+| `setAdViewBinder(NativeAdViewBinder)` | - | `null` | 네이티브 광고 바인더 설정 (`NativeAdView.setViewBinder()` 권장, 이 메서드는 AdInfo를 통한 대안) |
+| `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 (예: AppLovin `sdkKey`). `AdMixer.ADAPTER_*` 상수를 adapterName으로 사용 |
 | `setCustomParams(Map<String,String>)` | - | `{}` | S2S Callback 커스텀 파라미터 |
 | `build()` | `AdInfo` | - | AdInfo 인스턴스 생성 |
 
