@@ -10,22 +10,32 @@
 
 ### 1-1. Banner 뷰 인스턴스 생성 및 설정
 
-배너 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMBannerAdView` 인스턴스 변수를 생성합니다.
+배너 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMBannerView` 인스턴스 변수를 생성합니다.
 
 ```swift
-import NapSSP
+import AdMixerMediation
 
 class ViewController: UIViewController {
 
-    private var bannerView: AMMBannerAdView?
+    var bannerView: AMMBannerView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        bannerView = AMMBannerAdView(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
-        bannerView?.adUnitId = "발급받은_ADUNIT_ID"
-        bannerView?.delegate = self
-        view.addSubview(bannerView!)
+        bannerView = AMMBannerView(rootViewController: self)
+        addBannerViewToView(bannerView)
+        bannerView.adUnitId = "ADUNIT_ID"
+        bannerView.delegate = self
+    }
+
+    func addBannerViewToView(_ bannerView: UIView) {
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bannerView)
+        NSLayoutConstraint.activate([
+            bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+        ])
     }
 }
 ```
@@ -35,7 +45,7 @@ class ViewController: UIViewController {
 `load()`를 사용하여 배너 광고를 로드하고 bannerView 영역 내에서 보여줍니다.
 
 ```swift
-bannerView?.load()
+bannerView.load()
 ```
 
 ### 1-3. 리소스 해제
@@ -43,9 +53,13 @@ bannerView?.load()
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
-override func viewWillDisappear(_ animated: Bool) {
-    super.viewWillDisappear(animated)
-    bannerView?.stop()
+override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+    if isMovingFromParent || isBeingDismissed {
+        bannerView.stop()
+        bannerView = nil
+    }
 }
 ```
 
@@ -63,15 +77,15 @@ override func viewWillDisappear(_ animated: Bool) {
 ```swift
 extension ViewController: AMMBannerViewDelegate {
 
-    func onSuccessBanner(_ bannerView: AMMBannerAdView) {
+    func onSuccessBanner() {
         // 광고 로드 성공
     }
 
-    func onFailBanner(_ bannerView: AMMBannerAdView, error: AMMAdError) {
-        print("Banner error: \(error.code) - \(error.message)")
+    func onFailBanner() {
+        // 광고 로드 실패
     }
 
-    func onTapBanner(_ bannerView: AMMBannerAdView) {
+    func onTapBanner() {
         // 광고 클릭
     }
 }
@@ -107,37 +121,36 @@ extension ViewController: AMMBannerViewDelegate {
 | `countDown` | 설정된 시간이 지난 후 닫기 버튼 노출 |
 
 ```swift
-import NapSSP
+import AdMixerMediation
 
 class InterstitialViewController: UIViewController {
 
-    private var interstitial: AMMInterstitial?
+    var interstitial: AMMInterstitial?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        interstitial = AMMInterstitial()
-        interstitial?.adUnitId = "발급받은_ADUNIT_ID"
-        interstitial?.delegate = self
+        let config = AMMInterstitialConfig()
+        config.viewType = .popup
 
-        // popup 형식 설정 (닫기 버튼 텍스트, 타이틀 색상, 버튼 배경색)
-        interstitial?.popupOption = AMMInterstitialPopupOption(
-            closeText: "닫기",
-            titleColor: .black,
-            buttonBackgroundColor: .white
+        // popup 형식 설정 (닫기 버튼 텍스트, 텍스트 색상, 버튼 배경색)
+        config.popupOption = AMMInterstitialPopupOption(
+            buttonTitle: "닫기",
+            buttonTextColor: .white,
+            buttonBackgroundColor: .black
         )
 
         // countDown 형식 설정
         // countDownTime: 카운트다운 시간 (최소 2초 ~ 최대 5초)
         // countDownType: .gauge (게이지 형태), .text (텍스트 형태)
-        interstitial?.countDownOption = AMMInterstitialCountDownOption(
-            countDownTime: 3,
+        config.countDownOption = AMMInterstitialCountDownOption(
+            countDownTime: 4,
             countDownType: .gauge
         )
 
         // 닫기 버튼 터치 영역 비율 (0.2 ~ 1.0, default: 1.0)
         // basic, countDown 형에만 적용됩니다.
-        interstitial?.closeButtonTouchAreaRatio = 1.0
+        config.closeButtonTouchAreaRatio = 1.0
     }
 }
 ```
@@ -147,7 +160,18 @@ class InterstitialViewController: UIViewController {
 `load()`를 사용하여 전면 배너 광고를 로드합니다.
 
 ```swift
-interstitial?.load()
+AMMInterstitial.load(adUnitID: "ADUNIT_ID", config: config) { [weak self] interstitial, error in
+    guard let self = self else { return }
+
+    if let error = error {
+        print("AMMInterstitial error: \(error)")
+    }
+
+    if let interstitial = interstitial {
+        self.interstitial = interstitial
+        self.interstitial?.delegate = self
+    }
+}
 ```
 
 ### 2-4. 광고 노출
@@ -155,13 +179,20 @@ interstitial?.load()
 `show()`를 사용하여 로드된 광고를 보여줍니다.
 
 ```swift
-interstitial?.show(from: self)
+interstitial?.show(rootViewController: self)
 ```
 
 ### 2-5. 리소스 해제
 
 ```swift
-interstitial?.stop()
+override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+    if isMovingFromParent || isBeingDismissed {
+        interstitial?.stop()
+        interstitial = nil
+    }
+}
 ```
 
 ### 2-6. Delegate
@@ -176,19 +207,19 @@ interstitial?.stop()
 ```swift
 extension InterstitialViewController: AMMInterstitialDelegate {
 
-    func onSuccessShowInterstitial(_ interstitial: AMMInterstitial) {
+    func onSuccessShowInterstitial() {
         // 광고 노출 성공
     }
 
-    func onFailShowInterstitial(_ interstitial: AMMInterstitial, error: AMMAdError) {
-        print("Interstitial error: \(error.code)")
+    func onFailShowInterstitial(error: Error?) {
+        // 광고 노출 실패
     }
 
-    func onTapInterstitial(_ interstitial: AMMInterstitial) {
+    func onTapInterstitial() {
         // 광고 클릭
     }
 
-    func onCloseInterstitial(_ interstitial: AMMInterstitial) {
+    func onCloseInterstitial() {
         // 광고 닫힘
     }
 }

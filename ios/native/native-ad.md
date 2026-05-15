@@ -34,19 +34,22 @@
 광고를 노출할 ViewController에 `AMMNativeAdViewContainer` 인스턴스 변수를 생성합니다.
 
 ```swift
-import NapSSP
+import AdMixerMediation
 
 class NativeAdViewController: UIViewController {
 
-    private var nativeAdContainer: AMMNativeAdViewContainer?
+    var nativeAd: AMMNativeAdViewContainer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        nativeAdContainer = AMMNativeAdViewContainer(frame: adContainerView.bounds)
-        nativeAdContainer?.adUnitId = "발급받은_ADUNIT_ID"
-        nativeAdContainer?.delegate = self
-        adContainerView.addSubview(nativeAdContainer!)
+        let nibView = Bundle.main.loadNibNamed("AMMNativeAdView", owner: nil, options: nil)?.first
+        let nativeAdView = nibView as? AMMNativeAdView
+
+        nativeAd = AMMNativeAdViewContainer(rootViewController: self)
+        nativeAd.nativeAdView = nativeAdView
+        nativeAd.adUnitID = "ADUNIT_ID"
+        nativeAd.delegate = self
     }
 }
 ```
@@ -55,10 +58,10 @@ class NativeAdViewController: UIViewController {
 
 ## 3. 광고 요청
 
-`loadAd()`를 호출하여 네이티브 광고를 로드하고 보여줍니다.
+`load()`를 호출하여 네이티브 광고를 로드하고 보여줍니다.
 
 ```swift
-nativeAdContainer?.loadAd()
+nativeAd.load()
 ```
 
 ---
@@ -68,8 +71,13 @@ nativeAdContainer?.loadAd()
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
-deinit {
-    nativeAdContainer?.stop()
+override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+    if isMovingFromParent || isBeingDismissed {
+        nativeAd.stop()
+        nativeAd = nil
+    }
 }
 ```
 
@@ -89,15 +97,15 @@ deinit {
 ```swift
 extension NativeAdViewController: AMMNativeDelegate {
 
-    func onSuccessNative(_ nativeAdContainer: AMMNativeAdViewContainer) {
+    func onSuccessNative() {
         // 광고 로드 성공
     }
 
-    func onFailNative(_ nativeAdContainer: AMMNativeAdViewContainer, error: AMMAdError) {
-        print("Native error: \(error.code) - \(error.message)")
+    func onFailNative() {
+        // 광고 로드 실패
     }
 
-    func onTapNative(_ nativeAdContainer: AMMNativeAdViewContainer) {
+    func onTapNative() {
         // 광고 클릭
     }
 }

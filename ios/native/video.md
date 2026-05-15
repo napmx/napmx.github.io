@@ -15,19 +15,30 @@
 동영상 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMVideoAdView` 인스턴스 변수를 생성합니다.
 
 ```swift
-import NapSSP
+import AdMixerMediation
 
 class VideoAdViewController: UIViewController {
 
-    private var videoAdView: AMMVideoAdView?
+    var ammVideoView: AMMVideoAdView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        videoAdView = AMMVideoAdView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 200))
-        videoAdView?.adUnitId = "발급받은_ADUNIT_ID"
-        videoAdView?.delegate = self
-        view.addSubview(videoAdView!)
+        ammVideoView = AMMVideoAdView(rootViewController: self)
+        addBannerViewToView(ammVideoView)
+        ammVideoView.adUnitID = "ADUNIT_ID"
+        ammVideoView.delegate = self
+    }
+
+    func addBannerViewToView(_ bannerView: UIView) {
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bannerView)
+        NSLayoutConstraint.activate([
+            bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            bannerView.heightAnchor.constraint(equalToConstant: 200)
+        ])
     }
 }
 ```
@@ -37,7 +48,7 @@ class VideoAdViewController: UIViewController {
 `load()`를 사용하여 동영상 광고를 로드하고 videoView 영역 내에서 보여줍니다.
 
 ```swift
-videoAdView?.load()
+ammVideoView.load()
 ```
 
 ### 1-3. 리소스 해제
@@ -45,8 +56,13 @@ videoAdView?.load()
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
-deinit {
-    videoAdView?.stop()
+override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+    if isMovingFromParent || isBeingDismissed {
+        ammVideoView.stop()
+        ammVideoView = nil
+    }
 }
 ```
 
@@ -66,23 +82,23 @@ deinit {
 ```swift
 extension VideoAdViewController: AMMVideoViewDelegate {
 
-    func onSuccessVideo(_ videoAdView: AMMVideoAdView) {
+    func onSuccessVideo() {
         // 광고 로드 성공
     }
 
-    func onFailVideo(_ videoAdView: AMMVideoAdView, error: AMMAdError) {
-        print("Video error: \(error.code)")
+    func onFailVideo() {
+        // 광고 로드 실패
     }
 
-    func onSkipVideo(_ videoAdView: AMMVideoAdView) {
+    func onSkipVideo() {
         // skip 버튼 클릭
     }
 
-    func onTapAdViewMore(_ videoAdView: AMMVideoAdView) {
+    func onTapAdViewMore() {
         // 더보기 버튼 클릭
     }
 
-    func onCompleteVideo(_ videoAdView: AMMVideoAdView) {
+    func onCompleteVideo() {
         // 재생 완료
     }
 }
@@ -101,28 +117,40 @@ extension VideoAdViewController: AMMVideoViewDelegate {
 전면 동영상 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMVideoInterstitial` 인스턴스 변수를 생성합니다.
 
 ```swift
-import NapSSP
+import AdMixerMediation
 
 class VideoInterstitialViewController: UIViewController {
 
-    private var videoInterstitial: AMMVideoInterstitial?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        videoInterstitial = AMMVideoInterstitial()
-        videoInterstitial?.adUnitId = "발급받은_ADUNIT_ID"
-        videoInterstitial?.delegate = self
-    }
+    var videoInterstitial: AMMVideoInterstitial?
 }
 ```
 
 ### 2-2. 광고 요청
 
-`loadAd()`를 사용하여 전면 동영상 광고를 로드합니다.
+`load()`를 사용하여 전면 동영상 광고를 로드합니다.
 
 ```swift
-videoInterstitial?.loadAd()
+class VideoInterstitialViewController: UIViewController {
+
+    var videoInterstitial: AMMVideoInterstitial?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        AMMVideoInterstitial.load(adUnitID: "ADUNIT_ID") { [weak self] videoInterstitial, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("AMMVideoInterstitial error: \(error)")
+            }
+
+            if let videoInterstitial = videoInterstitial {
+                self.videoInterstitial = videoInterstitial
+                self.videoInterstitial?.delegate = self
+            }
+        }
+    }
+}
 ```
 
 ### 2-3. 광고 노출
@@ -130,14 +158,19 @@ videoInterstitial?.loadAd()
 `show()`를 사용하여 로드된 전면 동영상 광고를 보여줍니다.
 
 ```swift
-videoInterstitial?.show(from: self)
+videoInterstitial?.show(rootViewController: self)
 ```
 
 ### 2-4. 리소스 해제
 
 ```swift
-deinit {
-    videoInterstitial?.stop()
+override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+    if isMovingFromParent || isBeingDismissed {
+        videoInterstitial?.stop()
+        videoInterstitial = nil
+    }
 }
 ```
 
@@ -156,23 +189,23 @@ deinit {
 ```swift
 extension VideoInterstitialViewController: AMMVideoInterstitialDelegate {
 
-    func onSuccessShowVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial) {
+    func onSuccessShowVideoInterstitial() {
         // 광고 노출 성공
     }
 
-    func onFailShowVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial, error: AMMAdError) {
-        print("VideoInterstitial error: \(error.code)")
+    func onFailShowVideoInterstitial(error: Error?) {
+        // 광고 노출 실패
     }
 
-    func onCloseVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial) {
+    func onCloseVideoInterstitial() {
         // 광고 닫힘
     }
 
-    func onTapVideoInterstitialViewMore(_ videoInterstitial: AMMVideoInterstitial) {
+    func onTapVideoInterstitialViewMore() {
         // 더보기 버튼 클릭
     }
 
-    func onCompleteVideoInterstitial(_ videoInterstitial: AMMVideoInterstitial) {
+    func onCompleteVideoInterstitial() {
         // 재생 완료
     }
 }

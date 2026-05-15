@@ -11,19 +11,11 @@
 광고를 노출할 ViewController에 `AMMRewardVideo` 인스턴스 변수를 생성합니다.
 
 ```swift
-import NapSSP
+import AdMixerMediation
 
 class RewardedAdViewController: UIViewController {
 
-    private var rewardVideo: AMMRewardVideo?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        rewardVideo = AMMRewardVideo()
-        rewardVideo?.adUnitId = "발급받은_ADUNIT_ID"
-        rewardVideo?.delegate = self
-    }
+    var rewardVideo: AMMRewardVideo?
 }
 ```
 
@@ -31,10 +23,32 @@ class RewardedAdViewController: UIViewController {
 
 ## 2. 광고 요청
 
-`loadAd()`를 호출하여 리워드 동영상 광고를 로드합니다.
+`load()`를 호출하여 리워드 동영상 광고를 로드합니다.
 
 ```swift
-rewardVideo?.loadAd()
+class RewardedAdViewController: UIViewController {
+
+    var rewardVideo: AMMRewardVideo?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
+
+        AMMRewardVideo.load(adUnitID: "ADUNIT_ID", customParam: customParam) { [weak self] reward, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("AMMRewardVideo error: \(error)")
+            }
+
+            if let reward = reward {
+                self.rewardVideo = reward
+                self.rewardVideo?.delegate = self
+            }
+        }
+    }
+}
 ```
 
 ---
@@ -44,7 +58,7 @@ rewardVideo?.loadAd()
 `show()`를 호출하여 로드된 리워드 동영상 광고를 보여줍니다.
 
 ```swift
-rewardVideo?.show(from: self)
+rewardVideo?.show(rootViewController: self)
 ```
 
 ---
@@ -54,8 +68,13 @@ rewardVideo?.show(from: self)
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
-deinit {
-    rewardVideo?.stop()
+override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+
+    if isMovingFromParent || isBeingDismissed {
+        rewardVideo?.stop()
+        rewardVideo = nil
+    }
 }
 ```
 
@@ -80,34 +99,28 @@ deinit {
 ```swift
 extension RewardedAdViewController: AMMRewardVideoDelegate {
 
-    func onSuccessShowReward(_ rewardVideo: AMMRewardVideo) {
+    func onSuccessShowReward() {
         // 광고 노출 성공
     }
 
-    func onFailShowReward(_ rewardVideo: AMMRewardVideo, error: AMMAdError) {
-        print("Reward error: \(error.code)")
+    func onFailShowReward(error: Error?) {
+        // 광고 노출 실패
     }
 
-    func onCloseRewardVideo(_ rewardVideo: AMMRewardVideo) {
-        // 광고 닫힘 → 다음 광고 미리 로드
-        self.rewardVideo?.loadAd()
+    func onCloseRewardVideo() {
+        // 광고 닫힘
     }
 
-    func onTapRewardVideo(_ rewardVideo: AMMRewardVideo) {
+    func onTapRewardVideo() {
         // 광고 클릭
     }
 
-    func onRewardVideoComplete(_ rewardVideo: AMMRewardVideo) {
+    func onRewardVideoComplete() {
         // 재생 완료
     }
 
-    func onRewardVideoEarned(_ rewardVideo: AMMRewardVideo) {
+    func onRewardVideoEarned() {
         // 리워드 지급 처리
-        grantReward()
-    }
-
-    func grantReward() {
-        // 앱 내 보상 지급 로직
     }
 }
 ```
@@ -137,9 +150,8 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
 CustomParm을 통해 콜백에서 추가 데이터를 수집할 수 있습니다. Dictionary 형태로 추가해야 합니다.
 
 ```swift
-rewardVideo?.customParm = [
-    "userid": "nas",
-    "name": "hdragon",
-    "phone": "010-1111-1111"
-]
+let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
+AMMRewardVideo.load(adUnitID: "ADUNIT_ID", customParam: customParam) { reward, error in
+    // ...
+}
 ```

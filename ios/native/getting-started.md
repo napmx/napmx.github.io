@@ -31,13 +31,16 @@ pod init
 초기화 시 생성된 `Podfile`에 nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 아래와 같이 추가합니다.
 
 ```ruby
-pod 'NapSSP'
+target 'MyApp' do
+  use_frameworks!
 
-# 미디에이션 네트워크 (선택)
-pod 'NapSSP/GoogleAdManager'
-pod 'NapSSP/Pangle'
-pod 'NapSSP/AppLovin'
-pod 'NapSSP/KakaoAdfit'
+  pod 'AdMixerMediation'
+  pod 'AdMixerMediationGAM'      # Google AdManager
+  pod 'AdMixerMediationAdFit'    # Kakao AdFit
+  pod 'AdMixerMediationPangle'   # Pangle
+  pod 'AdMixerMediationAppLovin' # AppLovin
+  pod 'AdMixerMediationUnityAds' # UnityAds
+end
 ```
 
 pod를 업데이트합니다.
@@ -52,14 +55,17 @@ nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추
 
 **Project > Package Dependencies 탭** 이동 후 아래 패키지를 추가합니다.
 
-| 패키지 | 설명 |
-|--------|------|
-| nap ssp Mediation | 필수 |
-| Google AdManager | 선택 |
-| Kakao AdFit | 선택 |
-| Pangle | 선택 |
-| Unity Ads | 선택 (nap ssp Mediation과 함께 사용 시 Google SDK 입찰 광고 소스에서 Unity Ads 제외 — 중복 불가) |
-| AppLovin | 선택 |
+| 패키지 | 설명 | Repository URL |
+|--------|------|----------------|
+| nap ssp Mediation (Mediation) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
+| nap ssp Mediation (Core) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
+| Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
+| Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
+| Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
+| AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
+
+> Unity Ads를 nap ssp Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
 
 ### 1-3. Google 네트워크 - SDK 입찰 광고 소스 설정
 
@@ -133,30 +139,39 @@ Google AdManager 사용 시:
 반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 호출해주세요.
 
 ```swift
-import NapSSP
+import UIKit
+import AdMixerMediation
+import GoogleMobileAds
+import PAGAdSDK
+import AppLovinSDK
+import UnityAds
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 
-        // AMMediation 초기화 (필수)
+        // AdMixer 초기화 (필수)
         AMMediation.shared.initialize(
-            mediaKey: "발급받은_MEDIA_KEY",
-            adunitID: ["ADUNIT_ID_BANNER", "ADUNIT_ID_INTERSTITIAL", "ADUNIT_ID_NATIVE"]
+            mediaKey: MEDIA_KEY,
+            adunitID: [ADUNIT_ID_BANNER, ADUNIT_ID_INTERSTITIAL_BANNER, ADUNIT_ID_NATIVE]
         )
 
         // Google AdManager 초기화 (해당 네트워크 사용 시)
         MobileAds.shared.start()
 
         // Pangle 초기화 (해당 네트워크 사용 시)
-        let config = PAGConfig.share()
-        config.appID = "발급받은_PANGLE_APP_ID"
-        PAGSdk.start(with: config) { isSuccess, error in }
+        let pangleConfig = PAGConfig.share()
+        pangleConfig.appID = "앱ID"
+        PAGSdk.start(with: pangleConfig) { isSuccess, error in }
 
         // AppLovin 초기화 (해당 네트워크 사용 시, SDK key 값 적용 필수)
-        // AppLovin SDK Key: nObIkviLd_FQIkP6yMGsTI7vKdDheVRJfwRkxzH7ie0T2o2slTnPIBcbTRelfXPuwGQcPf2bVGKTtaxtTrR0c9
+        let sdkKey = "nObIkviLd_FQIkP6yMGsTI7vKdDheVRJfwRkxzH7ie0T2o2slTnPIBcbTRelfXPuwGQcPf2bVGKTtaxtTrR0c9"
+        let config = ALSdkInitializationConfiguration(sdkKey: sdkKey)
+        ALSdk.shared().initialize(with: config) { _ in }
+
+        // UnityAds 초기화 (해당 네트워크 사용 시)
+        UnityAds.initialize("앱ID")
 
         return true
     }
