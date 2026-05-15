@@ -1,0 +1,6 @@
+# OMC working directory
+.omc/
+
+# macOS AppleDouble metadata (생성됨: 외장 디스크/네트워크 볼륨)
+**/._*
+.DS_Store
