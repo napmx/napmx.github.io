@@ -157,23 +157,7 @@ public class NativeAdActivity extends AppCompatActivity {
 
         container = findViewById(R.id.container_native);
 
-        // ① View ID 매핑 — 각 네트워크에 레이아웃 View ID를 알려줍니다
-        Map<String, Integer> adViewIds = new HashMap<>();
-        adViewIds.put("nap_mx_iv_icon", R.id.nap_mx_iv_icon);
-        adViewIds.put("nap_mx_tv_title", R.id.nap_mx_tv_title);
-        adViewIds.put("nap_mx_tv_adv", R.id.nap_mx_tv_adv);
-        adViewIds.put("nap_mx_tv_desc", R.id.nap_mx_tv_desc);
-        adViewIds.put("nap_mx_iv_main", R.id.nap_mx_iv_main);
-        adViewIds.put("nap_mx_btn_cta", R.id.nap_mx_btn_cta);
-
-        AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE)
-            // Google, Adfit, Pangle 등 사용하는 어댑터에 동일한 View ID 매핑 전달
-            .setViewIds(AdMixer.ADAPTER_ADMANAGER, adViewIds)
-            .setViewIds(AdMixer.ADAPTER_ADFIT, adViewIds)
-            .setViewIds(AdMixer.ADAPTER_PANGLE, adViewIds)
-            .build();
-
-        // ② NativeAdViewBinder — SDK 내부 렌더링용 레이아웃 바인딩 설정
+        // ① NativeAdViewBinder — 모든 어댑터가 공유하는 레이아웃 바인딩 설정
         NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
             .setIconImageId(R.id.nap_mx_iv_icon)
             .setTitleId(R.id.nap_mx_tv_title)
@@ -183,10 +167,12 @@ public class NativeAdActivity extends AppCompatActivity {
             .setCtaId(R.id.nap_mx_btn_cta)
             .build();
 
-        // ③ NativeAdView 생성 및 로드
+        AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build();
+
+        // ② NativeAdView 생성 및 로드
         nativeAdView = new NativeAdView(this); // Activity context 사용 (Adfit 필수)
         nativeAdView.setAdInfo(adInfo);
-        nativeAdView.setViewBinder(viewBinder); // ✅ 필수
+        nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
         nativeAdView.setAdViewListener(adListener);
         nativeAdView.loadNativeAd();
     }
@@ -230,21 +216,6 @@ class NativeAdActivity : AppCompatActivity() {
 
         container = findViewById(R.id.container_native)
 
-        val adViewIds = mapOf(
-            "iv_icon" to R.id.nap_mx_iv_icon,
-            "tv_title" to R.id.nap_mx_tv_title,
-            "tv_adv" to R.id.nap_mx_tv_adv,
-            "tv_desc" to R.id.nap_mx_tv_desc,
-            "iv_main" to R.id.nap_mx_iv_main,
-            "btn_cta" to R.id.nap_mx_btn_cta
-        )
-
-        val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE)
-            .setViewIds(AdMixer.ADAPTER_ADMANAGER, adViewIds)
-            .setViewIds(AdMixer.ADAPTER_ADFIT, adViewIds)
-            .setViewIds(AdMixer.ADAPTER_PANGLE, adViewIds)
-            .build()
-
         val viewBinder = NativeAdViewBinder.Builder(R.layout.item_native_ad)
             .setIconImageId(R.id.nap_mx_iv_icon)
             .setTitleId(R.id.nap_mx_tv_title)
@@ -254,9 +225,11 @@ class NativeAdActivity : AppCompatActivity() {
             .setCtaId(R.id.nap_mx_btn_cta)
             .build()
 
+        val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build()
+
         nativeAdView = NativeAdView(this).apply {
             setAdInfo(adInfo)
-            setViewBinder(viewBinder)
+            setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
             setAdViewListener(adListener)
             loadNativeAd()
         }
