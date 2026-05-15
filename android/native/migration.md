@@ -197,18 +197,20 @@ new NativeAdViewBinder.Builder(R.layout.item_native_ad)
     .build();
 ```
 
-### setViewIds 코드 수정 (Mobwith / Adfit / Pangle 어댑터)
+### setViewIds 코드 수정 (Mobwith 어댑터 전용 추가 필드)
+
+v2.0.0부터 **Adfit·Pangle 어댑터는 `NativeAdViewBinder`를 직접 읽습니다.** `setViewIds()` 호출은 불필요하며, 위의 `NativeAdViewBinder` 설정만으로 동작합니다.
+
+`setViewIds()`는 `NativeAdViewBinder`로 커버되지 않는 **Mobwith 전용 추가 필드**(`iv_image`)에만 사용합니다.
 
 ```java
-// Before
-Map<String, Integer> adViewIds = new HashMap<>();
-adViewIds.put("tv_title", R.id.tv_title);
-adViewIds.put("iv_icon",  R.id.iv_icon);
+// Mobwith의 iv_image 필드가 필요한 경우에만
+Map<String, Integer> mobwithExtra = new HashMap<>();
+mobwithExtra.put("iv_image", R.id.my_extra_image_view);
 
-// After
-Map<String, Integer> adViewIds = new HashMap<>();
-adViewIds.put("nap_mx_tv_title", R.id.nap_mx_tv_title);
-adViewIds.put("nap_mx_iv_icon",  R.id.nap_mx_iv_icon);
+AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
+    .setViewIds(AdMixer.ADAPTER_MOBWITH, mobwithExtra)
+    .build();
 ```
 
 > **💡 참고** SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.

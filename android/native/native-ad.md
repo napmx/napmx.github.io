@@ -10,14 +10,14 @@
 
 네이티브 광고는 아래 6가지 asset으로 구성됩니다.
 
-| Asset | View ID 키 | 설명 | 필수 여부 |
-|-------|-----------|------|----------|
-| 제목 | `"tv_title"` | 광고 제목 (TextView) | AdMixer 단독: 1개 이상 필수 |
-| 아이콘 | `"iv_icon"` | 광고주 아이콘 이미지 (ImageView) | 선택 |
-| 광고주 | `"tv_adv"` | 광고주명 (TextView) | 선택 |
-| 설명 | `"tv_desc"` | 광고 설명 텍스트 (TextView) | 선택 |
-| 메인 | `"iv_main"` | 메인 이미지 또는 동영상 (NativeMainAdView) | AdMixer 단독: 1개 이상 필수 |
-| CTA 버튼 | `"btn_cta"` | 행동 유도 버튼 (Button) | 선택 |
+| Asset | 레이아웃 `android:id` | 설명 | 필수 여부 |
+|-------|---------------------|------|----------|
+| 제목 | `nap_mx_tv_title` | 광고 제목 (TextView) | AdMixer 단독: 1개 이상 필수 |
+| 아이콘 | `nap_mx_iv_icon` | 광고주 아이콘 이미지 (ImageView) | 선택 |
+| 광고주 | `nap_mx_tv_adv` | 광고주명 (TextView) | 선택 |
+| 설명 | `nap_mx_tv_desc` | 광고 설명 텍스트 (TextView) | 선택 |
+| 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 (NativeMainAdView) | AdMixer 단독: 1개 이상 필수 |
+| CTA 버튼 | `nap_mx_btn_cta` | 행동 유도 버튼 (Button) | 선택 |
 
 > **⚠️ 주의** **필수 규칙**
 > - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
