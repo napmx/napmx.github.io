@@ -1,7 +1,7 @@
 <!-- _sidebar.md -->
 
 - [<i class="fa-solid fa-house nav-icon"></i> 홈](/)
-- [<i class="fa-solid fa-rocket nav-icon"></i> 소개 및 지원 포맷](/overview)
+- [<i class="fa-solid fa-rocket nav-icon"></i> nap mx 소개](/overview)
 
 - **<i class="fa-brands fa-android nav-icon icon-android"></i> Android SDK**
   - [개요](/android/)
