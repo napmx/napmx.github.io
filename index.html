@@ -1,6 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<meta charset="UTF-8">
+<title>nap mx 공식 연동 가이드</title>
+<meta name="description" content="nap mx 공식 연동 가이드">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<link rel="icon" href="/_media/favicon.ico">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --red: #E8001A;
+  --red-mid: #c5001a;
+  --red-light: rgba(232,0,26,.06);
+  --dark: #1a1a1a;
+  --text: #374151;
+  --light: #6b7280;
+  --border: #e8eaed;
+  --bg: #f7f8fa;
+  --sidebar-bg: #18191c;
+  --sidebar-border: #2d2e31;
+  --sidebar-hover: #2a2b2e;
+  --theme-color: #E8001A;
+}
+body { font-family: -apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif; margin-top:54px !important; }
+#napmx-topbar { position:fixed;top:0;left:0;right:0;height:54px;background:var(--sidebar-bg);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:9999;border-bottom:1px solid var(--sidebar-border);box-sizing:border-box; }
+.topbar-logo { display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none; }
+.topbar-logo-text { font-size:21px;font-weight:900;letter-spacing:-1px;line-height:1; }
+.topbar-logo-text .r { color:#E8001A; }
+.topbar-logo-text .w { color:#fff; }
+.topbar-divider { width:1px;height:16px;background:#3a3b3e; }
+.topbar-sub { font-size:12px;color:#666;font-weight:500;letter-spacing:.3px; }
+.topbar-actions { display:flex;gap:8px;align-items:center; }
+.topbar-btn-ghost { padding:5px 12px;border:1px solid #3a3b3e;color:#ccc;border-radius:5px;font-size:12.5px;font-weight:600;cursor:pointer;background:transparent;transition:all .18s;text-decoration:none;display:inline-flex;align-items:center;gap:5px; }
+.topbar-btn-ghost:hover { border-color:#888;color:#fff;background:rgba(255,255,255,.07); }
+.topbar-btn-primary { padding:5px 14px;background:var(--red);color:#fff;border:1px solid var(--red);border-radius:5px;font-size:12.5px;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;display:inline-flex;align-items:center;gap:5px; }
+.topbar-btn-primary:hover { background:#c5001a; }
+.sidebar { background-color:var(--sidebar-bg) !important;border-right:1px solid var(--sidebar-border) !important;top:54px !important; }
+.sidebar .app-name { background:var(--sidebar-bg);padding:16px 16px 12px !important;border-bottom:1px solid var(--sidebar-border); }
+.sidebar .app-name a { font-size:18px !important;font-weight:900 !important;letter-spacing:-1px;color:#fff !important; }
+.sidebar .app-name a b { color:var(--red); }
+.search { background:var(--sidebar-bg) !important;border-bottom:1px solid var(--sidebar-border) !important;padding:8px 12px !important;margin:0 !important; }
+.search input { background:#222326 !important;border:1px solid #3a3b3e !important;border-radius:6px !important;color:#ccc !important;font-size:12px !important;padding:7px 10px !important;box-shadow:none !important; }
+.search input:focus { border-color:#555 !important;color:#fff !important;outline:none !important;box-shadow:none !important; }
+.search input::placeholder { color:#555 !important; }
+.search .results-panel { background:#1e1f23 !important;border:1px solid var(--sidebar-border) !important;border-radius:0 0 8px 8px !important;box-shadow:0 8px 24px rgba(0,0,0,.4) !important;margin:0 !important; }
+.search .results-panel a { color:#ccc !important;border-bottom:1px solid #2a2b2e !important;padding:9px 14px !important;font-size:12.5px !important; }
+.search .results-panel a:hover { background:var(--sidebar-hover) !important; }
+.search .results-panel .search-keyword { color:var(--red) !important;font-weight:700 !important; }
+.sidebar-nav { padding:4px 0 20px !important; }
+.sidebar-nav > ul > li > p,.sidebar-nav > ul > li > strong,.sidebar-nav p { font-size:10px !important;font-weight:700 !important;color:#4a4b50 !important;text-transform:uppercase !important;letter-spacing:1.2px !important;padding:12px 16px 4px !important;margin:0 !important;display:block; }
+.sidebar-nav li a { color:#9a9ba0 !important;font-size:13px !important;padding:7px 16px !important;border-left:2px solid transparent !important;border-right:none !important;display:block;line-height:1.4;transition:all .15s; }
+.sidebar-nav li a:hover { color:#e0e0e0 !important;background:var(--sidebar-hover) !important;text-decoration:none !important; }
+.sidebar-nav li.active > a { color:#fff !important;font-weight:600 !important;border-left-color:var(--red) !important;border-right:none !important;background:rgba(232,0,26,.14) !important; }
+.sidebar-nav ul ul li a { padding:5px 16px 5px 28px !important;font-size:12px !important;color:#5c5d63 !important; }
+.sidebar-nav ul ul li a:hover { color:#bbb !important;background:rgba(255,255,255,.04) !important; }
+.sidebar-nav ul ul li.active > a { color:#fff !important;font-weight:600 !important;border-left-color:var(--red) !important;background:rgba(232,0,26,.1) !important; }
+.sidebar-nav .nav-icon { width:18px;display:inline-flex;align-items:center;margin-right:7px;font-size:.92em; }
+.icon-android{color:#3DDC84}.icon-ios{color:#ccc}.icon-web{color:#4A90D9}.icon-google{color:#EA4335}.icon-api{color:#F5A623}.icon-partner{color:var(--red)}.icon-unity{color:#ccc}
+.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+.sidebar-toggle{background:transparent !important}.sidebar-toggle span{background:#666 !important}
+nav.app-nav { display:none !important; }
+.content{padding-top:0 !important}
+.markdown-section{max-width:860px;padding-top:28px !important}
+.markdown-section h1{font-size:26px;font-weight:800;color:var(--dark);margin-bottom:6px;line-height:1.3;border-bottom:none;padding-bottom:0}
+.markdown-section h2{font-size:18px;font-weight:700;color:var(--dark);margin:32px 0 12px;padding-bottom:7px;border-bottom:2px solid var(--red)}
+.markdown-section h3{font-size:15.5px;font-weight:700;color:var(--dark);margin:20px 0 8px;border-bottom:none}
+.markdown-section h4{font-size:14px;font-weight:700;color:var(--dark);margin:14px 0 6px}
+.markdown-section p{color:var(--text);font-size:14px;line-height:1.75}
+.markdown-section code{font-family:'Consolas','Monaco',monospace;background:#f0f0f2;color:#c7254e;border:1px solid #e5e5e5;border-radius:3px;padding:1px 5px;font-size:12.5px}
+.markdown-section pre{background:#1e1e2e !important;border-radius:8px !important;border-left:none !important;position:relative}
+.markdown-section pre code{background:transparent !important;color:#d4d4d4 !important;font-size:12.5px !important;line-height:1.65 !important;border:none !important;padding:0 !important}
+.markdown-section pre[data-lang]::before{content:attr(data-lang);position:absolute;top:8px;right:44px;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.6px;font-family:-apple-system,sans-serif;pointer-events:none}
+.markdown-section table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0}
+.markdown-section table thead tr{background-color:var(--red) !important}
+.markdown-section table thead th{padding:8px 12px;font-weight:600;font-size:13px;border:none;color:#fff !important;background:transparent !important}
+.markdown-section table tbody tr:nth-child(even){background:var(--bg)}
+.markdown-section table tbody tr:hover td{background:rgba(232,0,26,.04)}
+.markdown-section table tbody td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);font-size:13.5px;vertical-align:top}
+.markdown-section a{color:var(--red);text-decoration:none;border-bottom:none}
+.markdown-section a:hover{color:var(--red-mid);text-decoration:underline}
+.markdown-section blockquote{border-left:3px solid var(--red) !important;background:var(--red-light) !important;padding:11px 15px !important;border-radius:0 6px 6px 0 !important;margin:12px 0 !important;color:var(--text) !important}
+.markdown-section blockquote p{margin:0 !important;font-size:13.5px}
+.markdown-section hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.markdown-section ul li,.markdown-section ol li{line-height:1.8;color:var(--text);font-size:13.5px}
+.pagination{border-top:none !important;margin-top:48px;display:flex;justify-content:space-between;gap:12px}
+.pagination-item{flex:1}.pagination-item--next{text-align:right}
+.pagination-item a{display:inline-flex;align-items:center;gap:6px;color:var(--light) !important;border:1px solid var(--border);border-radius:6px;padding:10px 18px;font-size:13px;text-decoration:none !important;border-bottom:none !important;transition:all .15s;background:#fff}
+.pagination-item a:hover{background:var(--red) !important;color:#fff !important;border-color:var(--red) !important}
+.pagination-item a .pagination-item-label{font-size:.75rem;color:var(--light);display:block}
+.pagination-item a:hover .pagination-item-label{color:rgba(255,255,255,.75)}
+.pagination-item a .pagination-item-title{font-weight:600;color:var(--dark)}
+.pagination-item a:hover .pagination-item-title{color:#fff}
+.docsify-copy-code-button{background:#13131f !important;color:#888 !important;border-radius:3px !important;font-size:10.5px !important;border:none !important;opacity:1 !important;top:6px !important;right:8px !important}
+.docsify-copy-code-button:hover{background:rgba(255,255,255,.18) !important;color:#ddd !important}
+.github-corner{display:none !important}
+@media screen and (max-width:768px){.pagination{flex-direction:column}.pagination-item--next{text-align:left}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+<html lang="ko">
+<head>
   <meta charset="UTF-8">
   <title>nap mx 공식 연동 가이드</title>
   <meta name="description" content="nap mx 공식 연동 가이드">
