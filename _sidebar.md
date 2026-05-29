@@ -3,9 +3,22 @@
 - [<i class="fa-solid fa-house nav-icon"></i> 홈](/)
 - [<i class="fa-solid fa-rocket nav-icon"></i> nap mx 소개](/overview)
 
+
+- **<i class="fa-solid fa-building nav-icon icon-partner"></i> 파트너 사이트 가이드**
+  - [회원가입 및 정산 정보 등록](/partner-site/signup)
+  - [미디어 / 애드유닛 등록 및 관리](/partner-site/media-adunit)
+  - [하우스애드 사용하기](/partner-site/house-ad)
+  - [차단 규칙 등록 및 관리](/partner-site/block-rules)
+  - [수익화 리포트 확인하기](/partner-site/revenue-report)
+  - [하우스애드 리포트 확인하기](/partner-site/house-ad-report)
+  - [수익금 지급 신청하기](/partner-site/payment)
+  - [문의 및 공지사항 확인하기](/partner-site/support)
+  - [멤버 초대 및 삭제하기](/partner-site/member)
+
+
 - **<i class="fa-brands fa-android nav-icon icon-android"></i> Android SDK**
   - [개요](/android/)
-  - Native
+  - <i class="fa-solid fa-microchip nav-icon icon-unity"></i> Native
     - [시작하기](/android/native/getting-started)
     - [배너 광고](/android/native/banner)
     - [네이티브 광고](/android/native/native-ad)
@@ -28,7 +41,7 @@
 
 - **<i class="fa-brands fa-apple nav-icon icon-ios"></i> iOS SDK**
   - [개요](/ios/)
-  - Native
+  - <i class="fa-solid fa-microchip nav-icon icon-unity"></i> Native
     - [시작하기](/ios/native/getting-started)
     - [배너 구현](/ios/native/banner)
     - [네이티브 광고](/ios/native/native-ad)
@@ -54,14 +67,3 @@
 - **<i class="fa-solid fa-plug nav-icon icon-api"></i> API 연동**
   - [광고 연동 API](/api/ad-api)
   - [리포트 API](/api/report-api)
-
-- **<i class="fa-solid fa-building nav-icon icon-partner"></i> 파트너 사이트 가이드**
-  - [회원가입 및 정산 정보 등록](/partner-site/signup)
-  - [미디어 / 애드유닛 등록 및 관리](/partner-site/media-adunit)
-  - [하우스애드 사용하기](/partner-site/house-ad)
-  - [차단 규칙 등록 및 관리](/partner-site/block-rules)
-  - [수익화 리포트 확인하기](/partner-site/revenue-report)
-  - [하우스애드 리포트 확인하기](/partner-site/house-ad-report)
-  - [수익금 지급 신청하기](/partner-site/payment)
-  - [문의 및 공지사항 확인하기](/partner-site/support)
-  - [멤버 초대 및 삭제하기](/partner-site/member)

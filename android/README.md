@@ -38,8 +38,8 @@
 
 ## 빠른 시작
 
-1. [SDK 시작하기](native/getting-started.md) — Gradle 설정, 초기화, ProGuard
-2. [배너 광고](native/banner.md) — 첫 번째 광고 노출
+1. [SDK 시작하기](android/native/getting-started.md) — Gradle 설정, 초기화, ProGuard
+2. [배너 광고](android/native/banner.md) — 첫 번째 광고 노출
 3. [샘플 프로젝트](#샘플-프로젝트) — 완성된 예제 코드 확인
 
 ---
