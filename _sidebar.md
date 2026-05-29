@@ -1,7 +1,7 @@
 <!-- _sidebar.md -->
 
 - [<i class="fa-solid fa-house nav-icon"></i> 홈](/)
-- [<i class="fa-solid fa-rocket nav-icon"></i> nap mx 소개](/overview)
+
 
 
 - **<i class="fa-solid fa-building nav-icon icon-partner"></i> 파트너 사이트 가이드**
