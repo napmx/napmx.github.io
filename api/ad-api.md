@@ -95,7 +95,7 @@ X-Forwarded-For: 203.0.113.10
 | 필드 | 노출 조건 | 설명 |
 |------|----------|------|
 | `success` | 항상 | `true`: 광고 응답 성공 / `false`: 광고 응답 실패 |
-| `error_code` | `success: false` | 에러 코드 ([5-1 에러 코드](#5-1-에러-코드) 참조) |
+| `error_code` | `success: false` | 에러 코드 ([5-1 에러 코드](#_5-1-에러-코드) 참조) |
 | `error_message` | `success: false` 이며 메시지가 있을 때 | 에러 메시지 |
 | `data` | `success: true` 이며 데이터가 있을 때 | 애드유닛 정보와 광고 응답 |
 
@@ -297,4 +297,3 @@ Map<String, String> params = new HashMap<>();
 params.put("cpl_uid", user_id);
 params.put("cpl_nmv", value);
 ```
-
