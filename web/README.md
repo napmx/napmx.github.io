@@ -18,7 +18,7 @@ nap mx Script를 WEB 페이지에 연동하기 위한 가이드 문서입니다.
 
 | 방식 | 적합한 환경 | 지원 네트워크 |
 |------|------------|--------------|
-| **Script** | M.Web, PC.Web, WebView | NAP, Google ADfit, MobWith |
+| **Script** | M.Web, PC.Web, WebView | NAP, Google, ADfit, MobWith |
 | **API** | 서버 사이드 렌더링 | NAP, Criteo, MobWith |
 
 > Google 수익화(ADfit 등)를 함께 사용하는 경우 **Script 연동**을 권장합니다.

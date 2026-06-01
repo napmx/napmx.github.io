@@ -135,7 +135,7 @@ window.addEventListener('message', function(event) {
 </script>
 ```
 
-### 배너, 네이티브 — 아웃스트림 비디오 (기본)
+### 비디오 — 아웃스트림 비디오 (기본)
 
 ```javascript
 admixer_m({
@@ -147,7 +147,7 @@ admixer_m({
 });
 ```
 
-### 배너, 네이티브 — 아웃스트림 비디오 (close_btn, callback)
+### 비디오 — 아웃스트림 비디오 (close_btn, callback)
 
 ```javascript
 admixer_m({
@@ -165,7 +165,7 @@ admixer_m({
 });
 ```
 
-### 배너, 네이티브 — 아웃스트림 비디오 (다중 Adunit, coppa, log, 하이브리드 비디오용 style)
+### 비디오 — 아웃스트림 비디오 (다중 Adunit, coppa, log, 하이브리드 비디오용 style)
 
 ```javascript
 admixer_m({
@@ -186,7 +186,7 @@ admixer_m({
 });
 ```
 
-### 인스트림 비디오
+### 비디오 - 인스트림 비디오
 
 ```javascript
 admixer_m({

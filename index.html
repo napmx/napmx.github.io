@@ -395,6 +395,19 @@ nav.app-nav { display: none !important; }
   #napmx-topbar { padding: 0 14px; }
 }
 </style>
+
+<style>
+  /* 커스텀 */
+  .markdown-section output:after, .markdown-section pre:after {
+    display:none !important;
+  }
+  .markdown-section pre[data-lang]::before {
+    right: 50px;
+  }
+  .markdown-section output, .markdown-section pre {
+    padding : 1.2rem;
+  }
+</style>
 </head>
 <body>
 <!-- 상단 고정 바 -->
