@@ -35,7 +35,7 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 
 | 광고 포맷 | 지원 네트워크 |
 |-----------|--------------|
-| 배너 (일반/전면) | NAP, Google ADfit, MobWith |
+| 배너 (일반/전면) | NAP, Google, ADfit, MobWith |
 | 네이티브 (일반/전면) | NAP, MobWith |
 | 리워드 | NAP |
 
