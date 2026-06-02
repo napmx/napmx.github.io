@@ -61,7 +61,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `new Builder(String adUnitId)` | - | - | 필수. adUnit ID 지정 |
 | `isRetry(boolean)` | `boolean` | `true` | 광고 수신 실패 시 자동 재시도 |
 | `isLoadOnly(boolean)` | `boolean` | `false` | `true` 설정 시 광고 수신 후 자동 노출 안 함 (지연 노출용) |
-| `maxRetryCountInSlot(int)` | `int` | `-1` | 슬롯 내 최대 재시도 횟수 (-1 또는 0: 무제한, 양수: 해당 횟수까지) |
+| `maxRetryCountInSlot(int)` | `int` | `-1` | 슬롯 내 최대 자동 재시도 횟수. `-1`/`0` = 무제한, 양수 N = 최대 N회. **주로 배너 자동 재시도에 적용**(재시도 간격 최소 5초). **권장: 유한값(예 3~5).** 전면/리워드는 별도 루프 가드로 무한 재로드가 차단됨 |
 | `interstitialTimeout(int)` | `int` | `0` | 전면 광고 타임아웃 (초, 0: 서버 지정) |
 | `interstitialAdType(InterstitialAdType)` | enum | `Basic` | 전면 광고 형태 |
 | `popupAdOption(PopupInterstitialAdOption)` | - | `null` | 팝업형 옵션 |
