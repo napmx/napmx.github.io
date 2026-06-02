@@ -54,6 +54,98 @@ AdMixerBanner(adUnitId = "...", listener = listener)
 
 ---
 
+## 네이티브 — `AdMixerNativeAd`
+
+네이티브 광고는 **레이아웃 바인더(`NativeAdViewBinder`)** 로 제목/이미지/CTA 등을 매핑합니다. 헬퍼가 `loadNativeAd()` → 수신 시 `showAd()`(어댑터 뷰 부착) → 이탈 시 `destroy()`까지 자동 처리합니다.
+
+```kotlin
+import com.nasmedia.admixerssp.compose.AdMixerNativeAd
+import com.nasmedia.admixerssp.common.nativeads.NativeAdViewBinder
+
+@Composable
+fun NativeSlot() {
+    val binder = remember {
+        NativeAdViewBinder.Builder(R.layout.item_native_ad)
+            .setTitleId(R.id.nap_mx_tv_title)
+            .setIconImageId(R.id.nap_mx_iv_icon)
+            .setAdvertiserId(R.id.nap_mx_tv_adv)
+            .setDescriptionId(R.id.nap_mx_tv_desc)
+            .setMainViewId(R.id.nap_mx_iv_main)
+            .setCtaId(R.id.nap_mx_btn_cta)
+            .build()
+    }
+    AdMixerNativeAd(
+        adUnitId = MyApplication.ADUNIT_ID_NATIVE,
+        binder = binder,
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+```
+
+> ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration.md)을 참고하세요.
+
+---
+
+## 전면 — `rememberInterstitialAd`
+
+전면·리워드는 **Activity 노출형**이라 화면에 배치하는 컴포저블이 아니라, `remember*`가 반환하는 **state-holder 핸들**로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고(중복 콜백 방지, #58), 이탈 시 `stopInterstitial()`로 정식 해제합니다.
+
+```kotlin
+import com.nasmedia.admixerssp.compose.rememberInterstitialAd
+
+@Composable
+fun MyScreen() {
+    val interstitial = rememberInterstitialAd(
+        adUnitId = MyApplication.ADUNIT_ID_INTERSTITIAL,
+        // autoShow = false (기본): 수신 후 원하는 시점에 show() 직접 호출
+    )
+
+    // 화면 진입 시 미리 로드
+    LaunchedEffect(Unit) { interstitial.load() }
+
+    Button(onClick = { if (interstitial.isLoaded) interstitial.show() }) {
+        Text("전면 광고 보기")
+    }
+}
+```
+
+- `load()` 비동기 로드 / `show()` 노출 / `cancelLoad()` 진행 중 로드만 취소 / `isLoaded` 수신 여부.
+- 로드 즉시 노출하려면 `rememberInterstitialAd(adUnitId, autoShow = true)`. 내부적으로 수신 시 `show()`만 호출하며 `start*`를 재호출하지 않습니다.
+
+> 🚨 **수신 콜백에서 `start*`(로드+자동노출)를 직접 호출하지 마세요.** 매 수신마다 재로드되어 무한 루프가 발생합니다(#59). 노출은 항상 `show()`(=`showInterstitial()`)로 하며, 헬퍼는 이 규약을 강제합니다.
+
+---
+
+## 리워드 — `rememberRewardVideoAd`
+
+```kotlin
+import com.nasmedia.admixerssp.compose.rememberRewardVideoAd
+
+@Composable
+fun RewardScreen() {
+    val rewardListener = remember {
+        object : AdListener {
+            override fun onReceivedAd(adapterName: String, ad: Any) {}
+            override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {}
+            override fun onEventAd(ad: Any, event: AdEvent) {
+                if (event == AdEvent.EARNEDREWARD) { /* 보상 지급 */ }
+            }
+        }
+    }
+    val reward = rememberRewardVideoAd(
+        adUnitId = MyApplication.ADUNIT_ID_REWARD,
+        listener = rewardListener,
+    )
+
+    LaunchedEffect(Unit) { reward.load() }
+    Button(onClick = { if (reward.isLoaded) reward.show() }) { Text("리워드 보기") }
+}
+```
+
+- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onEventAd`의 `AdEvent.EARNEDREWARD`로 통지됩니다.
+
+---
+
 ## 헬퍼 없이 직접 호스팅하는 경우
 
 `admixer-compose`를 쓰지 않고 직접 연동한다면, **아래 두 가지를 반드시** 구현해야 합니다.
@@ -100,14 +192,6 @@ LazyColumn {
 }
 ```
 - 광고 상태(로드/실패)는 항목 key에 묶어 hoisting하거나, `AdMixerBanner`처럼 `remember(adUnitId)`로 관리하세요.
-
----
-
-## 전면 / 리워드 (안내)
-
-전면·리워드는 **Activity 기반 노출**이라 별도 상태 홀더로 제공될 예정입니다(다음 릴리즈). 현재는 `InterstitialAd`/`RewardInterstitialVideoAd`를 Activity Context로 사용하되, 다음을 지키세요.
-
-> 🚨 **수신 콜백(`onReceivedAd`)에서 `startInterstitial()`(=로드+자동노출)을 호출하지 마세요.** 매 수신마다 재로드되어 무한 루프가 발생합니다. 표시는 **`showInterstitial()`** 을 사용하세요. (자동 노출은 `startInterstitial()`을 최초 1회만)
 
 ---
 
