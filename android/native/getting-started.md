@@ -1,6 +1,6 @@
 # SDK 시작하기
 
-이 페이지에서는 nap mx Android SDK를 프로젝트에 추가하고 초기화하는 방법을 안내합니다.
+이 페이지에서는 nap ssp Android SDK를 프로젝트에 추가하고 초기화하는 방법을 안내합니다.
 
 ---
 
@@ -19,7 +19,9 @@ allprojects {
 
 ### 1-2. 앱 모듈 `build.gradle`
 
-> **⚠️ 주의** 라이브러리 버전은 항상 **최신 버전**으로 유지하세요. 구버전 사용 시 광고 수신율이 저하되거나 보안 취약점이 발생할 수 있습니다.
+{% hint style="warning" %}
+라이브러리 버전은 항상 **최신 버전**으로 유지하세요. 구버전 사용 시 광고 수신율이 저하되거나 보안 취약점이 발생할 수 있습니다.
+{% endhint %}
 
 ```gradle
 dependencies {
@@ -80,30 +82,28 @@ dependencyResolutionManagement {
 <application>
     <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
-        android:value="nap mx 운영팀으로부터 발급받은 Google App ID" />
+        android:value="nap ssp 운영팀으로부터 발급받은 Google App ID" />
 </application>
 ```
 
-### Naver Ad Manager 사용 시 (필수)
+### Naver Ad Manager 사용 시
 
-```xml
-<application>
-    <meta-data
-        android:name="com.naver.gfpsdk.PUBLISHER_ID"
-        android:value="nap mx 운영팀으로부터 발급받은 NaverAdManager Publisher ID" />
-</application>
-```
+별도 설정이 필요 없습니다. Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp가 SDK(`admixer-naveradmanager` aar)에서 제공·관리하므로 **호스트 앱 매니페스트에 설정하지 마세요.** (SDK 동기화 시 자동 포함)
 
-> **📌 참고** Google App ID와 NaverAdManager Publisher ID는 **nap_mx@nasmedia.co.kr**로 문의하여 발급받으세요.
+{% hint style="info" %}
+Google App ID는 **nap_mx@nasmedia.co.kr**로 문의하여 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
+{% endhint %}
 
 ---
 
 ## Step 3. SDK 초기화
 
-> **🚨 주의** SDK 초기화는 광고 호출 전 앱에서 **반드시 1회** 호출해야 합니다. `Application.onCreate()`에서 호출하는 것을 권장합니다.
+{% hint style="danger" %}
+SDK 초기화는 광고 호출 전 앱에서 **반드시 1회** 호출해야 합니다. `Application.onCreate()`에서 호출하는 것을 권장합니다.
+{% endhint %}
 
-**Java**
-
+{% tabs %}
+{% tab title="Java" %}
 ```java
 // MyApplication.java
 public class MyApplication extends android.app.Application {
@@ -150,9 +150,9 @@ public class MyApplication extends android.app.Application {
     }
 }
 ```
+{% endtab %}
 
-**Kotlin**
-
+{% tab title="Kotlin" %}
 ```kotlin
 // MyApplication.kt
 class MyApplication : Application() {
@@ -197,14 +197,28 @@ class MyApplication : Application() {
     }
 }
 ```
+{% endtab %}
+{% endtabs %}
 
-### 선택 초기화 옵션
+### 선택 초기화 옵션 (개인정보 동의 / 테스트)
 
 ```java
 // COPPA(아동 대상 앱) 여부 설정
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);  // 아동 대상
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE); // 일반 대상
+
+// 개인정보 동의 — 워터폴에서 각 네트워크로 자동 전파
+AdMixer.setGdprConsent(true);          // GDPR 사용자 동의 (EU)
+AdMixer.setCcpaDoNotSell(false);       // CCPA Do-Not-Sell (US)
+
+// 테스트 모드 / 테스트 디바이스 (QA·심사용)
+AdMixer.setTestMode(true);
+AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```
+
+{% hint style="info" %}
+개인정보 동의·테스트 설정의 네트워크별 전파 매핑은 [개인정보 동의 및 테스트 설정](privacy.md)을 참고하세요.
+{% endhint %}
 
 ---
 
@@ -227,7 +241,9 @@ AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATM
 -keep class com.nasmedia.teads.** { *; }            # Teads
 ```
 
-> **📌 참고** 각 네트워크 SDK가 자체 ProGuard 규칙을 `consumerProguardFiles`로 제공하는 경우, 해당 규칙이 자동으로 적용됩니다. 빌드 경고가 발생하면 해당 네트워크의 ProGuard 가이드를 참고하세요.
+{% hint style="info" %}
+각 네트워크 SDK가 자체 ProGuard 규칙을 `consumerProguardFiles`로 제공하는 경우, 해당 규칙이 자동으로 적용됩니다. 빌드 경고가 발생하면 해당 네트워크의 ProGuard 가이드를 참고하세요.
+{% endhint %}
 
 ---
 
@@ -254,10 +270,12 @@ dependencies {
 }
 ```
 
-> **⚠️ 주의** exclude 적용 후 반드시 아래를 확인하세요.
-> 1. Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 포함되어 있는지 확인
-> 2. 빌드 정상 여부 확인
-> 3. nap mx 광고 및 기존 광고 모두 정상 동작 여부 확인
+{% hint style="warning" %}
+exclude 적용 후 반드시 아래를 확인하세요.
+1. Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 포함되어 있는지 확인
+2. 빌드 정상 여부 확인
+3. nap ssp 광고 및 기존 광고 모두 정상 동작 여부 확인
+{% endhint %}
 
 ---
 
@@ -281,4 +299,6 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 | Unity Ads |
 | Mintegral |
 
-> **⚠️ 주의** 프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
+{% hint style="warning" %}
+프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
+{% endhint %}

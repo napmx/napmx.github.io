@@ -10,7 +10,7 @@
 
 ```proguard
 ##############################################
-# nap mx AdMixer SDK — ProGuard Rules
+# nap ssp AdMixer SDK — ProGuard Rules
 ##############################################
 
 # ✅ 필수 — Core SDK
@@ -33,16 +33,16 @@
 
 각 네트워크 SDK 어댑터에는 자체 ProGuard 규칙이 포함되어 있으며, AAR 내 `consumer-rules.pro`로 자동 적용됩니다. 별도 추가 없이 동작하지만, 빌드 경고 발생 시 해당 네트워크의 공식 ProGuard 가이드를 참고하세요.
 
-| 네트워크 | 자동 적용 |
-|---------|----------|
-| Google AdManager | ✅ |
-| Kakao Adfit | ✅ |
-| Pangle | ✅ |
-| AppLovin | ✅ |
-| Unity Ads | ✅ |
-| Mobwith | ✅ |
-| Naver Ad Manager | ✅ |
-| Teads | ✅ |
+| 네트워크 | 자동 적용 | 비고 |
+|---------|----------|------|
+| Google AdManager | ✅ | - |
+| Kakao Adfit | ✅ | - |
+| Pangle | ✅ | - |
+| AppLovin | ✅ | - |
+| Unity Ads | ✅ | - |
+| Mobwith | ✅ | - |
+| Naver Ad Manager | ✅ | - |
+| Teads | ✅ | - |
 
 ---
 
@@ -51,5 +51,6 @@
 빌드 후 `build/outputs/mapping/release/` 폴더의 `seeds.txt`에서 보호된 클래스 목록을 확인할 수 있습니다.
 
 ```bash
+# 빌드 후 mapping 파일 확인
 cat app/build/outputs/mapping/release/seeds.txt | grep "nasmedia"
 ```

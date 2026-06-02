@@ -1,6 +1,8 @@
 # 배너 광고
 
-> **📌 참고** 배너 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+{% hint style="info" %}
+배너 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+{% endhint %}
 
 배너 광고는 `AdView`를 사용하여 화면 내에 고정 크기의 광고를 표시합니다.
 
@@ -19,8 +21,8 @@
 
 ## 방법 1: 코드로 추가 (즉시 노출)
 
-**Java**
-
+{% tabs %}
+{% tab title="Java" %}
 ```java
 public class BannerActivity extends AppCompatActivity {
 
@@ -85,9 +87,9 @@ public class BannerActivity extends AppCompatActivity {
     }
 }
 ```
+{% endtab %}
 
-**Kotlin**
-
+{% tab title="Kotlin" %}
 ```kotlin
 class BannerActivity : AppCompatActivity() {
 
@@ -140,13 +142,15 @@ class BannerActivity : AppCompatActivity() {
     }
 }
 ```
+{% endtab %}
+{% endtabs %}
 
 ---
 
 ## 방법 2: XML 레이아웃으로 추가
 
-**activity_banner.xml**
-
+{% tabs %}
+{% tab title="activity_banner.xml" %}
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -161,9 +165,9 @@ class BannerActivity : AppCompatActivity() {
 
 </RelativeLayout>
 ```
+{% endtab %}
 
-**Java**
-
+{% tab title="Java" %}
 ```java
 public class BannerXmlActivity extends AppCompatActivity {
 
@@ -184,9 +188,9 @@ public class BannerXmlActivity extends AppCompatActivity {
     // ... onResume / onPause / onDestroy 동일
 }
 ```
+{% endtab %}
 
-**Kotlin**
-
+{% tab title="Kotlin" %}
 ```kotlin
 class BannerXmlActivity : AppCompatActivity() {
 
@@ -205,6 +209,8 @@ class BannerXmlActivity : AppCompatActivity() {
     }
 }
 ```
+{% endtab %}
+{% endtabs %}
 
 ---
 
@@ -212,8 +218,8 @@ class BannerXmlActivity : AppCompatActivity() {
 
 광고를 미리 로드한 후 특정 이벤트(예: 콘텐츠 로딩 완료) 시점에 표시하는 방식입니다.
 
-**Java**
-
+{% tabs %}
+{% tab title="Java" %}
 ```java
 // 1. 광고 미리 로드 (화면 표시 없이 백그라운드 로드)
 // isLoadOnly(true): 광고 수신 후 자동 노출하지 않고 loadAd() 완료만 처리
@@ -242,9 +248,9 @@ showAdButton.setOnClickListener(v -> {
     }
 });
 ```
+{% endtab %}
 
-**Kotlin**
-
+{% tab title="Kotlin" %}
 ```kotlin
 // 1. 광고 미리 로드
 val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
@@ -271,11 +277,15 @@ showAdButton.setOnClickListener {
     }
 }
 ```
+{% endtab %}
+{% endtabs %}
 
-> **⚠️ 주의** **지연 노출 유의사항**
-> - 광고 수신 후 너무 오랜 시간이 지나면 `showAd()` 호출 시 정상 표시되지 않을 수 있습니다.
-> - `adView.loadAd()`만 호출하고 레이아웃에 `addView()`를 하지 않으면 광고가 화면에 표시되지 않습니다.
-> - 반드시 `showAd()` 를 호출해야 광고가 화면에 표시됩니다.
+{% hint style="warning" %}
+**지연 노출 유의사항**
+- 광고 수신 후 너무 오랜 시간이 지나면 `showAd()` 호출 시 정상 표시되지 않을 수 있습니다.
+- `adView.loadAd()`만 호출하고 레이아웃에 `addView()`를 하지 않으면 광고가 화면에 표시되지 않습니다.
+- 반드시 `showAd()` 를 호출해야 광고가 화면에 표시됩니다.
+{% endhint %}
 
 ---
 
@@ -293,7 +303,9 @@ showAdButton.setOnClickListener {
 
 ## 라이프사이클 관리
 
-> **🚨 주의** `AdView`의 라이프사이클 메서드를 반드시 연결하세요. 누락 시 메모리 누수가 발생하거나 광고가 정상 동작하지 않습니다.
+{% hint style="danger" %}
+`AdView`의 라이프사이클 메서드를 반드시 연결하세요. 누락 시 메모리 누수가 발생하거나 광고가 정상 동작하지 않습니다.
+{% endhint %}
 
 | Activity 메서드 | AdView 메서드 | 역할 |
 |----------------|--------------|------|
@@ -301,18 +313,22 @@ showAdButton.setOnClickListener {
 | `onPause()` | `adView.onPause()` | 광고 갱신 타이머 일시 정지 |
 | `onDestroy()` | `adView.destroy()` | 모든 리소스 해제 (필수) |
 
-> **⚠️ 주의** `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. **익명 클래스(anonymous class)**로 구현하면 GC에 의해 수집될 수 있으므로, 반드시 **멤버 변수**로 선언하세요.
+{% hint style="warning" %}
+`AdListener`는 내부적으로 `WeakReference`로 보유됩니다. **익명 클래스(anonymous class)**로 구현하면 GC에 의해 수집될 수 있으므로, 반드시 **멤버 변수**로 선언하세요.
+{% endhint %}
 
 ---
 
 ## Adfit 사용 시 주의사항
 
-> **⚠️ 주의** Kakao Adfit을 미디에이션으로 사용하는 경우, `AdView`는 반드시 **Activity Context**로 생성해야 합니다. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
->
-> ```java
-> // ✅ 올바른 방법
-> adView = new AdView(this); // Activity context
->
-> // ❌ 잘못된 방법
-> adView = new AdView(getApplicationContext()); // Application context — Adfit 동작 안 함
-> ```
+{% hint style="warning" %}
+Kakao Adfit을 미디에이션으로 사용하는 경우, `AdView`는 반드시 **Activity Context**로 생성해야 합니다. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
+
+```java
+// ✅ 올바른 방법
+adView = new AdView(this); // Activity context
+
+// ❌ 잘못된 방법
+adView = new AdView(getApplicationContext()); // Application context — Adfit 동작 안 함
+```
+{% endhint %}

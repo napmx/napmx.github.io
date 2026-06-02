@@ -26,10 +26,12 @@
     - [동영상 광고](/android/native/video)
     - [리워드 동영상](/android/native/rewarded-video)
     - [비즈보드](/android/native/bizboard)
+    - [개인정보 / 테스트 설정](/android/native/privacy)
     - [ProGuard 설정](/android/native/proguard)
     - [API 레퍼런스](/android/native/api-reference)
     - [에러 코드](/android/native/error-codes)
     - [FAQ](/android/native/faq)
+    - [Q&A](/android/native/qna)
     - [v2 마이그레이션](/android/native/migration)
     - [릴리즈 노트](/android/native/changelog)
   - <i class="fa-brands fa-unity nav-icon icon-unity"></i> Unity

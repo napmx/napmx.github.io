@@ -6,31 +6,38 @@
 
 ### 새로운 기능
 
-- **광고 신고하기 기능 추가**: `AdInfo.Builder.showReportIcon(true)` 설정으로 신고 아이콘(ⓘ) 표시. PixelCopy 기반 소재 자동 캡처 지원 (Android 8.0+)
+- **광고 신고하기 기능 추가**: `AdInfo.Builder.showReportIcon(true)` 설정으로 광고 소재 위에 신고 아이콘(ⓘ) 표시. PixelCopy 기반 소재 자동 캡처 지원 (Android 8.0+)
 - **NaverAdManager 어댑터 추가**: Naver Ad Manager (NAM) 미디에이션 지원 (`admixer-naveradmanager:2.0.0`)
 - **Teads 어댑터 추가**: Teads 미디에이션 지원 (`admixer-teads:2.0.0`)
+- **통합 개인정보 동의/테스트 API 추가**: `AdMixer.setGdprConsent/setCcpaDoNotSell/setUsPrivacy/setTestMode/setTestDeviceIds` — 워터폴에서 각 네트워크 privacy/test API로 자동 전파 (AppLovin/Unity/Pangle/AdManager)
+- **`cancelLoad()` 추가**: 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
+- **클라이언트 키 주입(`setAdapterConfig`)**: 서버 미제공 시 네트워크 키를 매체가 주입 (Server-Precedence 병합)
 
 ### 개선 사항
 
 - **어댑터 자동 등록**: `initialize()` 호출 시 Gradle 의존성에 포함된 어댑터를 자동 탐지·등록 — `registerAdapter()` 수동 호출 불필요
 - **Mobwith 버전 업데이트**: mobwithSDK `1.0.2` → `1.0.68`
-- **ProGuard 최적화**: `NativeAdViewBinder$Builder` R8 난독화 버그 수정, 서버 응답 파싱 클래스 난독화 방지 규칙 강화
-- **아키텍처 개선**: Delegate 패턴 기반 SRP 적용, 생성자 주입 완성
-- **전면/리워드 비디오 경로 정규화**: Activity 기반 경로로 통일 — back/close 정책 안정성 개선
-- **네이티브 View ID prefix 추가**: `tv_title` 등 → `nap_mx_tv_title` 등으로 변경 — 리소스 충돌 방지 ([마이그레이션 Step 7](migration.md#step-7) 참고)
-- **`setViewIds()` 제거 / `setAdapterConfig()` 추가**: 모든 어댑터가 `NativeAdViewBinder` 단일 경로로 통합. 어댑터별 String 파라미터(AppLovin `sdkKey` 등)는 `setAdapterConfig(adapterName, Map<String,String>)` 사용
-- **AppLovin 12.x/13.x 초기화 API 호환성**: SDK 버전별 `builder()` 시그니처 차이를 폴백 처리로 해결
+- **ProGuard 최적화**: ConfigMapper, AdStrategy 등 서버 응답 파싱 클래스 난독화 방지 규칙 강화. `NativeAdViewBinder$Builder` R8 난독화 버그 수정 (`consumer-rules.pro` `$**` wildcard 추가)
+- **아키텍처 개선**: Delegate 패턴 기반 단일 책임 원칙(SRP) 적용으로 유지보수성 향상
+- **생성자 주입 완성**: 모든 내부 Delegate 클래스가 Service Locator 대신 생성자 주입 사용
+- **전면/리워드 비디오 경로 정규화**: `AXAdInterstitialVideoAd → InterstitialVideoAdActivity` 기반 Activity 경로로 통일 — back/close 정책 안정성 개선
+- **네이티브 View ID prefix 추가**: `tv_title` 등 6개 View ID → `nap_mx_tv_title` 등으로 변경 — 타 라이브러리 리소스 충돌 방지 (마이그레이션 필요, [Step 7](migration-to-v2.md#step-7-view-id) 참고)
+- **`setViewIds()` 제거 / `setAdapterConfig()` 추가**: 모든 어댑터(Adfit·Pangle·Mobwith 포함)가 `NativeAdViewBinder` 단일 경로로 통합. 어댑터별 String 초기화 파라미터(AppLovin `sdkKey` 등)는 `setAdapterConfig(adapterName, Map<String,String>)` 사용
+- **AppLovin 12.x/13.x 초기화 API 호환성**: `AppLovinSdkInitializationConfiguration.builder()` 시그니처가 버전별로 다른 문제를 폴백 처리로 해결
+- **전면 광고 BACK 키 기본 차단(동작 변경)**: `PopupInterstitialAdOption.setDisableBackKey` 기본값 `true` — 정적 전면도 비디오·리워드와 동일하게 뒤로가기 기본 차단. `false` 명시 시 종전 동작 ([마이그레이션 Step 8](migration-to-v2.md))
+- **media-conf 재동기화 안정화**: 표시 중(SHOWING)/이미 로드된 풀스크린 유닛이 config 재동기화로 재로드되거나 MediationController가 중복 생성되던 문제 수정
+- **Naver PUBLISHER_CD 관리 방식**: `com.naver.gfpsdk.PUBLISHER_CD`를 SDK(`admixer-naveradmanager`)가 제공·고정 — 호스트 앱 매니페스트 설정 불필요
 
 ### 버그 수정
 
-- 전면/리워드 광고 콜백에서 `adInfo` null 체크 누락 수정
-- Adfit 어댑터 `closeAdapter()` 시 메모리 누수 방지
-- 노출/클릭 로그 `nSkip` 파라미터 null 버그 수정
-- NaverAd/Unity 어댑터 콜백 누락 및 리소스 해제 수정
+- 전면/리워드 광고 `onAdReceived`, `onEarnedReward` 콜백에서 `adInfo` null 체크 누락 수정
+- Adfit 어댑터 `closeAdapter()` 시 `nativeAdLayout` null 처리로 메모리 누수 방지
+- 노출/클릭 로그의 `nSkip` 파라미터가 항상 null로 전달되던 버그 수정
+- NaverAd/Unity 어댑터 콜백 누락 및 리소스 해제 불완전 수정
 
 ### 하위 호환성
 
-모든 Public API 변경 없음 — 기존 연동 코드 수정 불필요.
+기존 Public API(`AdView`, `InterstitialAd`, `NativeAdView`, `VideoAdView`, `RewardInterstitialVideoAd`, `InterstitialVideoAd`, `AdListener`, `AdEvent`, `AdInfo`, `AdMixer`, `PopupInterstitialAdOption`) 변경 없음 — **기존 연동 코드 수정 불필요**.
 
 ---
 
@@ -53,6 +60,7 @@
 ## v1.0.19 (2026-01-21)
 
 - 네트워크 SDK에서 리워드 획득 커스텀 파라미터 추가
+- 리워드 획득 내부 로깅 URL 추가
 
 ---
 
@@ -90,19 +98,40 @@
 ## v1.0.12 (2025-08-18)
 
 - AppLovin 어댑터 추가
-- Mobwith 버전 업데이트
+- Mobwith 버전 업데이트 (`1.0.2` → `1.0.3`)
+
+---
+
+## v1.0.11 (2025-08-11)
+
+- 전면 배너 옵션 추가
+- 버그 수정
 
 ---
 
 ## v1.0.10 (2025-07-24)
 
 - Mobwith, Pangle 어댑터 추가
+- 버그 수정
+
+---
+
+## v1.0.9 (2025-05-22)
+
+- 버그 수정
 
 ---
 
 ## v1.0.8 (2025-04-14)
 
 - Kakao Adfit 어댑터 추가
+- 버그 수정
+
+---
+
+## v1.0.7 (2025-03-10) ~ v1.0.1 (2024-10-14)
+
+- 버그 수정 및 안정성 개선
 
 ---
 

@@ -1,7 +1,7 @@
 # WEB Script 연동
 
 nap ssp Script를 mobile web 사이트와 PC web 사이트에 연동하기 위한 가이드 문서입니다.  
-연동 및 이용 방법 문의: nap_adx@nasmedia.co.kr
+연동 및 이용 방법 문의: nap_mx@nasmedia.co.kr
 
 ---
 

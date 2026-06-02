@@ -1,7 +1,7 @@
 # 리포트 API
 
 nap ssp 퍼블리셔를 위한 리포트 데이터 API입니다.  
-연동 및 이용 방법 문의: nap_adx@nasmedia.co.kr
+연동 및 이용 방법 문의: nap_mx@nasmedia.co.kr
 
 ---
 

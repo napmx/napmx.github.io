@@ -1,7 +1,7 @@
 # Hybrid App (WebView) 비즈보드
 
 KaKao Adfit 비즈보드 연동을 위한 가이드 문서입니다.  
-문의: nap_adx@nasmedia.co.kr
+문의: nap_mx@nasmedia.co.kr
 
 > **비즈보드 지면 정책**
 > - 비즈보드 지면은 비즈보드만 단독 사용 (타사 네트워크 등 미디에이션 불가)

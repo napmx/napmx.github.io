@@ -6,12 +6,14 @@
 
 ## SDK 에러 코드
 
+`onFailedToReceiveAd` 콜백의 `errorCode`는 `AdMixer` 클래스에 정의된 `int` 상수입니다.
+
 | 상수명 | 값 | 설명 | 권장 조치 |
 |--------|-----|------|----------|
 | `AdMixer.AX_ERR_INIT` | `0x80000001` | SDK 초기화 오류 | `AdMixer.initialize()` 호출 여부 확인 |
 | `AdMixer.AX_ERR_ADUNIT` | `0x80000002` | 유효하지 않은 AdUnit ID | AdUnit ID 및 Media Key 확인 |
 | `AdMixer.AX_ERR_TIMEOUT` | `0x80000004` | 광고 로딩 타임아웃 | 타임아웃 설정 조정 또는 재요청 |
-| `AdMixer.AX_ERR_NO_ADAPTER` | `0x80000005` | 어댑터 미등록 | `build.gradle`에 어댑터 모듈 의존성 추가 여부 확인 |
+| `AdMixer.AX_ERR_NO_ADAPTER` | `0x80000005` | 어댑터 미등록 | `build.gradle`에 해당 어댑터 모듈 의존성 추가 여부 확인 |
 | `AdMixer.AX_ERR_ADAPTER` | `0x80000006` | 어댑터 내부 오류 | 해당 네트워크 SDK 초기화 상태 확인 |
 | `AdMixer.AX_ERR_CONFIG_FAIL` | `0x80000007` | 서버 Config 파싱 실패 | Media Key 및 네트워크 상태 확인 |
 | `AdMixer.AX_ERR_NO_ADS` | `0x80000008` | 광고 없음 (재고 부족) | 일정 시간 후 재요청 |
@@ -20,6 +22,7 @@
 | `AdMixer.AX_ERR_NETWORK` | `0x8000000B` | 네트워크 오류 | 네트워크 연결 상태 확인 |
 
 ```java
+// 에러 코드 비교 예시
 @Override
 public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapterName,
                                   int errorCode, @Nullable String errorMsg) {
@@ -31,16 +34,16 @@ public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapter
 }
 ```
 
----
-
 ## 미디에이션 에러 코드
 
-네트워크 어댑터에서 발생한 에러는 해당 네트워크 SDK의 에러 코드가 그대로 전달될 수 있습니다.
+네트워크 어댑터에서 발생하는 에러의 경우, 해당 네트워크 SDK의 에러 코드가 그대로 전달될 수 있습니다.
 
-> **📌 참고** LogCat에서 `AdMixer` 태그로 필터링하면 상세 에러 로그를 확인할 수 있습니다.
-> ```
-> adb logcat -s AdMixer
-> ```
+{% hint style="info" %}
+LogCat에서 `AdMixer` 태그로 필터링하면 상세 에러 로그를 확인할 수 있습니다.
+```
+adb logcat -s AdMixer
+```
+{% endhint %}
 
 ---
 

@@ -3,7 +3,7 @@
 NAP SSP 광고 API로, 자체 광고 및 제휴 DSP(외부) 광고를 제공합니다.
 **애드믹서(NAP) 광고만 송출**되는 방식이며, Google 수익화를 포함하여 진행하는 경우 Script 연동으로 진행해주세요.
 
-연동 및 이용 방법 문의: nap_adx@nasmedia.co.kr
+연동 및 이용 방법 문의: nap_mx@nasmedia.co.kr
 
 ---
 

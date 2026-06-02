@@ -1,6 +1,8 @@
 # 리워드 동영상 광고
 
-> **📌 참고** 리워드 동영상 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+{% hint style="info" %}
+리워드 동영상 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+{% endhint %}
 
 리워드 동영상 광고는 `RewardInterstitialVideoAd`를 사용합니다. 사용자가 동영상을 끝까지 시청하면 `EARNEDREWARD` 이벤트가 발생하며, 이 시점에 리워드를 지급하세요.
 
@@ -22,8 +24,8 @@ loadRewardVideoAd()
 
 ## 코드 구현
 
-**Java**
-
+{% tabs %}
+{% tab title="Java" %}
 ```java
 public class RewardVideoActivity extends AppCompatActivity {
 
@@ -116,9 +118,9 @@ public class RewardVideoActivity extends AppCompatActivity {
     }
 }
 ```
+{% endtab %}
 
-**Kotlin**
-
+{% tab title="Kotlin" %}
 ```kotlin
 class RewardVideoActivity : AppCompatActivity() {
 
@@ -181,6 +183,8 @@ class RewardVideoActivity : AppCompatActivity() {
     }
 }
 ```
+{% endtab %}
+{% endtabs %}
 
 ---
 
@@ -226,7 +230,9 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_REWARD_VIDEO)
 https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={adid}&complete={complete}&timestamp={timestamp}&user_id=user123&session_token=abc123
 ```
 
-> **📌 참고** 광고 네트워크별로 `EARNEDREWARD` 이벤트 발생 시점이 다를 수 있습니다. 서버 콜백이 클라이언트 콜백보다 먼저 또는 나중에 도달할 수 있으니, 서버에서 양쪽을 모두 처리하는 방식을 권장합니다.
+{% hint style="info" %}
+광고 네트워크별로 `EARNEDREWARD` 이벤트 발생 시점이 다를 수 있습니다. 서버 콜백이 클라이언트 콜백보다 먼저 또는 나중에 도달할 수 있으니, 서버에서 양쪽을 모두 처리하는 방식을 권장합니다.
+{% endhint %}
 
 ---
 
@@ -259,4 +265,6 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 | `Activity.onDestroy()` | `rewardAd.stopRewardVideoAd()` | 광고 정지 및 리소스 해제 (리스너 참조도 함께 해제됨) |
 | `CLOSE/SKIPPED 이벤트` | `rewardAd.closeInterstitialVideoAd()` | 광고 화면 닫기 (필수) |
 
-> **⚠️ 주의** `CLOSE` 또는 `SKIPPED` 이벤트 수신 시 반드시 `closeInterstitialVideoAd()`를 호출해야 합니다. 호출하지 않으면 광고 화면이 닫히지 않습니다.
+{% hint style="warning" %}
+`CLOSE` 또는 `SKIPPED` 이벤트 수신 시 반드시 `closeInterstitialVideoAd()`를 호출해야 합니다. 호출하지 않으면 광고 화면이 닫히지 않습니다.
+{% endhint %}

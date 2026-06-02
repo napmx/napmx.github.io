@@ -5,7 +5,7 @@ nap ssp에서 노출되는 광고 소재 중, 원하지 않는 광고를 차단�
 
 파트너 사이트 메뉴: **애드리뷰센터 > 차단 관리**
 
-이용 방법 문의: nap_adx@nasmedia.co.kr
+이용 방법 문의: nap_mx@nasmedia.co.kr
 
 ---
 

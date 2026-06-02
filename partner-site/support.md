@@ -2,7 +2,7 @@
 
 파트너 사이트 메뉴: **지원센터**
 
-이용 방법 문의: nap_adx@nasmedia.co.kr
+이용 방법 문의: nap_mx@nasmedia.co.kr
 
 ---
 

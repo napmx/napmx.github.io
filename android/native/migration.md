@@ -1,6 +1,6 @@
 # v2.0.0 마이그레이션 가이드
 
-이 문서는 nap mx Android SDK **v1.x → v2.0.0** 업그레이드 시 필요한 변경 사항을 설명합니다.
+이 문서는 nap ssp Android SDK **v1.x → v2.0.0** 업그레이드 시 필요한 변경 사항을 설명합니다.
 
 ---
 
@@ -14,6 +14,9 @@
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
+| **전면 BACK 키 기본 차단** | **`PopupInterstitialAdOption.setDisableBackKey` 기본값 `true`로 변경 — 뒤로가기 닫기 의존 시 `false` 명시 필요** |
+| 신규 API | `cancelLoad()`(로드만 취소), `AdMixer.setGdprConsent/setCcpaDoNotSell/setTestMode/setTestDeviceIds`(개인정보·테스트 전파) |
+| Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | Deprecated | `loadInterstitial()`, `closeInterstitial()`, `onDestroy()` 등 |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
 | Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
@@ -21,6 +24,8 @@
 ---
 
 ## Step 1. Gradle 버전 업데이트
+
+`build.gradle` 의존성 버전을 `2.0.0`으로 변경하세요.
 
 ```gradle
 // Before
@@ -41,9 +46,13 @@ implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'
 implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'
 ```
 
+**Mobwith 내장 SDK 버전 변경**: `1.0.2` → `1.0.68`
+
 ---
 
 ## Step 2. ProGuard 규칙 업데이트
+
+v2.0.0에서 ProGuard 규칙이 강화되었습니다. `proguard-rules.pro`의 기존 AdMixer 관련 규칙을 아래로 교체하세요.
 
 ```proguard
 # ✅ 필수 — AdMixer Core
@@ -60,22 +69,30 @@ implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'
 -keep class com.nasmedia.teads.** { *; }            # 신규
 ```
 
-> **📌 참고** 각 어댑터 AAR에 `consumer-rules.pro`가 포함되어 있어 대부분의 규칙이 자동 적용됩니다. 위 규칙은 추가 안전망입니다.
+{% hint style="info" %}
+각 어댑터 AAR에 `consumer-rules.pro`가 포함되어 있어 대부분의 규칙이 자동 적용됩니다. 위 규칙은 추가 안전망입니다.
+{% endhint %}
 
 ---
 
 ## Step 3. `registerAdapter()` 호출 제거
 
-v2.0.0부터 `initialize()` 내부에서 클래스패스에 포함된 어댑터를 **자동으로 탐지·등록**합니다.
+v2.0.0부터 `initialize()` 내부에서 클래스패스(Gradle 의존성)에 포함된 어댑터를 **자동으로 탐지·등록**합니다. `Application.onCreate()`의 `registerAdapter()` 호출을 모두 제거하세요.
 
 ```java
 // Before (v1.x) — 수동 등록 필요
 AdMixer.registerAdapter(AdMixer.ADAPTER_ADMANAGER);
 AdMixer.registerAdapter(AdMixer.ADAPTER_ADFIT);
+AdMixer.registerAdapter(AdMixer.ADAPTER_PANGLE);
 // ...
 
 // After (v2.0.0) — 불필요, 제거하세요
+// (Gradle 의존성에 포함된 어댑터는 initialize() 호출 시 자동 등록)
 ```
+
+{% hint style="info" %}
+`registerAdapter()` 메서드는 하위 호환성을 위해 남아 있으며 호출 시 동작은 하지만, `initialize()` 내부에서 `discoverAdapters()`가 이미 모든 어댑터를 자동 등록하므로 중복 호출입니다. 제거를 권장합니다.
+{% endhint %}
 
 ---
 
@@ -83,19 +100,15 @@ AdMixer.registerAdapter(AdMixer.ADAPTER_ADFIT);
 
 ### NaverAdManager 추가 시
 
-`AndroidManifest.xml`에 Publisher ID를 추가합니다:
+`build.gradle`에 의존성을 추가하면 어댑터는 `initialize()` 호출 시 자동으로 등록됩니다.
 
-```xml
-<application>
-    <meta-data
-        android:name="com.naver.gfpsdk.PUBLISHER_ID"
-        android:value="nap mx 운영팀으로부터 발급받은 Publisher ID" />
-</application>
-```
+{% hint style="info" %}
+Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp가 SDK(`admixer-naveradmanager` aar)에서 제공·관리합니다. **호스트 앱 매니페스트에 별도로 설정하지 마세요.** (이전 안내에서 호스트가 Publisher ID를 추가하도록 했으나, SDK 제공 방식으로 변경되었습니다.)
+{% endhint %}
 
 ### Teads 추가 시
 
-`settings.gradle` Maven 저장소 추가:
+**`settings.gradle`** Maven 저장소 추가:
 
 ```gradle
 repositories {
@@ -104,35 +117,79 @@ repositories {
 }
 ```
 
+어댑터는 `initialize()` 호출 시 자동으로 등록됩니다. 별도의 `registerAdapter()` 호출이 필요하지 않습니다.
+
 ---
 
 ## Step 5. Deprecated API 교체 (권장)
 
+하위 호환성이 유지되어 기존 코드가 동작하지만, deprecated 메서드는 향후 제거될 수 있습니다.
+
 ### InterstitialAd
 
-| 기존 (v1.x) | v2.0.0 대체 |
-|------------|------------|
-| `loadInterstitial()` | `loadAd()` |
-| `closeInterstitial()` | `stopInterstitial()` |
-| `onDestroy()` | `stopInterstitial()` |
+| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+|------------|------------|------|
+| `loadInterstitial()` | `loadAd()` | 동일 동작 |
+| `closeInterstitial()` | `stopInterstitial()` | 동일 동작 |
+| `onDestroy()` | `stopInterstitial()` | `onDestroy()`는 Activity 메서드와 혼동 유발 |
+
+```java
+// Before
+interstitialAd.loadInterstitial();
+// onDestroy()에서:
+interstitialAd.onDestroy();
+
+// After
+interstitialAd.loadAd();
+// onDestroy()에서:
+interstitialAd.stopInterstitial();
+```
 
 ### RewardInterstitialVideoAd
 
-| 기존 (v1.x) | v2.0.0 대체 |
-|------------|------------|
-| `onDestroy()` | `stopRewardVideoAd()` |
+| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+|------------|------------|------|
+| `onDestroy()` | `stopRewardVideoAd()` | — |
+
+```java
+// Before
+rewardAd.onDestroy();
+
+// After
+rewardAd.stopRewardVideoAd();
+```
 
 ### InterstitialVideoAd
 
-| 기존 (v1.x) | v2.0.0 대체 |
-|------------|------------|
-| `onDestroy()` | `stopInterstitialVideoAd()` |
+| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+|------------|------------|------|
+| `onDestroy()` | `stopInterstitialVideoAd()` | — |
+
+```java
+// Before
+interstitialVideoAd.onDestroy();
+
+// After
+interstitialVideoAd.stopInterstitialVideoAd();
+```
 
 ### AdInfo.Builder
 
-| 기존 (v1.x) | v2.0.0 대체 |
-|------------|------------|
-| `.isUseBackgroundAlpha(Boolean)` | `.setUseBackgroundAlpha(boolean)` |
+| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+|------------|------------|------|
+| `.isUseBackgroundAlpha(Boolean)` | `.setUseBackgroundAlpha(boolean)` | `Boolean` → `boolean` (null 위험 제거) |
+
+```java
+// Before
+new AdInfo.Builder(ADUNIT_ID)
+    .isUseBackgroundAlpha(true)
+    .build();
+
+// After
+new AdInfo.Builder(ADUNIT_ID)
+    .setUseBackgroundAlpha(true)
+    .build();
+```
 
 ---
 
@@ -140,9 +197,11 @@ repositories {
 
 ### 광고 신고하기
 
+v2.0.0에서 추가된 광고 소재 신고 기능입니다. Android 8.0(API 26) 이상에서 PixelCopy 기반 소재 자동 캡처를 지원합니다.
+
 ```java
 AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-    .showReportIcon(true)
+    .showReportIcon(true)  // ← 신고 아이콘(ⓘ) 활성화
     .build();
 ```
 
@@ -232,22 +291,74 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
     .build();
 ```
 
-> **💡 참고** SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
+{% hint style="info" %}
+SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
+{% endhint %}
 
 ---
 
-## 변경 없는 항목
+## Step 8. 전면 광고 뒤로가기(BACK) 키 — 동작 변경 (확인 필요)
+
+v2.0.0부터 **전면 광고는 시스템 뒤로가기(BACK) 키를 기본 차단**합니다(비디오·리워드와 동일 정책). 광고는 'X' 닫기 버튼으로만 닫힙니다.
+
+{% hint style="warning" %}
+기존(v1.x)에 **뒤로가기로 전면 광고를 닫던 동작에 의존**하는 매체는, 아래와 같이 명시적으로 해제해야 종전 동작이 유지됩니다.
+{% endhint %}
+
+```java
+// v1.x 동작(뒤로가기로 닫기)을 유지하려면:
+PopupInterstitialAdOption opt = new PopupInterstitialAdOption();
+opt.setDisableBackKey(false); // 명시적 false → 뒤로가기 닫기 허용
+```
+
+`PopupInterstitialAdOption.setDisableBackKey`의 **기본값이 `true`(차단)** 로 변경되었습니다.
+
+---
+
+## Step 9. 진행 중 로드만 취소 — `cancelLoad()` (선택)
+
+표시 중인 광고를 끊지 않고 미완료 로드만 취소하는 `cancelLoad()`가 추가되었습니다(전면·리워드·전면 동영상 공통).
+
+```java
+// 화면 전환·백그라운드: 진행 중 로드만 취소 (표시 중이면 no-op)
+interstitialAd.cancelLoad();
+// 화면 종료: 전체 정리
+interstitialAd.stopInterstitial();
+```
+
+---
+
+## Step 10. 개인정보 동의 / 테스트 설정 전파 (선택)
+
+GDPR/CCPA/COPPA 동의값과 테스트 설정을 `AdMixer` 전역에 설정하면 워터폴에서 각 네트워크로 자동 전파됩니다.
+
+```java
+AdMixer.setGdprConsent(true);
+AdMixer.setCcpaDoNotSell(false);
+AdMixer.setTestMode(true);
+AdMixer.setTestDeviceIds(Arrays.asList("..."));
+```
+
+자세한 매핑은 [개인정보 동의 및 테스트 설정](privacy.md)을 참고하세요.
+
+---
+
+## 변경 없는 항목 (하위 호환 유지)
+
+아래 Public API는 **v2.0.0에서 변경되지 않습니다**. 기존 코드를 그대로 사용할 수 있습니다.
 
 | 클래스 | 변경 여부 |
 |--------|----------|
 | `AdView` | 변경 없음 |
 | `AdListener` | 변경 없음 |
 | `AdEvent` | 변경 없음 |
+| `AdInfo.Builder` (deprecated 제외) | 변경 없음 |
 | `NativeAdView` | 변경 없음 |
 | `VideoAdView` | 변경 없음 |
 | `InterstitialAd` (deprecated 제외) | 변경 없음 |
 | `RewardInterstitialVideoAd` (deprecated 제외) | 변경 없음 |
 | `InterstitialVideoAd` (deprecated 제외) | 변경 없음 |
+| `PopupInterstitialAdOption` | 변경 없음 |
 
 ---
 

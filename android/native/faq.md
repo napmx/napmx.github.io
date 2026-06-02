@@ -49,13 +49,13 @@ LogCat에서 `AdMixer` 태그로 필터링하면 SDK 내부 동작을 상세히 
 광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 추가해야 합니다.
 
 - **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`와 `adView.showAd()`를 호출하세요.
-- **완전 지연 노출**: `AdInfo.Builder.isLoadOnly(true)`를 설정한 후 `loadAd()`를 호출하세요. 광고가 수신되어도 자동 노출되지 않으며, 원하는 시점에 `container.addView(adView)` + `adView.showAd()`를 호출합니다.
+- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `AdInfo.Builder.isLoadOnly(true)`를 설정한 후 `loadAd()`를 호출하세요. 광고가 수신되어도 자동 노출되지 않으며, 원하는 시점에 `container.addView(adView)` + `adView.showAd()`를 호출합니다.
 
 ---
 
 **Q. AdUnit 설정 사이즈와 다른 광고 사이즈가 노출됩니다.**
 
-AdUnit 설정 사이즈는 보장되지 않을 수 있습니다. `WRAP_CONTENT`로 레이아웃을 설정하면 소재 크기에 맞게 자동 조정됩니다.
+AdUnit 설정 사이즈는 보장되지 않을 수 있습니다. 광고 네트워크 및 소재 유형에 따라 실제 노출 사이즈가 달라질 수 있습니다. `WRAP_CONTENT`로 레이아웃을 설정하면 소재 크기에 맞게 자동 조정됩니다.
 
 ---
 
@@ -89,7 +89,7 @@ Adfit은 매체 심사 과정을 통해 상용 광고가 응답됩니다.
 
 **Q. Google AdManager와 다른 네트워크를 동시에 운영 중인 앱에 추가해도 되나요?**
 
-Google AdManager는 기존 운영 중인 지면과 **다른 지면**에 한해 중복 사용이 가능합니다. 동일 지면에서 사용하는 경우 `exclude`로 중복을 방지하세요.
+Google AdManager는 기존 운영 중인 지면과 **다른 지면**에 한해 중복 사용이 가능합니다. 동일 지면에서 사용하는 경우 `exclude`로 중복을 방지하세요. 자세한 내용은 [SDK 시작하기 — 네트워크 SDK 중복 예외 처리](getting-started.md#네트워크-sdk-중복-예외-처리)를 참고하세요.
 
 ---
 
@@ -97,7 +97,7 @@ Google AdManager는 기존 운영 중인 지면과 **다른 지면**에 한해 �
 
 **Q. EARNEDREWARD 이벤트와 COMPLETION 이벤트의 차이는 무엇인가요?**
 
-- `EARNEDREWARD`: 리워드 지급 조건 충족. **리워드 지급은 이 이벤트에서 처리하세요.**
+- `EARNEDREWARD`: 리워드 지급 조건 충족 (동영상 시청 완료). **리워드 지급은 이 이벤트에서 처리하세요.**
 - `COMPLETION`: 동영상 재생이 끝까지 완료됨. 네트워크에 따라 `EARNEDREWARD`와 동시 또는 별도로 발생할 수 있습니다.
 
 ---
@@ -105,6 +105,34 @@ Google AdManager는 기존 운영 중인 지면과 **다른 지면**에 한해 �
 **Q. 사용자가 Skip을 누르면 리워드가 지급되나요?**
 
 아니요. `SKIPPED` 이벤트는 리워드 미지급 상황입니다. 리워드는 반드시 `EARNEDREWARD` 이벤트에서만 지급하세요.
+
+---
+
+## 전면 광고
+
+**Q. 전면 광고가 뒤로가기(BACK)로 닫히지 않습니다.**
+
+v2.0.0부터 전면 광고는 **BACK 키를 기본 차단**합니다(닫기는 'X' 버튼으로만). 뒤로가기 닫기를 허용하려면 `PopupInterstitialAdOption.setDisableBackKey(false)`를 명시하세요. 자세한 내용은 [전면 배너 광고 — 뒤로가기 키 정책](interstitial.md#뒤로가기back-키-정책) 참고.
+
+---
+
+**Q. 표시 중인 광고는 유지하면서 진행 중 로드만 취소하려면?**
+
+`cancelLoad()`를 호출하세요. 로딩 중일 때만 취소하고 표시 중(SHOWING)이면 아무 동작도 하지 않습니다. 전체 정리는 `stopXxx()`/`onDestroy()`입니다.
+
+---
+
+## 개인정보 및 테스트
+
+**Q. GDPR/CCPA 동의를 각 네트워크에 일일이 설정해야 하나요?**
+
+아니요. `AdMixer.setGdprConsent(...)`, `setCcpaDoNotSell(...)`, `setTagForChildDirectedTreatment(...)`를 전역으로 설정하면 워터폴에서 각 네트워크로 자동 전파됩니다. (일부 네트워크는 공식 API 부재로 미전파 — [개인정보 동의 및 테스트 설정](privacy.md) 매핑표 참고)
+
+---
+
+**Q. 테스트 광고는 어떻게 받나요?**
+
+`AdMixer.setTestMode(true)`와 `AdMixer.setTestDeviceIds([GAID])`를 초기화 시 설정하세요. AppLovin·Unity·AdManager·Pangle에 반영됩니다.
 
 ---
 

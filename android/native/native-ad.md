@@ -1,6 +1,8 @@
 ﻿# 네이티브 광고
 
-> **📌 참고** 네이티브 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+{% hint style="info" %}
+네이티브 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
+{% endhint %}
 
 네이티브 광고는 `NativeAdView`를 사용하여 앱 UI에 자연스럽게 통합된 형태의 광고를 표시합니다. 제공된 asset을 이용해 자유롭게 UI를 구성할 수 있습니다.
 
@@ -19,9 +21,11 @@
 | 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 (NativeMainAdView) | AdMixer 단독: 1개 이상 필수 |
 | CTA 버튼 | `nap_mx_btn_cta` | 행동 유도 버튼 (Button) | 선택 |
 
-> **⚠️ 주의** **필수 규칙**
-> - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
-> - Google AdManager 사용 시: Google이 요구하는 최소 View를 반드시 설정해야 합니다.
+{% hint style="warning" %}
+**필수 규칙**
+- AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
+- Google AdManager 사용 시: Google이 요구하는 최소 View를 반드시 설정해야 합니다.
+{% endhint %}
 
 ---
 
@@ -29,6 +33,7 @@
 
 네이티브 광고 레이아웃을 XML로 먼저 정의합니다.
 
+{% code title="res/layout/item_native_ad.xml" %}
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -112,13 +117,14 @@
 
 </RelativeLayout>
 ```
+{% endcode %}
 
 ---
 
 ## 코드 구현
 
-**Java**
-
+{% tabs %}
+{% tab title="Java" %}
 ```java
 public class NativeAdActivity extends AppCompatActivity {
 
@@ -186,9 +192,9 @@ public class NativeAdActivity extends AppCompatActivity {
     }
 }
 ```
+{% endtab %}
 
-**Kotlin**
-
+{% tab title="Kotlin" %}
 ```kotlin
 class NativeAdActivity : AppCompatActivity() {
 
@@ -243,6 +249,8 @@ class NativeAdActivity : AppCompatActivity() {
     }
 }
 ```
+{% endtab %}
+{% endtabs %}
 
 ---
 
@@ -264,11 +272,17 @@ class NativeAdActivity : AppCompatActivity() {
 
 ## 주의사항
 
-> **⚠️ 주의** **Adfit 사용 시**: `NativeAdView`는 반드시 **Activity Context**로 생성하세요. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
+{% hint style="warning" %}
+**Adfit 사용 시**: `NativeAdView`는 반드시 **Activity Context**로 생성하세요. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
+{% endhint %}
 
-> **📌 참고** **레이아웃 구조**: 네이티브 광고 레이아웃에는 `RelativeLayout` 사용을 권장합니다. 다른 레이아웃을 사용해야 하는 경우, 해당 레이아웃을 `RelativeLayout` 안에 넣는 방식으로 구현할 수 있습니다.
+{% hint style="info" %}
+**레이아웃 구조**: 네이티브 광고 레이아웃에는 `RelativeLayout` 사용을 권장합니다. 다른 레이아웃을 사용해야 하는 경우, 해당 레이아웃을 `RelativeLayout` 안에 넣는 방식으로 구현할 수 있습니다.
+{% endhint %}
 
-> **📌 참고** **`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
+{% hint style="info" %}
+**`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
+{% endhint %}
 
 ---
 
