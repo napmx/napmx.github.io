@@ -69,9 +69,7 @@ v2.0.0에서 ProGuard 규칙이 강화되었습니다. `proguard-rules.pro`의 �
 -keep class com.nasmedia.teads.** { *; }            # 신규
 ```
 
-{% hint style="info" %}
-각 어댑터 AAR에 `consumer-rules.pro`가 포함되어 있어 대부분의 규칙이 자동 적용됩니다. 위 규칙은 추가 안전망입니다.
-{% endhint %}
+> ℹ️ 각 어댑터 AAR에 `consumer-rules.pro`가 포함되어 있어 대부분의 규칙이 자동 적용됩니다. 위 규칙은 추가 안전망입니다.
 
 ---
 
@@ -90,9 +88,7 @@ AdMixer.registerAdapter(AdMixer.ADAPTER_PANGLE);
 // (Gradle 의존성에 포함된 어댑터는 initialize() 호출 시 자동 등록)
 ```
 
-{% hint style="info" %}
-`registerAdapter()` 메서드는 하위 호환성을 위해 남아 있으며 호출 시 동작은 하지만, `initialize()` 내부에서 `discoverAdapters()`가 이미 모든 어댑터를 자동 등록하므로 중복 호출입니다. 제거를 권장합니다.
-{% endhint %}
+> ℹ️ `registerAdapter()` 메서드는 하위 호환성을 위해 남아 있으며 호출 시 동작은 하지만, `initialize()` 내부에서 `discoverAdapters()`가 이미 모든 어댑터를 자동 등록하므로 중복 호출입니다. 제거를 권장합니다.
 
 ---
 
@@ -102,9 +98,7 @@ AdMixer.registerAdapter(AdMixer.ADAPTER_PANGLE);
 
 `build.gradle`에 의존성을 추가하면 어댑터는 `initialize()` 호출 시 자동으로 등록됩니다.
 
-{% hint style="info" %}
-Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp가 SDK(`admixer-naveradmanager` aar)에서 제공·관리합니다. **호스트 앱 매니페스트에 별도로 설정하지 마세요.** (이전 안내에서 호스트가 Publisher ID를 추가하도록 했으나, SDK 제공 방식으로 변경되었습니다.)
-{% endhint %}
+> ℹ️ Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp가 SDK(`admixer-naveradmanager` aar)에서 제공·관리합니다. **호스트 앱 매니페스트에 별도로 설정하지 마세요.** (이전 안내에서 호스트가 Publisher ID를 추가하도록 했으나, SDK 제공 방식으로 변경되었습니다.)
 
 ### Teads 추가 시
 
@@ -291,9 +285,7 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
     .build();
 ```
 
-{% hint style="info" %}
-SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
-{% endhint %}
+> ℹ️ SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
 
 ---
 
@@ -301,9 +293,7 @@ SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 
 
 v2.0.0부터 **전면 광고는 시스템 뒤로가기(BACK) 키를 기본 차단**합니다(비디오·리워드와 동일 정책). 광고는 'X' 닫기 버튼으로만 닫힙니다.
 
-{% hint style="warning" %}
-기존(v1.x)에 **뒤로가기로 전면 광고를 닫던 동작에 의존**하는 매체는, 아래와 같이 명시적으로 해제해야 종전 동작이 유지됩니다.
-{% endhint %}
+> ⚠️ 기존(v1.x)에 **뒤로가기로 전면 광고를 닫던 동작에 의존**하는 매체는, 아래와 같이 명시적으로 해제해야 종전 동작이 유지됩니다.
 
 ```java
 // v1.x 동작(뒤로가기로 닫기)을 유지하려면:

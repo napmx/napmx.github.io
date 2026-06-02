@@ -2,9 +2,7 @@
 
 이 페이지에서는 GDPR/CCPA/COPPA 등 **개인정보 동의값**과 **테스트 모드/테스트 디바이스** 설정을 안내합니다.
 
-{% hint style="info" %}
-이 설정들은 **선택 사항**이며, QA·심사·프라이버시 규제 대응 시 사용합니다. 설정하지 않으면 SDK는 해당 항목을 하위 네트워크에 적용하지 않습니다(미설정 유지).
-{% endhint %}
+> ℹ️ 이 설정들은 **선택 사항**이며, QA·심사·프라이버시 규제 대응 시 사용합니다. 설정하지 않으면 SDK는 해당 항목을 하위 네트워크에 적용하지 않습니다(미설정 유지).
 
 ---
 
@@ -25,8 +23,7 @@ flowchart LR
 
 `Application.onCreate()` 또는 동의 수집 직후에 설정하세요.
 
-{% tabs %}
-{% tab title="Java" %}
+#### Java
 ```java
 // GDPR 사용자 동의 여부 (EU 대상)
 AdMixer.setGdprConsent(true);
@@ -41,17 +38,14 @@ AdMixer.setUsPrivacy("1YNN");
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);  // 아동 대상
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE); // 일반 대상
 ```
-{% endtab %}
 
-{% tab title="Kotlin" %}
+#### Kotlin
 ```kotlin
 AdMixer.setGdprConsent(true)
 AdMixer.setCcpaDoNotSell(false)
 AdMixer.setUsPrivacy("1YNN")
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)
 ```
-{% endtab %}
-{% endtabs %}
 
 ### 네트워크별 전파 매핑
 
@@ -63,9 +57,7 @@ AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATM
 | **Google AdManager** | UMP(별도 동의 흐름) | UMP(별도) | `RequestConfiguration.setTagForChildDirectedTreatment` |
 | Teads / Adfit / Mobwith / Naver | TCF 자동/제한적 | 제한적 | 제한적 |
 
-{% hint style="warning" %}
-미설정 항목은 해당 네트워크에 적용하지 않습니다. 일부 네트워크는 공식 SDK가 해당 privacy API를 제공하지 않아 전파되지 않을 수 있습니다(표의 "미지원" 참고).
-{% endhint %}
+> ⚠️ 미설정 항목은 해당 네트워크에 적용하지 않습니다. 일부 네트워크는 공식 SDK가 해당 privacy API를 제공하지 않아 전파되지 않을 수 있습니다(표의 "미지원" 참고).
 
 ---
 
@@ -73,8 +65,7 @@ AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATM
 
 QA·심사 단계에서 테스트 광고를 받으려면 테스트 모드와 테스트 디바이스 광고 ID를 설정하세요.
 
-{% tabs %}
-{% tab title="Java" %}
+#### Java
 ```java
 // 전역 테스트 모드
 AdMixer.setTestMode(true);
@@ -82,15 +73,12 @@ AdMixer.setTestMode(true);
 // 테스트 디바이스 광고 ID(GAID) 목록
 AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```
-{% endtab %}
 
-{% tab title="Kotlin" %}
+#### Kotlin
 ```kotlin
 AdMixer.setTestMode(true)
 AdMixer.setTestDeviceIds(listOf("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"))
 ```
-{% endtab %}
-{% endtabs %}
 
 ### 네트워크별 테스트 적용
 
@@ -101,9 +89,7 @@ AdMixer.setTestDeviceIds(listOf("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"))
 | **Pangle** | `PAGConfig.debugLog(testMode)` (테스트 디바이스는 Pangle 대시보드에서 GAID 등록) |
 | **Google AdManager** | `RequestConfiguration.setTestDeviceIds(testDeviceIds)` |
 
-{% hint style="info" %}
-테스트 디바이스 광고 ID(GAID)는 LogCat에서 각 네트워크 SDK가 출력하는 안내 메시지로 확인하거나, 기기 설정 > Google > 광고에서 확인할 수 있습니다.
-{% endhint %}
+> ℹ️ 테스트 디바이스 광고 ID(GAID)는 LogCat에서 각 네트워크 SDK가 출력하는 안내 메시지로 확인하거나, 기기 설정 > Google > 광고에서 확인할 수 있습니다.
 
 ---
 
@@ -126,9 +112,7 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
 | Pangle | `AdMixer.ADAPTER_PANGLE` (`"Pangle"`) | `app_id`, `placement_id` |
 | AppLovin | `AdMixer.ADAPTER_APPLOVIN` (`"AppLovin"`) | `zone_id`, `sdkKey` |
 
-{% hint style="info" %}
-일반적으로 네트워크 키는 nap ssp 서버(media-conf)가 공급합니다. `setAdapterConfig`는 서버 미제공 상황의 보완 수단입니다.
-{% endhint %}
+> ℹ️ 일반적으로 네트워크 키는 nap ssp 서버(media-conf)가 공급합니다. `setAdapterConfig`는 서버 미제공 상황의 보완 수단입니다.
 
 ---
 

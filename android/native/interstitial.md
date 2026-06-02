@@ -1,8 +1,6 @@
 # 전면 배너 광고
 
-{% hint style="info" %}
-전면 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
-{% endhint %}
+> ℹ️ 전면 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
 전면 광고는 `InterstitialAd`를 사용하여 화면 전체를 덮는 형태의 광고를 표시합니다.
 
@@ -20,18 +18,16 @@
 
 ## 뒤로가기(BACK) 키 정책
 
-{% hint style="warning" %}
-**v2.0.0 동작 변경**: 전면 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다. 광고는 'X' 닫기 버튼으로만 닫히며, 뒤로가기로 임의 종료되지 않습니다(비디오·리워드와 동일 정책).
-
-뒤로가기로 닫기를 **허용**하려면 팝업 옵션에서 명시적으로 해제하세요:
-
-```java
-PopupInterstitialAdOption opt = new PopupInterstitialAdOption();
-opt.setDisableBackKey(false); // 명시적 false → 뒤로가기로 닫기 허용
-```
-
-기존(v1.x)에 뒤로가기 닫기에 의존하던 매체는 위와 같이 `setDisableBackKey(false)`를 명시해야 종전 동작이 유지됩니다.
-{% endhint %}
+> ⚠️ **v2.0.0 동작 변경**: 전면 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다. 광고는 'X' 닫기 버튼으로만 닫히며, 뒤로가기로 임의 종료되지 않습니다(비디오·리워드와 동일 정책).
+>
+> 뒤로가기로 닫기를 **허용**하려면 팝업 옵션에서 명시적으로 해제하세요:
+>
+> ```java
+> PopupInterstitialAdOption opt = new PopupInterstitialAdOption();
+> opt.setDisableBackKey(false); // 명시적 false → 뒤로가기로 닫기 허용
+> ```
+>
+> 기존(v1.x)에 뒤로가기 닫기에 의존하던 매체는 위와 같이 `setDisableBackKey(false)`를 명시해야 종전 동작이 유지됩니다.
 
 ---
 
@@ -39,19 +35,16 @@ opt.setDisableBackKey(false); // 명시적 false → 뒤로가기로 닫기 허�
 
 ### 1단계: AdInfo 구성
 
-{% tabs %}
-{% tab title="기본형 (Basic)" %}
+#### 기본형 (Basic)
 ```java
 AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
     .interstitialAdType(AdInfo.InterstitialAdType.Basic)
     .build();
 ```
-{% endtab %}
 
-{% tab title="팝업형 (Popup)" %}
+#### 팝업형 (Popup)
 ```java
 PopupInterstitialAdOption adOption = new PopupInterstitialAdOption();
-adOption.setDisableBackKey(false);              // 뒤로가기 버튼으로 닫기 허용 여부 (false: 허용)
 adOption.setButtonLeft("닫기", "#333333");       // 닫기(왼쪽) 버튼 텍스트, 색상
 adOption.setButtonRight("앱 종료", null);        // 앱 종료(오른쪽) 버튼 (null: 사용 안 함)
 adOption.setButtonFrameColor("#FFFFFF");         // 버튼 영역 배경색 (null: 기본값)
@@ -62,9 +55,8 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
     .setUseBackgroundAlpha(true)                 // 배경 반투명 처리 여부
     .build();
 ```
-{% endtab %}
 
-{% tab title="카운트다운형 (CountDown)" %}
+#### 카운트다운형 (CountDown)
 ```java
 PopupInterstitialAdOption adOption = new PopupInterstitialAdOption();
 adOption.setCountDown(AdMixer.AX_COUNT_TYPE_GAUGE, 5); // AX_COUNT_TYPE_GAUGE=0(게이지), AX_COUNT_TYPE_TEXT=1(텍스트) / time: 2~5초
@@ -74,13 +66,10 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
     .popupAdOption(adOption)
     .build();
 ```
-{% endtab %}
-{% endtabs %}
 
 ### 2단계: 전면 광고 로드 및 노출
 
-{% tabs %}
-{% tab title="Java" %}
+#### Java
 ```java
 public class InterstitialActivity extends AppCompatActivity {
 
@@ -129,7 +118,6 @@ public class InterstitialActivity extends AppCompatActivity {
         // AdInfo 구성 (팝업형 예시)
         PopupInterstitialAdOption adOption = new PopupInterstitialAdOption();
         adOption.setButtonLeft("닫기", "#333333");
-        adOption.setDisableBackKey(false);
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
             .interstitialAdType(AdInfo.InterstitialAdType.Popup)
@@ -165,9 +153,8 @@ public class InterstitialActivity extends AppCompatActivity {
     }
 }
 ```
-{% endtab %}
 
-{% tab title="Kotlin" %}
+#### Kotlin
 ```kotlin
 class InterstitialActivity : AppCompatActivity() {
 
@@ -197,7 +184,6 @@ class InterstitialActivity : AppCompatActivity() {
 
         val adOption = PopupInterstitialAdOption().apply {
             setButtonLeft("닫기", "#333333")
-            setDisableBackKey(false)
         }
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
@@ -226,8 +212,6 @@ class InterstitialActivity : AppCompatActivity() {
     }
 }
 ```
-{% endtab %}
-{% endtabs %}
 
 ---
 
@@ -277,10 +261,6 @@ public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
 | 화면 전환·백그라운드 (표시 광고 유지) | `interstitialAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
 | `Activity.onDestroy()` | `interstitialAd.stopInterstitial()` | 광고 객체 해제 (필수) |
 
-{% hint style="info" %}
-`cancelLoad()`는 "로드만 취소", `stopInterstitial()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
-{% endhint %}
+> ℹ️ `cancelLoad()`는 "로드만 취소", `stopInterstitial()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
 
-{% hint style="warning" %}
-`interstitialAd.showInterstitial()`은 **Activity Context**가 필요합니다. Application Context만 있는 상태에서는 호출되지 않습니다.
-{% endhint %}
+> ⚠️ `interstitialAd.showInterstitial()`은 **Activity Context**가 필요합니다. Application Context만 있는 상태에서는 호출되지 않습니다.

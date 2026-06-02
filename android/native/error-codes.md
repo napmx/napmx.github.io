@@ -38,12 +38,10 @@ public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapter
 
 네트워크 어댑터에서 발생하는 에러의 경우, 해당 네트워크 SDK의 에러 코드가 그대로 전달될 수 있습니다.
 
-{% hint style="info" %}
-LogCat에서 `AdMixer` 태그로 필터링하면 상세 에러 로그를 확인할 수 있습니다.
-```
-adb logcat -s AdMixer
-```
-{% endhint %}
+> ℹ️ LogCat에서 `AdMixer` 태그로 필터링하면 상세 에러 로그를 확인할 수 있습니다.
+> ```
+> adb logcat -s AdMixer
+> ```
 
 ---
 
@@ -61,8 +59,8 @@ adb logcat -s AdMixer
 
 1. `build.gradle`에 해당 네트워크 어댑터 모듈 의존성 추가 여부 확인
 2. Google AdManager: `AndroidManifest.xml`의 `APPLICATION_ID` 설정 확인
-3. Pangle: `PAGSdk.init()` 별도 초기화 여부 확인
-4. NaverAdManager: `AndroidManifest.xml`의 `PUBLISHER_ID` 설정 확인
+3. Pangle: `app_id`/`placement_id`가 media-conf 또는 `setAdapterConfig`로 전달되는지 확인 (SDK init은 어댑터가 자동 처리)
+4. NaverAdManager: 운영 Ad Unit ID 발급 여부 확인 (`PUBLISHER_CD`는 SDK가 제공)
 5. Adfit: Activity Context 사용 여부 확인
 
 ### 리워드가 지급되지 않는 경우

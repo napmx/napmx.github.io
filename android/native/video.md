@@ -1,8 +1,6 @@
 # 동영상 광고
 
-{% hint style="info" %}
-동영상 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
-{% endhint %}
+> ℹ️ 동영상 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
 nap ssp SDK는 두 가지 동영상 광고 포맷을 지원합니다.
 
@@ -11,9 +9,7 @@ nap ssp SDK는 두 가지 동영상 광고 포맷을 지원합니다.
 | 인라인 동영상 | `VideoAdView` | 앱 화면 내에 인라인으로 재생 |
 | 전면 동영상 | `InterstitialVideoAd` | 화면 전체를 덮는 전면 동영상 |
 
-{% hint style="info" %}
-리워드 지급이 필요한 전면 동영상은 [리워드 동영상 광고](rewarded-video.md)를 참고하세요.
-{% endhint %}
+> ℹ️ 리워드 지급이 필요한 전면 동영상은 [리워드 동영상 광고](rewarded-video.md)를 참고하세요.
 
 ---
 
@@ -23,7 +19,7 @@ nap ssp SDK는 두 가지 동영상 광고 포맷을 지원합니다.
 
 ### 레이아웃 XML
 
-{% code title="res/layout/activity_video.xml" %}
+**res/layout/activity_video.xml**
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -51,12 +47,10 @@ nap ssp SDK는 두 가지 동영상 광고 포맷을 지원합니다.
 
 </RelativeLayout>
 ```
-{% endcode %}
 
 ### 코드 구현
 
-{% tabs %}
-{% tab title="Java" %}
+#### Java
 ```java
 public class VideoAdActivity extends AppCompatActivity {
 
@@ -127,9 +121,8 @@ public class VideoAdActivity extends AppCompatActivity {
     }
 }
 ```
-{% endtab %}
 
-{% tab title="Kotlin" %}
+#### Kotlin
 ```kotlin
 class VideoAdActivity : AppCompatActivity() {
 
@@ -183,8 +176,6 @@ class VideoAdActivity : AppCompatActivity() {
     }
 }
 ```
-{% endtab %}
-{% endtabs %}
 
 ---
 
@@ -192,8 +183,7 @@ class VideoAdActivity : AppCompatActivity() {
 
 화면 전체를 덮는 전면 동영상 광고를 표시합니다.
 
-{% tabs %}
-{% tab title="Java" %}
+#### Java
 ```java
 public class InterstitialVideoActivity extends AppCompatActivity {
 
@@ -264,9 +254,8 @@ public class InterstitialVideoActivity extends AppCompatActivity {
     }
 }
 ```
-{% endtab %}
 
-{% tab title="Kotlin" %}
+#### Kotlin
 ```kotlin
 class InterstitialVideoActivity : AppCompatActivity() {
 
@@ -318,12 +307,8 @@ class InterstitialVideoActivity : AppCompatActivity() {
     }
 }
 ```
-{% endtab %}
-{% endtabs %}
 
-{% hint style="warning" %}
-`CLOSE` 또는 `SKIPPED` 이벤트 수신 시 반드시 `closeInterstitialVideoAd()`를 호출해야 합니다. 호출하지 않으면 광고 화면이 닫히지 않습니다.
-{% endhint %}
+> ⚠️ `CLOSE` 또는 `SKIPPED` 이벤트 수신 시 반드시 `closeInterstitialVideoAd()`를 호출해야 합니다. 호출하지 않으면 광고 화면이 닫히지 않습니다.
 
 ---
 

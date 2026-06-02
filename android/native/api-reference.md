@@ -34,9 +34,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 > 네트워크별 전파 매핑은 [개인정보 동의 및 테스트 설정](privacy.md) 참고.
 
-{% hint style="info" %}
-**어댑터 자동 등록 (v2.0.0)**: `initialize()` 내부에서 클래스패스(Gradle 의존성)에 포함된 어댑터를 자동으로 탐지하여 등록합니다. `registerAdapter()` 수동 호출은 더 이상 필요하지 않습니다.
-{% endhint %}
+> ℹ️ **어댑터 자동 등록 (v2.0.0)**: `initialize()` 내부에서 클래스패스(Gradle 의존성)에 포함된 어댑터를 자동으로 탐지하여 등록합니다. `registerAdapter()` 수동 호출은 더 이상 필요하지 않습니다.
 
 | 어댑터 상수 | 대상 네트워크 |
 |-----------|-------------|
@@ -209,9 +207,7 @@ public interface AdListener {
 }
 ```
 
-{% hint style="warning" %}
-`AdListener`는 내부적으로 `WeakReference`로 보유됩니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
-{% endhint %}
+> ⚠️ `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
 
 ---
 
