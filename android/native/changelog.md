@@ -12,6 +12,7 @@
 - **통합 개인정보 동의/테스트 API 추가**: `AdMixer.setGdprConsent/setCcpaDoNotSell/setUsPrivacy/setTestMode/setTestDeviceIds` — 워터폴에서 각 네트워크 privacy/test API로 자동 전파 (AppLovin/Unity/Pangle/AdManager)
 - **`cancelLoad()` 추가**: 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
 - **클라이언트 키 주입(`setAdapterConfig`)**: 서버 미제공 시 네트워크 키를 매체가 주입 (Server-Precedence 병합)
+- **Jetpack Compose 지원(`admixer-compose`)**: `@Composable AdMixerBanner(...)` 제공 — `AndroidView` 호스팅 + 생명주기/dispose 자동 처리. 코어에 Compose 의존성을 강제하지 않는 선택 모듈 (`admixer-compose:2.0.0`). [Compose 가이드](compose.md) 참고
 
 ### 개선 사항
 
@@ -21,10 +22,10 @@
 - **아키텍처 개선**: Delegate 패턴 기반 단일 책임 원칙(SRP) 적용으로 유지보수성 향상
 - **생성자 주입 완성**: 모든 내부 Delegate 클래스가 Service Locator 대신 생성자 주입 사용
 - **전면/리워드 비디오 경로 정규화**: `AXAdInterstitialVideoAd → InterstitialVideoAdActivity` 기반 Activity 경로로 통일 — back/close 정책 안정성 개선
-- **네이티브 View ID prefix 추가**: `tv_title` 등 6개 View ID → `nap_mx_tv_title` 등으로 변경 — 타 라이브러리 리소스 충돌 방지 (마이그레이션 필요, [Step 7](migration-to-v2.md#step-7-view-id) 참고)
+- **네이티브 View ID prefix 추가**: `tv_title` 등 6개 View ID → `nap_mx_tv_title` 등으로 변경 — 타 라이브러리 리소스 충돌 방지 (마이그레이션 필요, [Step 7](migration.md#step-7-view-id) 참고)
 - **`setViewIds()` 제거 / `setAdapterConfig()` 추가**: 모든 어댑터(Adfit·Pangle·Mobwith 포함)가 `NativeAdViewBinder` 단일 경로로 통합. 어댑터별 String 초기화 파라미터(AppLovin `sdkKey` 등)는 `setAdapterConfig(adapterName, Map<String,String>)` 사용
 - **AppLovin 12.x/13.x 초기화 API 호환성**: `AppLovinSdkInitializationConfiguration.builder()` 시그니처가 버전별로 다른 문제를 폴백 처리로 해결
-- **전면 광고 BACK 키 기본 차단(동작 변경)**: `PopupInterstitialAdOption.setDisableBackKey` 기본값 `true` — 정적 전면도 비디오·리워드와 동일하게 뒤로가기 기본 차단. `false` 명시 시 종전 동작 ([마이그레이션 Step 8](migration-to-v2.md))
+- **전면 광고 BACK 키 기본 차단(동작 변경)**: `PopupInterstitialAdOption.setDisableBackKey` 기본값 `true` — 정적 전면도 비디오·리워드와 동일하게 뒤로가기 기본 차단. `false` 명시 시 종전 동작 ([마이그레이션 Step 8](migration.md))
 - **media-conf 재동기화 안정화**: 표시 중(SHOWING)/이미 로드된 풀스크린 유닛이 config 재동기화로 재로드되거나 MediationController가 중복 생성되던 문제 수정
 - **Naver PUBLISHER_CD 관리 방식**: `com.naver.gfpsdk.PUBLISHER_CD`를 SDK(`admixer-naveradmanager`)가 제공·고정 — 호스트 앱 매니페스트 설정 불필요
 
@@ -35,9 +36,20 @@
 - 노출/클릭 로그의 `nSkip` 파라미터가 항상 null로 전달되던 버그 수정
 - NaverAd/Unity 어댑터 콜백 누락 및 리소스 해제 불완전 수정
 
-### 하위 호환성
+### 주요 변경 (Breaking Changes)
 
-기존 Public API(`AdView`, `InterstitialAd`, `NativeAdView`, `VideoAdView`, `RewardInterstitialVideoAd`, `InterstitialVideoAd`, `AdListener`, `AdEvent`, `AdInfo`, `AdMixer`, `PopupInterstitialAdOption`) 변경 없음 — **기존 연동 코드 수정 불필요**.
+v1→v2 메이저 전환에 맞춰 v1.x `@Deprecated` 별칭 API를 완전히 제거했습니다. 모두 동일 동작의 정식 메서드/상수로 대체되며, 교체 방법은 [마이그레이션 Step 5](migration.md#step-5)를 참고하세요.
+
+| 제거된 API | 정식 대체 |
+|---|---|
+| `InterstitialAd.onDestroy()`, `closeInterstitial()` | `stopInterstitial()` |
+| `RewardInterstitialVideoAd.onDestroy()` | `stopRewardVideoAd()` |
+| `InterstitialVideoAd.onDestroy()` | `stopInterstitialVideoAd()` |
+| `AdView`/`NativeAdView`.`onDestroy()` | `destroy()` |
+| `AdInfo.Builder.isUseBackgroundAlpha(Boolean)` | `setUseBackgroundAlpha(boolean)` |
+| `AdMixer.GAUGE` / `AdMixer.TEXT` | `AdMixer.AX_COUNT_TYPE_GAUGE` / `AX_COUNT_TYPE_TEXT` |
+
+> 위 표 외의 기존 Public API(`AdView`, `InterstitialAd`, `NativeAdView`, `VideoAdView`, `RewardInterstitialVideoAd`, `InterstitialVideoAd`, `AdListener`, `AdEvent`, `AdInfo`, `AdMixer`, `PopupInterstitialAdOption`)의 **정식 메서드는 변경되지 않았습니다**. 단, 네이티브 View ID 변경([Step 7](migration.md))과 전면 BACK 키 기본값 변경([Step 8](migration.md))은 별도 확인이 필요합니다.
 
 ---
 

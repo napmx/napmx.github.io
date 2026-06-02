@@ -16,6 +16,20 @@
 
 ---
 
+## ⚠️ 호출 규약 — `start*` vs `show*` (무한 루프 주의)
+
+> 🚨 **수신 콜백(`onReceivedAd`) 안에서 `startInterstitial()`을 호출하지 마세요.** `startInterstitial()`은 **로드 + 자동 노출**이라, 수신 때마다 다시 로드되어 **무한 워터폴 루프**가 발생합니다(영구 실패 네트워크와 만나면 busy-spin).
+>
+> | 메서드 | 동작 | 사용처 |
+> |---|---|---|
+> | `loadInterstitial()` | 로드만 | 미리 로드 |
+> | `showInterstitial()` | **표시만** | `onReceivedAd` 이후 노출 |
+> | `startInterstitial()` | 로드+자동노출 | **최초 1회만**(수신 콜백 밖) |
+>
+> 권장: `loadInterstitial()` → `onReceivedAd`에서 **`showInterstitial()`**. (v2.0.0 SDK는 READY 광고 재로드 가드/백오프로 루프를 구조적으로도 차단)
+
+---
+
 ## 뒤로가기(BACK) 키 정책
 
 > ⚠️ **v2.0.0 동작 변경**: 전면 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다. 광고는 'X' 닫기 버튼으로만 닫히며, 뒤로가기로 임의 종료되지 않습니다(비디오·리워드와 동일 정책).

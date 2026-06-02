@@ -8,7 +8,6 @@
 
 | 구분 | 내용 |
 |------|------|
-| 하위 호환 | 기존 Public API 변경 없음 — 대부분 기존 코드 그대로 동작 |
 | 새 기능 | NaverAdManager·Teads 어댑터, 광고 신고 기능 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
@@ -17,7 +16,7 @@
 | **전면 BACK 키 기본 차단** | **`PopupInterstitialAdOption.setDisableBackKey` 기본값 `true`로 변경 — 뒤로가기 닫기 의존 시 `false` 명시 필요** |
 | 신규 API | `cancelLoad()`(로드만 취소), `AdMixer.setGdprConsent/setCcpaDoNotSell/setTestMode/setTestDeviceIds`(개인정보·테스트 전파) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
-| Deprecated | `loadInterstitial()`, `closeInterstitial()`, `onDestroy()` 등 |
+| **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, `AdInfo.Builder.isUseBackgroundAlpha(Boolean)`, `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭을 v2.0.0에서 완전 제거. 정식 메서드로 교체 필요** |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
 | Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
 
@@ -115,38 +114,36 @@ repositories {
 
 ---
 
-## Step 5. Deprecated API 교체 (권장)
+## Step 5. 제거된 API 교체 (필수 — Breaking Change)
 
-하위 호환성이 유지되어 기존 코드가 동작하지만, deprecated 메서드는 향후 제거될 수 있습니다.
+v1.x에서 `@Deprecated`로 표시되었던 **별칭(alias) 메서드·상수는 v2.0.0에서 완전히 제거**되었습니다. 이 메서드들은 동일 동작을 하는 정식 메서드의 별칭이었으며, v1→v2는 메이저 버전 전환이므로 클린 브레이크로 정리했습니다. 아래 정식 메서드로 교체하세요(미교체 시 컴파일 오류).
 
 ### InterstitialAd
 
-| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+| 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
-| `loadInterstitial()` | `loadAd()` | 동일 동작 |
-| `closeInterstitial()` | `stopInterstitial()` | 동일 동작 |
-| `onDestroy()` | `stopInterstitial()` | `onDestroy()`는 Activity 메서드와 혼동 유발 |
+| `closeInterstitial()` | `stopInterstitial()` | 동일 동작 별칭이었음 |
+| `onDestroy()` | `stopInterstitial()` | `destroy()`의 별칭 + Activity 메서드와 혼동 유발 → 제거 |
+
+> **로드 메서드 (참고)**: 전면 광고의 정식 로드 메서드는 **`loadInterstitial()`**(유지됨)입니다. `InterstitialAd`에는 `loadAd()`가 없습니다(`loadAd()`는 배너 `AdView`의 메서드). 자동 노출은 `startInterstitial()`(로드+노출), 수신 후 표시는 `showInterstitial()`.
 
 ```java
-// Before
-interstitialAd.loadInterstitial();
-// onDestroy()에서:
+// Before — 제거됨, 컴파일 오류
 interstitialAd.onDestroy();
+interstitialAd.closeInterstitial();
 
 // After
-interstitialAd.loadAd();
-// onDestroy()에서:
-interstitialAd.stopInterstitial();
+interstitialAd.stopInterstitial();   // 정식 해제 (loadInterstitial()은 그대로 사용)
 ```
 
 ### RewardInterstitialVideoAd
 
-| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+| 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
-| `onDestroy()` | `stopRewardVideoAd()` | — |
+| `onDestroy()` | `stopRewardVideoAd()` | `destroy()` 별칭이었음 |
 
 ```java
-// Before
+// Before — 제거됨
 rewardAd.onDestroy();
 
 // After
@@ -155,26 +152,40 @@ rewardAd.stopRewardVideoAd();
 
 ### InterstitialVideoAd
 
-| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+| 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
-| `onDestroy()` | `stopInterstitialVideoAd()` | — |
+| `onDestroy()` | `stopInterstitialVideoAd()` | `destroy()` 별칭이었음 |
 
 ```java
-// Before
+// Before — 제거됨
 interstitialVideoAd.onDestroy();
 
 // After
 interstitialVideoAd.stopInterstitialVideoAd();
 ```
 
+### AdView / NativeAdView (배너·네이티브)
+
+| 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
+|------------|------------|------|
+| `onDestroy()` | `destroy()` | `destroy()` 별칭이었음. 생명주기 자동 연결(`bindLifecycle`) 사용 시 호출 불필요 |
+
+```java
+// Before — 제거됨
+adView.onDestroy();
+
+// After
+adView.destroy();
+```
+
 ### AdInfo.Builder
 
-| 기존 (v1.x) | v2.0.0 대체 | 비고 |
+| 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
 | `.isUseBackgroundAlpha(Boolean)` | `.setUseBackgroundAlpha(boolean)` | `Boolean` → `boolean` (null 위험 제거) |
 
 ```java
-// Before
+// Before — 제거됨
 new AdInfo.Builder(ADUNIT_ID)
     .isUseBackgroundAlpha(true)
     .build();
@@ -183,6 +194,21 @@ new AdInfo.Builder(ADUNIT_ID)
 new AdInfo.Builder(ADUNIT_ID)
     .setUseBackgroundAlpha(true)
     .build();
+```
+
+### AdMixer 상수
+
+| 제거됨 (v1.x) | v2.0.0 정식 상수 | 비고 |
+|------------|------------|------|
+| `AdMixer.GAUGE` | `AdMixer.AX_COUNT_TYPE_GAUGE` | 동일 값 별칭이었음 |
+| `AdMixer.TEXT` | `AdMixer.AX_COUNT_TYPE_TEXT` | 동일 값 별칭이었음 |
+
+```java
+// Before — 제거됨
+int type = AdMixer.GAUGE;
+
+// After
+int type = AdMixer.AX_COUNT_TYPE_GAUGE;
 ```
 
 ---
@@ -342,12 +368,12 @@ AdMixer.setTestDeviceIds(Arrays.asList("..."));
 | `AdView` | 변경 없음 |
 | `AdListener` | 변경 없음 |
 | `AdEvent` | 변경 없음 |
-| `AdInfo.Builder` (deprecated 제외) | 변경 없음 |
-| `NativeAdView` | 변경 없음 |
+| `AdInfo.Builder` (제거 API 제외) | 변경 없음 |
+| `NativeAdView` (제거 API 제외) | 변경 없음 |
 | `VideoAdView` | 변경 없음 |
-| `InterstitialAd` (deprecated 제외) | 변경 없음 |
-| `RewardInterstitialVideoAd` (deprecated 제외) | 변경 없음 |
-| `InterstitialVideoAd` (deprecated 제외) | 변경 없음 |
+| `InterstitialAd` (제거 API 제외) | 변경 없음 |
+| `RewardInterstitialVideoAd` (제거 API 제외) | 변경 없음 |
+| `InterstitialVideoAd` (제거 API 제외) | 변경 없음 |
 | `PopupInterstitialAdOption` | 변경 없음 |
 
 ---
