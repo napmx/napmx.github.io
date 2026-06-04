@@ -34,14 +34,25 @@
 
 > ⚠️ **v2.0.0 동작 변경**: 전면 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다. 광고는 'X' 닫기 버튼으로만 닫히며, 뒤로가기로 임의 종료되지 않습니다(비디오·리워드와 동일 정책).
 >
-> 뒤로가기로 닫기를 **허용**하려면 팝업 옵션에서 명시적으로 해제하세요:
+> 뒤로가기로 닫기를 **허용**하려면 광고 유형에 따라 아래처럼 명시적으로 해제하세요.
 >
+> **Basic 전면** — `AdInfo.Builder.setDisableBackKey(false)` (공통 옵션):
+> ```java
+> AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
+>         .setInterstitialAdType(AdInfo.InterstitialAdType.Basic)
+>         .setDisableBackKey(false) // 명시적 false → 뒤로가기로 닫기 허용
+>         .build();
+> ```
+>
+> **Popup / CountDown 전면** — `PopupInterstitialAdOption.setDisableBackKey(false)` (팝업 옵션이 우선):
 > ```java
 > PopupInterstitialAdOption opt = new PopupInterstitialAdOption();
 > opt.setDisableBackKey(false); // 명시적 false → 뒤로가기로 닫기 허용
 > ```
 >
 > 기존(v1.x)에 뒤로가기 닫기에 의존하던 매체는 위와 같이 `setDisableBackKey(false)`를 명시해야 종전 동작이 유지됩니다.
+>
+> ℹ️ Android 13(API 33)+ 예측형 뒤로가기(predictive back)가 켜진 앱(예: `targetSdk 35`)에서도 위 차단이 정상 적용됩니다.
 
 ---
 
@@ -260,7 +271,7 @@ public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
 
 | 메서드 | 설명 |
 |--------|------|
-| `setDisableBackKey(boolean)` | 뒤로가기로 닫기 차단 여부. **기본값 `true`(차단)** — `false` 설정 시에만 뒤로가기 닫기 허용 |
+| `setDisableBackKey(boolean)` | **Popup/CountDown** 뒤로가기 닫기 차단 여부. **기본값 `true`(차단)** — `false` 설정 시에만 허용. (Basic 전면은 `AdInfo.Builder.setDisableBackKey` 사용) |
 | `setButtonLeft(String text, String color)` | 왼쪽(닫기) 버튼 텍스트와 색상 (필수) |
 | `setButtonRight(String text, String color)` | 오른쪽 버튼 텍스트와 색상 (선택, null: 미표시) |
 | `setButtonFrameColor(String color)` | 버튼 영역 배경색 (null: 기본값) |

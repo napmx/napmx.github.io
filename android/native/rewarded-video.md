@@ -228,6 +228,21 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 
 ---
 
+## 뒤로가기(BACK) 키 정책
+
+> ⚠️ **v2.0.0**: 리워드 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다(시청 도중 스킵·조기 종료 방지, 닫기는 닫기 버튼 전용). 보상은 `EARNEDREWARD` 시점에만 지급되므로, BACK 차단 여부와 무관하게 보상 무결성은 항상 유지됩니다.
+>
+> 뒤로가기로 닫기를 허용하려면 `AdInfo`에서 명시적으로 해제하세요:
+> ```java
+> AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
+>         .setDisableBackKey(false) // 명시적 false → 뒤로가기로 닫기 허용
+>         .build();
+> ```
+>
+> ℹ️ Android 13(API 33)+ 예측형 뒤로가기(predictive back)가 켜진 앱(예: `targetSdk 35`)에서도 위 차단이 정상 적용됩니다.
+
+---
+
 ## AdInfo 옵션 레퍼런스
 
 | 메서드 | 기본값 | 설명 |
@@ -235,6 +250,7 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 | `setMute(boolean)` | `false` | 동영상 음소거 여부 |
 | `setCustomParams(Map)` | `{}` | S2S Reward Callback 커스텀 파라미터 |
 | `interstitialTimeout(int)` | `0` (서버 지정) | 로딩 타임아웃 (초) |
+| `setDisableBackKey(boolean)` | `true` (차단) | 리워드 광고 뒤로가기 닫기 차단 여부. `false` 설정 시에만 BACK으로 닫기 허용 |
 
 ---
 

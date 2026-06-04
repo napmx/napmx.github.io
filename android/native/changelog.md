@@ -26,11 +26,13 @@
 - **`setViewIds()` 제거 / `setAdapterConfig()` 추가**: 모든 어댑터(Adfit·Pangle·Mobwith 포함)가 `NativeAdViewBinder` 단일 경로로 통합. 어댑터별 String 초기화 파라미터(AppLovin `sdkKey` 등)는 `setAdapterConfig(adapterName, Map<String,String>)` 사용
 - **AppLovin 12.x/13.x 초기화 API 호환성**: `AppLovinSdkInitializationConfiguration.builder()` 시그니처가 버전별로 다른 문제를 폴백 처리로 해결
 - **전면 광고 BACK 키 기본 차단(동작 변경)**: `PopupInterstitialAdOption.setDisableBackKey` 기본값 `true` — 정적 전면도 비디오·리워드와 동일하게 뒤로가기 기본 차단. `false` 명시 시 종전 동작 ([마이그레이션 Step 8](migration.md))
+- **BACK 키 공통 제어 API 추가**: `AdInfo.Builder.setDisableBackKey(boolean)`(기본 `true`) — Basic 전면·비디오·리워드 전 풀스크린 타입 공통 적용. (Popup/CountDown은 `PopupInterstitialAdOption`이 우선) ([전면](interstitial.md)·[동영상](video.md)·[리워드](rewarded-video.md) 가이드)
 - **media-conf 재동기화 안정화**: 표시 중(SHOWING)/이미 로드된 풀스크린 유닛이 config 재동기화로 재로드되거나 MediationController가 중복 생성되던 문제 수정
 - **Naver PUBLISHER_CD 관리 방식**: `com.naver.gfpsdk.PUBLISHER_CD`를 SDK(`admixer-naveradmanager`)가 제공·고정 — 호스트 앱 매니페스트 설정 불필요
 
 ### 버그 수정
 
+- **BACK 키 차단이 Android 13+ 예측형 뒤로가기에서 무력화되던 문제 수정**: `targetSdk 35` 등 predictive back이 켜진 앱에서 `onKeyDown/onKeyUp`이 호출되지 않아 전면·비디오·리워드가 BACK으로 닫히던 현상 → `OnBackInvokedCallback` 등록으로 정상 차단
 - 전면/리워드 광고 `onAdReceived`, `onEarnedReward` 콜백에서 `adInfo` null 체크 누락 수정
 - Adfit 어댑터 `closeAdapter()` 시 `nativeAdLayout` null 처리로 메모리 누수 방지
 - 노출/클릭 로그의 `nSkip` 파라미터가 항상 null로 전달되던 버그 수정

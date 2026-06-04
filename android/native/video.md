@@ -312,6 +312,21 @@ class InterstitialVideoActivity : AppCompatActivity() {
 
 ---
 
+## 뒤로가기(BACK) 키 정책 (전면 동영상)
+
+> ⚠️ **v2.0.0**: 전면 동영상 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다(스킵·조기 종료 방지, 닫기는 닫기 버튼 전용). 인라인 동영상(`VideoAdView`)은 화면 내 View이므로 해당하지 않습니다.
+>
+> 뒤로가기로 닫기를 허용하려면 `AdInfo`에서 명시적으로 해제하세요:
+> ```java
+> AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
+>         .setDisableBackKey(false) // 명시적 false → 뒤로가기로 닫기 허용
+>         .build();
+> ```
+>
+> ℹ️ Android 13(API 33)+ 예측형 뒤로가기(predictive back)가 켜진 앱(예: `targetSdk 35`)에서도 위 차단이 정상 적용됩니다.
+
+---
+
 ## AdInfo 옵션 레퍼런스
 
 | 메서드 | 기본값 | 설명 |
@@ -319,6 +334,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
 | `isRetry(boolean)` | `true` | 광고 없을 때 재요청 여부 (인라인 동영상) |
 | `interstitialTimeout(int)` | `0` (서버 지정, 약 20초) | 로딩 타임아웃 (초) |
 | `maxRetryCountInSlot(int)` | `-1` | 재시도 횟수 (`-1` 또는 `0`: 무제한, 양수: 해당 횟수까지) |
+| `setDisableBackKey(boolean)` | `true` (차단) | **전면 동영상** 뒤로가기 닫기 차단 여부. `false` 설정 시에만 BACK으로 닫기 허용 |
 
 ---
 
