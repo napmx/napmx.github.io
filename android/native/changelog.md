@@ -29,6 +29,7 @@
 - **BACK 키 공통 제어 API 추가**: `AdInfo.Builder.setDisableBackKey(boolean)`(기본 `true`) — Basic 전면·비디오·리워드 전 풀스크린 타입 공통 적용. (Popup/CountDown은 `PopupInterstitialAdOption`이 우선) ([전면](interstitial.md)·[동영상](video.md)·[리워드](rewarded-video.md) 가이드)
 - **media-conf 재동기화 안정화**: 표시 중(SHOWING)/이미 로드된 풀스크린 유닛이 config 재동기화로 재로드되거나 MediationController가 중복 생성되던 문제 수정
 - **Naver PUBLISHER_CD 관리 방식**: `com.naver.gfpsdk.PUBLISHER_CD`를 SDK(`admixer-naveradmanager`)가 제공·고정 — 호스트 앱 매니페스트 설정 불필요
+- **노출(DISPLAYED) 이벤트 일관화**: 모든 포맷(배너·전면·네이티브·동영상)이 노출 시 `onEventAd(AdEvent.DISPLAYED)`를 일관되게 전달. 종전 네이티브 및 일부 NAP 전면배너 경로에서 `DISPLAYED` 콜백이 누락되던 문제 수정 (임프레션 집계에는 영향 없음)
 
 ### 버그 수정
 
