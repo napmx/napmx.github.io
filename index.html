@@ -344,13 +344,18 @@ nav.app-nav { display: none !important; }
 }
 
 /* 네트워크/광고주 칩 */
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .chip {
   display: inline-flex; align-items: center; justify-content: center;
-  height: 40px; border-radius: 7px; padding: 0 10px;
-  font-size: 11px; font-weight: 600; border: 1.5px solid;
-  color: #ded9dc;
+  height: 36px; border-radius: 7px; padding: 0 10px;
+  font-size: 11px; font-weight: 600; border: 1.5px solid #e8eaed;
+  color: #ded9dc; background: #fff; box-sizing: border-box;
+  overflow: hidden;
 }
+.chip svg { height: 16px !important; width: auto !important; max-width: 80px; display: block; }
+.chip img { height: 16px !important; width: auto !important; max-width: 80px; display: block; object-fit: contain; }
+.chip div { height: 16px !important; display: flex; align-items: center; }
+.s-card .chips .chip { border-color: #e8eaed; background: #fff; }
 .chip-naver { color: #e85800; border-color: #e85800; background: rgba(232,88,0,.07); }
 .chip-google { color: #4285f4; border-color: #4285f4; background: rgba(66,133,244,.07); }
 .chip-kakao { color: #b8860b; border-color: #f7e01d; background: rgba(247,224,29,.07); }
