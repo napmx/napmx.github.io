@@ -366,6 +366,17 @@ nav.app-nav { display: none !important; }
 .chip-kt { color: #e4003a; border-color: #e4003a; background: rgba(228,0,58,.07); }
 .chip-amore { color: #555; border-color: #888; background: rgba(0,0,0,.05); }
 
+/* 로고 칩 */
+.logo-chips { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+.logo-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; border: 1.5px solid #e8eaed; border-radius: 8px;
+  padding: 6px 12px; height: 38px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06); transition: all .18s;
+}
+.logo-chip:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); border-color: #ccc; transform: translateY(-1px); }
+.logo-chip img { height: 18px; width: auto; max-width: 90px; display: block; object-fit: contain; }
+
 /* 메트릭 박스 */
 .metric-box {
   background: #fff5f5; border: 1px solid rgba(232,0,26,.12); border-radius: 6px;
@@ -386,6 +397,43 @@ nav.app-nav { display: none !important; }
 .f-card h4 { color: var(--red) !important; margin-bottom: 7px !important; font-size: 13.5px !important; }
 .f-card p { font-size: 13px !important; margin-bottom: 6px !important; }
 .f-card ul { font-size: 13px; }
+
+/* ── Callout 박스 ── */
+.callout {
+  border-left: 3px solid var(--red); background: rgba(232,0,26,.04);
+  padding: 11px 15px; border-radius: 0 6px 6px 0; margin: 12px 0;
+}
+.callout.info {
+  border-left-color: #3b82f6; background: rgba(59,130,246,.05);
+}
+.callout.warn {
+  border-left-color: #f59e0b; background: rgba(245,158,11,.06);
+}
+.callout strong { display: block; margin-bottom: 4px; font-size: 13.5px; color: var(--dark); }
+.callout p, .callout ul { font-size: 13.5px; margin: 0; color: var(--text); line-height: 1.7; }
+.callout ul { padding-left: 17px; margin-top: 6px; }
+.callout li { margin-bottom: 4px; }
+.callout a { color: var(--red); }
+
+/* ── 하이라이트 텍스트 ── */
+.hl {
+  background: #fef9c3; padding: 1px 4px; border-radius: 3px;
+  font-weight: 700; color: #854d0e;
+}
+
+/* 사이드바 접힘/펼침 화살표 */
+.sidebar-nav .app-sub-sidebar { display: none; }
+.sidebar-nav .open > .app-sub-sidebar { display: block; }
+.sidebar-nav li.folder > a::after,
+.sidebar-nav li > p::after {
+  content: ''; display: inline-block; width: 0; height: 0;
+  margin-left: 6px; border-left: 4px solid #555; border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent; transition: transform .2s; vertical-align: middle;
+}
+.sidebar-nav li.folder.open > a::after,
+.sidebar-nav li.open > p::after {
+  transform: rotate(90deg); border-left-color: var(--red);
+}
 
 /* 모바일 반응형 */
 @media screen and (max-width: 768px) {
@@ -442,6 +490,7 @@ nav.app-nav { display: none !important; }
     subMaxLevel: 3,
     maxLevel: 4,
     themeColor: '#E8001A',
+    sidebarDisplayLevel: 1,
     search: {
       maxAge: 86400000,
       paths: 'auto',
@@ -463,6 +512,7 @@ nav.app-nav { display: none !important; }
   }
 </script>
 <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>

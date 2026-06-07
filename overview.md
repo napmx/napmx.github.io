@@ -1,8 +1,8 @@
 <div class="hero-banner">
   <div class="hero-logo"><span class="r">n</span><span class="w">ap mx</span></div>
-  <div class="hero-badge">Monetization Maximization</div>
+  <div class="hero-badge">Monetization Experiences</div>
   <h1>KT나스미디어의 프리미엄 Supply 수익화 솔루션</h1>
-  <p>nap mx(Monetization Maximization)는 국내외 프리미엄 광고 네트워크를 하나의 SDK로 통합 제공합니다.</p>
+  <p>nap mx(Monetization Experiences)는 국내외 프리미엄 광고 네트워크를 하나의 SDK로 통합 제공합니다.</p>
 </div>
 
 ## nap mx 강점
@@ -124,93 +124,32 @@
 
 ## 연동 방식
 
-| 방식 | 설명 | 지원 플랫폼 | 지원 네트워크 |
-|------|------|------------|--------------|
-| **SDK** | Android/iOS 앱에 라이브러리 직접 연동 | Android / iOS | NAP, Google, KakaoAdfit, Pangle, AppLovin, Unity Ads |
-| **Script** | 웹뷰/모바일웹에 스크립트 삽입 | M.Web / PC.Web | NAP, Google ADfit, Mobwith |
-| **API** | 서버-서버 직접 API 호출 | Server | NAP, Criteo, Mobwith |
+| 방식 | 설명 | 지원 플랫폼 | 권장 대상 |
+|------|------|------------|----------|
+| **SDK** | Android/iOS 앱에 라이브러리 직접 연동. 가장 많은 네트워크와 포맷 지원 | Android / iOS | 모바일 앱 매체사 |
+| **Script** | 웹/모바일웹에 스크립트 태그 삽입 | M.Web / PC.Web | 웹 매체사 |
+| **API** | 서버-서버(S2S) 직접 API 호출. S2S 광고만 지원하여 네트워크 지원에 제한이 있음 | Server | S2S 연동 필요 매체사 |
 
-> **참고**: nap 네트워크는 Adpacker, Criteo, Appier 등 연동된 디멘드 물량을 함께 제공합니다.
+> **참고**: 대부분의 매체사에는 SDK 연동을 권장합니다.
 
 ---
 
-## 플랫폼 · 광고 포맷 지원 현황
+## 플랫폼별 광고 포맷 지원 현황
 
 ### Android / iOS SDK
 
-#### 배너
+| 포맷 | 설명 | 지원 크기 |
+|------|------|----------|
+| 배너 (Banner) | 화면 상단/하단 고정 배너 광고 | 320×50, 320×100, 300×250, 728×90 |
+| 전면 (Interstitial) | 전체 화면을 덮는 광고 | 전체 화면 |
+| 네이티브 (Native) | 앱 UI에 자연스럽게 통합되는 광고 | 자유 크기 (Asset 활용) |
+| 리워드 동영상 (Rewarded Video) | 시청 완료 시 보상 제공 동영상 광고 | 전체 화면 |
+| 동영상 (Video) | 인스트림/아웃스트림 동영상 광고 | 전체 화면 / 인라인 |
 
-| 사이즈 | NAP | Google | KakaoAdfit | AppLovin | Pangle | Unity Ads |
-|--------|:---:|:------:|:----------:|:--------:|:------:|:---------:|
-| 320×50 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 320×100 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 300×250 | ✅ | ✅ | ✅ | — | ✅ | ✅ |
-| 320×480 | ✅ | ✅ | ✅ | — | — | ✅ |
+### Web Script
 
-#### 전면 배너
-
-| 사이즈 | NAP | Google | KakaoAdfit | AppLovin | Pangle | Unity Ads |
-|--------|:---:|:------:|:----------:|:--------:|:------:|:---------:|
-| 300×250 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 320×480 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-#### 네이티브
-
-| NAP | Google | KakaoAdfit | Pangle |
-|:---:|:------:|:----------:|:------:|
-| ✅ | ✅ | ✅ | ✅ |
-
-#### 동영상
-
-| 포맷 | NAP | Google | AppLovin | Pangle | Unity Ads |
-|------|:---:|:------:|:--------:|:------:|:---------:|
-| 아웃스트림 (16:9) | ✅ | — | — | — | — |
-| 인스트림 (16:9) | ✅ | — | — | — | — |
-| 리워드 (전면) | ✅ | ✅ | ✅ | ✅ | ✅ |
-
----
-
-### M.Web (Script)
-
-#### 배너
-
-| 사이즈 | NAP | Google | KakaoAdfit | Mobwith |
-|--------|:---:|:------:|:----------:|:-------:|
-| 100×100 | ✅ | ✅ | — | — |
-| 300×250 | ✅ | ✅ | ✅ | ✅ |
-| 320×50 | ✅ | ✅ | ✅ | ✅ |
-| 320×100 | ✅ | ✅ | ✅ | ✅ |
-| 320×480 | ✅ | ✅ | ✅ | ✅ |
-
-#### 전면 배너 / 리워드 / 네이티브
-
-| 포맷 | 사이즈 | NAP | Google | KakaoAdfit | Mobwith |
-|------|--------|:---:|:------:|:----------:|:-------:|
-| 전면 배너 | 300×250, 320×480 | ✅ | ✅ | ✅ | ✅ |
-| 리워드 | 300×250, 320×480 | ✅ | ✅ | — | — |
-| 네이티브 | 다양 | ✅ | ✅ | — | — |
-
----
-
-### PC.Web (Script)
-
-| 포맷 | 사이즈 | NAP |
-|------|--------|:---:|
-| 배너 | 120×600 등 | ✅ |
-
----
-
-## 지원 광고 네트워크
-
-| 네트워크 | 어댑터 | 플랫폼 |
-|---------|--------|--------|
-| nap mx (자체) | `AdMixer` | Android / iOS / Web |
-| Google Ad Manager | `AdManager` | Android / iOS |
-| 카카오 ADfit | `KakaoAdfit` | Android / iOS / M.Web |
-| Mobwith | `MobWith` | Android / iOS / M.Web |
-| AppLovin MAX | `AppLovin` | Android / iOS |
-| ByteDance Pangle | `Pangle` | Android / iOS |
-| Unity Ads | `UnityAds` | Android / iOS (Unity) |
-| 네이버 성과형DA | `NaverAdManager` | Android / iOS |
-| Teads | `Teads` | Android / iOS |
-| Criteo | — | API |
+| 포맷 | 설명 | 지원 크기 |
+|------|------|----------|
+| 배너 (Banner) | PC/모바일 웹 배너 | 320×50, 320×100, 300×250, 728×90, 970×90 |
+| 네이티브 (Native) | 콘텐츠 피드형 광고 | 자유 크기 |
+| 동영상 (Video) | 아웃스트림 동영상 | 인라인 |
