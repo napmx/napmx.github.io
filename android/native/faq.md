@@ -44,7 +44,7 @@ LogCat에서 `AdMixer` 태그로 필터링하면 SDK 내부 동작을 상세히 
 
 ## 배너 광고
 
-**Q. `AdView`를 레이아웃에 추가하지 않았는데 광고가 표시되지 않습니다.**
+**Q. `AMMBannerView`를 레이아웃에 추가하지 않았는데 광고가 표시되지 않습니다.**
 
 광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 추가해야 합니다.
 
@@ -67,7 +67,7 @@ RelativeLayout 사용을 강력히 권장합니다. 다른 레이아웃을 사�
 
 ---
 
-**Q. `NativeAdView`에 `setViewBinder()`를 설정하지 않으면 어떻게 되나요?**
+**Q. `AMMNativeAdView`에 `setViewBinder()`를 설정하지 않으면 어떻게 되나요?**
 
 `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다. `loadNativeAd()` 호출 전에 반드시 `setViewBinder()`를 설정하세요.
 

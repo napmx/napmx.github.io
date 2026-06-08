@@ -2,20 +2,20 @@
 
 > ℹ️ 리워드 동영상 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
-리워드 동영상 광고는 `RewardInterstitialVideoAd`를 사용합니다. 사용자가 동영상을 끝까지 시청하면 `EARNEDREWARD` 이벤트가 발생하며, 이 시점에 리워드를 지급하세요.
+리워드 동영상 광고는 `AMMRewardVideo`를 사용합니다. 정적 `load()`로 로드한 뒤, `show(activity, OnUserEarnedRewardListener)`로 노출합니다. 사용자가 동영상을 끝까지 시청하면 등록한 리스너의 `onUserEarnedReward()`가 호출되며, 이 시점에 리워드를 지급하세요.
 
 ---
 
 ## 기본 흐름
 
 ```
-loadRewardVideoAd()
-    → onReceivedAd() 콜백
-    → hasInterstitial == true 확인
-    → showRewardVideoAd()
+AMMRewardVideo.load(context, adInfo, callback)
+    → onSuccessLoadReward(adapterName, ad) 콜백
+    → ad.setFullScreenContentCallback(...)   // 노출/클릭/완료/닫힘 수신
+    → ad.show(activity, OnUserEarnedRewardListener)
     → 사용자 시청 완료
-    → onEventAd(EARNEDREWARD) ← 🎁 리워드 지급 시점
-    → onEventAd(CLOSE or COMPLETION)
+    → onUserEarnedReward()                    ← 🎁 리워드 지급 시점
+    → onAdDismissedFullScreenContent()        ← 광고 닫힘
 ```
 
 ---
@@ -26,54 +26,28 @@ loadRewardVideoAd()
 ```java
 public class RewardVideoActivity extends AppCompatActivity {
 
-    private RewardInterstitialVideoAd rewardAd;
-
-    private final AdListener adListener = new AdListener() {
-        @Override
-        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-            // 광고 수신 성공 — 즉시 노출하거나 버튼 활성화
-            // 즉시 노출:
-            // if (rewardAd.hasInterstitial) rewardAd.showRewardVideoAd();
-        }
-
-        @Override
-        public void onFailedToReceiveAd(@Nullable Object adView,
-                @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
-            // 광고 수신 실패
-        }
-
-        @Override
-        public void onEventAd(@NonNull Object adView, @NonNull AdEvent event) {
-            switch (event) {
-                case EARNEDREWARD:
-                    // ✅ 리워드 지급 처리 — 사용자가 광고를 끝까지 시청함
-                    giveRewardToUser();
-                    break;
-                case COMPLETION:
-                    // 동영상 재생 완료
-                    break;
-                case SKIPPED:
-                    // 사용자가 Skip 버튼 클릭 (리워드 지급 안 함)
-                    // 반드시 closeInterstitialVideoAd() 호출 — 호출하지 않으면 광고 화면이 닫히지 않음
-                    if (rewardAd != null) rewardAd.closeInterstitialVideoAd();
-                    break;
-                case CLOSE:
-                    // 광고 창 닫힘 (Skip 또는 완료 후)
-                    // 반드시 closeInterstitialVideoAd() 호출 — 호출하지 않으면 광고 화면이 닫히지 않음
-                    if (rewardAd != null) rewardAd.closeInterstitialVideoAd();
-                    break;
-                case CLICK:
-                    // 광고 내 더보기/링크 클릭
-                    break;
-            }
-        }
-    };
+    private AMMRewardVideo rewardAd; // load() 콜백으로 받은 로드 완료 광고
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reward_video);
 
+        // 화면 진입 시 미리 로드
+        loadRewardVideo();
+
+        // 광고 표시 버튼
+        Button btnShow = findViewById(R.id.btn_show_reward);
+        btnShow.setOnClickListener(v -> {
+            if (rewardAd != null && rewardAd.hasInterstitial) {
+                showRewardAd(rewardAd);
+            } else {
+                loadRewardVideo(); // 아직 로드 전이면 재요청
+            }
+        });
+    }
+
+    private void loadRewardVideo() {
         // S2S Reward Callback용 커스텀 파라미터 (선택사항)
         Map<String, String> customParams = new HashMap<>();
         customParams.put("user_id", "user123");     // 리워드 지급 대상 사용자 ID
@@ -84,18 +58,39 @@ public class RewardVideoActivity extends AppCompatActivity {
             .setMute(false)                 // 동영상 음소거 여부 (false: 소리 켬)
             .build();
 
-        rewardAd = new RewardInterstitialVideoAd(this);
-        rewardAd.setAdInfo(adInfo);
-        rewardAd.setListener(adListener);
-        rewardAd.loadRewardVideoAd(); // 광고 로드 시작
+        // 정적 load() — 로드 완료 시 콜백으로 광고 객체 전달
+        AMMRewardVideo.load(this, adInfo, new AMMRewardVideoLoadCallback() {
+            @Override
+            public void onSuccessLoadReward(@NonNull String adapterName, @NonNull AMMRewardVideo ad) {
+                // 광고 수신 성공 — 노출/클릭/완료/닫힘은 FullScreenContentCallback로 수신
+                rewardAd = ad;
+                ad.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override public void onAdShowedFullScreenContent() { /* 노출됨 */ }
+                    @Override public void onAdClicked() { /* 더보기/링크 클릭 */ }
+                    @Override public void onAdCompleted() { /* 동영상 재생 완료 */ }
+                    @Override public void onAdDismissedFullScreenContent() {
+                        rewardAd = null; // 광고 닫힘 — 객체 정리
+                    }
+                    @Override public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                        rewardAd = null; // 노출 단계 실패
+                    }
+                });
+            }
 
-        // 광고 표시 버튼
-        Button btnShow = findViewById(R.id.btn_show_reward);
-        btnShow.setOnClickListener(v -> {
-            if (rewardAd.hasInterstitial) {
-                rewardAd.showRewardVideoAd();
-            } else {
-                rewardAd.loadRewardVideoAd(); // 재요청
+            @Override
+            public void onFailLoadReward(int errorCode, String errorMsg) {
+                rewardAd = null; // 광고 수신 실패
+            }
+        });
+    }
+
+    // show() 시점에 OnUserEarnedRewardListener를 등록 → 시청 완료 시 보상 지급
+    private void showRewardAd(AMMRewardVideo ad) {
+        ad.show(this, new OnUserEarnedRewardListener() {
+            @Override
+            public void onUserEarnedReward() {
+                // ✅ 리워드 지급 처리 — 사용자가 광고를 끝까지 시청함
+                giveRewardToUser();
             }
         });
     }
@@ -120,29 +115,25 @@ public class RewardVideoActivity extends AppCompatActivity {
 ```kotlin
 class RewardVideoActivity : AppCompatActivity() {
 
-    private var rewardAd: RewardInterstitialVideoAd? = null
-
-    private val adListener = object : AdListener {
-        override fun onReceivedAd(adapterName: String, adView: Any) {
-            // 광고 수신 성공
-        }
-        override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
-                                          errorCode: Int, errorMsg: String?) { }
-        override fun onEventAd(adView: Any, event: AdEvent) {
-            when (event) {
-                AdEvent.EARNEDREWARD -> giveRewardToUser() // 🎁 리워드 지급
-                AdEvent.COMPLETION -> { /* 시청 완료 */ }
-                AdEvent.SKIPPED -> rewardAd?.closeInterstitialVideoAd() // 광고 화면 닫기 (필수)
-                AdEvent.CLOSE -> rewardAd?.closeInterstitialVideoAd()   // 광고 화면 닫기 (필수)
-                else -> {}
-            }
-        }
-    }
+    private var rewardAd: AMMRewardVideo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reward_video)
 
+        loadRewardVideo()
+
+        findViewById<Button>(R.id.btn_show_reward).setOnClickListener {
+            val ad = rewardAd
+            if (ad != null && ad.hasInterstitial) {
+                showRewardAd(ad)
+            } else {
+                loadRewardVideo() // 재요청
+            }
+        }
+    }
+
+    private fun loadRewardVideo() {
         val customParams = mapOf(
             "user_id" to "user123",
             "reward_type" to "coin"
@@ -153,19 +144,31 @@ class RewardVideoActivity : AppCompatActivity() {
             .setMute(false)
             .build()
 
-        rewardAd = RewardInterstitialVideoAd(this).apply {
-            setAdInfo(adInfo)
-            setListener(adListener)
-            loadRewardVideoAd()
-        }
-
-        findViewById<Button>(R.id.btn_show_reward).setOnClickListener {
-            if (rewardAd?.hasInterstitial == true) {
-                rewardAd?.showRewardVideoAd()
-            } else {
-                rewardAd?.loadRewardVideoAd()
+        // 정적 load() — 로드 완료 시 콜백으로 광고 객체 전달
+        AMMRewardVideo.load(this, adInfo, object : AMMRewardVideoLoadCallback() {
+            override fun onSuccessLoadReward(adapterName: String, ad: AMMRewardVideo) {
+                rewardAd = ad
+                ad.setFullScreenContentCallback(object : FullScreenContentCallback() {
+                    override fun onAdShowedFullScreenContent() { /* 노출됨 */ }
+                    override fun onAdClicked() { /* 클릭 */ }
+                    override fun onAdCompleted() { /* 재생 완료 */ }
+                    override fun onAdDismissedFullScreenContent() { rewardAd = null }
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) { rewardAd = null }
+                })
             }
-        }
+
+            override fun onFailLoadReward(errorCode: Int, errorMsg: String?) {
+                rewardAd = null
+            }
+        })
+    }
+
+    // show() 시점에 OnUserEarnedRewardListener 등록 → 시청 완료 시 보상 지급
+    private fun showRewardAd(ad: AMMRewardVideo) {
+        ad.show(this, OnUserEarnedRewardListener {
+            // 🎁 리워드 지급 — 사용자가 광고를 끝까지 시청함
+            giveRewardToUser()
+        })
     }
 
     private fun giveRewardToUser() {
@@ -224,13 +227,13 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_REWARD_VIDEO)
 https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={adid}&complete={complete}&timestamp={timestamp}&user_id=user123&session_token=abc123
 ```
 
-> ℹ️ 광고 네트워크별로 `EARNEDREWARD` 이벤트 발생 시점이 다를 수 있습니다. 서버 콜백이 클라이언트 콜백보다 먼저 또는 나중에 도달할 수 있으니, 서버에서 양쪽을 모두 처리하는 방식을 권장합니다.
+> ℹ️ 광고 네트워크별로 보상 적립(`onUserEarnedReward`) 시점이 다를 수 있습니다. 서버 콜백이 클라이언트 콜백보다 먼저 또는 나중에 도달할 수 있으니, 서버에서 양쪽을 모두 처리하는 방식을 권장합니다.
 
 ---
 
 ## 뒤로가기(BACK) 키 정책
 
-> ⚠️ **v2.0.0**: 리워드 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다(시청 도중 스킵·조기 종료 방지, 닫기는 닫기 버튼 전용). 보상은 `EARNEDREWARD` 시점에만 지급되므로, BACK 차단 여부와 무관하게 보상 무결성은 항상 유지됩니다.
+> ⚠️ **v2.0.0**: 리워드 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다(시청 도중 스킵·조기 종료 방지, 닫기는 닫기 버튼 전용). 보상은 `onUserEarnedReward()` 시점에만 지급되므로, BACK 차단 여부와 무관하게 보상 무결성은 항상 유지됩니다.
 >
 > 뒤로가기로 닫기를 허용하려면 `AdInfo`에서 명시적으로 해제하세요:
 > ```java
@@ -254,15 +257,25 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 
 ---
 
-## AdEvent 레퍼런스
+## 이벤트 콜백 레퍼런스
 
-| 이벤트 | 설명 | 리워드 지급 여부 |
-|--------|------|----------------|
-| `EARNEDREWARD` | 동영상 시청 완료 → **리워드 지급 시점** | ✅ 지급 |
-| `COMPLETION` | 재생이 끝까지 완료됨 | 네트워크에 따라 상이 |
-| `SKIPPED` | 사용자가 Skip 버튼 클릭 | ❌ 미지급 |
-| `CLOSE` | 광고 창 닫힘 | - |
-| `CLICK` | 광고 내 링크 클릭 | - |
+**보상 적립** — `show(activity, OnUserEarnedRewardListener)`로 등록한 리스너로 수신
+
+| 콜백 | 설명 | 리워드 지급 |
+|------|------|------------|
+| `onUserEarnedReward()` | 동영상 시청 완료 → **리워드 지급 시점** | ✅ 지급 |
+
+**노출/클릭/완료/닫힘** — `FullScreenContentCallback`로 수신
+
+| 콜백 | 발생 시점 |
+|------|----------|
+| `onAdShowedFullScreenContent()` | 광고가 풀스크린으로 표시됨 |
+| `onAdClicked()` | 광고 내 링크/더보기 클릭 |
+| `onAdCompleted()` | 동영상 재생 완료 |
+| `onAdDismissedFullScreenContent()` | 광고 닫힘 |
+| `onAdFailedToShowFullScreenContent(AdError)` | 노출 단계 실패 |
+
+> ℹ️ 보상은 `onUserEarnedReward()`에서만 지급하세요. `onAdCompleted()`(재생 완료)는 보상 적립과 별개의 이벤트입니다.
 
 ---
 
@@ -270,7 +283,7 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
+| 화면 전환·백그라운드 (표시 광고 유지) | `rewardAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
 | `Activity.onDestroy()` | `rewardAd.stopRewardVideoAd()` | 광고 정지 및 리소스 해제 (리스너 참조도 함께 해제됨) |
-| `CLOSE/SKIPPED 이벤트` | `rewardAd.closeInterstitialVideoAd()` | 광고 화면 닫기 (필수) |
 
-> ⚠️ `CLOSE` 또는 `SKIPPED` 이벤트 수신 시 반드시 `closeInterstitialVideoAd()`를 호출해야 합니다. 호출하지 않으면 광고 화면이 닫히지 않습니다.
+> ℹ️ 광고 닫힘은 `FullScreenContentCallback.onAdDismissedFullScreenContent()`로 통지되며 SDK가 자동 처리합니다. v1.x의 `closeInterstitialVideoAd()` 수동 호출은 더 이상 필요하지 않습니다.

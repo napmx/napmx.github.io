@@ -2,7 +2,7 @@
 
 > ℹ️ 배너 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
-배너 광고는 `AdView`를 사용하여 화면 내에 고정 크기의 광고를 표시합니다.
+배너 광고는 `AMMBannerView`를 사용하여 화면 내에 고정 크기의 광고를 표시합니다.
 
 ---
 
@@ -24,7 +24,7 @@
 public class BannerActivity extends AppCompatActivity {
 
     private RelativeLayout container;
-    private AdView adView;
+    private AMMBannerView adView;
     private final AdListener adListener = new AdListener() {
         @Override
         public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
@@ -61,8 +61,8 @@ public class BannerActivity extends AppCompatActivity {
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
             .build();
 
-        // AdView 생성 및 설정
-        adView = new AdView(this);
+        // AMMBannerView 생성 및 설정
+        adView = new AMMBannerView(this);
         adView.setLayoutParams(new RelativeLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -90,7 +90,7 @@ public class BannerActivity extends AppCompatActivity {
 class BannerActivity : AppCompatActivity() {
 
     private lateinit var container: RelativeLayout
-    private var adView: AdView? = null
+    private var adView: AMMBannerView? = null
 
     private val adListener = object : AdListener {
         override fun onReceivedAd(adapterName: String, adView: Any) {
@@ -117,7 +117,7 @@ class BannerActivity : AppCompatActivity() {
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER).build()
 
-        adView = AdView(this).apply {
+        adView = AMMBannerView(this).apply {
             layoutParams = RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -150,7 +150,7 @@ class BannerActivity : AppCompatActivity() {
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.nasmedia.admixerssp.ads.AdView
+    <com.nasmedia.admixerssp.ads.AMMBannerView
         android:id="@+id/ad_view_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -163,7 +163,7 @@ class BannerActivity : AppCompatActivity() {
 ```java
 public class BannerXmlActivity extends AppCompatActivity {
 
-    private AdView adView;
+    private AMMBannerView adView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -185,7 +185,7 @@ public class BannerXmlActivity extends AppCompatActivity {
 ```kotlin
 class BannerXmlActivity : AppCompatActivity() {
 
-    private lateinit var adView: AdView
+    private lateinit var adView: AMMBannerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -215,7 +215,7 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
     .isLoadOnly(true) // ← 지연 노출 필수 설정
     .build();
 
-adView = new AdView(this);
+adView = new AMMBannerView(this);
 adView.setAdInfo(adInfo);
 adView.setAdViewListener(new AdListener() {
     @Override
@@ -244,7 +244,7 @@ val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
     .isLoadOnly(true) // ← 지연 노출 필수 설정
     .build()
 
-adView = AdView(this).apply {
+adView = AMMBannerView(this).apply {
     setAdInfo(adInfo)
     setAdViewListener(object : AdListener {
         override fun onReceivedAd(adapterName: String, adView: Any) {
@@ -286,9 +286,9 @@ showAdButton.setOnClickListener {
 
 ## 라이프사이클 관리
 
-> 🚨 `AdView`의 라이프사이클 메서드를 반드시 연결하세요. 누락 시 메모리 누수가 발생하거나 광고가 정상 동작하지 않습니다.
+> 🚨 `AMMBannerView`의 라이프사이클 메서드를 반드시 연결하세요. 누락 시 메모리 누수가 발생하거나 광고가 정상 동작하지 않습니다.
 
-| Activity 메서드 | AdView 메서드 | 역할 |
+| Activity 메서드 | AMMBannerView 메서드 | 역할 |
 |----------------|--------------|------|
 | `onResume()` | `adView.onResume()` | 광고 갱신 타이머 재개 |
 | `onPause()` | `adView.onPause()` | 광고 갱신 타이머 일시 정지 |
@@ -300,12 +300,12 @@ showAdButton.setOnClickListener {
 
 ## Adfit 사용 시 주의사항
 
-> ⚠️ Kakao Adfit을 미디에이션으로 사용하는 경우, `AdView`는 반드시 **Activity Context**로 생성해야 합니다. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
+> ⚠️ Kakao Adfit을 미디에이션으로 사용하는 경우, `AMMBannerView`는 반드시 **Activity Context**로 생성해야 합니다. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
 >
 > ```java
 > // ✅ 올바른 방법
-> adView = new AdView(this); // Activity context
+> adView = new AMMBannerView(this); // Activity context
 >
 > // ❌ 잘못된 방법
-> adView = new AdView(getApplicationContext()); // Application context — Adfit 동작 안 함
+> adView = new AMMBannerView(getApplicationContext()); // Application context — Adfit 동작 안 함
 > ```

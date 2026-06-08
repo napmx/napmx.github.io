@@ -2,7 +2,7 @@
 
 > ℹ️ 네이티브 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
-네이티브 광고는 `NativeAdView`를 사용하여 앱 UI에 자연스럽게 통합된 형태의 광고를 표시합니다. 제공된 asset을 이용해 자유롭게 UI를 구성할 수 있습니다.
+네이티브 광고는 `AMMNativeAdView`를 사용하여 앱 UI에 자연스럽게 통합된 형태의 광고를 표시합니다. 제공된 asset을 이용해 자유롭게 UI를 구성할 수 있습니다.
 
 ---
 
@@ -122,7 +122,7 @@
 ```java
 public class NativeAdActivity extends AppCompatActivity {
 
-    private NativeAdView nativeAdView;
+    private AMMNativeAdView nativeAdView;
     private ViewGroup container;
 
     private final AdListener adListener = new AdListener() {
@@ -169,8 +169,8 @@ public class NativeAdActivity extends AppCompatActivity {
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build();
 
-        // ② NativeAdView 생성 및 로드
-        nativeAdView = new NativeAdView(this); // Activity context 사용 (Adfit 필수)
+        // ② AMMNativeAdView 생성 및 로드
+        nativeAdView = new AMMNativeAdView(this); // Activity context 사용 (Adfit 필수)
         nativeAdView.setAdInfo(adInfo);
         nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
         nativeAdView.setAdViewListener(adListener);
@@ -191,7 +191,7 @@ public class NativeAdActivity extends AppCompatActivity {
 ```kotlin
 class NativeAdActivity : AppCompatActivity() {
 
-    private var nativeAdView: NativeAdView? = null
+    private var nativeAdView: AMMNativeAdView? = null
     private lateinit var container: ViewGroup
 
     private val adListener = object : AdListener {
@@ -226,7 +226,7 @@ class NativeAdActivity : AppCompatActivity() {
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build()
 
-        nativeAdView = NativeAdView(this).apply {
+        nativeAdView = AMMNativeAdView(this).apply {
             setAdInfo(adInfo)
             setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
             setAdViewListener(adListener)
@@ -263,7 +263,7 @@ class NativeAdActivity : AppCompatActivity() {
 
 ## 주의사항
 
-> ⚠️ **Adfit 사용 시**: `NativeAdView`는 반드시 **Activity Context**로 생성하세요. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
+> ⚠️ **Adfit 사용 시**: `AMMNativeAdView`는 반드시 **Activity Context**로 생성하세요. `getApplicationContext()`는 Adfit에서 지원하지 않습니다.
 
 > ℹ️ **레이아웃 구조**: 네이티브 광고 레이아웃에는 `RelativeLayout` 사용을 권장합니다. 다른 레이아웃을 사용해야 하는 경우, 해당 레이아웃을 `RelativeLayout` 안에 넣는 방식으로 구현할 수 있습니다.
 
@@ -273,7 +273,7 @@ class NativeAdActivity : AppCompatActivity() {
 
 ## 라이프사이클 관리
 
-| Activity 메서드 | NativeAdView 메서드 | 역할 |
+| Activity 메서드 | AMMNativeAdView 메서드 | 역할 |
 |----------------|---------------------|------|
 | `onResume()` | `nativeAdView.onResume()` | 동영상 재생 재개 |
 | `onPause()` | `nativeAdView.onPause()` | 동영상 재생 일시 정지 |

@@ -2,7 +2,7 @@
 
 > ℹ️ 전면 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
-전면 광고는 `InterstitialAd`를 사용하여 화면 전체를 덮는 형태의 광고를 표시합니다.
+전면 광고는 `AMMInterstitial`을 사용하여 화면 전체를 덮는 형태의 광고를 표시합니다.
 
 ---
 
@@ -16,17 +16,17 @@
 
 ---
 
-## ⚠️ 호출 규약 — `start*` vs `show*` (무한 루프 주의)
+## ⚠️ 호출 방식 — 정적 `load()` + `FullScreenContentCallback` (v2.0.0)
 
-> 🚨 **수신 콜백(`onReceivedAd`) 안에서 `startInterstitial()`을 호출하지 마세요.** `startInterstitial()`은 **로드 + 자동 노출**이라, 수신 때마다 다시 로드되어 **무한 워터폴 루프**가 발생합니다(영구 실패 네트워크와 만나면 busy-spin).
+> 🚨 **v2.0.0부터 전면 광고는 정적 `AMMInterstitial.load()`로 로드합니다.** 로드가 완료되면 콜백(`onSuccessLoadInterstitial`)으로 로드 완료된 광고 객체가 전달됩니다. 이 객체에 `FullScreenContentCallback`을 등록한 뒤 `show(activity)`로 노출하세요.
 >
-> | 메서드 | 동작 | 사용처 |
+> | 단계 | API | 설명 |
 > |---|---|---|
-> | `loadInterstitial()` | 로드만 | 미리 로드 |
-> | `showInterstitial()` | **표시만** | `onReceivedAd` 이후 노출 |
-> | `startInterstitial()` | 로드+자동노출 | **최초 1회만**(수신 콜백 밖) |
+> | 로드 | `AMMInterstitial.load(context, adInfo, callback)` | 정적 메서드. 로드 완료 시 콜백으로 광고 객체 전달 |
+> | 노출 | `ad.show(activity)` | 콜백에서 받은 광고 객체로 노출 (Activity Context 필요) |
+> | 이벤트 | `ad.setFullScreenContentCallback(...)` | 노출/클릭/닫힘/표시실패 수신 |
 >
-> 권장: `loadInterstitial()` → `onReceivedAd`에서 **`showInterstitial()`**. (v2.0.0 SDK는 READY 광고 재로드 가드/백오프로 루프를 구조적으로도 차단)
+> **로드 즉시 노출**하려면 `onSuccessLoadInterstitial` 안에서 바로 `ad.show(activity)`를 호출하고, **미리 로드 후 원하는 시점에 노출**하려면 광고 객체를 멤버 변수에 보관했다가 버튼 클릭 시 `show()`를 호출하세요. 정적 `load()`는 1회성 호출이므로 v1.x의 무한 워터폴 루프(수신 콜백 내 재로드) 문제가 구조적으로 발생하지 않습니다.
 
 ---
 
@@ -98,51 +98,32 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
 ```java
 public class InterstitialActivity extends AppCompatActivity {
 
-    private InterstitialAd interstitialAd;
-
-    private final AdListener adListener = new AdListener() {
-        @Override
-        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-            // 광고 수신 성공 — hasInterstitial 플래그가 true로 설정됨
-        }
-
-        @Override
-        public void onFailedToReceiveAd(@Nullable Object adView,
-                @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
-            // 광고 수신 실패
-        }
-
-        @Override
-        public void onEventAd(@NonNull Object adView, @NonNull AdEvent event) {
-            switch (event) {
-                case DISPLAYED:
-                    // 광고 화면에 표시됨
-                    break;
-                case CLOSE:
-                    // 광고 닫힘 (닫기 버튼 클릭 또는 뒤로가기)
-                    break;
-                case LEFT_CLICK:
-                    // 팝업형: 왼쪽(닫기) 버튼 클릭
-                    break;
-                case RIGHT_CLICK:
-                    // 팝업형: 오른쪽(앱 종료) 버튼 클릭
-                    finish(); // 앱 종료 처리
-                    break;
-                case CLICK:
-                    // 광고 소재 클릭
-                    break;
-            }
-        }
-    };
+    private AMMInterstitial interstitialAd; // load() 콜백으로 받은 로드 완료 광고
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interstitial);
 
+        // 화면 진입 시 미리 로드
+        loadInterstitial();
+
+        // 광고 표시 버튼 (원하는 시점에 노출)
+        Button btnShow = findViewById(R.id.btn_show_interstitial);
+        btnShow.setOnClickListener(v -> {
+            if (interstitialAd != null && interstitialAd.hasInterstitial) {
+                interstitialAd.show(this);   // 로드 완료된 광고 노출
+            } else {
+                loadInterstitial();          // 아직 로드 전이면 재요청
+            }
+        });
+    }
+
+    private void loadInterstitial() {
         // AdInfo 구성 (팝업형 예시)
         PopupInterstitialAdOption adOption = new PopupInterstitialAdOption();
         adOption.setButtonLeft("닫기", "#333333");
+        adOption.setButtonRight("앱 종료", null); // null: 오른쪽 버튼 미사용
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
             .interstitialAdType(AdInfo.InterstitialAdType.Popup)
@@ -150,20 +131,39 @@ public class InterstitialActivity extends AppCompatActivity {
             .setUseBackgroundAlpha(true)
             .build();
 
-        // InterstitialAd 생성
-        interstitialAd = new InterstitialAd(this);
-        interstitialAd.setAdInfo(adInfo);
-        interstitialAd.setAdListener(adListener);
-        interstitialAd.loadAd(); // 광고 로드 시작
+        // 정적 load() — 로드 완료 시 콜백으로 광고 객체 전달
+        AMMInterstitial.load(this, adInfo, new AMMInterstitialLoadCallback() {
+            @Override
+            public void onSuccessLoadInterstitial(@NonNull String adapterName,
+                    @NonNull AMMInterstitial ad) {
+                // 광고 수신 성공 — 노출/클릭/닫힘은 FullScreenContentCallback로 수신
+                interstitialAd = ad;
+                ad.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override public void onAdShowedFullScreenContent() { /* 노출됨 */ }
+                    @Override public void onAdClicked() { /* 광고 소재 클릭 */ }
+                    @Override public void onAdDismissedFullScreenContent() {
+                        // 광고 닫힘 — 객체 정리
+                        interstitialAd = null;
+                    }
+                    @Override public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                        // 노출 단계 실패
+                        interstitialAd = null;
+                    }
+                    // 팝업형 좌/우 버튼은 SDK가 자동으로 닫지 않으므로 앱이 직접 처리
+                    @Override public void onAdLeftClicked() {
+                        if (interstitialAd != null) interstitialAd.stopInterstitial(); // 닫기
+                    }
+                    @Override public void onAdRightClicked() {
+                        finish(); // 앱 종료
+                    }
+                });
+                // 로드 즉시 노출하려면 여기서 ad.show(InterstitialActivity.this); 를 호출하세요.
+            }
 
-        // 광고 표시 버튼 (원하는 시점에 노출)
-        Button btnShow = findViewById(R.id.btn_show_interstitial);
-        btnShow.setOnClickListener(v -> {
-            if (interstitialAd.hasInterstitial) {
-                interstitialAd.showInterstitial();
-            } else {
-                // 아직 로드 중 — 필요 시 재요청
-                interstitialAd.loadAd();
+            @Override
+            public void onFailLoadInterstitial(int errorCode, String errorMsg) {
+                // 광고 수신 실패
+                interstitialAd = null;
             }
         });
     }
@@ -183,32 +183,28 @@ public class InterstitialActivity extends AppCompatActivity {
 ```kotlin
 class InterstitialActivity : AppCompatActivity() {
 
-    private var interstitialAd: InterstitialAd? = null
-
-    private val adListener = object : AdListener {
-        override fun onReceivedAd(adapterName: String, adView: Any) {
-            // 광고 수신 성공
-        }
-        override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
-                                          errorCode: Int, errorMsg: String?) {
-            // 광고 수신 실패
-        }
-        override fun onEventAd(adView: Any, event: AdEvent) {
-            when (event) {
-                AdEvent.CLOSE -> { /* 닫힘 */ }
-                AdEvent.LEFT_CLICK -> { /* 왼쪽 버튼 */ }
-                AdEvent.RIGHT_CLICK -> finish() // 앱 종료
-                else -> {}
-            }
-        }
-    }
+    private var interstitialAd: AMMInterstitial? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interstitial)
 
+        loadInterstitial()
+
+        findViewById<Button>(R.id.btn_show_interstitial).setOnClickListener {
+            val ad = interstitialAd
+            if (ad != null && ad.hasInterstitial) {
+                ad.show(this)           // 로드 완료된 광고 노출
+            } else {
+                loadInterstitial()      // 재요청
+            }
+        }
+    }
+
+    private fun loadInterstitial() {
         val adOption = PopupInterstitialAdOption().apply {
             setButtonLeft("닫기", "#333333")
+            setButtonRight("앱 종료", null)
         }
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
@@ -217,17 +213,25 @@ class InterstitialActivity : AppCompatActivity() {
             .setUseBackgroundAlpha(true)
             .build()
 
-        interstitialAd = InterstitialAd(this).apply {
-            setAdInfo(adInfo)
-            setAdListener(adListener)
-            loadAd()
-        }
-
-        findViewById<Button>(R.id.btn_show_interstitial).setOnClickListener {
-            if (interstitialAd?.hasInterstitial == true) {
-                interstitialAd?.showInterstitial()
+        // 정적 load() — 로드 완료 시 콜백으로 광고 객체 전달
+        AMMInterstitial.load(this, adInfo, object : AMMInterstitialLoadCallback() {
+            override fun onSuccessLoadInterstitial(adapterName: String, ad: AMMInterstitial) {
+                interstitialAd = ad
+                ad.setFullScreenContentCallback(object : FullScreenContentCallback() {
+                    override fun onAdShowedFullScreenContent() { /* 노출됨 */ }
+                    override fun onAdClicked() { /* 클릭 */ }
+                    override fun onAdDismissedFullScreenContent() { interstitialAd = null }
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) { interstitialAd = null }
+                    override fun onAdLeftClicked() { interstitialAd?.stopInterstitial() } // 닫기
+                    override fun onAdRightClicked() { finish() }                          // 앱 종료
+                })
+                // 로드 즉시 노출하려면 여기서 ad.show(this@InterstitialActivity) 호출
             }
-        }
+
+            override fun onFailLoadInterstitial(errorCode: Int, errorMsg: String?) {
+                interstitialAd = null
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -242,15 +246,14 @@ class InterstitialActivity : AppCompatActivity() {
 
 ## 즉시 노출 방식
 
-광고 수신 즉시 화면에 표시하려면 `onReceivedAd` 콜백에서 `showInterstitial()`을 호출하세요.
+광고 수신 즉시 화면에 표시하려면 `onSuccessLoadInterstitial` 콜백에서 바로 `show(activity)`를 호출하세요.
 
 ```java
 @Override
-public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-    // 수신 즉시 표시
-    if (interstitialAd != null && interstitialAd.hasInterstitial) {
-        interstitialAd.showInterstitial();
-    }
+public void onSuccessLoadInterstitial(@NonNull String adapterName, @NonNull AMMInterstitial ad) {
+    interstitialAd = ad;
+    ad.setFullScreenContentCallback(fullScreenContentCallback);
+    ad.show(InterstitialActivity.this); // 수신 즉시 노출
 }
 ```
 
@@ -265,7 +268,7 @@ public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
 | `setUseBackgroundAlpha(boolean)` | `true` | 배경 반투명 처리 여부 |
 | `interstitialTimeout(int)` | `0` (서버 지정, 기본 20초) | 광고 로딩 타임아웃 (초) |
 | `showCloseButton(boolean)` | `true` | 닫기(X) 버튼 표시 여부 |
-| `closeButtonDelay(int)` | `0` | 닫기 버튼 지연 노출 시간 (초) |
+| `setCloseButtonBound(int)` | `100` | Basic/CountDown 전면 닫기(X) 버튼 터치 영역 비율 (20~100%) |
 
 ## PopupInterstitialAdOption 레퍼런스
 
@@ -288,4 +291,4 @@ public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
 
 > ℹ️ `cancelLoad()`는 "로드만 취소", `stopInterstitial()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
 
-> ⚠️ `interstitialAd.showInterstitial()`은 **Activity Context**가 필요합니다. Application Context만 있는 상태에서는 호출되지 않습니다.
+> ⚠️ `interstitialAd.show(activity)`는 **Activity Context**가 필요합니다. Application Context만 있는 상태에서는 호출되지 않습니다.

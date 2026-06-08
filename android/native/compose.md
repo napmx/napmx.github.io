@@ -35,7 +35,7 @@ fun MyScreen() {
 ```
 
 내부 동작:
-- 컴포지션 진입 시 `AdView` 생성 + `loadAd()`, 이탈 시 `DisposableEffect.onDispose`에서 `destroy()`.
+- 컴포지션 진입 시 `AMMBannerView` 생성 + `loadAd()`, 이탈 시 `DisposableEffect.onDispose`에서 `destroy()`.
 - `ON_RESUME/ON_PAUSE`를 `adView.onResume()/onPause()`로 자동 연결 → **백그라운드 갱신/영상 재생 정지**.
 - dispose 이후 도착하는 콜백은 무시(가드) → 스크롤 아웃/슬롯 재사용 시 상태 오염 방지.
 
@@ -153,7 +153,7 @@ fun RewardScreen() {
 ### 1) 해제: `DisposableEffect.onDispose`에서 `destroy()`
 
 ```kotlin
-val view = remember { AdView(context).apply { setAdInfo(AdInfo.Builder(adUnitId).build()); loadAd() } }
+val view = remember { AMMBannerView(context).apply { setAdInfo(AdInfo.Builder(adUnitId).build()); loadAd() } }
 AndroidView(factory = { view })
 DisposableEffect(adUnitId) { onDispose { view.destroy() } }
 ```

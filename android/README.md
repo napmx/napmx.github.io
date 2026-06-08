@@ -14,12 +14,12 @@
 
 | 포맷 | 클래스 | 설명 |
 |------|--------|------|
-| 배너 광고 | `AdView` | 화면 상단/하단에 고정 표시되는 배너 |
-| 전면 광고 | `InterstitialAd` | 화면 전체를 덮는 전면 광고 |
-| 네이티브 광고 | `NativeAdView` | 앱 UI에 자연스럽게 통합되는 커스텀 형태 |
-| 리워드 동영상 | `RewardInterstitialVideoAd` | 시청 완료 시 리워드를 지급하는 전면 동영상 |
-| 인라인 동영상 | `VideoAdView` | 화면 내 인라인으로 재생되는 동영상 |
-| 전면 동영상 | `InterstitialVideoAd` | 화면 전체를 덮는 전면 동영상 |
+| 배너 광고 | `AMMBannerView` | 화면 상단/하단에 고정 표시되는 배너 |
+| 전면 광고 | `AMMInterstitial` | 화면 전체를 덮는 전면 광고 |
+| 네이티브 광고 | `AMMNativeAdView` | 앱 UI에 자연스럽게 통합되는 커스텀 형태 |
+| 리워드 동영상 | `AMMRewardVideo` | 시청 완료 시 리워드를 지급하는 전면 동영상 |
+| 인라인 동영상 | `AMMVideoView` | 화면 내 인라인으로 재생되는 동영상 |
+| 전면 동영상 | `AMMVideoInterstitial` | 화면 전체를 덮는 전면 동영상 |
 
 ### 지원하는 미디에이션 네트워크
 
