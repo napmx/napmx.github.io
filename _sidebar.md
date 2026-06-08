@@ -10,7 +10,7 @@
 
 - **<i class="fa-brands fa-android nav-icon icon-android"></i> Android SDK**
   - [개요](/android/)
-  - <i class="fa-solid fa-microchip nav-icon icon-unity"></i> Native
+  - Native
     - [시작하기](/android/native/getting-started)
     - [온보딩 체크리스트](/android/native/onboarding-checklist)
     - [배너 광고](/android/native/banner)
@@ -37,7 +37,7 @@
 
 - **<i class="fa-brands fa-apple nav-icon icon-ios"></i> iOS SDK**
   - [개요](/ios/)
-  - <i class="fa-solid fa-microchip nav-icon icon-unity"></i> Native
+  - Native
     - [시작하기](/ios/native/getting-started)
     - [배너 구현](/ios/native/banner)
     - [네이티브 광고](/ios/native/native-ad)

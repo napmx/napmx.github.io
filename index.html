@@ -148,6 +148,14 @@ body {
   border-left-color: var(--red) !important; background: rgba(232,0,26,.1) !important;
 }
 
+/* 사이드바 서브 카테고리 (Native, Unity) — 링크와 동일 스타일 */
+.sidebar-nav ul ul > li > p {
+  font-size: 13px !important; font-weight: 400 !important;
+  color: #9a9ba0 !important; text-transform: none !important;
+  letter-spacing: 0 !important; padding: 7px 16px !important;
+  margin: 0 !important; cursor: pointer;
+}
+
 /* 사이드바 아이콘 */
 .sidebar-nav .nav-icon { width: 18px; display: inline-flex; align-items: center; margin-right: 7px; font-size: .92em; }
 .icon-android { color: #3DDC84; }
@@ -352,10 +360,6 @@ nav.app-nav { display: none !important; }
   color: #ded9dc; background: #fff; box-sizing: border-box;
   overflow: hidden;
 }
-.chip svg { height: 16px !important; width: auto !important; max-width: 80px; display: block; }
-.chip img { height: 16px !important; width: auto !important; max-width: 80px; display: block; object-fit: contain; }
-.chip div { height: 16px !important; display: flex; align-items: center; }
-.s-card .chips .chip { border-color: #e8eaed; background: #fff; }
 .chip-naver { color: #e85800; border-color: #e85800; background: rgba(232,88,0,.07); }
 .chip-google { color: #4285f4; border-color: #4285f4; background: rgba(66,133,244,.07); }
 .chip-kakao { color: #b8860b; border-color: #f7e01d; background: rgba(247,224,29,.07); }
