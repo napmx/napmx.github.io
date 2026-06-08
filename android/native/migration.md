@@ -8,6 +8,8 @@
 
 | 구분 | 내용 |
 |------|------|
+| **광고 클래스명 변경 (Breaking)** | **`AdView`→`AMMBannerView`, `InterstitialAd`→`AMMInterstitial`, `NativeAdView`→`AMMNativeAdView`, `RewardInterstitialVideoAd`→`AMMRewardVideo`, `VideoAdView`→`AMMVideoView`, `InterstitialVideoAd`→`AMMVideoInterstitial` — 구 클래스명 완전 제거(미교체 시 컴파일 오류)** |
+| **풀스크린 로드 방식 (권장)** | **전면/리워드/전면 동영상에 정적 `load()` + `FullScreenContentCallback` 패턴 추가 — 기존 인스턴스 메서드도 그대로 유지** |
 | 새 기능 | NaverAdManager·Teads 어댑터, 광고 신고 기능 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
@@ -114,18 +116,52 @@ repositories {
 
 ---
 
-## Step 5. 제거된 API 교체 (필수 — Breaking Change)
+## Step 5. 클래스명 변경 및 제거된 API 교체 (필수 — Breaking Change)
+
+### 5-1. 광고 클래스명 변경 (필수)
+
+v2.0.0에서 광고 포맷 클래스가 `AMM` prefix로 일괄 변경되었습니다. **구 클래스명은 완전히 제거**되어 그대로 두면 컴파일 오류가 발생합니다. 클래스명만 교체하면 기존 인스턴스 메서드(`setAdInfo`/`setListener`/`load*`/`show*`/`stop*`)는 그대로 사용할 수 있습니다.
+
+| 포맷 | 기존 (v1.x) | v2.0.0 |
+|------|------------|--------|
+| 배너 | `AdView` | `AMMBannerView` |
+| 전면 | `InterstitialAd` | `AMMInterstitial` |
+| 네이티브 | `NativeAdView` | `AMMNativeAdView` |
+| 리워드 동영상 | `RewardInterstitialVideoAd` | `AMMRewardVideo` |
+| 인라인 동영상 | `VideoAdView` | `AMMVideoView` |
+| 전면 동영상 | `InterstitialVideoAd` | `AMMVideoInterstitial` |
+
+```java
+// Before — 구 클래스명 제거됨, 컴파일 오류
+InterstitialAd interstitialAd = new InterstitialAd(this);
+
+// After — 클래스명만 교체
+AMMInterstitial interstitialAd = new AMMInterstitial(this);
+```
+
+XML 레이아웃의 배너 태그도 함께 교체하세요.
+
+```xml
+<!-- Before -->
+<com.nasmedia.admixerssp.ads.AdView ... />
+<!-- After -->
+<com.nasmedia.admixerssp.ads.AMMBannerView ... />
+```
+
+> 💡 **권장 — 풀스크린 정적 로드 패턴**: 전면·리워드·전면 동영상은 정적 `load()` + `FullScreenContentCallback` 패턴으로 전환하면 GAM(Google Mobile Ads) 스타일의 명확한 노출/클릭/닫힘/보상 콜백을 사용할 수 있습니다. 자세한 코드는 [전면 광고](interstitial.md)·[리워드 동영상](rewarded-video.md)·[동영상 광고](video.md) 가이드를 참고하세요. (기존 인스턴스 메서드 `loadInterstitial()`/`showInterstitial()` 등도 계속 동작하므로, 클래스명만 교체하는 최소 마이그레이션도 가능합니다.)
+
+### 5-2. 제거된 별칭 API 교체 (필수)
 
 v1.x에서 `@Deprecated`로 표시되었던 **별칭(alias) 메서드·상수는 v2.0.0에서 완전히 제거**되었습니다. 이 메서드들은 동일 동작을 하는 정식 메서드의 별칭이었으며, v1→v2는 메이저 버전 전환이므로 클린 브레이크로 정리했습니다. 아래 정식 메서드로 교체하세요(미교체 시 컴파일 오류).
 
-### InterstitialAd
+#### AMMInterstitial (전면)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
 | `closeInterstitial()` | `stopInterstitial()` | 동일 동작 별칭이었음 |
 | `onDestroy()` | `stopInterstitial()` | `destroy()`의 별칭 + Activity 메서드와 혼동 유발 → 제거 |
 
-> **로드 메서드 (참고)**: 전면 광고의 정식 로드 메서드는 **`loadInterstitial()`**(유지됨)입니다. `InterstitialAd`에는 `loadAd()`가 없습니다(`loadAd()`는 배너 `AdView`의 메서드). 자동 노출은 `startInterstitial()`(로드+노출), 수신 후 표시는 `showInterstitial()`.
+> **로드 메서드 (참고)**: v2.0.0 권장 방식은 정적 `AMMInterstitial.load()` + `FullScreenContentCallback`입니다([전면 광고](interstitial.md) 참고). 기존 인스턴스 메서드 `loadInterstitial()`(로드)·`startInterstitial()`(로드+노출)·`showInterstitial()`(표시)도 유지됩니다. `AMMInterstitial`에는 `loadAd()`가 없습니다(`loadAd()`는 배너 `AMMBannerView`의 메서드).
 
 ```java
 // Before — 제거됨, 컴파일 오류
@@ -136,7 +172,7 @@ interstitialAd.closeInterstitial();
 interstitialAd.stopInterstitial();   // 정식 해제 (loadInterstitial()은 그대로 사용)
 ```
 
-### RewardInterstitialVideoAd
+#### AMMRewardVideo (리워드 동영상)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
@@ -150,7 +186,7 @@ rewardAd.onDestroy();
 rewardAd.stopRewardVideoAd();
 ```
 
-### InterstitialVideoAd
+#### AMMVideoInterstitial (전면 동영상)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
@@ -164,7 +200,7 @@ interstitialVideoAd.onDestroy();
 interstitialVideoAd.stopInterstitialVideoAd();
 ```
 
-### AdView / NativeAdView (배너·네이티브)
+#### AMMBannerView / AMMNativeAdView (배너·네이티브)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
@@ -178,7 +214,7 @@ adView.onDestroy();
 adView.destroy();
 ```
 
-### AdInfo.Builder
+#### AdInfo.Builder
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
@@ -196,7 +232,7 @@ new AdInfo.Builder(ADUNIT_ID)
     .build();
 ```
 
-### AdMixer 상수
+#### AdMixer 상수
 
 | 제거됨 (v1.x) | v2.0.0 정식 상수 | 비고 |
 |------------|------------|------|
@@ -361,20 +397,18 @@ AdMixer.setTestDeviceIds(Arrays.asList("..."));
 
 ## 변경 없는 항목 (하위 호환 유지)
 
-아래 Public API는 **v2.0.0에서 변경되지 않습니다**. 기존 코드를 그대로 사용할 수 있습니다.
+아래 Public API는 **v2.0.0에서 클래스명·시그니처가 변경되지 않습니다**. 기존 코드를 그대로 사용할 수 있습니다.
 
 | 클래스 | 변경 여부 |
 |--------|----------|
-| `AdView` | 변경 없음 |
-| `AdListener` | 변경 없음 |
+| `AdListener` | 변경 없음 (콜백 메서드 시그니처 동일) |
 | `AdEvent` | 변경 없음 |
-| `AdInfo.Builder` (제거 API 제외) | 변경 없음 |
-| `NativeAdView` (제거 API 제외) | 변경 없음 |
-| `VideoAdView` | 변경 없음 |
-| `InterstitialAd` (제거 API 제외) | 변경 없음 |
-| `RewardInterstitialVideoAd` (제거 API 제외) | 변경 없음 |
-| `InterstitialVideoAd` (제거 API 제외) | 변경 없음 |
+| `AdInfo` / `AdInfo.Builder` (제거 API 제외) | 변경 없음 |
+| `NativeAdViewBinder` | 변경 없음 |
 | `PopupInterstitialAdOption` | 변경 없음 |
+| `AdMixer` (제거 상수 제외) | 변경 없음 |
+
+> ℹ️ 광고 포맷 클래스(`AdView`·`InterstitialAd`·`NativeAdView`·`RewardInterstitialVideoAd`·`VideoAdView`·`InterstitialVideoAd`)는 v2.0.0에서 `AMM*`로 **이름이 변경**되었습니다. [Step 5](#step-5-클래스명-변경-및-제거된-api-교체-필수--breaking-change)를 참고하세요.
 
 ---
 

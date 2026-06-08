@@ -11,6 +11,7 @@
 - **Teads 어댑터 추가**: Teads 미디에이션 지원 (`admixer-teads:2.0.0`)
 - **통합 개인정보 동의/테스트 API 추가**: `AdMixer.setGdprConsent/setCcpaDoNotSell/setUsPrivacy/setTestMode/setTestDeviceIds` — 워터폴에서 각 네트워크 privacy/test API로 자동 전파 (AppLovin/Unity/Pangle/AdManager)
 - **`cancelLoad()` 추가**: 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
+- **풀스크린 정적 로드 API 추가**: 전면/리워드/전면 동영상에 정적 `load()` + `FullScreenContentCallback`(리워드는 `OnUserEarnedRewardListener`) 패턴 제공 — GAM(Google Mobile Ads) 스타일 노출/클릭/닫힘/보상 콜백. 기존 인스턴스 메서드도 유지
 - **클라이언트 키 주입(`setAdapterConfig`)**: 서버 미제공 시 네트워크 키를 매체가 주입 (Server-Precedence 병합)
 - **Jetpack Compose 지원(`admixer-compose`)**: `@Composable AdMixerBanner(...)` 제공 — `AndroidView` 호스팅 + 생명주기/dispose 자동 처리. 코어에 Compose 의존성을 강제하지 않는 선택 모듈 (`admixer-compose:2.0.0`). [Compose 가이드](compose.md) 참고
 
@@ -41,18 +42,35 @@
 
 ### 주요 변경 (Breaking Changes)
 
+#### 광고 클래스명 변경
+
+광고 포맷 클래스가 `AMM` prefix로 일괄 변경되었습니다. **구 클래스명은 완전히 제거**되어 미교체 시 컴파일 오류가 발생합니다. 클래스명만 교체하면 기존 인스턴스 메서드는 그대로 동작합니다.
+
+| 기존 (v1.x) | v2.0.0 |
+|---|---|
+| `AdView` | `AMMBannerView` |
+| `InterstitialAd` | `AMMInterstitial` |
+| `NativeAdView` | `AMMNativeAdView` |
+| `RewardInterstitialVideoAd` | `AMMRewardVideo` |
+| `VideoAdView` | `AMMVideoView` |
+| `InterstitialVideoAd` | `AMMVideoInterstitial` |
+
+> 전면·리워드·전면 동영상은 정적 `load()` + `FullScreenContentCallback` 패턴(권장)이 추가되었습니다. 교체 방법은 [마이그레이션 Step 5](migration.md#step-5)를 참고하세요.
+
+#### 제거된 별칭 API
+
 v1→v2 메이저 전환에 맞춰 v1.x `@Deprecated` 별칭 API를 완전히 제거했습니다. 모두 동일 동작의 정식 메서드/상수로 대체되며, 교체 방법은 [마이그레이션 Step 5](migration.md#step-5)를 참고하세요.
 
 | 제거된 API | 정식 대체 |
 |---|---|
-| `InterstitialAd.onDestroy()`, `closeInterstitial()` | `stopInterstitial()` |
-| `RewardInterstitialVideoAd.onDestroy()` | `stopRewardVideoAd()` |
-| `InterstitialVideoAd.onDestroy()` | `stopInterstitialVideoAd()` |
-| `AdView`/`NativeAdView`.`onDestroy()` | `destroy()` |
+| `AMMInterstitial.onDestroy()`, `closeInterstitial()` | `stopInterstitial()` |
+| `AMMRewardVideo.onDestroy()` | `stopRewardVideoAd()` |
+| `AMMVideoInterstitial.onDestroy()` | `stopInterstitialVideoAd()` |
+| `AMMBannerView`/`AMMNativeAdView`.`onDestroy()` | `destroy()` |
 | `AdInfo.Builder.isUseBackgroundAlpha(Boolean)` | `setUseBackgroundAlpha(boolean)` |
 | `AdMixer.GAUGE` / `AdMixer.TEXT` | `AdMixer.AX_COUNT_TYPE_GAUGE` / `AX_COUNT_TYPE_TEXT` |
 
-> 위 표 외의 기존 Public API(`AdView`, `InterstitialAd`, `NativeAdView`, `VideoAdView`, `RewardInterstitialVideoAd`, `InterstitialVideoAd`, `AdListener`, `AdEvent`, `AdInfo`, `AdMixer`, `PopupInterstitialAdOption`)의 **정식 메서드는 변경되지 않았습니다**. 단, 네이티브 View ID 변경([Step 7](migration.md))과 전면 BACK 키 기본값 변경([Step 8](migration.md))은 별도 확인이 필요합니다.
+> 광고 포맷 클래스(위 표)를 제외한 기존 Public API(`AdListener`, `AdEvent`, `AdInfo`, `AdMixer`, `NativeAdViewBinder`, `PopupInterstitialAdOption`)의 **정식 메서드는 변경되지 않았습니다**. 단, 광고 클래스명 변경, 네이티브 View ID 변경([Step 7](migration.md))과 전면 BACK 키 기본값 변경([Step 8](migration.md))은 별도 확인이 필요합니다.
 
 ---
 
