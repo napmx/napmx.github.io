@@ -65,6 +65,6 @@ public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapter
 
 ### 리워드가 지급되지 않는 경우
 
-1. `EARNEDREWARD` 이벤트 수신 여부 LogCat으로 확인
-2. `onEventAd()` 내 리워드 지급 로직 구현 여부 확인
+1. `onAdRewarded()` 콜백 수신 여부 LogCat으로 확인
+2. `onAdRewarded()` 내 리워드 지급 로직 구현 여부 확인
 3. S2S Callback URL 설정 여부 확인 (서버 기반 리워드의 경우)

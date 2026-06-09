@@ -43,10 +43,11 @@ fun MyScreen() {
 
 ```kotlin
 val listener = remember {
-    object : AdListener {
+    object : AdListener() {
         override fun onReceivedAd(adapterName: String, ad: Any) {}
         override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {}
-        override fun onEventAd(ad: Any, event: AdEvent) {}
+        override fun onAdDisplayed() {}
+        override fun onAdClicked() {}
     }
 }
 AdMixerBanner(adUnitId = "...", listener = listener)
@@ -82,7 +83,7 @@ fun NativeSlot() {
 }
 ```
 
-> ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration.md)을 참고하세요.
+> ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration-to-v2.md)을 참고하세요.
 
 ---
 
@@ -124,12 +125,10 @@ import com.nasmedia.admixerssp.compose.rememberRewardVideoAd
 @Composable
 fun RewardScreen() {
     val rewardListener = remember {
-        object : AdListener {
+        object : AdListener() {
             override fun onReceivedAd(adapterName: String, ad: Any) {}
             override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {}
-            override fun onEventAd(ad: Any, event: AdEvent) {
-                if (event == AdEvent.EARNEDREWARD) { /* 보상 지급 */ }
-            }
+            override fun onAdRewarded() { /* 보상 지급 */ }
         }
     }
     val reward = rememberRewardVideoAd(
@@ -142,7 +141,7 @@ fun RewardScreen() {
 }
 ```
 
-- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onEventAd`의 `AdEvent.EARNEDREWARD`로 통지됩니다.
+- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onAdRewarded()`로 통지됩니다.
 
 ---
 

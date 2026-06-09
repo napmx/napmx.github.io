@@ -11,6 +11,8 @@ nap ssp SDK는 두 가지 동영상 광고 포맷을 지원합니다.
 
 > ℹ️ 리워드 지급이 필요한 전면 동영상은 [리워드 동영상 광고](rewarded-video.md)를 참고하세요.
 
+> 🆕 **GAM 스타일 API**: 전면 동영상은 `AMMVideoInterstitial`의 정적 `load()` + `FullScreenContentCallback` 구조를 사용합니다. 기존 `InterstitialVideoAd` 클래스는 **제거**되었습니다 — `AMMVideoInterstitial`로 전환하세요. 인라인 동영상은 `AMMVideoView`(구 `VideoAdView`, 제거됨)를 사용하며 화면 내 View이므로 기존 `AdListener` 모델을 그대로 사용합니다.
+
 ---
 
 ## 인라인 동영상 광고 (AMMVideoView)
@@ -78,19 +80,19 @@ public class VideoAdActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onEventAd(@NonNull Object adView, @NonNull AdEvent event) {
-            switch (event) {
-                case COMPLETION:
-                    // 동영상 재생 완료
-                    tvComplete.setVisibility(View.VISIBLE);
-                    break;
-                case SKIPPED:
-                    // 사용자가 Skip 클릭
-                    break;
-                case CLICK:
-                    // 더보기 링크 클릭
-                    break;
-            }
+        public void onAdCompleted() {
+            // 동영상 재생 완료
+            tvComplete.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAdSkipped() {
+            // 사용자가 Skip 클릭
+        }
+
+        @Override
+        public void onAdClicked() {
+            // 더보기 링크 클릭
         }
     };
 
@@ -103,7 +105,6 @@ public class VideoAdActivity extends AppCompatActivity {
         tvComplete = findViewById(R.id.tv_complete);
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_VIDEO)
-            .isRetry(false) // 광고 없을 때 재요청 여부 (false: 1회 요청 후 바로 실패 콜백)
             .build();
 
         videoAdView = new AMMVideoView(this);
@@ -130,7 +131,7 @@ class VideoAdActivity : AppCompatActivity() {
     private lateinit var container: RelativeLayout
     private lateinit var tvComplete: TextView
 
-    private val adListener = object : AdListener {
+    private val adListener = object : AdListener() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
             val params = RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -141,13 +142,8 @@ class VideoAdActivity : AppCompatActivity() {
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
                                           errorCode: Int, errorMsg: String?) { }
-        override fun onEventAd(adView: Any, event: AdEvent) {
-            when (event) {
-                AdEvent.COMPLETION -> tvComplete.visibility = View.VISIBLE
-                AdEvent.SKIPPED -> { /* Skip됨 */ }
-                else -> {}
-            }
-        }
+        override fun onAdCompleted() { tvComplete.visibility = View.VISIBLE }
+        override fun onAdSkipped() { /* Skip됨 */ }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,7 +154,6 @@ class VideoAdActivity : AppCompatActivity() {
         tvComplete = findViewById(R.id.tv_complete)
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_VIDEO)
-            .isRetry(false)
             .build()
 
         videoAdView = AMMVideoView(this).apply {
@@ -177,79 +172,76 @@ class VideoAdActivity : AppCompatActivity() {
 }
 ```
 
+> ℹ️ 인라인 동영상(`AMMVideoView`)은 화면 내 View로 동작하므로 `AdListener`의 이름 있는 이벤트 콜백(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdSkipped` 등)을 사용합니다. 정적 `load()` / `FullScreenContentCallback`은 전면(풀스크린) 포맷에만 적용됩니다.
+
 ---
 
 ## 전면 동영상 광고 (AMMVideoInterstitial)
 
-화면 전체를 덮는 전면 동영상 광고를 표시합니다.
+화면 전체를 덮는 전면 동영상 광고를 표시합니다. 전면 배너와 동일한 GAM 스타일(정적 `load()` + `FullScreenContentCallback`) 구조입니다.
 
-> ℹ️ **v2.0.0 호출 방식 변경**: 전면 동영상은 정적 `AMMVideoInterstitial.load()`로 로드하고, 콜백으로 받은 광고 객체에 `FullScreenContentCallback`을 등록한 뒤 `show(activity)`로 노출합니다. 닫힘은 SDK가 자동 처리하므로 별도의 `closeInterstitialVideoAd()` 호출이 필요하지 않습니다.
+### 호출 흐름
+
+```
+AMMVideoInterstitial.load(context, adInfo, callback)
+    → onSuccessLoadVideoInterstitial(adapterName, ad)  ← 로드된 광고 객체 전달
+        → ad.setFullScreenContentCallback(...)         ← 노출/클릭/재생완료/닫힘 콜백
+        → ad.show(activity)                            ← 노출 (Activity 필요)
+    → onFailLoadVideoInterstitial(errorCode, errorMsg) ← 로드 실패
+```
 
 #### Java
 ```java
 public class InterstitialVideoActivity extends AppCompatActivity {
 
-    private AMMVideoInterstitial videoAd; // load() 콜백으로 받은 로드 완료 광고
+    private AMMVideoInterstitial loadedAd;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interstitial_video);
 
-        // 화면 진입 시 미리 로드, 버튼 클릭 시 노출
-        loadVideoInterstitial();
-
         Button btnShow = findViewById(R.id.btn_show_video);
-        btnShow.setOnClickListener(v -> {
-            if (videoAd != null && videoAd.hasInterstitial) {
-                videoAd.show(this);   // 로드 완료된 광고 노출
-            } else {
-                loadVideoInterstitial(); // 아직 로드 전이면 재요청
-            }
-        });
+        btnShow.setOnClickListener(v -> loadAndShowVideo());
     }
 
-    private void loadVideoInterstitial() {
+    private void loadAndShowVideo() {
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_VIDEO)
             .interstitialTimeout(20)      // 타임아웃 (초, 0: 서버 지정)
-            .maxRetryCountInSlot(-1)      // 재시도 횟수 (-1: 무제한)
             .build();
 
-        // 정적 load() — 로드 완료 시 콜백으로 광고 객체 전달
         AMMVideoInterstitial.load(this, adInfo, new AMMVideoInterstitialLoadCallback() {
             @Override
-            public void onSuccessLoadVideoInterstitial(@NonNull String adapterName,
-                    @NonNull AMMVideoInterstitial ad) {
-                // 광고 수신 성공 — 노출/클릭/완료/닫힘은 FullScreenContentCallback로 수신
-                videoAd = ad;
+            public void onSuccessLoadVideoInterstitial(@NonNull String adapterName, @NonNull AMMVideoInterstitial ad) {
+                loadedAd = ad;
+
                 ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                     @Override public void onAdShowedFullScreenContent() { /* 노출됨 */ }
                     @Override public void onAdClicked() { /* 클릭 */ }
                     @Override public void onAdCompleted() { /* 동영상 재생 완료 */ }
                     @Override public void onAdDismissedFullScreenContent() {
-                        // 광고 닫힘 — 객체 정리
-                        videoAd = null;
+                        loadedAd = null; // 닫힘
                     }
                     @Override public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        // 노출 단계 실패
-                        videoAd = null;
+                        loadedAd = null;
                     }
                 });
+
+                ad.show(InterstitialVideoActivity.this);
             }
 
             @Override
-            public void onFailLoadVideoInterstitial(int errorCode, String errorMsg) {
-                // 광고 수신 실패
-                videoAd = null;
+            public void onFailLoadVideoInterstitial(int errorCode, @Nullable String errorMsg) {
+                // 수신 실패
             }
         });
     }
 
     @Override
     protected void onDestroy() {
-        if (videoAd != null) {
-            videoAd.stopInterstitialVideoAd();
-            videoAd = null;
+        if (loadedAd != null) {
+            loadedAd.stopInterstitialVideoAd(); // 또는 destroy()
+            loadedAd = null;
         }
         super.onDestroy();
     }
@@ -260,57 +252,48 @@ public class InterstitialVideoActivity extends AppCompatActivity {
 ```kotlin
 class InterstitialVideoActivity : AppCompatActivity() {
 
-    private var videoAd: AMMVideoInterstitial? = null
+    private var loadedAd: AMMVideoInterstitial? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interstitial_video)
 
-        loadVideoInterstitial()
-
         findViewById<Button>(R.id.btn_show_video).setOnClickListener {
-            val ad = videoAd
-            if (ad != null && ad.hasInterstitial) {
-                ad.show(this)              // 로드 완료된 광고 노출
-            } else {
-                loadVideoInterstitial()    // 재요청
-            }
+            loadAndShowVideo()
         }
     }
 
-    private fun loadVideoInterstitial() {
+    private fun loadAndShowVideo() {
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_VIDEO)
             .interstitialTimeout(20)
-            .maxRetryCountInSlot(-1)
             .build()
 
         AMMVideoInterstitial.load(this, adInfo, object : AMMVideoInterstitialLoadCallback() {
             override fun onSuccessLoadVideoInterstitial(adapterName: String, ad: AMMVideoInterstitial) {
-                videoAd = ad
-                ad.setFullScreenContentCallback(object : FullScreenContentCallback() {
+                loadedAd = ad
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                     override fun onAdShowedFullScreenContent() { /* 노출됨 */ }
                     override fun onAdClicked() { /* 클릭 */ }
                     override fun onAdCompleted() { /* 재생 완료 */ }
-                    override fun onAdDismissedFullScreenContent() { videoAd = null }
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) { videoAd = null }
-                })
+                    override fun onAdDismissedFullScreenContent() { loadedAd = null }
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) { loadedAd = null }
+                }
+                ad.show(this@InterstitialVideoActivity)
             }
 
             override fun onFailLoadVideoInterstitial(errorCode: Int, errorMsg: String?) {
-                videoAd = null
+                // 수신 실패
             }
         })
     }
 
     override fun onDestroy() {
-        videoAd?.stopInterstitialVideoAd()
-        videoAd = null
+        loadedAd?.stopInterstitialVideoAd()
+        loadedAd = null
         super.onDestroy()
     }
 }
 ```
-
-> ℹ️ 닫힘·완료 처리는 `FullScreenContentCallback`(`onAdDismissedFullScreenContent` / `onAdCompleted`)로 통지됩니다. v1.x에서 필수였던 `closeInterstitialVideoAd()` 수동 호출은 더 이상 필요하지 않습니다.
 
 ---
 
@@ -333,33 +316,33 @@ class InterstitialVideoActivity : AppCompatActivity() {
 
 | 메서드 | 기본값 | 설명 |
 |--------|--------|------|
-| `isRetry(boolean)` | `true` | 광고 없을 때 재요청 여부 (인라인 동영상) |
+| `isLoadOnly(boolean)` | `false` | 로드만 수행(전면 동영상 지연 노출). `show()` 호출 시 노출 |
 | `interstitialTimeout(int)` | `0` (서버 지정, 약 20초) | 로딩 타임아웃 (초) |
-| `maxRetryCountInSlot(int)` | `-1` | 재시도 횟수 (`-1` 또는 `0`: 무제한, 양수: 해당 횟수까지) |
 | `setDisableBackKey(boolean)` | `true` (차단) | **전면 동영상** 뒤로가기 닫기 차단 여부. `false` 설정 시에만 BACK으로 닫기 허용 |
 
 ---
 
-## 이벤트 콜백 레퍼런스
+## 이벤트 레퍼런스
 
-**인라인 동영상 (AMMVideoView)** — `AdListener.onEventAd(AdEvent)`로 수신
+**인라인 동영상 (`AMMVideoView` — AdListener 콜백)**
 
-| 이벤트 | 발생 시점 |
+| 콜백 | 발생 시점 |
 |--------|----------|
-| `COMPLETION` | 동영상이 끝까지 재생됨 |
-| `SKIPPED` | 사용자가 Skip 버튼 클릭 |
-| `CLOSE` | 광고 창 닫힘 |
-| `CLICK` | 광고 내 링크(더보기 등) 클릭 |
+| `onAdDisplayed()` | 광고가 화면에 표시됨 |
+| `onAdCompleted()` | 동영상이 끝까지 재생됨 |
+| `onAdSkipped()` | 사용자가 Skip 버튼 클릭 |
+| `onAdClosed()` | 광고 창 닫힘 |
+| `onAdClicked()` | 광고 내 링크(더보기 등) 클릭 |
 
-**전면 동영상 (AMMVideoInterstitial)** — `FullScreenContentCallback`로 수신
+**전면 동영상 (`AMMVideoInterstitial` — FullScreenContentCallback)**
 
 | 콜백 | 발생 시점 |
 |------|----------|
-| `onAdShowedFullScreenContent()` | 광고가 풀스크린으로 표시됨 |
-| `onAdClicked()` | 광고 클릭 |
+| `onAdShowedFullScreenContent()` | 광고가 화면에 표시됨 (임프레션) |
+| `onAdClicked()` | 광고 내 링크 클릭 |
 | `onAdCompleted()` | 동영상 재생 완료 |
-| `onAdDismissedFullScreenContent()` | 광고 닫힘 |
-| `onAdFailedToShowFullScreenContent(AdError)` | 노출 단계 실패 |
+| `onAdDismissedFullScreenContent()` | 광고 창 닫힘 |
+| `onAdFailedToShowFullScreenContent(AdError)` | 노출 실패 |
 
 ---
 
@@ -377,7 +360,22 @@ class InterstitialVideoActivity : AppCompatActivity() {
 
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
-| 화면 전환·백그라운드 (표시 광고 유지) | `videoAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
-| `Activity.onDestroy()` | `videoAd.stopInterstitialVideoAd()` | 광고 정지 및 리소스 해제 (필수) |
+| 화면 전환·백그라운드 (표시 광고 유지) | `loadedAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
+| `Activity.onDestroy()` | `loadedAd.stopInterstitialVideoAd()` (또는 `destroy()`) | 광고 정지 및 리소스 해제 |
 
-> ℹ️ 광고 닫힘은 `FullScreenContentCallback.onAdDismissedFullScreenContent()`로 통지되며 SDK가 자동 처리합니다. v1.x의 `closeInterstitialVideoAd()` 수동 호출은 더 이상 필요하지 않습니다.
+---
+
+## 구 API에서 전환 (전면 동영상 — 제거됨)
+
+구 `InterstitialVideoAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMVideoInterstitial` 정적 `load()`로 전환하세요.
+
+| 구 (제거됨) | 신규 (GAM 스타일) |
+|---|---|
+| `new InterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMVideoInterstitial.load(context, adInfo, callback)` |
+| `setListener(AdListener)` + `onReceivedAd` | `AMMVideoInterstitialLoadCallback.onSuccessLoadVideoInterstitial(adapterName, ad)` |
+| `onFailedToReceiveAd(...)` | `onFailLoadVideoInterstitial(errorCode, errorMsg)` |
+| `loadInterstitialVideoAd()` / `startInterstitialVideoAd()` | `AMMVideoInterstitial.load(...)` (노출은 `ad.show(activity)`) |
+| `showInterstitialVideoAd()` / `showInterstitialVideoAd(activity)` | `ad.show(activity)` |
+| `onEventAd(AdEvent.DISPLAYED / CLICK / COMPLETION / CLOSE)` | `onAdShowedFullScreenContent()` / `onAdClicked()` / `onAdCompleted()` / `onAdDismissedFullScreenContent()` |
+| `closeInterstitialVideoAd()` (CLOSE/SKIPPED 시 필수) | 불필요 — `onAdDismissedFullScreenContent()`로 닫힘 수신 |
+| `stopInterstitialVideoAd()` | `stopInterstitialVideoAd()` (유지) 또는 `destroy()` |

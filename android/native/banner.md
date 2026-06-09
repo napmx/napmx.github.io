@@ -38,15 +38,13 @@ public class BannerActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onEventAd(@NonNull Object adView, @NonNull AdEvent event) {
-            switch (event) {
-                case DISPLAYED:
-                    // 광고 화면에 표시됨
-                    break;
-                case CLICK:
-                    // 사용자가 광고 클릭
-                    break;
-            }
+        public void onAdDisplayed() {
+            // 광고 화면에 표시됨
+        }
+
+        @Override
+        public void onAdClicked() {
+            // 사용자가 광고 클릭
         }
     };
 
@@ -92,7 +90,7 @@ class BannerActivity : AppCompatActivity() {
     private lateinit var container: RelativeLayout
     private var adView: AMMBannerView? = null
 
-    private val adListener = object : AdListener {
+    private val adListener = object : AdListener() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
             // 광고 수신 성공
         }
@@ -100,13 +98,8 @@ class BannerActivity : AppCompatActivity() {
                                           errorCode: Int, errorMsg: String?) {
             // 광고 수신 실패
         }
-        override fun onEventAd(adView: Any, event: AdEvent) {
-            when (event) {
-                AdEvent.DISPLAYED -> { /* 광고 표시됨 */ }
-                AdEvent.CLICK -> { /* 광고 클릭 */ }
-                else -> {}
-            }
-        }
+        override fun onAdDisplayed() { /* 광고 표시됨 */ }
+        override fun onAdClicked() { /* 광고 클릭 */ }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -246,7 +239,7 @@ val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
 
 adView = AMMBannerView(this).apply {
     setAdInfo(adInfo)
-    setAdViewListener(object : AdListener {
+    setAdViewListener(object : AdListener() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
             // 수신 완료 — isLoadOnly(true)이므로 자동 노출 안 됨
         }
@@ -278,9 +271,9 @@ showAdButton.setOnClickListener {
 
 | 메서드 | 기본값 | 설명 |
 |--------|--------|------|
-| `isRetry(boolean)` | `true` | 광고 수신 실패 시 자동 재시도 여부 |
-| `maxRetryCountInSlot(int)` | `-1` | 단일 슬롯 내 최대 재시도 횟수 (`-1` 또는 `0`: 무제한, 양수: 해당 횟수까지) |
 | `showReportIcon(boolean)` | `false` | 광고 소재 위에 신고 아이콘 표시 여부 |
+
+> **[v2.0.0]** 배너 자동 갱신/실패 재시도는 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 동작합니다(서버 0/미설정 → 단발성, 자동 재로드 없음). 기존 클라이언트 `isRetry` 옵션은 제거되었습니다.
 
 ---
 

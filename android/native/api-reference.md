@@ -47,11 +47,6 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `AdMixer.ADAPTER_NAVER_ADMANAGER` | Naver Ad Manager |
 | `AdMixer.ADAPTER_TEADS` | Teads |
 
-| 카운트다운 타입 상수 | 값 | 설명 |
-|------------------|----|------|
-| `AdMixer.AX_COUNT_TYPE_GAUGE` | `0` | 게이지(원형 프로그레스) 타입 |
-| `AdMixer.AX_COUNT_TYPE_TEXT` | `1` | 숫자 텍스트 타입 |
-
 ---
 
 ## AdInfo.Builder
@@ -59,16 +54,12 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | 메서드 | 타입 | 기본값 | 설명 |
 |--------|------|--------|------|
 | `new Builder(String adUnitId)` | - | - | 필수. adUnit ID 지정 |
-| `isRetry(boolean)` | `boolean` | `true` | 광고 수신 실패 시 자동 재시도 |
 | `isLoadOnly(boolean)` | `boolean` | `false` | `true` 설정 시 광고 수신 후 자동 노출 안 함 (지연 노출용) |
-| `maxRetryCountInSlot(int)` | `int` | `-1` | 슬롯 내 최대 자동 재시도 횟수. `-1`/`0` = 무제한, 양수 N = 최대 N회. **주로 배너 자동 재시도에 적용**(재시도 간격 최소 5초). **권장: 유한값(예 3~5).** 전면/리워드는 별도 루프 가드로 무한 재로드가 차단됨 |
 | `interstitialTimeout(int)` | `int` | `0` | 전면 광고 타임아웃 (초, 0: 서버 지정) |
-| `interstitialAdType(InterstitialAdType)` | enum | `Basic` | 전면 광고 형태 |
-| `popupAdOption(PopupInterstitialAdOption)` | - | `null` | 팝업형 옵션 |
 | `setUseBackgroundAlpha(boolean)` | `boolean` | `true` | 전면 광고 배경 반투명 |
 | `setMute(boolean)` | `boolean` | `false` | 동영상 음소거 |
 | `showCloseButton(boolean)` | `boolean` | `true` | 전면 광고 닫기 버튼 표시 |
-| `setCloseButtonBound(int)` | `int` | `100` | Basic/CountDown 전면 닫기(X) 버튼 터치 영역 비율 (20~100%, 범위 밖은 클램프) |
+| `setCloseButtonBound(int)` | `int` | `100` | 전면 광고 닫기 'X' 버튼 터치 영역 비율(%, 20~100 범위로 클램프) |
 | `showReportIcon(boolean)` | `boolean` | `false` | 신고 아이콘 표시 |
 | `setAdViewBinder(NativeAdViewBinder)` | - | `null` | 네이티브 광고 바인더 설정 (`AMMNativeAdView.setViewBinder()` 권장, 이 메서드는 AdInfo를 통한 대안) |
 | `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 (예: AppLovin `sdkKey`). `AdMixer.ADAPTER_*` 상수를 adapterName으로 사용 |
@@ -94,13 +85,32 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 ## AMMInterstitial (전면 배너)
 
-| 메서드 | 설명 |
+> 🆕 GAM 스타일 정적 `load()` + `FullScreenContentCallback` 구조. 구 `InterstitialAd` 클래스는 **제거**되었습니다(→ `AMMInterstitial`).
+
+| 멤버 | 설명 |
 |--------|------|
-| `static load(Context, AdInfo, AMMInterstitialLoadCallback)` | **정적 로드.** 로드 완료 시 콜백으로 로드된 광고 객체 전달 |
-| `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/닫힘/표시실패 콜백 등록 |
+| `static load(Context, AdInfo, AMMInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
+| `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/닫힘/표시실패 콜백 등록 (Kotlin: `fullScreenContentCallback` 프로퍼티) |
 | `show(Activity)` | 전면 광고 표시 (Activity Context 필요) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존). 로딩 중이 아니면 no-op |
-| `stopInterstitial()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
+| `destroy()` / `stopInterstitial()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
+| `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
+
+> ℹ️ 인스턴스 메서드(`setAdInfo` / `setAdListener` / `loadInterstitial` / `showInterstitial` / `startInterstitial`)는 `AMMInterstitial`에 그대로 존재하지만, 신규 연동은 정적 `load()`를 권장합니다. (구 `InterstitialAd` 클래스는 제거됨)
+
+---
+
+## AMMVideoInterstitial (전면 동영상)
+
+> 🆕 전면 배너와 동일한 GAM 스타일 구조. 구 `InterstitialVideoAd` 클래스는 **제거**되었습니다(→ `AMMVideoInterstitial`).
+
+| 멤버 | 설명 |
+|--------|------|
+| `static load(Context, AdInfo, AMMVideoInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
+| `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
+| `show(Activity)` | 전면 동영상 표시 (Activity Context 필요) |
+| `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
+| `destroy()` / `stopInterstitialVideoAd()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
 ---
@@ -123,14 +133,19 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 ## AMMRewardVideo (리워드 동영상)
 
-| 메서드 | 설명 |
+> 🆕 GAM 스타일 정적 `load()` + `show(activity, OnUserEarnedRewardListener)` 구조. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다(→ `AMMRewardVideo`).
+
+| 멤버 | 설명 |
 |--------|------|
-| `static load(Context, AdInfo, AMMRewardVideoLoadCallback)` | **정적 로드.** 로드 완료 시 콜백으로 로드된 광고 객체 전달 |
-| `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/완료/닫힘/표시실패 콜백 등록 |
-| `show(Activity, OnUserEarnedRewardListener)` | 광고 표시 + 시청 완료 시 `onUserEarnedReward()` 보상 적립 콜백 |
-| `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존). 로딩 중이 아니면 no-op |
-| `stopRewardVideoAd()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
+| `static load(Context, AdInfo, AMMRewardVideoLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
+| `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
+| `show(Activity, OnUserEarnedRewardListener)` | 광고 표시 + 보상 적립 리스너 등록 |
+| `show(Activity)` | 광고 표시 (보상 리스너 없이) |
+| `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
+| `destroy()` / `stopRewardVideoAd()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
+
+> 보상 적립은 `OnUserEarnedRewardListener.onUserEarnedReward()`로 수신합니다(영상 재생 완료 `onAdCompleted()`와는 별개).
 
 ---
 
@@ -147,70 +162,45 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 ---
 
-## AMMVideoInterstitial (전면 동영상)
+## 풀스크린 로드 콜백 / 노출 콜백 (GAM 스타일)
+
+전면 / 리워드 / 전면 동영상의 정적 `load()` 결과 콜백과 노출 단계 콜백입니다.
+
+**Load 콜백 (abstract class — 로드 결과 1회 통지)**
+
+| 콜백 클래스 | 성공 콜백 | 실패 콜백 |
+|---|---|---|
+| `AMMInterstitialLoadCallback` | `onSuccessLoadInterstitial(String adapterName, AMMInterstitial ad)` | `onFailLoadInterstitial(int errorCode, String errorMsg)` |
+| `AMMRewardVideoLoadCallback` | `onSuccessLoadReward(String adapterName, AMMRewardVideo ad)` | `onFailLoadReward(int errorCode, String errorMsg)` |
+| `AMMVideoInterstitialLoadCallback` | `onSuccessLoadVideoInterstitial(String adapterName, AMMVideoInterstitial ad)` | `onFailLoadVideoInterstitial(int errorCode, String errorMsg)` |
+
+**FullScreenContentCallback (abstract class — 노출 단계, 필요한 메서드만 오버라이드)**
+
+| 콜백 | 설명 | 비고 |
+|------|------|------|
+| `onAdShowedFullScreenContent()` | 광고가 풀스크린으로 표시됨 (임프레션) | |
+| `onAdClicked()` | 광고 클릭 | |
+| `onAdDismissedFullScreenContent()` | 광고 닫힘 | |
+| `onAdFailedToShowFullScreenContent(AdError)` | 광고 표시 실패 | |
+| `onAdCompleted()` | 비디오 재생 완료 | **AdMixer 확장** (전면비디오/리워드) |
+| `onAdLeftClicked()` | 팝업형 좌측 버튼 클릭 | **AdMixer 확장** (Popup 전면) |
+| `onAdRightClicked()` | 팝업형 우측 버튼 클릭 | **AdMixer 확장** (Popup 전면) |
+
+**OnUserEarnedRewardListener (interface — 리워드 보상 적립)**
+
+| 콜백 | 설명 |
+|------|------|
+| `onUserEarnedReward()` | 사용자가 시청을 완료해 보상을 획득함. `AMMRewardVideo.show(activity, listener)`로 등록 |
+
+**AdError (class — 표시 실패 정보)**
 
 | 메서드 | 설명 |
 |--------|------|
-| `static load(Context, AdInfo, AMMVideoInterstitialLoadCallback)` | **정적 로드.** 로드 완료 시 콜백으로 로드된 광고 객체 전달 |
-| `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/완료/닫힘/표시실패 콜백 등록 |
-| `show(Activity)` | 광고 표시 (Activity Context 필요) |
-| `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존). 로딩 중이 아니면 no-op |
-| `stopInterstitialVideoAd()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
-| `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
+| `getCode()` | 에러 코드 (`AX_ERR_*`) |
+| `getMessage()` | 에러 메시지 |
+| `getDomain()` | 에러 도메인 (기본 `com.nasmedia.admixerssp`) |
 
----
-
-## 풀스크린 로드/콘텐츠 콜백 (전면·리워드·전면 동영상)
-
-v2.0.0부터 전면/리워드/전면 동영상은 정적 `load()`로 로드하고, 콜백으로 받은 광고 객체에 `FullScreenContentCallback`을 등록합니다.
-
-### 로드 콜백
-
-```java
-// AMMInterstitial.load() — 전면
-public abstract class AMMInterstitialLoadCallback {
-    public abstract void onSuccessLoadInterstitial(@NonNull String adapterName, @NonNull AMMInterstitial ad);
-    public abstract void onFailLoadInterstitial(int errorCode, @Nullable String errorMsg);
-}
-
-// AMMRewardVideo.load() — 리워드
-public abstract class AMMRewardVideoLoadCallback {
-    public abstract void onSuccessLoadReward(@NonNull String adapterName, @NonNull AMMRewardVideo ad);
-    public abstract void onFailLoadReward(int errorCode, @Nullable String errorMsg);
-}
-
-// AMMVideoInterstitial.load() — 전면 동영상
-public abstract class AMMVideoInterstitialLoadCallback {
-    public abstract void onSuccessLoadVideoInterstitial(@NonNull String adapterName, @NonNull AMMVideoInterstitial ad);
-    public abstract void onFailLoadVideoInterstitial(int errorCode, @Nullable String errorMsg);
-}
-```
-
-### FullScreenContentCallback (노출 단계 이벤트)
-
-필요한 메서드만 오버라이드합니다(모두 기본 빈 구현). GAM(Google Mobile Ads)의 `FullScreenContentCallback`과 동일한 구조/네이밍을 따릅니다.
-
-```java
-public abstract class FullScreenContentCallback {
-    public void onAdShowedFullScreenContent() {}                       // 풀스크린 표시됨
-    public void onAdClicked() {}                                       // 광고 클릭
-    public void onAdDismissedFullScreenContent() {}                    // 광고 닫힘
-    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {} // 표시 실패
-    public void onAdCompleted() {}                                     // [확장] 동영상 재생 완료(전면/리워드 비디오)
-    public void onAdLeftClicked() {}                                   // [확장] 팝업형 전면 좌측 버튼 클릭
-    public void onAdRightClicked() {}                                  // [확장] 팝업형 전면 우측 버튼 클릭
-}
-```
-
-### OnUserEarnedRewardListener (리워드 적립)
-
-```java
-public interface OnUserEarnedRewardListener {
-    void onUserEarnedReward(); // 시청 완료 → 보상 지급 시점 (AMMRewardVideo.show()에 전달)
-}
-```
-
-> ℹ️ 팝업형 전면의 좌/우 버튼은 SDK가 자동으로 닫지 않습니다. `onAdLeftClicked()`/`onAdRightClicked()`에서 앱이 직접 `stopInterstitial()` 또는 화면 종료를 처리하세요.
+> ℹ️ **제거된 구 클래스**: `AdView`(→`AMMBannerView`), `NativeAdView`(→`AMMNativeAdView`), `VideoAdView`(→`AMMVideoView`), `InterstitialAd`(→`AMMInterstitial`), `RewardInterstitialVideoAd`(→`AMMRewardVideo`), `InterstitialVideoAd`(→`AMMVideoInterstitial`)는 모두 **제거**되었습니다. `AMM*` 클래스로 전환하세요(메서드 시그니처 동일).
 
 ---
 
@@ -229,44 +219,52 @@ public interface OnUserEarnedRewardListener {
 
 ---
 
-## AdListener (이벤트 콜백 — 배너·네이티브·인라인 동영상)
+## AdListener (이벤트 콜백)
 
-`AMMBannerView` / `AMMNativeAdView` / `AMMVideoView`(View 기반 포맷)의 이벤트 콜백입니다. 전면·리워드·전면 동영상은 [FullScreenContentCallback](#풀스크린-로드콘텐츠-콜백-전면리워드전면-동영상)을 사용합니다.
+> **[REQ-20260609 / v2.0.0]** 기존 단일 `onEventAd(adView, AdEvent)`는 **이름 있는 이벤트 메서드로 분리**되었습니다. `AdListener`는 `abstract class`이며 **모든 메서드가 기본 no-op**이라 **필요한 메서드만 override**하면 됩니다(필수 구현 없음). 기존 `onEventAd` 구현은 아래 named 메서드로 이전해야 합니다(Breaking Change).
 
 ```java
-public interface AdListener {
-    // 광고 수신 성공 — 메인 스레드에서 호출됨
-    void onReceivedAd(@NonNull String adapterName, @NonNull Object adView);
+public abstract class AdListener {
+    // ── 로드 콜백 ──
+    public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {}
+    public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapterName,
+                                    int errorCode, @Nullable String errorMsg) {}
+    // 노출(show) 실패 — 로드 실패와 구분되는 표시 단계 실패
+    public void onAdShowFailed(@Nullable Object adView, @NonNull String adapterName,
+                               int errorCode, @Nullable String errorMsg) {}
 
-    // 광고 수신 실패 — 메인 스레드에서 호출됨
-    void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapterName,
-                              int errorCode, @Nullable String errorMsg);
-
-    // 광고 이벤트 발생 (표시, 클릭, 닫기 등) — 메인 스레드에서 호출됨
-    void onEventAd(@NonNull Object adView, @NonNull AdEvent event);
-
-    // 광고 노출(show) 단계 실패 — 로드 실패와 구분 (default 빈 구현 제공)
-    default void onAdShowFailed(@Nullable Object adView, @NonNull String adapterName,
-                                int errorCode, @Nullable String errorMsg) {}
+    // ── 이벤트 콜백 (필요한 것만 override) ──
+    public void onAdDisplayed() {}      // 광고 노출됨
+    public void onAdClicked() {}        // 광고 클릭
+    public void onAdClosed() {}         // 광고 닫힘
+    public void onAdCompleted() {}      // 동영상 재생 완료
+    public void onAdSkipped() {}        // 동영상 Skip
+    public void onAdLeftClicked() {}    // 팝업 전면: 왼쪽 버튼 클릭
+    public void onAdRightClicked() {}   // 팝업 전면: 오른쪽 버튼 클릭
+    public void onAdRewarded() {}       // 리워드 적립
 }
 ```
 
-> ⚠️ `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
+> ⚠️ 배너(`AMMBannerView`)는 `AdListener`를 내부적으로 `WeakReference`로 보유합니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
+>
+> ℹ️ 전면형태(전면/리워드/전면 동영상)는 GAM 규약의 [`FullScreenContentCallback`](interstitial.md)으로도 노출 단계 콜백을 받을 수 있습니다.
 
 ---
 
-## AdEvent (이벤트 종류 — `AdListener.onEventAd`)
+## 이벤트 콜백 메서드 (구 AdEvent 매핑)
 
-`AdListener`(배너·네이티브·인라인 동영상)에서 전달되는 이벤트입니다.
+기존 `onEventAd(adView, AdEvent)`의 `AdEvent` 분기는 아래 이름 있는 메서드로 대체되었습니다. (`AdEvent` enum은 SDK 내부 전용으로 전환)
 
-| 이벤트 | 설명 | 발생 포맷 |
-|--------|------|----------|
-| `DISPLAYED` | 광고가 화면에 표시됨 | 배너, 네이티브, 인라인 동영상 |
-| `CLICK` | 광고 소재 또는 링크 클릭 | 배너, 네이티브, 인라인 동영상 |
-| `COMPLETION` | 동영상 재생 완료 | 인라인 동영상 |
-| `SKIPPED` | Skip 버튼 클릭 | 인라인 동영상 |
-
-> ℹ️ **전면·리워드·전면 동영상**의 노출/클릭/닫힘/완료/보상 이벤트는 `AdEvent`가 아닌 [`FullScreenContentCallback`](#풀스크린-로드콘텐츠-콜백-전면리워드전면-동영상)(`onAdShowedFullScreenContent`/`onAdClicked`/`onAdDismissedFullScreenContent`/`onAdCompleted` 등)과 `OnUserEarnedRewardListener.onUserEarnedReward()`로 전달됩니다.
+| 구 `AdEvent` | 신 콜백 메서드 | 설명 | 발생 포맷 |
+|--------|------|------|----------|
+| `DISPLAYED` | `onAdDisplayed()` | 광고가 화면에 표시됨 | 배너, 전면, 네이티브, 동영상 |
+| `CLICK` | `onAdClicked()` | 광고 소재 또는 링크 클릭 | 전체 |
+| `CLOSE` | `onAdClosed()` | 광고 창 닫힘 | 전면, 동영상 |
+| `LEFT_CLICK` | `onAdLeftClicked()` | 팝업형: 왼쪽 버튼 클릭 | 전면(Popup) |
+| `RIGHT_CLICK` | `onAdRightClicked()` | 팝업형: 오른쪽 버튼 클릭 | 전면(Popup) |
+| `COMPLETION` | `onAdCompleted()` | 동영상 재생 완료 | 동영상, 리워드 |
+| `SKIPPED` | `onAdSkipped()` | Skip 버튼 클릭 | 동영상, 리워드 |
+| `EARNEDREWARD` | `onAdRewarded()` | 리워드 획득 (동영상 시청 완료) | 리워드 |
 
 ---
 
