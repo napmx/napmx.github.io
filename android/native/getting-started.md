@@ -29,13 +29,13 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:25.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:25.3.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.0'           // Kakao Adfit (ads-base:3.21.17 포함)
     implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'          // Pangle (pag-sdk:8.0.0.5 포함)
-    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.5.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.6.3 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'           // Unity Ads (unity-ads:4.18.1 포함)
-    implementation 'io.github.nasmedia-tech:admixer-mobwith:2.0.0'         // Mobwith (mobwithSDK:1.0.68 포함)
-    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.14.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-mobwith:2.0.0'         // Mobwith (mobwithSDK:1.0.83 포함, JitPack 저장소 필요)
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'           // Teads (teads-sdk:6.1.0 포함)
 }
 ```
@@ -57,16 +57,19 @@ dependencyResolutionManagement {
         // Teads 사용 시 필수
         maven { url "https://sdk.teads.tv/android/repo" }
         maven { url "https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod" }
+        // Mobwith 사용 시 필수 (mobwithSDK 1.0.83+ 전이 의존 com.github.Dimezis:BlurView)
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
 
 | 네트워크 | 필요 저장소 |
 |---------|------------|
-| Google AdManager, AppLovin, Unity, Mobwith, NaverAdManager | `google()` / `mavenCentral()` 만으로 해결 |
+| Google AdManager, AppLovin, Unity, NaverAdManager | `google()` / `mavenCentral()` 만으로 해결 |
 | Kakao Adfit | `devrepo.kakao.com` 추가 필요 |
 | Pangle | `artifact.bytedance.com` 추가 필요 |
 | Teads | `sdk.teads.tv`, `teads.jfrog.io` 추가 필요 |
+| Mobwith | `jitpack.io` 추가 필요 (1.0.83+ BlurView 전이 의존) |
 
 ---
 
