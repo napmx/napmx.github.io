@@ -19,6 +19,7 @@
 
 - **어댑터 자동 등록**: `initialize()` 호출 시 Gradle 의존성에 포함된 어댑터를 자동 탐지·등록 — `registerAdapter()` 수동 호출 불필요
 - **Mobwith 버전 업데이트**: mobwithSDK `1.0.2` → `1.0.68`
+- **Pangle 버전 업데이트**: pag-sdk `7.7.0.2` → `8.0.0.5`. GDPR 동의는 8.x에서 `setGDPRConsent` 제거에 따라 퍼블리셔 CMP의 TCF v2 동의문자열로 자동 처리됩니다(`AdMixer.setGdprConsent` 값은 Pangle로 전파되지 않음). CCPA는 기존대로 전파.
 - **ProGuard 최적화**: ConfigMapper, AdStrategy 등 서버 응답 파싱 클래스 난독화 방지 규칙 강화. `NativeAdViewBinder$Builder` R8 난독화 버그 수정 (`consumer-rules.pro` `$**` wildcard 추가)
 - **아키텍처 개선**: Delegate 패턴 기반 단일 책임 원칙(SRP) 적용으로 유지보수성 향상
 - **생성자 주입 완성**: 모든 내부 Delegate 클래스가 Service Locator 대신 생성자 주입 사용
