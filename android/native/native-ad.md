@@ -23,6 +23,10 @@
 > - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
 > - Google AdManager 사용 시: Google이 요구하는 최소 View를 반드시 설정해야 합니다.
 
+> ℹ️ **선택 asset 미수신 시 자동 숨김 — [현재 버전]**
+> 서버가 내려준 광고 소재에 선택(optional) 텍스트 asset(제목·광고주·설명 등)이 포함되지 않은 경우, SDK/어댑터(Naver·Pangle·AdManager 등)는 해당 View를 **빈칸이나 placeholder 텍스트로 노출하지 않고 자동으로 `GONE` 처리**합니다. 따라서 레이아웃에 모든 asset View를 선언해 두어도 실제 소재에 없는 항목은 표시되지 않습니다.
+> - 일부 소재는 제목/설명 등이 없을 수 있으므로, **asset이 누락된 경우에도 레이아웃이 자연스럽게 보이도록** 상대 위치 제약(`layout_below` 등)을 사용해 배치하고, 누락 케이스로 한 번 테스트하는 것을 권장합니다.
+
 ---
 
 ## 레이아웃 XML 작성
@@ -143,10 +147,8 @@ public class NativeAdActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onEventAd(@NonNull Object adView, @NonNull AdEvent event) {
-            if (event == AdEvent.CLICK) {
-                // 광고 클릭
-            }
+        public void onAdClicked() {
+            // 광고 클릭
         }
     };
 
@@ -194,7 +196,7 @@ class NativeAdActivity : AppCompatActivity() {
     private var nativeAdView: AMMNativeAdView? = null
     private lateinit var container: ViewGroup
 
-    private val adListener = object : AdListener {
+    private val adListener = object : AdListener() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
             if (nativeAdView?.hasAd == true) {
                 container.removeAllViews()
@@ -204,9 +206,7 @@ class NativeAdActivity : AppCompatActivity() {
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
                                           errorCode: Int, errorMsg: String?) { }
-        override fun onEventAd(adView: Any, event: AdEvent) {
-            if (event == AdEvent.CLICK) { /* 클릭 처리 */ }
-        }
+        override fun onAdClicked() { /* 클릭 처리 */ }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -268,6 +268,8 @@ class NativeAdActivity : AppCompatActivity() {
 > ℹ️ **레이아웃 구조**: 네이티브 광고 레이아웃에는 `RelativeLayout` 사용을 권장합니다. 다른 레이아웃을 사용해야 하는 경우, 해당 레이아웃을 `RelativeLayout` 안에 넣는 방식으로 구현할 수 있습니다.
 
 > ℹ️ **`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
+
+> ℹ️ **자동 갱신(롤링) — [v2.0.0]**: 배너와 **동일 로직**으로, 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격, 무한 루프는 #59 가드 차단). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 갱신 시 수신 콜백(`onReceivedAd`)이 다시 호출되므로 위 예제처럼 콜백에서 `showAd()`를 호출하면 새 소재가 자동 표시됩니다.
 
 ---
 
