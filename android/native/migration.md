@@ -8,7 +8,7 @@
 
 | 구분 | 내용 |
 |------|------|
-| 새 기능 | NaverAdManager·Teads 어댑터, 광고 신고 기능 추가 |
+| 새 기능 | NaverAdManager·Teads 어댑터 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
@@ -251,15 +251,7 @@ adView.setAdViewListener(new AdListener() {
 
 ## Step 6. 새 기능 적용 (선택)
 
-### 광고 신고하기
-
-v2.0.0에서 추가된 광고 소재 신고 기능입니다. Android 8.0(API 26) 이상에서 PixelCopy 기반 소재 자동 캡처를 지원합니다.
-
-```java
-AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-    .showReportIcon(true)  // ← 신고 아이콘(ⓘ) 활성화
-    .build();
-```
+v2.0.0의 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 9~10**을 참고하세요.
 
 ---
 

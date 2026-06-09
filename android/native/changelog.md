@@ -49,7 +49,6 @@
 
 ### 새로운 기능
 
-- **광고 신고하기 기능 추가**: `AdInfo.Builder.showReportIcon(true)` 설정으로 광고 소재 위에 신고 아이콘(ⓘ) 표시. PixelCopy 기반 소재 자동 캡처 지원 (Android 8.0+)
 - **NaverAdManager 어댑터 추가**: Naver Ad Manager (NAM) 미디에이션 지원 (`admixer-naveradmanager:2.0.0`)
 - **Teads 어댑터 추가**: Teads 미디에이션 지원 (`admixer-teads:2.0.0`)
 - **통합 개인정보 동의/테스트 API 추가**: `AdMixer.setGdprConsent/setCcpaDoNotSell/setUsPrivacy/setTestMode/setTestDeviceIds` — 워터폴에서 각 네트워크 privacy/test API로 자동 전파 (AppLovin/Unity/Pangle/AdManager)

@@ -60,7 +60,6 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setMute(boolean)` | `boolean` | `false` | 동영상 음소거 |
 | `showCloseButton(boolean)` | `boolean` | `true` | 전면 광고 닫기 버튼 표시 |
 | `setCloseButtonBound(int)` | `int` | `100` | 전면 광고 닫기 'X' 버튼 터치 영역 비율(%, 20~100 범위로 클램프) |
-| `showReportIcon(boolean)` | `boolean` | `false` | 신고 아이콘 표시 |
 | `setAdViewBinder(NativeAdViewBinder)` | - | `null` | 네이티브 광고 바인더 설정 (`AMMNativeAdView.setViewBinder()` 권장, 이 메서드는 AdInfo를 통한 대안) |
 | `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 (예: AppLovin `sdkKey`). `AdMixer.ADAPTER_*` 상수를 adapterName으로 사용 |
 | `setCustomParams(Map<String,String>)` | - | `{}` | S2S Callback 커스텀 파라미터 |

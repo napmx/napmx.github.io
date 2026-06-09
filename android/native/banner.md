@@ -265,14 +265,6 @@ showAdButton.setOnClickListener {
 
 ---
 
-## AdInfo 옵션 레퍼런스
-
-`AdInfo.Builder`에서 설정 가능한 배너 관련 주요 옵션입니다.
-
-| 메서드 | 기본값 | 설명 |
-|--------|--------|------|
-| `showReportIcon(boolean)` | `false` | 광고 소재 위에 신고 아이콘 표시 여부 |
-
 > **[v2.0.0]** 배너 자동 갱신/실패 재시도는 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 동작합니다(서버 0/미설정 → 단발성, 자동 재로드 없음). 기존 클라이언트 `isRetry` 옵션은 제거되었습니다.
 
 ---
