@@ -29,7 +29,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:24.8.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:25.2.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.0'           // Kakao Adfit (ads-base:3.21.17 포함)
     implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'          // Pangle (pag-sdk:7.7.0.2 포함)
     implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.5.0 포함)
