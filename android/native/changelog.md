@@ -20,7 +20,7 @@
 - **어댑터 자동 등록**: `initialize()` 호출 시 Gradle 의존성에 포함된 어댑터를 자동 탐지·등록 — `registerAdapter()` 수동 호출 불필요
 - **Mobwith 버전 업데이트**: mobwithSDK `1.0.2` → `1.0.68`
 - **Pangle 버전 업데이트**: pag-sdk `7.7.0.2` → `8.0.0.5`. GDPR 동의는 8.x에서 `setGDPRConsent` 제거에 따라 퍼블리셔 CMP의 TCF v2 동의문자열로 자동 처리됩니다(`AdMixer.setGdprConsent` 값은 Pangle로 전파되지 않음). CCPA는 기존대로 전파.
-- **Google AdManager 버전 업데이트**: play-services-ads `25.2.0` → `25.3.0`.
+- **Google AdManager 버전 업데이트**: play-services-ads `24.8.0` → `25.2.0`. (`25.3.0`+는 Kotlin 메타데이터 호환 이슈로 광범위한 호스트 지원을 위해 `25.2.0`에 고정)
 - **AppLovin 버전 업데이트**: applovin-sdk `13.5.0` → `13.6.3`.
 - **Naver NAM 버전 업데이트**: nam-bom `8.14.0` → `8.16.0`.
 - **Mobwith 버전 업데이트**: mobwithSDK `1.0.68` → `1.0.83`. ⚠️ 1.0.83이 `com.github.Dimezis:BlurView`를 전이 의존하므로 `settings.gradle` repositories에 `maven { url 'https://jitpack.io' }` 추가가 필요합니다([시작하기](getting-started.md) 참고).
