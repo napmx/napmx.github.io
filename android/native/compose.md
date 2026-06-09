@@ -83,7 +83,7 @@ fun NativeSlot() {
 }
 ```
 
-> ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration-to-v2.md)을 참고하세요.
+> ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration.md)을 참고하세요.
 
 ---
 
