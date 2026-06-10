@@ -8,17 +8,17 @@
 
 | 구분 | 내용 |
 |------|------|
-| 새 기능 | NaverAdManager·Teads 어댑터 추가 |
+| 새 기능 | NaverAdManager·Teads 어댑터 추가, 광고 신고 및 닫기 버튼 제어 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
 | **전면 BACK 키 기본 차단** | **`AdInfo.Builder.setDisableBackKey` 기본값 `true`로 변경 — 뒤로가기 닫기 의존 시 `false` 명시 필요** |
 | **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — `AdInfo.Builder.interstitialAdType`/`popupAdOption`/`setInterstitialAdType`/`setPopupAdOption` 제거. Popup은 내부(서버 설정) 전용, **CountDown 타입은 완전 제거**(관련 상수·뷰 삭제)** |
-| 신규 API | `cancelLoad()`(로드만 취소), `AdMixer.setGdprConsent/setCcpaDoNotSell/setTestMode/setTestDeviceIds`(개인정보·테스트 전파) |
+| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showReportIcon/showCloseButton` (광고 제어) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, `AdInfo.Builder.isUseBackgroundAlpha(Boolean)`, `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭을 v2.0.0에서 완전 제거. 정식 메서드로 교체 필요** |
-| **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
+| **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
 | Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
 
@@ -116,67 +116,88 @@ repositories {
 
 ---
 
-## Step 5. 제거된 API 교체 (필수 — Breaking Change)
+## Step 5. 제거된 클래스 및 API 교체 (필수 — Breaking Change)
 
-v1.x에서 `@Deprecated`로 표시되었던 **별칭(alias) 메서드·상수는 v2.0.0에서 완전히 제거**되었습니다. 이 메서드들은 동일 동작을 하는 정식 메서드의 별칭이었으며, v1→v2는 메이저 버전 전환이므로 클린 브레이크로 정리했습니다. 아래 정식 메서드로 교체하세요(미교체 시 컴파일 오류).
+### ⚠️ 구버전 클래스 제거 및 AMM* 클래스 전환
 
-### InterstitialAd
+v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제거되었습니다. 아래와 같이 새 클래스로 교체하여 빌드 오류를 해결하십시오.
+
+| 구 클래스 (v1.x) | 신 클래스 (v2.0.0) | 설명 |
+|---|---|---|
+| `AdView` | `AMMBannerView` | 배너 광고 뷰 |
+| `NativeAdView` | `AMMNativeAdView` | 네이티브 광고 뷰 |
+| `InterstitialAd` | `AMMInterstitial` | 전면 광고 매니저 |
+| `RewardInterstitialVideoAd` | `AMMRewardVideo` | 보상형 전면 비디오 광고 매니저 |
+| `InterstitialVideoAd` | `AMMVideoInterstitial` | 전면 비디오 광고 매니저 |
+| `VideoAdView` | `AMMVideoView` | 비디오 광고 뷰 |
+
+또한, v1.x에서 `@Deprecated`로 표시되었던 **별칭(alias) 메서드·상수는 v2.0.0에서 완전히 제거**되었습니다. 아래의 정식 메서드로 교체하세요(미교체 시 컴파일 오류).
+
+### AMMInterstitial (전면 광고)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
 | `closeInterstitial()` | `stopInterstitial()` | 동일 동작 별칭이었음 |
 | `onDestroy()` | `stopInterstitial()` | `destroy()`의 별칭 + Activity 메서드와 혼동 유발 → 제거 |
 
-> **로드 메서드 (참고)**: 전면 광고의 정식 로드 메서드는 **`loadInterstitial()`**(유지됨)입니다. `InterstitialAd`에는 `loadAd()`가 없습니다(`loadAd()`는 배너 `AdView`의 메서드). 자동 노출은 `startInterstitial()`(로드+노출), 수신 후 표시는 `showInterstitial()`.
+> **로드 메서드 (참고)**: 전면 광고의 정식 로드 메서드는 **`loadInterstitial()`**(유지됨)입니다. `AMMInterstitial`에는 `loadAd()`가 없습니다(`loadAd()`는 배너 `AMMBannerView`의 메서드). 자동 노출은 `startInterstitial()`(로드+노출), 수신 후 표시는 `showInterstitial()`.
 
 ```java
-// Before — 제거됨, 컴파일 오류
+// Before (v1.x) — 제거됨, 컴파일 오류
+InterstitialAd interstitialAd = new InterstitialAd(context);
 interstitialAd.onDestroy();
 interstitialAd.closeInterstitial();
 
-// After
+// After (v2.0.0) — 신규 클래스 및 메서드 사용
+AMMInterstitial interstitialAd = new AMMInterstitial(context);
 interstitialAd.stopInterstitial();   // 정식 해제 (loadInterstitial()은 그대로 사용)
 ```
 
-### RewardInterstitialVideoAd
+### AMMRewardVideo (보상형 전면 비디오 광고)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
-| `onDestroy()` | `stopRewardVideoAd()` | `destroy()` 별칭이었음 |
+| `onDestroy()` | `stopRewardVideoAd()` (또는 `destroy()`) | `destroy()` 별칭이었음. `stopRewardVideoAd()`는 하위 호환 메서드로 유지됨 |
 
 ```java
-// Before — 제거됨
+// Before (v1.x) — 제거됨
+RewardInterstitialVideoAd rewardAd = new RewardInterstitialVideoAd(context);
 rewardAd.onDestroy();
 
-// After
-rewardAd.stopRewardVideoAd();
+// After (v2.0.0)
+AMMRewardVideo rewardAd = new AMMRewardVideo(context);
+rewardAd.stopRewardVideoAd(); // 또는 rewardAd.destroy();
 ```
 
-### InterstitialVideoAd
+### AMMVideoInterstitial (전면 비디오 광고)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
-| `onDestroy()` | `stopInterstitialVideoAd()` | `destroy()` 별칭이었음 |
+| `onDestroy()` | `stopInterstitialVideoAd()` (또는 `destroy()`) | `destroy()` 별칭이었음. `stopInterstitialVideoAd()`는 하위 호환 메서드로 유지됨 |
 
 ```java
-// Before — 제거됨
+// Before (v1.x) — 제거됨
+InterstitialVideoAd interstitialVideoAd = new InterstitialVideoAd(context);
 interstitialVideoAd.onDestroy();
 
-// After
-interstitialVideoAd.stopInterstitialVideoAd();
+// After (v2.0.0)
+AMMVideoInterstitial interstitialVideoAd = new AMMVideoInterstitial(context);
+interstitialVideoAd.stopInterstitialVideoAd(); // 또는 interstitialVideoAd.destroy();
 ```
 
-### AdView / NativeAdView (배너·네이티브)
+### AMMBannerView / AMMNativeAdView (배너·네이티브)
 
 | 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
 |------------|------------|------|
 | `onDestroy()` | `destroy()` | `destroy()` 별칭이었음. 생명주기 자동 연결(`bindLifecycle`) 사용 시 호출 불필요 |
 
 ```java
-// Before — 제거됨
+// Before (v1.x) — 제거됨
+AdView adView = findViewById(R.id.ad_view);
 adView.onDestroy();
 
-// After
+// After (v2.0.0)
+AMMBannerView adView = findViewById(R.id.ad_view);
 adView.destroy();
 ```
 
@@ -187,12 +208,12 @@ adView.destroy();
 | `.isUseBackgroundAlpha(Boolean)` | `.setUseBackgroundAlpha(boolean)` | `Boolean` → `boolean` (null 위험 제거) |
 
 ```java
-// Before — 제거됨
+// Before (v1.x) — 제거됨
 new AdInfo.Builder(ADUNIT_ID)
     .isUseBackgroundAlpha(true)
     .build();
 
-// After
+// After (v2.0.0)
 new AdInfo.Builder(ADUNIT_ID)
     .setUseBackgroundAlpha(true)
     .build();
@@ -210,20 +231,22 @@ new AdInfo.Builder(ADUNIT_ID)
 
 - `AdListener`가 `interface` → `abstract class`로 바뀌어 **모든 메서드가 기본 no-op**입니다(필요한 것만 override, 필수 구현 없음).
 - `onReceivedAd` / `onFailedToReceiveAd`는 시그니처 동일(그대로 동작).
+- 로드 실패(`onFailedToReceiveAd`)와 구분되는 **표시 단계 실패** 시 호출되는 `onAdShowFailed`가 추가되었습니다.
 - `AdEvent` enum은 SDK 내부 전용으로 전환되었습니다(외부 콜백에서 미사용).
 
 ### `onEventAd(AdEvent.X)` → 이름 있는 메서드 매핑
 
-| 구 `onEventAd(AdEvent.X)` | 신 콜백 메서드 |
-|---|---|
-| `DISPLAYED` | `onAdDisplayed()` |
-| `CLICK` | `onAdClicked()` |
-| `CLOSE` | `onAdClosed()` |
-| `COMPLETION` | `onAdCompleted()` |
-| `SKIPPED` | `onAdSkipped()` |
-| `LEFT_CLICK` | `onAdLeftClicked()` |
-| `RIGHT_CLICK` | `onAdRightClicked()` |
-| `EARNEDREWARD` | `onAdRewarded()` |
+| 구 `onEventAd(AdEvent.X)` | 신 콜백 메서드 | 설명 |
+|---|---|---|
+| `DISPLAYED` | `onAdDisplayed()` | 광고 노출됨 |
+| `CLICK` | `onAdClicked()` | 광고 클릭 |
+| `CLOSE` | `onAdClosed()` | 광고 닫힘 |
+| `COMPLETION` | `onAdCompleted()` | 비디오 재생 완료 |
+| `SKIPPED` | `onAdSkipped()` | 비디오 스킵 |
+| `LEFT_CLICK` | `onAdLeftClicked()` | 팝업형 전면 좌측 버튼 클릭 |
+| `RIGHT_CLICK` | `onAdRightClicked()` | 팝업형 전면 우측 버튼 클릭 |
+| `EARNEDREWARD` | `onAdRewarded()` | 보상 적립 |
+| - | `onAdShowFailed(adView, adapterName, errorCode, errorMsg)` | 광고 노출(show) 실패 (신규 추가) |
 
 ```java
 // Before (v1.x) — onEventAd 제거됨, 컴파일 오류
@@ -240,6 +263,7 @@ adView.setAdViewListener(new AdListener() {
 adView.setAdViewListener(new AdListener() {
     @Override public void onReceivedAd(String adapterName, Object ad) { /* ... */ }
     @Override public void onFailedToReceiveAd(Object ad, String name, int code, String msg) { /* ... */ }
+    @Override public void onAdShowFailed(Object ad, String name, int code, String msg) { /* 표시 실패 */ }
     @Override public void onAdClicked() { /* 클릭 */ }
     @Override public void onAdCompleted() { /* 완료 */ }
 });
@@ -251,7 +275,18 @@ adView.setAdViewListener(new AdListener() {
 
 ## Step 6. 새 기능 적용 (선택)
 
-v2.0.0의 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 9~10**을 참고하세요.
+### 광고 신고하기 및 닫기 버튼 제어
+
+v2.0.0에서 광고 소재 신고 기능 및 전면 광고 'X' 닫기 버튼 표시 제어 기능이 추가되었습니다. Android 8.0(API 26) 이상에서 PixelCopy 기반 소재 자동 캡처를 지원합니다.
+
+```java
+AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
+    .showReportIcon(true)   // ← 신고 아이콘(ⓘ) 활성화 (기본값: false)
+    .showCloseButton(true)  // ← 전면 광고 'X' 닫기 버튼 표시 여부 (기본값: true)
+    .build();
+```
+
+v2.0.0의 기타 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 9~10**을 참고하세요.
 
 ---
 
@@ -379,7 +414,8 @@ GDPR/CCPA/COPPA 동의값과 테스트 설정을 `AdMixer` 전역에 설정하�
 
 ```java
 AdMixer.setGdprConsent(true);
-AdMixer.setCcpaDoNotSell(false);
+AdMixer.setUsPrivacy("1YNN"); // CCPA US Privacy 문자열 설정
+AdMixer.setCcpaDoNotSell(false); // CCPA Do Not Sell 플래그 설정
 AdMixer.setTestMode(true);
 AdMixer.setTestDeviceIds(Arrays.asList("..."));
 ```
@@ -388,21 +424,21 @@ AdMixer.setTestDeviceIds(Arrays.asList("..."));
 
 ---
 
-## 변경 없는 항목 (하위 호환 유지)
+## 주요 Public API 변경 여부 요약
 
-아래 Public API는 **v2.0.0에서 변경되지 않습니다**. 기존 코드를 그대로 사용할 수 있습니다.
+v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변경 없음'으로 표시된 API는 기존 v1.x 코드를 그대로 사용할 수 있습니다.
 
 | 클래스 | 변경 여부 |
 |--------|----------|
-| `AdView` | 변경 없음 |
-| `AdListener` | **변경됨** — `onEventAd` → 이름 있는 메서드 (Step 5-B) |
+| `AMMBannerView` (구 `AdView`) | 클래스명 변경 외 기본 API 동작 유지 |
+| `AMMNativeAdView` (구 `NativeAdView`) | 클래스명 변경 외 기본 API 동작 유지 |
+| `AMMVideoView` (구 `VideoAdView`) | 클래스명 변경 외 기본 API 동작 유지 |
+| `AMMInterstitial` (구 `InterstitialAd`) | 클래스명 변경 및 일부 제거 API 제외 유지 |
+| `AMMRewardVideo` (구 `RewardInterstitialVideoAd`) | 클래스명 변경 및 일부 제거 API 제외 유지 |
+| `AMMVideoInterstitial` (구 `InterstitialVideoAd`) | 클래스명 변경 및 일부 제거 API 제외 유지 |
+| `AdListener` | **변경됨** — `onEventAd` → 이름 있는 메서드 및 노출 실패 콜백 추가 (Step 5-B) |
 | `AdEvent` | **내부 전용 전환** — 외부 콜백에서 미사용 (Step 5-B) |
 | `AdInfo.Builder` (제거 API 제외) | 변경 없음 |
-| `NativeAdView` (제거 API 제외) | 변경 없음 |
-| `VideoAdView` | 변경 없음 |
-| `InterstitialAd` (제거 API 제외) | 변경 없음 |
-| `RewardInterstitialVideoAd` (제거 API 제외) | 변경 없음 |
-| `InterstitialVideoAd` (제거 API 제외) | 변경 없음 |
 | 전면 타입 설정 (`interstitialAdType`/`popupAdOption`) | **제거(Breaking)** — 전면은 Basic 전용. `PopupInterstitialAdOption` 클래스는 내부 전용으로 유지 |
 
 ---
