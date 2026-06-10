@@ -41,7 +41,6 @@
   <div class="s-num">3</div>
   <h3>우수한 Fill Rate &amp; eCPM</h3>
   <p>구글 Ad Manager 오픈비딩과 자체 워터폴 기술력이 결합된 하이브리드 미디에이션으로 높은 eCPM과 Fill Rate를 안정적으로 제공합니다.</p>
-  <div class="metric-box">리워드 비디오 기준 eCPM $20~$30 · Fill Rate 99% 제공 유지</div>
 </div>
 <div class="s-card">
   <div class="s-num">4</div>
