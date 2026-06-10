@@ -4,6 +4,15 @@
 
 ---
 
+## 📱 테스트 데모 앱 안내
+
+SDK를 연동하기 전, 구글 플레이 스토어에 공식 등록된 **AdMixer 데모 앱**을 기기에 설치하여 각 광고 포맷(배너, 전면, 네이티브, 동영상, 리워드 등)의 연동 예시와 실제 노출 동작을 직접 확인해 보실 수 있습니다.
+
+* [<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" width="140"/> **AdMixer 바이오리듬 데모 앱 다운로드**](https://play.google.com/store/apps/details?id=kr.co.nasmedia.biorhythm)
+* 데모 앱을 통해 SDK에서 지원하는 다양한 광고 포맷 샘플(Basic 전면, 네이티브 View ID 갱신 등)의 규격과 화면 구성을 실시간으로 확인하면서 개발에 참고하시길 적극 권장합니다.
+
+---
+
 ## Step 1. Gradle 설정
 
 ### 1-1. 프로젝트 최상위 `build.gradle`
