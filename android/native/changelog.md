@@ -18,6 +18,7 @@
 - **어댑터 자동 등록** — Gradle 의존성에 포함된 어댑터를 자동 탐지·등록. `registerAdapter()` 수동 호출 불필요
 - **`cancelLoad()`** — 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
 - **클라이언트 키 주입 `setAdapterConfig(adapterName, Map)`** — 서버 미제공 시 네트워크 키(예: AppLovin `sdkKey`)를 매체가 주입
+- **인라인 광고 addView 시점 자동 노출** — 배너·네이티브·인라인 동영상은 뷰가 화면에 부착(`addView` 또는 XML 배치)되는 시점에 자동 노출됩니다. `showAd()` 직접 호출은 더 이상 필요 없으며 `@Deprecated`로 유지(하위호환). `AdInfo.isLoadOnly`는 인라인 광고에서 무시되고 전면형 지연 노출에만 적용됩니다.
 
 ### 주요 변경 (Breaking Changes)
 
