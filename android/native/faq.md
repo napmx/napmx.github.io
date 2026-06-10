@@ -48,8 +48,10 @@ LogCat에서 `AdMixer` 태그로 필터링하면 SDK 내부 동작을 상세히 
 
 광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 추가해야 합니다.
 
-- **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`와 `adView.showAd()`를 호출하세요.
-- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `AdInfo.Builder.isLoadOnly(true)`를 설정한 후 `loadAd()`를 호출하세요. 광고가 수신되어도 자동 노출되지 않으며, 원하는 시점에 `container.addView(adView)` + `adView.showAd()`를 호출합니다.
+- **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`를 호출하세요. 레이아웃에 추가되는 즉시 광고가 노출됩니다.
+- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `AdInfo.Builder.isLoadOnly(true)`를 설정한 후 `loadAd()`를 호출하세요. 광고가 수신되어도 자동 노출되지 않으며, 원하는 시점에 `container.addView(adView)`를 호출하면 광고가 노출됩니다.
+
+> ℹ️ `v2.0.0`부터 배너의 `showAd()` 호출은 불필요합니다(Deprecated). `addView()`만으로 노출 처리가 자동 수행됩니다.
 
 ---
 

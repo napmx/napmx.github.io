@@ -21,6 +21,9 @@ AdMixer.setUsPrivacy(String usPrivacyString)     // CCPA US Privacy 문자열(�
 // 테스트 설정 — 선택
 AdMixer.setTestMode(boolean enabled)
 AdMixer.setTestDeviceIds(List<String> ids)
+
+// 고급 설정 (URL 교체 등) — 운영팀 가이드가 있을 때만 사용하세요
+AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.example.com/config");
 ```
 
 | 개인정보/테스트 메서드 | 설명 |
@@ -32,20 +35,10 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setTestDeviceIds(List<String>)` / `getTestDeviceIds()` | 테스트 디바이스 광고 ID 목록 |
 | `setTagForChildDirectedTreatment(int)` | COPPA(-1 미설정/0 false/1 true) |
 
-> 네트워크별 전파 매핑은 [개인정보 동의 및 테스트 설정](privacy.md) 참고.
-
-> ℹ️ **어댑터 자동 등록 (v2.0.0)**: `initialize()` 내부에서 클래스패스(Gradle 의존성)에 포함된 어댑터를 자동으로 탐지하여 등록합니다. `registerAdapter()` 수동 호출은 더 이상 필요하지 않습니다.
-
-| 어댑터 상수 | 대상 네트워크 |
-|-----------|-------------|
-| `AdMixer.ADAPTER_ADMANAGER` | Google AdManager |
-| `AdMixer.ADAPTER_ADFIT` | Kakao Adfit |
-| `AdMixer.ADAPTER_PANGLE` | Pangle (TikTok) |
-| `AdMixer.ADAPTER_APPLOVIN` | AppLovin |
-| `AdMixer.ADAPTER_UNITY` | Unity Ads |
-| `AdMixer.ADAPTER_MOBWITH` | Mobwith |
-| `AdMixer.ADAPTER_NAVER_ADMANAGER` | Naver Ad Manager |
-| `AdMixer.ADAPTER_TEADS` | Teads |
+| 고급 설정 키 (setObject) | 설명 |
+|-----------------------|------|
+| `AX_OBJ_CONFIG_URL` | 설정 동기화 서버 URL |
+| `AX_OBJ_GA_URL` | 임프레션/클릭 로그 전송 서버 URL |
 
 ---
 
@@ -60,8 +53,8 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setMute(boolean)` | `boolean` | `false` | 동영상 음소거 |
 | `showCloseButton(boolean)` | `boolean` | `true` | 전면 광고 닫기 버튼 표시 |
 | `setCloseButtonBound(int)` | `int` | `100` | 전면 광고 닫기 'X' 버튼 터치 영역 비율(%, 20~100 범위로 클램프) |
-| `setAdViewBinder(NativeAdViewBinder)` | - | `null` | 네이티브 광고 바인더 설정 (`AMMNativeAdView.setViewBinder()` 권장, 이 메서드는 AdInfo를 통한 대안) |
-| `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 (예: AppLovin `sdkKey`). `AdMixer.ADAPTER_*` 상수를 adapterName으로 사용 |
+| `setAdViewBinder(NativeAdViewBinder)` | - | `null` | 네이티브 광고 바인더 설정 (`AMMNativeAdView.setViewBinder()` 권장) |
+| `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 |
 | `setCustomParams(Map<String,String>)` | - | `{}` | S2S Callback 커스텀 파라미터 |
 | `build()` | `AdInfo` | - | AdInfo 인스턴스 생성 |
 
@@ -73,8 +66,8 @@ AdMixer.setTestDeviceIds(List<String> ids)
 |--------|------|
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
-| `loadAd()` | 광고 로드 시작 (`AdInfo.isLoadOnly(true)` 설정 시 자동 노출 안 함) |
-| `showAd()` | 지연 노출 모드(`isLoadOnly=true`)에서 광고 표시 |
+| `loadAd()` | 광고 로드 시작 |
+| `showAd()` | **(Deprecated)** 배너는 레이아웃에 `addView()` 시 자동 노출되므로 호출이 불필요합니다. |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `destroy()` | 리소스 해제 — onDestroy에서 호출 (필수) |
@@ -182,8 +175,6 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `onAdDismissedFullScreenContent()` | 광고 닫힘 | |
 | `onAdFailedToShowFullScreenContent(AdError)` | 광고 표시 실패 | |
 | `onAdCompleted()` | 비디오 재생 완료 | **AdMixer 확장** (전면비디오/리워드) |
-| `onAdLeftClicked()` | 팝업형 좌측 버튼 클릭 | **AdMixer 확장** (Popup 전면) |
-| `onAdRightClicked()` | 팝업형 우측 버튼 클릭 | **AdMixer 확장** (Popup 전면) |
 
 **OnUserEarnedRewardListener (interface — 리워드 보상 적립)**
 
@@ -238,8 +229,6 @@ public abstract class AdListener {
     public void onAdClosed() {}         // 광고 닫힘
     public void onAdCompleted() {}      // 동영상 재생 완료
     public void onAdSkipped() {}        // 동영상 Skip
-    public void onAdLeftClicked() {}    // 팝업 전면: 왼쪽 버튼 클릭
-    public void onAdRightClicked() {}   // 팝업 전면: 오른쪽 버튼 클릭
     public void onAdRewarded() {}       // 리워드 적립
 }
 ```
@@ -258,9 +247,7 @@ public abstract class AdListener {
 |--------|------|------|----------|
 | `DISPLAYED` | `onAdDisplayed()` | 광고가 화면에 표시됨 | 배너, 전면, 네이티브, 동영상 |
 | `CLICK` | `onAdClicked()` | 광고 소재 또는 링크 클릭 | 전체 |
-| `CLOSE` | `onAdClosed()` | 광고 창 닫힘 | 전면, 동영상 |
-| `LEFT_CLICK` | `onAdLeftClicked()` | 팝업형: 왼쪽 버튼 클릭 | 전면(Popup) |
-| `RIGHT_CLICK` | `onAdRightClicked()` | 팝업형: 오른쪽 버튼 클릭 | 전면(Popup) |
+| `onAdClosed()` | `onAdClosed()` | 광고 창 닫힘 | 전면, 동영상 |
 | `COMPLETION` | `onAdCompleted()` | 동영상 재생 완료 | 동영상, 리워드 |
 | `SKIPPED` | `onAdSkipped()` | Skip 버튼 클릭 | 동영상, 리워드 |
 | `EARNEDREWARD` | `onAdRewarded()` | 리워드 획득 (동영상 시청 완료) | 리워드 |

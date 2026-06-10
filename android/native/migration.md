@@ -14,8 +14,9 @@
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
 | **전면 BACK 키 기본 차단** | **`AdInfo.Builder.setDisableBackKey` 기본값 `true`로 변경 — 뒤로가기 닫기 의존 시 `false` 명시 필요** |
-| **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — `AdInfo.Builder.interstitialAdType`/`popupAdOption`/`setInterstitialAdType`/`setPopupAdOption` 제거. Popup은 내부(서버 설정) 전용, **CountDown 타입은 완전 제거**(관련 상수·뷰 삭제)** |
-| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showReportIcon/showCloseButton` (광고 제어) |
+| **정적 `load()` API 도입** | **전면·리워드 광고에 GMA 스타일의 정적 `load()` 메서드 추가 (추천 방식)** |
+| **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — Popup 및 CountDown 타입은 더 이상 제공되지 않음 (관련 API 제거)** |
+| 신규 API | `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showReportIcon/showCloseButton` (광고 제어) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, `AdInfo.Builder.isUseBackgroundAlpha(Boolean)`, `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭을 v2.0.0에서 완전 제거. 정식 메서드로 교체 필요** |
 | **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
@@ -273,6 +274,38 @@ adView.setAdViewListener(new AdListener() {
 
 ---
 
+## Step 5-C. 신규 GAM 스타일 정적 `load()` API 도입 (추천)
+
+v2.0.0부터 전면·리워드·전면 동영상 광고에 **GMA(Google Mobile Ads)와 유사한 정적 `load()` 방식**이 도입되었습니다. 기존의 인스턴스 생성 방식보다 이 방식을 사용하실 것을 강력히 권장합니다.
+
+### 주요 특징
+- **인스턴스 관리 불필요**: `new AMMInterstitial()` 대신 정적 메서드로 광고를 요청합니다.
+- **로드 완료 콜백으로 객체 수신**: 로드가 완료된 시점에만 광고 객체를 전달받으므로 상태 관리가 명확해집니다.
+- **노출 콜백 분리**: 노출 단계의 이벤트는 `FullScreenContentCallback`으로 수신합니다.
+
+### 코드 비교 (전면 광고 예시)
+
+| 구분 | 기존 (v1.x / v2.0 인스턴스 방식) | 신규 (v2.0 정적 load 방식 — 추천) |
+|---|---|---|
+| **로드** | `new AMMInterstitial(ctx)` <br> `ad.loadInterstitial(adInfo)` | `AMMInterstitial.load(ctx, adInfo, loadCallback)` |
+| **성공 콜백** | `AdListener.onReceivedAd()` | `AMMInterstitialLoadCallback.onSuccessLoadInterstitial()` |
+| **노출** | `ad.showInterstitial()` | `ad.show(activity)` |
+| **이벤트 콜백** | `AdListener` (전체 공통) | `FullScreenContentCallback` (노출 전용) |
+
+```java
+// [신규 방식 추천 코드]
+AMMInterstitial.load(this, adInfo, new AMMInterstitialLoadCallback() {
+    @Override
+    public void onSuccessLoadInterstitial(String adapterName, AMMInterstitial ad) {
+        // 로드된 광고 객체에 콜백 등록 후 노출
+        ad.setFullScreenContentCallback(new FullScreenContentCallback() { ... });
+        ad.show(MyActivity.this);
+    }
+});
+```
+
+---
+
 ## Step 6. 새 기능 적용 (선택)
 
 ### 광고 신고하기 및 닫기 버튼 제어
@@ -439,7 +472,7 @@ v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변�
 | `AdListener` | **변경됨** — `onEventAd` → 이름 있는 메서드 및 노출 실패 콜백 추가 (Step 5-B) |
 | `AdEvent` | **내부 전용 전환** — 외부 콜백에서 미사용 (Step 5-B) |
 | `AdInfo.Builder` (제거 API 제외) | 변경 없음 |
-| 전면 타입 설정 (`interstitialAdType`/`popupAdOption`) | **제거(Breaking)** — 전면은 Basic 전용. `PopupInterstitialAdOption` 클래스는 내부 전용으로 유지 |
+| 전면 타입 설정 (`interstitialAdType`/`popupAdOption`) | **제거(Breaking)** — 전면은 Basic 전용 (Popup/CountDown 제거) |
 
 ---
 
