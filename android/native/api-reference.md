@@ -148,6 +148,7 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작 |
+| `showAd()` | **(Deprecated)** 레이아웃에 `addView()` 시 자동 노출되므로 호출이 불필요합니다. |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `destroy()` | 리소스 해제 — onDestroy에서 호출 (필수) |

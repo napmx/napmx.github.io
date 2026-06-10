@@ -122,6 +122,13 @@
 
 ## 코드 구현
 
+### 1~3단계: Binder 및 AdInfo 구성
+(기존 가이드와 동일하므로 생략 가능하나, 완전성을 위해 코드로 설명합니다.)
+
+### 4단계: 광고 로드 및 노출
+
+`loadNativeAd()`를 호출하여 광고를 요청합니다. 광고 수신 성공 시 `onReceivedAd()` 콜백이 호출되며, 이때 레이아웃에 `AMMNativeAdView`를 추가하면 즉시 광고가 노출됩니다.
+
 #### Java
 ```java
 public class NativeAdActivity extends AppCompatActivity {
@@ -132,11 +139,10 @@ public class NativeAdActivity extends AppCompatActivity {
     private final AdListener adListener = new AdListener() {
         @Override
         public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-            // 광고 수신 성공 — 레이아웃에 추가 후 반드시 showAd() 호출
+            // 광고 수신 성공 — 레이아웃에 추가하는 즉시 광고가 노출됩니다.
             if (nativeAdView != null && nativeAdView.hasAd) {
                 container.removeAllViews();
                 container.addView(nativeAdView);
-                nativeAdView.showAd(); // 광고 소재 렌더링 및 노출 처리 (필수)
             }
         }
 
@@ -201,7 +207,6 @@ class NativeAdActivity : AppCompatActivity() {
             if (nativeAdView?.hasAd == true) {
                 container.removeAllViews()
                 container.addView(nativeAdView)
-                nativeAdView?.showAd() // 광고 소재 렌더링 및 노출 처리 (필수)
             }
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
@@ -243,6 +248,10 @@ class NativeAdActivity : AppCompatActivity() {
 }
 ```
 
+> ℹ️ **showAd() 메서드 안내**
+> - `v2.0.0`부터 `AMMNativeAdView`는 레이아웃에 추가(`addView`)되는 시점에 자동으로 노출 처리가 수행됩니다.
+> - 기존의 `showAd()` 메서드는 더 이상 호출할 필요가 없으며(Deprecated), `container.addView(adView)`만으로 충분합니다.
+
 ---
 
 ## NativeAdViewBinder 옵션
@@ -269,7 +278,7 @@ class NativeAdActivity : AppCompatActivity() {
 
 > ℹ️ **`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
 
-> ℹ️ **자동 갱신(롤링) — [v2.0.0]**: 배너와 **동일 로직**으로, 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격, 무한 루프는 #59 가드 차단). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 갱신 시 수신 콜백(`onReceivedAd`)이 다시 호출되므로 위 예제처럼 콜백에서 `showAd()`를 호출하면 새 소재가 자동 표시됩니다.
+> ℹ️ **자동 갱신(롤링) — [v2.0.0]**: 배너와 **동일 로직**으로, 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격, 무한 루프는 #59 가드 차단). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 갱신 시 수신 콜백(`onReceivedAd`)이 다시 호출되므로 위 예제처럼 콜백에서 `addView()`를 수행하면 새 소재가 자동 표시됩니다.
 
 ---
 
