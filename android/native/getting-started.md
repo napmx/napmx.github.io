@@ -4,12 +4,26 @@
 
 ---
 
-## 📱 테스트 데모 앱 안내
+## 📱 실제 연동 서비스 앱 참고 (바이오리듬)
 
-SDK를 연동하기 전, 구글 플레이 스토어에 공식 등록된 **AdMixer 데모 앱**을 기기에 설치하여 각 광고 포맷(배너, 전면, 네이티브, 동영상, 리워드 등)의 연동 예시와 실제 노출 동작을 직접 확인해 보실 수 있습니다.
+SDK를 연동하기 전, 구글 플레이 스토어에 출시된 **바이오리듬(Biorhythm) 앱**을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
+*(본 앱은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
 
-* [<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" width="140"/> **AdMixer 바이오리듬 데모 앱 다운로드**](https://play.google.com/store/apps/details?id=kr.co.nasmedia.biorhythm)
-* 데모 앱을 통해 SDK에서 지원하는 다양한 광고 포맷 샘플(Basic 전면, 네이티브 View ID 갱신 등)의 규격과 화면 구성을 실시간으로 확인하면서 개발에 참고하시길 적극 권장합니다.
+<table style="border: none; background: transparent;">
+  <tr style="border: none; background: transparent;">
+    <td style="border: none; padding-right: 15px; vertical-align: middle;">
+      <img src="https://play-lh.googleusercontent.com/yBai-9NRf3BkcYuSS9jU2MeGRXnpNx-Mn9EEKegP-BvdtFtzeCJDgMFMRLrnHTXwCX4AFh9kNbgVLlPNfrQ82dY" alt="Biorhythm Icon" width="64" height="64" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"/>
+    </td>
+    <td style="border: none; vertical-align: middle;">
+      <strong>함께하는 바이오리듬 (Biorhythm)</strong><br/>
+      <a href="https://play.google.com/store/apps/details?id=kr.co.nasmedia.biorhythm" target="_blank" style="text-decoration: none;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play에서 다운로드" width="120" style="margin-top: 4px;"/>
+      </a>
+    </td>
+  </tr>
+</table>
+
+* 이 앱에서는 SDK가 제공하는 실제 광고 포맷(Basic 전면, 배너 및 네이티브 등)이 실제 사용자 화면에서 어떻게 송출되는지 레퍼런스로 참고하실 수 있습니다.
 
 ---
 
