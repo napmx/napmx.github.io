@@ -38,6 +38,7 @@
 
 - **Pangle `7.7.0.2` → `8.0.0.5`** — GDPR 동의가 퍼블리셔 CMP의 TCF v2 동의문자열로 자동 처리됨(`setGdprConsent` 값은 Pangle로 미전파, CCPA는 유지). 최소 GMA(play-services-ads) `25.1.0`+ 권장.
 - **Google AdManager(play-services-ads) `24.8.0` → `25.2.0`** — (`25.3.0`+는 호환 이슈로 미채택)
+- **AdManager 표준 배너 → anchored adaptive 전환** — iOS와 동일하게 표준 배너를 디바이스 너비 기반 anchored adaptive 배너로 요청(높이는 SDK가 산출). MREC(300x250)·320x480 고정 슬롯은 종전대로 유지. 호스트 앱 API 변경 없음(렌더 사이즈만 변동).
 - **AppLovin `13.5.0` → `13.6.3`**
 - **Naver NAM(nam-bom) `8.14.0` → `8.16.0`**
 - **Mobwith(mobwithSDK) `1.0.2` → `1.0.83`** — ⚠️ `settings.gradle`(또는 프로젝트 `build.gradle`) repositories에 `maven { url 'https://jitpack.io' }` 추가 필요(BlurView 전이 의존).
