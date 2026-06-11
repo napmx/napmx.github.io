@@ -18,6 +18,7 @@
 | 설명 | `nap_mx_tv_desc` | 광고 설명 텍스트 (TextView) | 선택 |
 | 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 (NativeMainAdView) | AdMixer 단독: 1개 이상 필수 |
 | CTA 버튼 | `nap_mx_btn_cta` | 행동 유도 버튼 (Button) | 선택 |
+| 광고 정보 고지 | `nap_mx_privacy_container` | 정보 고지 / AdChoices (View/ViewGroup/ImageView) | 선택 (미지정 시 우측 상단 자동 오버레이) |
 
 > ⚠️ **필수 규칙**
 > - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
@@ -115,19 +116,22 @@
         android:textColor="#FFFFFF"
         android:textSize="13sp" />
 
+    <!-- 광고 정보 고지 (AdChoices) 컨테이너 -->
+    <FrameLayout
+        android:id="@+id/nap_mx_privacy_container"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp" />
+
 </RelativeLayout>
 ```
 
 ---
 
 ## 코드 구현
-
-### 1~3단계: Binder 및 AdInfo 구성
-(기존 가이드와 동일하므로 생략 가능하나, 완전성을 위해 코드로 설명합니다.)
-
-### 4단계: 광고 로드 및 노출
-
-`loadNativeAd()`를 호출하여 광고를 요청합니다. 광고 수신 성공 시 `onReceivedAd()` 콜백이 호출되며, 이때 레이아웃에 `AMMNativeAdView`를 추가하면 즉시 광고가 노출됩니다.
 
 #### Java
 ```java
@@ -139,10 +143,10 @@ public class NativeAdActivity extends AppCompatActivity {
     private final AdListener adListener = new AdListener() {
         @Override
         public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-            // 광고 수신 성공 — 레이아웃에 추가하는 즉시 광고가 노출됩니다.
+            // 광고 수신 성공 — 레이아웃에 추가하면 부착 시점에 자동 렌더링 (showAd 호출 불필요)
             if (nativeAdView != null && nativeAdView.hasAd) {
                 container.removeAllViews();
-                container.addView(nativeAdView);
+                container.addView(nativeAdView); // addView 시점에 자동 렌더링
             }
         }
 
@@ -173,6 +177,7 @@ public class NativeAdActivity extends AppCompatActivity {
             .setDescriptionId(R.id.nap_mx_tv_desc)
             .setMainViewId(R.id.nap_mx_iv_main)
             .setCtaId(R.id.nap_mx_btn_cta)
+            .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
             .build();
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build();
@@ -206,7 +211,7 @@ class NativeAdActivity : AppCompatActivity() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
             if (nativeAdView?.hasAd == true) {
                 container.removeAllViews()
-                container.addView(nativeAdView)
+                container.addView(nativeAdView) // addView 시점에 자동 렌더링 (showAd 호출 불필요)
             }
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
@@ -227,6 +232,7 @@ class NativeAdActivity : AppCompatActivity() {
             .setDescriptionId(R.id.nap_mx_tv_desc)
             .setMainViewId(R.id.nap_mx_iv_main)
             .setCtaId(R.id.nap_mx_btn_cta)
+            .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
             .build()
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build()
@@ -248,10 +254,6 @@ class NativeAdActivity : AppCompatActivity() {
 }
 ```
 
-> ℹ️ **showAd() 메서드 안내**
-> - `v2.0.0`부터 `AMMNativeAdView`는 레이아웃에 추가(`addView`)되는 시점에 자동으로 노출 처리가 수행됩니다.
-> - 기존의 `showAd()` 메서드는 더 이상 호출할 필요가 없으며(Deprecated), `container.addView(adView)`만으로 충분합니다.
-
 ---
 
 ## NativeAdViewBinder 옵션
@@ -267,6 +269,7 @@ class NativeAdActivity : AppCompatActivity() {
 | `setDescriptionId(int viewId)` | 설명 TextView ID |
 | `setMainViewId(int viewId)` | 메인 이미지/동영상 NativeMainAdView ID |
 | `setCtaId(int viewId)` | CTA 버튼 View ID |
+| `setPrivacyViewId(int viewId)` | 광고 정보 고지 (AdChoices) 컨테이너 / 뷰 ID |
 
 ---
 
@@ -278,7 +281,7 @@ class NativeAdActivity : AppCompatActivity() {
 
 > ℹ️ **`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
 
-> ℹ️ **자동 갱신(롤링) — [v2.0.0]**: 배너와 **동일 로직**으로, 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격, 무한 루프는 #59 가드 차단). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 갱신 시 수신 콜백(`onReceivedAd`)이 다시 호출되므로 위 예제처럼 콜백에서 `addView()`를 수행하면 새 소재가 자동 표시됩니다.
+> ℹ️ **자동 갱신(롤링) — [v2.0.0]**: 배너와 **동일 로직**으로, 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격, 무한 루프는 #59 가드 차단). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 갱신 시에는 뷰가 이미 화면에 부착돼 있으므로 새 소재가 자동으로 다시 렌더링됩니다(`showAd()` 호출 불필요).
 
 ---
 
