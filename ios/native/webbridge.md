@@ -627,7 +627,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
 
     private var bannerView: AMMBannerView?
-    private var interstitial: AMMInterstital?
+    private var interstitial: AMMInterstitial?
     private var rewardVideo: AMMRewardVideo?
     private var videoView: AMMVideoAdView?
     private var videoInterstitial: AMMVideoInterstitial?
@@ -722,7 +722,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
     // ── 인라인 동영상 ────────────────────────────
     private func requestVideo(params: [String: Any], in vc: UIViewController) {
         let adUnitId = params["adUnitId"] as? String ?? ""
-        videoView = AMMVideoView(rootViewController: vc)
+        videoView = AMMVideoAdView(rootViewController: vc)
         videoView?.adUnitID = adUnitId
         videoView?.delegate = self
         guard let video = videoView, let parent = webView?.superview else { return }
