@@ -385,6 +385,7 @@ public class NapMxAdBridgeHandler {
                 .setDescriptionId(activity.getResources().getIdentifier("nap_mx_tv_desc", "id", activity.getPackageName()))
                 .setMainViewId(activity.getResources().getIdentifier("nap_mx_iv_main", "id", activity.getPackageName()))
                 .setCtaId(activity.getResources().getIdentifier("nap_mx_btn_cta", "id", activity.getPackageName()))
+                .setPrivacyViewId(activity.getResources().getIdentifier("nap_mx_privacy_container", "id", activity.getPackageName())) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
                 .build();
 
                 AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
