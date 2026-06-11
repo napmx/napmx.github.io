@@ -31,6 +31,7 @@
     - [리워드 동영상](/android/native/rewarded-video)
     - [비즈보드](/android/native/bizboard)
     - [Jetpack Compose 연동](/android/native/compose)
+    - [**WebBridge — 하이브리드 앱**](/android/native/webbridge)
     - [개인정보 / 테스트 설정](/android/native/privacy)
     - [ProGuard 설정](/android/native/proguard)
     - [API 레퍼런스](/android/native/api-reference)
@@ -55,6 +56,7 @@
     - [리워드 동영상](/ios/native/rewarded-video)
     - [동영상](/ios/native/video)
     - [비즈보드](/ios/native/bizboard)
+    - [**WebBridge — 하이브리드 앱**](/ios/native/webbridge)
   - Unity
     - [시작하기 - Unity](/ios/unity/getting-started)
     - [배너 - Unity](/ios/unity/banner)
