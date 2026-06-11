@@ -116,6 +116,11 @@ window.NapMxBridgeCallback = {
     onBannerClicked:    function(data) { /* 배너 클릭 */ },
     onBannerDisplayed:  function(data) { /* 배너 표시됨 */ },
 
+    // 네이티브
+    onNativeLoaded:     function(data) { /* 네이티브 광고 로드 성공 */ },
+    onNativeFailed:     function(data) { /* 네이티브 광고 로드 실패 */ },
+    onNativeClicked:    function(data) { /* 네이티브 광고 클릭 */ },
+
     // 전면 배너
     onInterstitialLoaded:    function(data) { /* 로드 성공 → showInterstitial() 호출 가능 */ },
     onInterstitialFailed:    function(data) { /* 로드 실패 */ },
@@ -240,6 +245,7 @@ public class NapMxAdBridgeHandler {
     private final Activity activity;
     private final WebView webView;
     private AMMBannerView banner;
+    private AMMNativeAdView nativeAdView;
     private AMMInterstitial loadedInterstitial;
     private AMMRewardVideo loadedRewardVideo;
     private AMMVideoView videoView;
@@ -326,6 +332,70 @@ public class NapMxAdBridgeHandler {
                 if (parent != null) parent.removeView(banner);
                 banner.destroy();
                 banner = null;
+            }
+        });
+    }
+
+    // ── 네이티브 광고 ──────────────────────────────
+
+    private final AdListener nativeListener = new AdListener() {
+        @Override
+        public void onReceivedAd(String adapterName, Object adView) {
+            activity.runOnUiThread(() -> {
+                if (nativeAdView != null && nativeAdView.hasAd) {
+                    ViewGroup parent = (ViewGroup) webView.getParent();
+                    if (parent != null) {
+                        parent.removeView(nativeAdView);
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        );
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        parent.addView(nativeAdView, lp);
+                    }
+                    sendCallback("onNativeLoaded", nativeAdView.getAdInfo().getAdUnitId(), adapterName, 0, "");
+                }
+            });
+        }
+        @Override
+        public void onFailedToReceiveAd(Object adView, String adapterName, int errorCode, String errorMsg) {
+            String adUnitId = nativeAdView != null ? nativeAdView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onNativeFailed", adUnitId, adapterName, errorCode, errorMsg);
+        }
+        @Override
+        public void onAdClicked() {
+            String adUnitId = nativeAdView != null ? nativeAdView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onNativeClicked", adUnitId, "", 0, "");
+        }
+    };
+
+    @JavascriptInterface
+    public void requestNative(String jsonParams) {
+        activity.runOnUiThread(() -> {
+            try {
+                JSONObject params = new JSONObject(jsonParams);
+                String adUnitId = params.getString("adUnitId");
+                
+                NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(
+                    activity.getResources().getIdentifier("item_native_ad", "layout", activity.getPackageName())
+                )
+                .setIconImageId(activity.getResources().getIdentifier("nap_mx_iv_icon", "id", activity.getPackageName()))
+                .setTitleId(activity.getResources().getIdentifier("nap_mx_tv_title", "id", activity.getPackageName()))
+                .setAdvertiserId(activity.getResources().getIdentifier("nap_mx_tv_adv", "id", activity.getPackageName()))
+                .setDescriptionId(activity.getResources().getIdentifier("nap_mx_tv_desc", "id", activity.getPackageName()))
+                .setMainViewId(activity.getResources().getIdentifier("nap_mx_iv_main", "id", activity.getPackageName()))
+                .setCtaId(activity.getResources().getIdentifier("nap_mx_btn_cta", "id", activity.getPackageName()))
+                .build();
+
+                AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
+
+                nativeAdView = new AMMNativeAdView(activity);
+                nativeAdView.setAdInfo(adInfo);
+                nativeAdView.setViewBinder(viewBinder);
+                nativeAdView.setAdViewListener(nativeListener);
+                nativeAdView.loadNativeAd();
+            } catch (Exception e) {
+                sendCallback("onNativeFailed", "", "", -1, e.getMessage());
             }
         });
     }
@@ -458,6 +528,68 @@ public class NapMxAdBridgeHandler {
         });
     }
 
+    // ── 인라인 동영상 광고 ───────────────────────
+
+    private final AdListener videoListener = new AdListener() {
+        @Override
+        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+            activity.runOnUiThread(() -> {
+                if (videoView != null) {
+                    ViewGroup parent = (ViewGroup) webView.getParent();
+                    if (parent != null) {
+                        parent.removeView(videoView);
+                        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        );
+                        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+                        parent.addView(videoView, lp);
+                    }
+                    sendCallback("onVideoLoaded", videoView.getAdInfo().getAdUnitId(), adapterName, 0, "");
+                }
+            });
+        }
+        @Override
+        public void onFailedToReceiveAd(Object adView, String adapterName, int errorCode, String errorMsg) {
+            String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onVideoFailed", adUnitId, adapterName, errorCode, errorMsg);
+        }
+        @Override
+        public void onAdCompleted() {
+            String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onVideoCompleted", adUnitId, "", 0, "");
+        }
+        @Override
+        public void onAdSkipped() {
+            String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onVideoSkipped", adUnitId, "", 0, "");
+        }
+        @Override
+        public void onAdClicked() {
+            String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onVideoClicked", adUnitId, "", 0, "");
+        }
+    };
+
+    @JavascriptInterface
+    public void requestVideo(String jsonParams) {
+        activity.runOnUiThread(() -> {
+            try {
+                JSONObject params = new JSONObject(jsonParams);
+                String adUnitId = params.getString("adUnitId");
+
+                AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
+
+                videoView = new AMMVideoView(activity);
+                videoView.setAdInfo(adInfo);
+                videoView.setAdViewListener(videoListener);
+                videoView.loadAd();
+            } catch (JSONException e) {
+                sendCallback("onVideoFailed", "", "", -1, e.getMessage());
+            }
+        });
+    }
+
     // ── 전면 동영상 광고 ─────────────────────────
 
     @JavascriptInterface
@@ -521,9 +653,22 @@ public class NapMxAdBridgeHandler {
     // ── Lifecycle & 정리 ─────────────────────────
 
     @JavascriptInterface
+    public void destroyNative() {
+        activity.runOnUiThread(() -> {
+            if (nativeAdView != null) {
+                ViewGroup parent = (ViewGroup) nativeAdView.getParent();
+                if (parent != null) parent.removeView(nativeAdView);
+                nativeAdView.destroy();
+                nativeAdView = null;
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void destroyAll() {
         activity.runOnUiThread(() -> {
             destroyBanner();
+            destroyNative();
             if (loadedInterstitial != null)      { loadedInterstitial.destroy(); loadedInterstitial = null; }
             if (loadedRewardVideo != null)        { loadedRewardVideo.stopRewardVideoAd(); loadedRewardVideo = null; }
             if (videoView != null)                { videoView.destroy(); videoView = null; }
@@ -533,11 +678,13 @@ public class NapMxAdBridgeHandler {
 
     public void onResume() {
         if (banner != null) banner.onResume();
+        if (nativeAdView != null) nativeAdView.onResume();
         if (videoView != null) videoView.onResume();
     }
 
     public void onPause() {
         if (banner != null) banner.onPause();
+        if (nativeAdView != null) nativeAdView.onPause();
         if (videoView != null) videoView.onPause();
     }
 
@@ -619,6 +766,62 @@ NapMxBridge.requestRewardVideo({ adUnitId: "YOUR_REWARD_ADUNIT_ID", mute: false 
 
 // 2. 사용자 클릭 시 노출
 document.getElementById('btn-watch').onclick = () => NapMxBridge.showRewardVideo();
+</script>
+```
+
+### 네이티브 광고
+
+```html
+<script>
+window.NapMxBridgeCallback = {
+    onNativeLoaded:  function(d) { console.log('네이티브 로드 성공:', d.adapterName); },
+    onNativeFailed:  function(d) { console.error('네이티브 실패:', d.errorCode); },
+    onNativeClicked: function(d) { console.log('네이티브 클릭'); }
+};
+
+NapMxBridge.requestNative({
+    adUnitId: "YOUR_NATIVE_ADUNIT_ID"
+});
+</script>
+```
+
+### 인라인 동영상 광고
+
+```html
+<script>
+window.NapMxBridgeCallback = {
+    onVideoLoaded:    function(d) { console.log('동영상 로드 성공'); },
+    onVideoFailed:    function(d) { console.error('동영상 로드 실패'); },
+    onVideoCompleted: function(d) { console.log('동영상 재생 완료'); },
+    onVideoSkipped:   function(d) { console.log('동영상 스킵됨'); },
+    onVideoClicked:   function(d) { console.log('동영상 클릭(더보기)'); }
+};
+
+NapMxBridge.requestVideo({
+    adUnitId: "YOUR_VIDEO_ADUNIT_ID"
+});
+</script>
+```
+
+### 전면 동영상 광고
+
+```html
+<script>
+window.NapMxBridgeCallback = {
+    onVideoInterstitialLoaded: function(d) {
+        NapMxBridge.showVideoInterstitial(); // 즉시 노출 또는 원하는 시점에 호출
+    },
+    onVideoInterstitialCompleted: function(d) {
+        console.log('전면 동영상 재생 완료');
+    },
+    onVideoInterstitialDismissed: function(d) {
+        console.log('전면 동영상 닫힘');
+    }
+};
+
+NapMxBridge.requestVideoInterstitial({
+    adUnitId: "YOUR_VIDEO_INTERSTITIAL_ADUNIT_ID"
+});
 </script>
 ```
 

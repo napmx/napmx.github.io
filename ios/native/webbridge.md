@@ -116,6 +116,11 @@ window.NapMxBridgeCallback = {
     onBannerClicked:    function(data) { /* 배너 클릭 */ },
     onBannerDisplayed:  function(data) { /* 배너 표시됨 */ },
 
+    // 네이티브
+    onNativeLoaded:     function(data) { /* 네이티브 광고 로드 성공 */ },
+    onNativeFailed:     function(data) { /* 네이티브 광고 로드 실패 */ },
+    onNativeClicked:    function(data) { /* 네이티브 광고 클릭 */ },
+
     // 전면 배너
     onInterstitialLoaded:    function(data) { /* 로드 성공 → showInterstitial() 호출 가능 */ },
     onInterstitialFailed:    function(data) { /* 로드 실패 */ },
@@ -228,6 +233,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
 
     private var bannerView: AMMBannerView?
+    private var nativeAd: AMMNativeAdViewContainer?
     private var interstitial: AMMInterstitial?
     private var rewardVideo: AMMRewardVideo?
     private var videoView: AMMVideoAdView?
@@ -246,6 +252,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         switch message.name {
         case "requestBanner":            requestBanner(params: params, in: vc)
         case "requestInterstitial":      requestInterstitial(params: params, in: vc)
+        case "requestNative":            requestNative(params: params, in: vc)
         case "requestRewardVideo":       requestRewardVideo(params: params, in: vc)
         case "requestVideo":             requestVideo(params: params, in: vc)
         case "requestVideoInterstitial": requestVideoInterstitial(params: params, in: vc)
@@ -258,6 +265,32 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         case "destroyAll":               destroyAll()
         default: break
         }
+    }
+
+    // ── 네이티브 ──────────────────────────────────
+    private func requestNative(params: [String: Any], in vc: UIViewController) {
+        let adUnitId = params["adUnitId"] as? String ?? ""
+        
+        let nibView = Bundle.main.loadNibNamed("AMMNativeAdView", owner: nil, options: nil)?.first
+        let nativeAdView = nibView as? AMMNativeAdView
+        
+        nativeAd = AMMNativeAdViewContainer(rootViewController: vc)
+        nativeAd?.nativeAdView = nativeAdView
+        nativeAd?.adUnitID = adUnitId
+        nativeAd?.delegate = self
+        
+        guard let nativeContainer = nativeAdView, let parent = webView?.superview else { return }
+        
+        nativeContainer.translatesAutoresizingMaskIntoConstraints = false
+        parent.addSubview(nativeContainer)
+        
+        NSLayoutConstraint.activate([
+            nativeContainer.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+            nativeContainer.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+            nativeContainer.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        
+        nativeAd?.load()
     }
 
     // ── 배너 ─────────────────────────────────────
@@ -352,6 +385,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
     private func destroyBannerView() { bannerView?.stop(); bannerView?.removeFromSuperview(); bannerView = nil }
     func destroyAll() {
         destroyBannerView()
+        nativeAd?.stop(); nativeAd = nil
         interstitial?.stop(); interstitial = nil
         rewardVideo?.stop(); rewardVideo = nil
         videoView?.stop(); videoView?.removeFromSuperview(); videoView = nil
@@ -368,6 +402,12 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
 }
 
 // MARK: - Delegates
+extension NapMxAdBridgeHandler: AMMNativeDelegate {
+    func onSuccessNative() { sendCallback("onNativeLoaded") }
+    func onFailNative()    { sendCallback("onNativeFailed") }
+    func onTapNative()     { sendCallback("onNativeClicked") }
+}
+
 extension NapMxAdBridgeHandler: AMMBannerViewDelegate {
     func onSuccessBanner()  { sendCallback("onBannerLoaded") }
     func onFailBanner()     { sendCallback("onBannerFailed") }
@@ -467,6 +507,62 @@ NapMxBridge.requestRewardVideo({ adUnitId: "YOUR_REWARD_ADUNIT_ID", mute: false 
 
 // 2. 사용자 클릭 시 노출
 document.getElementById('btn-watch').onclick = () => NapMxBridge.showRewardVideo();
+</script>
+```
+
+### 네이티브 광고
+
+```html
+<script>
+window.NapMxBridgeCallback = {
+    onNativeLoaded:  function(d) { console.log('네이티브 로드 성공:', d.adapterName); },
+    onNativeFailed:  function(d) { console.error('네이티브 실패:', d.errorCode); },
+    onNativeClicked: function(d) { console.log('네이티브 클릭'); }
+};
+
+NapMxBridge.requestNative({
+    adUnitId: "YOUR_NATIVE_ADUNIT_ID"
+});
+</script>
+```
+
+### 인라인 동영상 광고
+
+```html
+<script>
+window.NapMxBridgeCallback = {
+    onVideoLoaded:    function(d) { console.log('동영상 로드 성공'); },
+    onVideoFailed:    function(d) { console.error('동영상 로드 실패'); },
+    onVideoCompleted: function(d) { console.log('동영상 재생 완료'); },
+    onVideoSkipped:   function(d) { console.log('동영상 스킵됨'); },
+    onVideoClicked:   function(d) { console.log('동영상 클릭(더보기)'); }
+};
+
+NapMxBridge.requestVideo({
+    adUnitId: "YOUR_VIDEO_ADUNIT_ID"
+});
+</script>
+```
+
+### 전면 동영상 광고
+
+```html
+<script>
+window.NapMxBridgeCallback = {
+    onVideoInterstitialLoaded: function(d) {
+        NapMxBridge.showVideoInterstitial(); // 즉시 노출 또는 원하는 시점에 호출
+    },
+    onVideoInterstitialCompleted: function(d) {
+        console.log('전면 동영상 재생 완료');
+    },
+    onVideoInterstitialDismissed: function(d) {
+        console.log('전면 동영상 닫힘');
+    }
+};
+
+NapMxBridge.requestVideoInterstitial({
+    adUnitId: "YOUR_VIDEO_INTERSTITIAL_ADUNIT_ID"
+});
 </script>
 ```
 
