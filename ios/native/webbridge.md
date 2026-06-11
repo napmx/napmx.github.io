@@ -1,54 +1,59 @@
-# WebBridge ???�이브리?????�동
+# WebBridge — 하이브리드 앱 연동
 
-> ?�️ WebBridge ?�동 ?? [SDK ?�작?�기](getting-started.md)??Step 1~4 ?�정???�료?�었?��? ?�인?�세??
+> ℹ️ WebBridge 연동 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
-WebBridge???�이브리????WebView 기반) ?�경?�서 nap ssp ?�이?�브 SDK�?JavaScript Bridge�??�해 ?�출?�여 광고�??�시?�는 ?�동 방식?�니??
+WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap ssp 네이티브 SDK를 JavaScript Bridge를 통해 호출하여 광고를 표시하는 연동 방식입니다.
 
-> ?�� **?�출 방식**  
-> 배너·?�이?�브·?�라???�영?��? **WebView ?�에 ?�이?�브 뷰�? ?�버?�이**?�는 방식?�니?? HTML ?��???직접 광고�??�더링하??것이 ?�니?? ?�이?�브 뷰�? WebView ?�에 겹쳐???�시?�니??
+> 💡 **노출 방식**  
+> 배너·네이티브·인라인 동영상은 **WebView 위에 네이티브 뷰를 오버레이**하는 방식입니다. HTML 내부에 직접 광고를 렌더링하는 것이 아니라, 네이티브 뷰가 WebView 위에 겹쳐져 표시됩니다.
 
 ---
 
-## ?�키?�처
+## 아키텍처
 
 ```
-[Web JS] ?�?�?�?� NapMxBridge.requestBanner() ?�?�?�?�??[Native Bridge Handler]
-                                                        ??                                                        ??                                                  [nap ssp SDK]
+[Web JS] ──── NapMxBridge.requestBanner() ────→ [Native Bridge Handler]
+                                                        │
+                                                        ▼
+                                                  [nap ssp SDK]
                                                    loadAd() / load()
-                                                        ??[Web JS] ?��??� NapMxBridgeCallback.onBannerLoaded() ?�?�?�?�  ??                                                        ??[Web JS] ?�?�?�?� NapMxBridge.showInterstitial() ?�?�?�?�?�??[SDK show()]
+                                                        │
+[Web JS] ←── NapMxBridgeCallback.onBannerLoaded() ────  │
+                                                        │
+[Web JS] ──── NapMxBridge.showInterstitial() ─────→ [SDK show()]
 ```
 
 | 계층 | Android | iOS |
 |------|---------|-----|
-| JS ??Native | `@JavascriptInterface` | `WKScriptMessageHandler` |
-| Native ??JS | `webView.evaluateJavascript()` | `webView.evaluateJavaScript()` |
-| Bridge ?�름 | `NapMxBridge` | `napMxBridge` (message handler) |
+| JS → Native | `@JavascriptInterface` | `WKScriptMessageHandler` |
+| Native → JS | `webView.evaluateJavascript()` | `webView.evaluateJavaScript()` |
+| Bridge 이름 | `NapMxBridge` | `napMxBridge` (message handler) |
 | 콜백 객체 | `window.NapMxBridgeCallback` | `window.NapMxBridgeCallback` |
 
 ---
 
-## 지??광고 ?�맷
+## 지원 광고 포맷
 
-| 광고 ?�맷 | ?�출 방식 | JS ?�청 | JS ?�시 |
+| 광고 포맷 | 노출 방식 | JS 요청 | JS 표시 |
 |-----------|-----------|---------|---------|
-| 배너 | ?�이?�브 �??�버?�이 | `requestBanner()` | ?�동 (addView ???�출) |
-| ?�면 배너 | ?�체 ?�면 ?�업 | `requestInterstitial()` | `showInterstitial()` |
-| ?�이?�브 | ?�이?�브 �??�버?�이 | `requestNative()` | ?�동 |
-| 리워???�영??| ?�체 ?�면 ?�영??| `requestRewardVideo()` | `showRewardVideo()` |
-| ?�라???�영??| ?�이?�브 �??�버?�이 | `requestVideo()` | ?�동 |
-| ?�면 ?�영??| ?�체 ?�면 ?�영??| `requestVideoInterstitial()` | `showVideoInterstitial()` |
+| 배너 | 네이티브 뷰 오버레이 | `requestBanner()` | 자동 (addView 시 노출) |
+| 전면 배너 | 전체 화면 팝업 | `requestInterstitial()` | `showInterstitial()` |
+| 네이티브 | 네이티브 뷰 오버레이 | `requestNative()` | 자동 |
+| 리워드 동영상 | 전체 화면 동영상 | `requestRewardVideo()` | `showRewardVideo()` |
+| 인라인 동영상 | 네이티브 뷰 오버레이 | `requestVideo()` | 자동 |
+| 전면 동영상 | 전체 화면 동영상 | `requestVideoInterstitial()` | `showVideoInterstitial()` |
 
 ---
 
-## Step 1. ?�랫???�합 JS ?�퍼
+## Step 1. 플랫폼 통합 JS 래퍼
 
-Android?� iOS???�출 방식 차이�?추상?�하??JS ?�퍼?�니?? ???�이지?�서?????�퍼�??�해 ?�랫?�을 ?�경 ?��? ?�고 ?�출?????�습?�다.
+Android와 iOS의 호출 방식 차이를 추상화하는 JS 래퍼입니다. 웹 페이지에서는 이 래퍼를 통해 플랫폼을 신경 쓰지 않고 호출할 수 있습니다.
 
 #### `nap-mx-bridge.js`
 
 ```javascript
 /**
- * nap ssp WebBridge ???�랫???�합 ?�퍼
+ * nap ssp WebBridge — 플랫폼 통합 래퍼
  *
  * Android: window.NapMxBridge.methodName(JSON.stringify(params))
  * iOS:     window.webkit.messageHandlers.methodName.postMessage(params)
@@ -77,7 +82,7 @@ const NapMxBridge = (() => {
     };
 
     return {
-        // 광고 ?�청
+        // 광고 요청
         requestBanner:             (params) => call("requestBanner", params),
         requestInterstitial:       (params) => call("requestInterstitial", params),
         requestNative:             (params) => call("requestNative", params),
@@ -85,7 +90,7 @@ const NapMxBridge = (() => {
         requestVideo:              (params) => call("requestVideo", params),
         requestVideoInterstitial:  (params) => call("requestVideoInterstitial", params),
 
-        // 광고 ?�어
+        // 광고 제어
         showInterstitial:          () => callNoArgs("showInterstitial"),
         showRewardVideo:           () => callNoArgs("showRewardVideo"),
         showVideoInterstitial:     () => callNoArgs("showVideoInterstitial"),
@@ -99,48 +104,51 @@ const NapMxBridge = (() => {
 
 ---
 
-## Step 2. 콜백 ?�들???�록
+## Step 2. 콜백 핸들러 등록
 
-?�이?�브?�서 광고 ?�벤??발생 ??JavaScript ?�수�??�출?�여 ???�이지???�립?�다.
+네이티브에서 광고 이벤트 발생 시 JavaScript 함수를 호출하여 웹 페이지에 알립니다.
 
 ```javascript
 window.NapMxBridgeCallback = {
     // 배너
-    onBannerLoaded:     function(data) { /* 배너 로드 ?�공 */ },
-    onBannerFailed:     function(data) { /* 배너 로드 ?�패 */ },
-    onBannerClicked:    function(data) { /* 배너 ?�릭 */ },
-    onBannerDisplayed:  function(data) { /* 배너 ?�시??*/ },
+    onBannerLoaded:     function(data) { /* 배너 로드 성공 */ },
+    onBannerFailed:     function(data) { /* 배너 로드 실패 */ },
+    onBannerClicked:    function(data) { /* 배너 클릭 */ },
+    onBannerDisplayed:  function(data) { /* 배너 표시됨 */ },
 
-    // ?�면 배너
-    onInterstitialLoaded:    function(data) { /* 로드 ?�공 ??showInterstitial() ?�출 가??*/ },
-    onInterstitialFailed:    function(data) { /* 로드 ?�패 */ },
-    onInterstitialShowed:    function(data) { /* ?�시??*/ },
-    onInterstitialClicked:   function(data) { /* ?�릭 */ },
-    onInterstitialDismissed: function(data) { /* ?�힘 */ },
+    // 전면 배너
+    onInterstitialLoaded:    function(data) { /* 로드 성공 → showInterstitial() 호출 가능 */ },
+    onInterstitialFailed:    function(data) { /* 로드 실패 */ },
+    onInterstitialShowed:    function(data) { /* 표시됨 */ },
+    onInterstitialClicked:   function(data) { /* 클릭 */ },
+    onInterstitialDismissed: function(data) { /* 닫힘 */ },
 
-    // 리워???�영??    onRewardVideoLoaded:    function(data) { /* 로드 ?�공 ??showRewardVideo() ?�출 가??*/ },
-    onRewardVideoFailed:    function(data) { /* 로드 ?�패 */ },
-    onRewardVideoShowed:    function(data) { /* ?�시??*/ },
-    onRewardVideoCompleted: function(data) { /* ?�생 ?�료 */ },
-    onRewardEarned:         function(data) { /* ??리워??지�??�점 */ },
-    onRewardVideoDismissed: function(data) { /* ?�힘 */ },
+    // 리워드 동영상
+    onRewardVideoLoaded:    function(data) { /* 로드 성공 → showRewardVideo() 호출 가능 */ },
+    onRewardVideoFailed:    function(data) { /* 로드 실패 */ },
+    onRewardVideoShowed:    function(data) { /* 표시됨 */ },
+    onRewardVideoCompleted: function(data) { /* 재생 완료 */ },
+    onRewardEarned:         function(data) { /* ✅ 리워드 지급 시점 */ },
+    onRewardVideoDismissed: function(data) { /* 닫힘 */ },
 
-    // ?�라???�영??    onVideoLoaded:    function(data) { /* 로드 ?�공 */ },
-    onVideoFailed:    function(data) { /* 로드 ?�패 */ },
-    onVideoCompleted: function(data) { /* ?�생 ?�료 */ },
-    onVideoClicked:   function(data) { /* ?�보�??�릭 */ },
-    onVideoSkipped:   function(data) { /* ?�킵 */ },
+    // 인라인 동영상
+    onVideoLoaded:    function(data) { /* 로드 성공 */ },
+    onVideoFailed:    function(data) { /* 로드 실패 */ },
+    onVideoCompleted: function(data) { /* 재생 완료 */ },
+    onVideoClicked:   function(data) { /* 더보기 클릭 */ },
+    onVideoSkipped:   function(data) { /* 스킵 */ },
 
-    // ?�면 ?�영??    onVideoInterstitialLoaded:    function(data) { /* 로드 ?�공 */ },
-    onVideoInterstitialFailed:    function(data) { /* 로드 ?�패 */ },
-    onVideoInterstitialShowed:    function(data) { /* ?�시??*/ },
-    onVideoInterstitialCompleted: function(data) { /* ?�생 ?�료 */ },
-    onVideoInterstitialClicked:   function(data) { /* ?�보�??�릭 */ },
-    onVideoInterstitialDismissed: function(data) { /* ?�힘 */ }
+    // 전면 동영상
+    onVideoInterstitialLoaded:    function(data) { /* 로드 성공 */ },
+    onVideoInterstitialFailed:    function(data) { /* 로드 실패 */ },
+    onVideoInterstitialShowed:    function(data) { /* 표시됨 */ },
+    onVideoInterstitialCompleted: function(data) { /* 재생 완료 */ },
+    onVideoInterstitialClicked:   function(data) { /* 더보기 클릭 */ },
+    onVideoInterstitialDismissed: function(data) { /* 닫힘 */ }
 };
 ```
 
-#### 콜백 ?�이???�식
+#### 콜백 데이터 형식
 
 ```json
 {
@@ -154,9 +162,9 @@ window.NapMxBridgeCallback = {
 
 ---
 
-## Step 3. Android ?�이?�브 구현
+## Step 3. Android 네이티브 구현
 
-### 3-1. ?�이?�웃 XML
+### 3-1. 레이아웃 XML
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -186,13 +194,13 @@ public class WebBridgeActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.webView);
 
-        // WebView 기본 ?�정
+        // WebView 기본 설정
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
 
-        // Bridge ?�들???�록
+        // Bridge 핸들러 등록
         bridgeHandler = new NapMxAdBridgeHandler(this, webView);
         webView.addJavascriptInterface(bridgeHandler, "NapMxBridge");
 
@@ -222,9 +230,10 @@ public class WebBridgeActivity extends AppCompatActivity {
 }
 ```
 
-### 3-3. Bridge ?�들??
-> ?�️ `@JavascriptInterface` 메서?�는 WebView??JS ?�레?�에???�출?�니?? 모든 UI 조작?� 반드??`runOnUiThread()`�??�핑?�세??  
-> ?�️ `AdListener`???��??�으�?`WeakReference`�?보유?�니?? 반드??**멤버 변??*�??�언?�세??
+### 3-3. Bridge 핸들러
+
+> ⚠️ `@JavascriptInterface` 메서드는 WebView의 JS 스레드에서 호출됩니다. 모든 UI 조작은 반드시 `runOnUiThread()`로 래핑하세요.  
+> ⚠️ `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. 반드시 **멤버 변수**로 선언하세요.
 
 ```java
 public class NapMxAdBridgeHandler {
@@ -241,7 +250,7 @@ public class NapMxAdBridgeHandler {
         this.webView = webView;
     }
 
-    // ?�?� 배너 광고 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 배너 광고 ─────────────────────────────────
 
     private final AdListener bannerListener = new AdListener() {
         @Override
@@ -273,7 +282,7 @@ public class NapMxAdBridgeHandler {
 
                 AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
 
-                // Adfit ?�용 ??Activity Context ?�수
+                // Adfit 사용 시 Activity Context 필수
                 banner = new AMMBannerView(activity);
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -321,7 +330,7 @@ public class NapMxAdBridgeHandler {
         });
     }
 
-    // ?�?� ?�면 배너 광고 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 전면 배너 광고 ───────────────────────────
 
     @JavascriptInterface
     public void requestInterstitial(String jsonParams) {
@@ -379,7 +388,7 @@ public class NapMxAdBridgeHandler {
         });
     }
 
-    // ?�?� 리워???�영??광고 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 리워드 동영상 광고 ───────────────────────
 
     @JavascriptInterface
     public void requestRewardVideo(String jsonParams) {
@@ -449,7 +458,7 @@ public class NapMxAdBridgeHandler {
         });
     }
 
-    // ?�?� ?�면 ?�영??광고 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 전면 동영상 광고 ─────────────────────────
 
     @JavascriptInterface
     public void requestVideoInterstitial(String jsonParams) {
@@ -509,7 +518,7 @@ public class NapMxAdBridgeHandler {
         });
     }
 
-    // ?�?� Lifecycle & ?�리 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── Lifecycle & 정리 ─────────────────────────
 
     @JavascriptInterface
     public void destroyAll() {
@@ -552,11 +561,11 @@ public class NapMxAdBridgeHandler {
 
 ---
 
-## Step 4. iOS ?�이?�브 구현
+## Step 4. iOS 네이티브 구현
 
-> iOS 코드??[iOS Native 가?�드](https://napmx.github.io/#/ios/native/getting-started) 기�??�로 ?�성?�었?�니??
+> iOS 코드는 [iOS Native 가이드](https://napmx.github.io/#/ios/native/getting-started) 기준으로 작성되었습니다.
 
-### 4-1. WKWebView ?�정
+### 4-1. WKWebView 설정
 
 ```swift
 import UIKit
@@ -607,7 +616,8 @@ class WebBridgeViewController: UIViewController {
 }
 ```
 
-### 4-2. Bridge ?�들??
+### 4-2. Bridge 핸들러
+
 ```swift
 import WebKit
 import AdMixerMediation
@@ -649,7 +659,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         }
     }
 
-    // ?�?� 배너 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 배너 ─────────────────────────────────────
     private func requestBanner(params: [String: Any], in vc: UIViewController) {
         let adUnitId = params["adUnitId"] as? String ?? ""
         let position = params["position"] as? String ?? "bottom"
@@ -678,7 +688,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         banner.load()
     }
 
-    // ?�?� ?�면 배너 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 전면 배너 ────────────────────────────────
     private func requestInterstitial(params: [String: Any], in vc: UIViewController) {
         let adUnitId = params["adUnitId"] as? String ?? ""
         let viewType = params["viewType"] as? String ?? "basic"
@@ -697,7 +707,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         }
     }
 
-    // ?�?� 리워???�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 리워드 ───────────────────────────────────
     private func requestRewardVideo(params: [String: Any], in vc: UIViewController) {
         let adUnitId = params["adUnitId"] as? String ?? ""
         let customParam = params["customParams"] as? [String: String]
@@ -709,7 +719,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         }
     }
 
-    // ?�?� ?�라???�영???�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 인라인 동영상 ────────────────────────────
     private func requestVideo(params: [String: Any], in vc: UIViewController) {
         let adUnitId = params["adUnitId"] as? String ?? ""
         videoView = AMMVideoView(rootViewController: vc)
@@ -727,7 +737,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         video.load()
     }
 
-    // ?�?� ?�면 ?�영???�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 전면 동영상 ──────────────────────────────
     private func requestVideoInterstitial(params: [String: Any], in vc: UIViewController) {
         let adUnitId = params["adUnitId"] as? String ?? ""
         AMMVideoInterstitial.load(adUnitID: adUnitId) { [weak self] vi, error in
@@ -737,7 +747,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         }
     }
 
-    // ?�?� ?�리 ?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�
+    // ── 정리 ─────────────────────────────────────
     private func destroyBannerView() { bannerView?.stop(); bannerView?.removeFromSuperview(); bannerView = nil }
     func destroyAll() {
         destroyBannerView()
@@ -798,7 +808,7 @@ extension NapMxAdBridgeHandler: AMMVideoInterstitialDelegate {
 
 ---
 
-## ???�이지 ?�용 ?�제
+## 웹 페이지 사용 예제
 
 ### 배너 광고
 
@@ -806,9 +816,9 @@ extension NapMxAdBridgeHandler: AMMVideoInterstitialDelegate {
 <script src="nap-mx-bridge.js"></script>
 <script>
 window.NapMxBridgeCallback = {
-    onBannerLoaded:  function(d) { console.log('배너 로드 ?�공:', d.adapterName); },
-    onBannerFailed:  function(d) { console.error('배너 ?�패:', d.errorCode); },
-    onBannerClicked: function(d) { console.log('배너 ?�릭'); }
+    onBannerLoaded:  function(d) { console.log('배너 로드 성공:', d.adapterName); },
+    onBannerFailed:  function(d) { console.error('배너 실패:', d.errorCode); },
+    onBannerClicked: function(d) { console.log('배너 클릭'); }
 };
 
 NapMxBridge.requestBanner({
@@ -818,16 +828,16 @@ NapMxBridge.requestBanner({
 </script>
 ```
 
-### ?�면 광고
+### 전면 광고
 
 ```html
 <script>
 window.NapMxBridgeCallback = {
     onInterstitialLoaded: function(d) {
-        NapMxBridge.showInterstitial();   // 즉시 ?�출 ?�는 ?�하???�점???�출
+        NapMxBridge.showInterstitial();   // 즉시 노출 또는 원하는 시점에 호출
     },
     onInterstitialDismissed: function(d) {
-        console.log('?�면 광고 ?�힘');
+        console.log('전면 광고 닫힘');
     }
 };
 
@@ -838,7 +848,7 @@ NapMxBridge.requestInterstitial({
 </script>
 ```
 
-### 리워???�영??광고
+### 리워드 동영상 광고
 
 ```html
 <script>
@@ -847,38 +857,40 @@ window.NapMxBridgeCallback = {
         document.getElementById('btn-watch').disabled = false;
     },
     onRewardEarned: function(d) {
-        alert('보상 ?�득! 코인 +100');    // ??리워??지�??�점
+        alert('보상 획득! 코인 +100');    // ✅ 리워드 지급 시점
     }
 };
 
 // 1. 미리 로드
 NapMxBridge.requestRewardVideo({ adUnitId: "YOUR_REWARD_ADUNIT_ID", mute: false });
 
-// 2. ?�용???�릭 ???�출
+// 2. 사용자 클릭 시 노출
 document.getElementById('btn-watch').onclick = () => NapMxBridge.showRewardVideo();
 </script>
 ```
 
 ---
 
-## 주의?�항
+## 주의사항
 
-### Lifecycle 관�?
-| ?�벤??| Android | iOS |
+### Lifecycle 관리
+
+| 이벤트 | Android | iOS |
 |--------|---------|-----|
-| ?�면 ?�환 | `onPause()` / `onResume()` ?�서 Bridge ?�들???�출 | `viewDidDisappear`?�서 `stop()` ?�출 |
-| ?�면 종료 | `onDestroy()`?�서 `destroyAll()` | `viewDidDisappear` + `isMovingFromParent`?�서 `destroyAll()` |
+| 화면 전환 | `onPause()` / `onResume()` 에서 Bridge 핸들러 호출 | `viewDidDisappear`에서 `stop()` 호출 |
+| 화면 종료 | `onDestroy()`에서 `destroyAll()` | `viewDidDisappear` + `isMovingFromParent`에서 `destroyAll()` |
 
-> ?�️ ?�이?�브 광고 객체??반드???�면 종료 ???�제?�야 ?�니??
+> ⚠️ 네이티브 광고 객체는 반드시 화면 종료 시 해제해야 합니다.
 
 ### Context (Android)
 
-| ??�� | 권장 | 주의 |
+| 항목 | 권장 | 주의 |
 |------|------|------|
-| 배너 ?�성 | Activity Context (Adfit ?�수) | `getApplicationContext()` ?�용 금�? |
-| ?�면/리워??`show()` | Activity ?�스?�스 | Fragment Context ?�달 ???�슈 가??|
+| 배너 생성 | Activity Context (Adfit 필수) | `getApplicationContext()` 사용 금지 |
+| 전면/리워드 `show()` | Activity 인스턴스 | Fragment Context 전달 시 이슈 가능 |
 
-### AdUnit ID 관�?
+### AdUnit ID 관리
+
 ```javascript
 const AD_CONFIG = {
     BANNER:               "your-banner-adunit-id",
@@ -889,12 +901,12 @@ const AD_CONFIG = {
 };
 ```
 
-> ?�️ ?�나??AdUnit ID???�나??광고 객체?�서�??�용?�세?? Media Key???�이?�브 코드(Application/AppDelegate)?�서 ?�정?�니??
+> ⚠️ 하나의 AdUnit ID는 하나의 광고 객체에서만 사용하세요. Media Key는 네이티브 코드(Application/AppDelegate)에서 설정합니다.
 
-### ProGuard ?�정 (Android)
+### ProGuard 설정 (Android)
 
 ```proguard
-# nap ssp Core (?�수)
+# nap ssp Core (필수)
 -keep class com.nasmedia.admixerssp.** { *; }
 
 # WebBridge Handler
