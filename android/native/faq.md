@@ -46,10 +46,10 @@ LogCat에서 `AdMixer` 태그로 필터링하면 SDK 내부 동작을 상세히 
 
 **Q. `AMMBannerView`를 레이아웃에 추가하지 않았는데 광고가 표시되지 않습니다.**
 
-광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 추가해야 합니다.
+광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 추가해야 합니다. 뷰가 화면에 부착(addView)되는 시점에 SDK가 **자동으로 노출**하므로 별도의 `showAd()` 호출은 필요 없습니다.
 
-- **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`를 호출하세요. 레이아웃에 추가되는 즉시 광고가 노출됩니다.
-- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `AdInfo.Builder.isLoadOnly(true)`를 설정한 후 `loadAd()`를 호출하세요. 광고가 수신되어도 자동 노출되지 않으며, 원하는 시점에 `container.addView(adView)`를 호출하면 광고가 노출됩니다.
+- **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`를 호출하세요. 부착 즉시 자동 노출됩니다.
+- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `loadAd()`로 미리 로드한 뒤, 원하는 시점에 `container.addView(adView)`를 호출하면 그 시점에 노출됩니다. (`showAd()`와 `AdInfo.isLoadOnly`는 모두 `@Deprecated`이며 동작에 영향을 주지 않습니다.)
 
 > ℹ️ `v2.0.0`부터 배너의 `showAd()` 호출은 불필요합니다(Deprecated). `addView()`만으로 노출 처리가 자동 수행됩니다.
 
@@ -71,7 +71,7 @@ RelativeLayout 사용을 강력히 권장합니다. 다른 레이아웃을 사�
 
 **Q. `AMMNativeAdView`에 `setViewBinder()`를 설정하지 않으면 어떻게 되나요?**
 
-`setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다. `loadNativeAd()` 호출 전에 반드시 `setViewBinder()`를 설정하세요.
+`setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다. `loadAd()` 호출 전에 반드시 `setViewBinder()`를 설정하세요.
 
 ---
 
@@ -120,13 +120,13 @@ v2.0.0부터 전면 광고는 **BACK 키를 기본 차단**합니다(닫기는 '
 
 **Q. 표시 중인 광고는 유지하면서 진행 중 로드만 취소하려면?**
 
-`cancelLoad()`를 호출하세요. 로딩 중일 때만 취소하고 표시 중(SHOWING)이면 아무 동작도 하지 않습니다. 전체 정리는 `stopXxx()`/`onDestroy()`입니다.
+`cancelLoad()`를 호출하세요. 로딩 중일 때만 취소하고 표시 중(SHOWING)이면 아무 동작도 하지 않습니다. 전체 정리는 `stop()`입니다.
 
 ---
 
-**Q. `onReceivedAd`에서 `startInterstitial()`을 불렀더니 광고가 계속 재로드됩니다.**
+**Q. 로드와 동시에 자동 노출하던 `startInterstitial()` 같은 메서드는 어디 갔나요?**
 
-`startInterstitial()`은 "로드 + 자동 노출"이라 수신 콜백 안에서 호출하면 매번 **재로드**됩니다. 수신 후 표시는 **`showInterstitial()`** 을 사용하세요(자동 노출을 원하면 `startInterstitial()`을 **1회만** 호출). v2.0.0 SDK는 이미 로드된(READY) 광고를 재로드 요청으로 파기하지 않고, 빠른 연속 재로드는 백오프(지연) 처리하여 무한 루프를 차단합니다.
+즉시 노출(로드+자동 노출) API는 **v2.0.0에서 제거**되었습니다(`startInterstitial()`/`startInterstitialVideoAd()`/`startRewardVideoAd()`). 모든 광고는 **로드(수신) → 노출**이 분리됩니다: 전면형은 정적 `loadAd()` 수신 콜백 이후 원하는 시점에 `show(activity)`를, 인라인(배너/네이티브/인라인 동영상)은 `loadAd()` 후 `addView`(부착) 시점에 자동 노출됩니다. 수신 즉시 노출을 원하면 수신 콜백 안에서 `show(activity)`를 바로 호출하면 됩니다. v2.0.0 SDK는 이미 로드된(READY) 광고를 재로드 요청으로 파기하지 않고, 빠른 연속 재로드는 백오프(지연) 처리하여 무한 루프를 차단합니다.
 
 ---
 

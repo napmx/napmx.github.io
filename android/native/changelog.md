@@ -13,12 +13,13 @@
 - **NaverAdManager 어댑터 추가** — Naver Ad Manager(NAM) 미디에이션 지원 (`admixer-naveradmanager`)
 - **Teads 어댑터 추가** — Teads 미디에이션 지원 (`admixer-teads`)
 - **Jetpack Compose 지원** — `@Composable AdMixerBanner(...)` 등 제공. 코어에 Compose 의존성을 강제하지 않는 선택 모듈 (`admixer-compose`). [Compose 가이드](compose.md)
-- **GAM 스타일 풀스크린 광고 API (전면/리워드/전면 동영상)** — 정적 `AMMInterstitial.load(...)` / `AMMRewardVideo.load(...)` / `AMMVideoInterstitial.load(...)`가 로드 완료 시 콜백으로 광고 객체를 반환(인스턴스 생성 불필요). 노출 이벤트는 `FullScreenContentCallback`(`onAdShowedFullScreenContent`/`onAdClicked`/`onAdDismissedFullScreenContent`/`onAdFailedToShowFullScreenContent`)로 수신. ([전면](interstitial.md)·[동영상](video.md)·[리워드](rewarded-video.md))
+- **GAM 스타일 풀스크린 광고 API (전면/리워드/전면 동영상)** — 정적 `AMMInterstitial.loadAd(...)` / `AMMRewardVideo.loadAd(...)` / `AMMVideoInterstitial.loadAd(...)`가 로드 완료 시 콜백으로 광고 객체를 반환(인스턴스 생성 불필요). 노출 이벤트는 `FullScreenContentCallback`(`onAdShowedFullScreenContent`/`onAdClicked`/`onAdDismissedFullScreenContent`/`onAdFailedToShowFullScreenContent`)로 수신. ([전면](interstitial.md)·[동영상](video.md)·[리워드](rewarded-video.md))
 - **통합 개인정보 동의/테스트 API** — `AdMixer.setGdprConsent`/`setCcpaDoNotSell`/`setUsPrivacy`/`setTestMode`/`setTestDeviceIds`. 워터폴에서 각 네트워크로 자동 전파. [개인정보/테스트 설정](privacy.md)
 - **어댑터 자동 등록** — Gradle 의존성에 포함된 어댑터를 자동 탐지·등록. `registerAdapter()` 수동 호출 불필요
 - **`cancelLoad()`** — 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
 - **클라이언트 키 주입 `setAdapterConfig(adapterName, Map)`** — 서버 미제공 시 네트워크 키(예: AppLovin `sdkKey`)를 매체가 주입
-- **인라인 광고 addView 시점 자동 노출** — 배너·네이티브·인라인 동영상은 뷰가 화면에 부착(`addView` 또는 XML 배치)되는 시점에 자동 노출됩니다. `showAd()` 직접 호출은 더 이상 필요 없으며 `@Deprecated`로 유지(하위호환). `AdInfo.isLoadOnly`는 인라인 광고에서 무시되고 전면형 지연 노출에만 적용됩니다.
+- **인라인 광고 addView 시점 자동 노출** — 배너·네이티브·인라인 동영상은 뷰가 화면에 부착(`addView` 또는 XML 배치)되는 시점에 자동 노출됩니다. `showAd()` 직접 호출은 더 이상 필요 없으며 `@Deprecated`로 유지(하위호환).
+- **사용자 API 표준화 (RFC-20260610)** — 로드는 `loadAd()`(인라인 인스턴스·풀스크린 정적 공통), 해제는 `stop()`으로 통일. 구 명칭(`loadNativeAd()`/`loadInterstitial()`/정적 `load()`/`destroy()`/`stopInterstitial()` 등)은 `@Deprecated` 별칭으로 동작이 유지됩니다.
 
 ### 주요 변경 (Breaking Changes)
 
@@ -32,6 +33,7 @@
 - **네이티브 View ID prefix** — `tv_title` 등 6개 → `nap_mx_tv_title` 등으로 변경(타 라이브러리 리소스 충돌 방지). 레이아웃 및 `NativeAdViewBinder` 수정 필요. ([v2 마이그레이션 가이드](migration.md))
 - **deprecated 별칭 API 제거** — `onDestroy()`/`closeInterstitial()`→`stopInterstitial()`, `AdInfo.Builder.isUseBackgroundAlpha(Boolean)`→`setUseBackgroundAlpha(boolean)` 등. 동일 동작의 정식 메서드로 교체. ([v2 마이그레이션 가이드](migration.md))
 - **배너·네이티브 자동 갱신 옵션 정리** — 클라이언트 `isRetry`/`maxRetryCountInSlot` 제거. 자동 갱신/재로드는 서버 광고단위 `interval`(초) > 0일 때만 동작(무한 루프는 내부 가드 차단).
+- **즉시 노출(start*) API 제거** — `startInterstitial()`/`startInterstitialVideoAd()`/`startRewardVideoAd()` 및 `loadAd(Activity, AdInfo)` 제거. 모든 광고는 로드(수신)와 노출(인라인=`addView`, 풀스크린=`show()`)이 분리됩니다. `AdInfo.Builder.isLoadOnly`는 동작에 영향을 주지 않는 `@Deprecated` 옵션이 되었습니다.
 
 ### 네트워크 버전 업데이트
 
@@ -44,6 +46,15 @@
 - **Naver NAM(nam-bom) `8.14.0` → `8.16.0`**
 - **Mobwith(mobwithSDK) `1.0.2` → `1.0.83`** — ⚠️ `settings.gradle`(또는 프로젝트 `build.gradle`) repositories에 `maven { url 'https://jitpack.io' }` 추가 필요(BlurView 전이 의존).
 
+### 버그 수정 및 안정성
+
+- **서버 interval 자동 갱신(롤링)이 동작하지 않던 문제 수정** — 노출 중(SHOWING) 재로드가 내부 가드에 차단되던 문제, 갱신 중 배너 영역이 화면 전체로 팽창하던 문제, 네이티브 갱신이 무음 중단되던 문제를 수정. 배너·네이티브가 서버 `interval`마다 정상 갱신됩니다.
+- **전면 동영상이 인라인 경로로 잘못 로드되어 화면에 표시되지 않을 수 있던 문제 수정**.
+- **네이티브 광고가 일부 매체/소재에서 표시되지 않던 문제 수정** — Adfit(난독화 빌드 에셋 추출), Mobwith(메인 이미지 렌더), Pangle(광고 로고), Naver(고지 라벨), 일부 에셋이 비어 있거나 누락된 소재 처리 등.
+- **BACK 키 차단이 Android 13+ 예측형 뒤로가기에서 무력화되던 문제 수정** — `targetSdk 35` 등 predictive back 환경(전면·비디오·리워드).
+- **media-conf 재동기화 시 풀스크린 광고 중복 로드/컨트롤러 중복 생성 문제 수정**.
+- **Naver `PUBLISHER_CD`를 SDK가 제공·고정** — 호스트 앱 매니페스트 설정 불필요.
+- 풀스크린(전면/리워드/동영상) 표시 안정성 및 리소스 해제 개선, 노출/클릭 로그 정확도 개선.
 
 ---
 

@@ -47,7 +47,7 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 | 메서드 | 타입 | 기본값 | 설명 |
 |--------|------|--------|------|
 | `new Builder(String adUnitId)` | - | - | 필수. adUnit ID 지정 |
-| `isLoadOnly(boolean)` | `boolean` | `false` | `true` 설정 시 광고 수신 후 자동 노출 안 함 (지연 노출용) |
+| ~~`isLoadOnly(boolean)`~~ | `boolean` | `false` | **Deprecated** — 동작에 영향 없음. 모든 광고는 load-only로 로드되며 노출은 addView(인라인)/`show()`(전면형)로 제어 |
 | `interstitialTimeout(int)` | `int` | `0` | 전면 광고 타임아웃 (초, 0: 서버 지정) |
 | `setUseBackgroundAlpha(boolean)` | `boolean` | `true` | 전면 광고 배경 반투명 |
 | `setMute(boolean)` | `boolean` | `false` | 동영상 음소거 |
@@ -70,7 +70,8 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 | `showAd()` | **(Deprecated)** 배너는 레이아웃에 `addView()` 시 자동 노출되므로 호출이 불필요합니다. |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
-| `destroy()` | 리소스 해제 — onDestroy에서 호출 (필수) |
+| `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
+| ~~`destroy()`~~ | **Deprecated** — `stop()`을 사용 (동일 동작 별칭) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
 
 ---
@@ -81,14 +82,14 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 
 | 멤버 | 설명 |
 |--------|------|
-| `static load(Context, AdInfo, AMMInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
+| `static loadAd(Context, AdInfo, AMMInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/닫힘/표시실패 콜백 등록 (Kotlin: `fullScreenContentCallback` 프로퍼티) |
 | `show(Activity)` | 전면 광고 표시 (Activity Context 필요) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존). 로딩 중이 아니면 no-op |
-| `destroy()` / `stopInterstitial()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
+| `stop()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) (~~`destroy()`~~/~~`stopInterstitial()`~~은 Deprecated 별칭) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
-> ℹ️ 인스턴스 메서드(`setAdInfo` / `setAdListener` / `loadInterstitial` / `showInterstitial` / `startInterstitial`)는 `AMMInterstitial`에 그대로 존재하지만, 신규 연동은 정적 `load()`를 권장합니다. (구 `InterstitialAd` 클래스는 제거됨)
+> ℹ️ 인스턴스 메서드(`setAdInfo`/`setAdListener`/`loadAd()`/`showAd()`)도 제공되며, 구 명칭(`loadInterstitial`/`showInterstitial`)은 `@Deprecated` 별칭으로 유지됩니다. **즉시 노출 `startInterstitial()`은 v2.0.0에서 제거**되었습니다 — 로드 후 `show()`로 노출하세요. 신규 연동은 정적 `loadAd()`를 권장합니다. (구 `InterstitialAd` 클래스는 제거됨)
 
 ---
 
@@ -98,11 +99,11 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 
 | 멤버 | 설명 |
 |--------|------|
-| `static load(Context, AdInfo, AMMVideoInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
+| `static loadAd(Context, AdInfo, AMMVideoInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
 | `show(Activity)` | 전면 동영상 표시 (Activity Context 필요) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
-| `destroy()` / `stopInterstitialVideoAd()` | 광고 정지 및 리소스 해제 (필수) |
+| `stop()` | 광고 정지 및 리소스 해제 (필수) (~~`destroy()`~~/~~`stopInterstitialVideoAd()`~~은 Deprecated 별칭) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
 ---
@@ -114,11 +115,13 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setViewBinder(NativeAdViewBinder)` | 레이아웃 바인더 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
-| `loadNativeAd()` | 광고 로드 시작 (항상 지연 노출 모드 — `showAd()` 명시 호출 필수) |
-| `showAd()` | 광고 소재 렌더링 및 노출 — `onReceivedAd()` 콜백에서 호출 (필수) |
+| `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 렌더링 |
+| ~~`loadNativeAd()`~~ | **Deprecated** — `loadAd()`를 사용 (동일 동작 별칭) |
+| ~~`showAd()`~~ | **Deprecated** — addView 시 자동 렌더되므로 호출 불필요(하위호환 유지) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
-| `destroy()` | 리소스 해제 — onDestroy에서 호출 (필수) |
+| `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
+| ~~`destroy()`~~ | **Deprecated** — `stop()`을 사용 (동일 동작 별칭) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
 
 ---
@@ -129,12 +132,12 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 
 | 멤버 | 설명 |
 |--------|------|
-| `static load(Context, AdInfo, AMMRewardVideoLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
+| `static loadAd(Context, AdInfo, AMMRewardVideoLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
 | `show(Activity, OnUserEarnedRewardListener)` | 광고 표시 + 보상 적립 리스너 등록 |
 | `show(Activity)` | 광고 표시 (보상 리스너 없이) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
-| `destroy()` / `stopRewardVideoAd()` | 광고 정지 및 리소스 해제 (필수) |
+| `stop()` | 광고 정지 및 리소스 해제 (필수) (~~`destroy()`~~/~~`stopRewardVideoAd()`~~은 Deprecated 별칭) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
 > 보상 적립은 `OnUserEarnedRewardListener.onUserEarnedReward()`로 수신합니다(영상 재생 완료 `onAdCompleted()`와는 별개).
@@ -151,7 +154,8 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 | `showAd()` | **(Deprecated)** 레이아웃에 `addView()` 시 자동 노출되므로 호출이 불필요합니다. |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
-| `destroy()` | 리소스 해제 — onDestroy에서 호출 (필수) |
+| `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
+| ~~`destroy()`~~ | **Deprecated** — `stop()`을 사용 (동일 동작 별칭) |
 
 ---
 
@@ -205,7 +209,7 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 | 광고 닫힘/실패 콜백 수신 후 | `stopXxx()` → `onDestroy()` | 미디에이션 컨트롤러 destroy + 서버 config 리스너 해제(재동기화 재로드 대상에서 제외) |
 | 화면 완전 종료 (`Activity#onDestroy`) | `stopXxx()` (필수) | 전체 리소스 해제 |
 
-> `cancelLoad()`는 "로드만 취소", `stopXxx()/destroy()`는 "전체 정리(리스너 해제 포함)"로 구분됩니다.
+> `cancelLoad()`는 "로드만 취소", `stop()`은 "전체 정리(리스너 해제 포함)"로 구분됩니다.
 > `media-conf` 재동기화 시 SHOWING/이미-로드 유닛은 SDK가 자동으로 재로드하지 않습니다(REQ-LIFECYCLE-RESYNC-56).
 
 ---

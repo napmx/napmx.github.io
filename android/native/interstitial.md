@@ -4,7 +4,7 @@
 
 전면 광고는 `AMMInterstitial`을 사용하여 화면 전체를 덮는 형태의 광고를 표시합니다.
 
-> 🆕 **GAM 스타일 API**: 전면 광고는 GMA(Google Mobile Ads) / iOS-AdMixer와 동일한 **정적 `load()` → 로드된 광고 객체 반환 → `FullScreenContentCallback` 노출 콜백** 구조를 사용합니다. 구 `InterstitialAd` 클래스는 **제거**되었습니다 — `AMMInterstitial` 정적 `load()`로 전환하세요. 마이그레이션은 아래 [구 API에서 전환](#구-api에서-전환-제거됨)을 참고하세요.
+> 🆕 **GAM 스타일 API**: 전면 광고는 GMA(Google Mobile Ads) / iOS-AdMixer와 동일한 **정적 `loadAd()` → 로드된 광고 객체 반환 → `FullScreenContentCallback` 노출 콜백** 구조를 사용합니다. 구 `InterstitialAd` 클래스는 **제거**되었습니다 — `AMMInterstitial` 정적 `loadAd()`로 전환하세요. 마이그레이션은 아래 [구 API에서 전환](#구-api에서-전환-제거됨)을 참고하세요.
 
 ---
 
@@ -17,14 +17,14 @@
 ## 호출 흐름
 
 ```
-AMMInterstitial.load(context, adInfo, callback)
+AMMInterstitial.loadAd(context, adInfo, callback)
     → onSuccessLoadInterstitial(adapterName, ad)   ← 로드된 광고 객체 전달
         → ad.setFullScreenContentCallback(...)     ← 노출/클릭/닫힘/표시실패 콜백 등록
         → ad.show(activity)                        ← 원하는 시점에 노출 (Activity 필요)
     → onFailLoadInterstitial(errorCode, errorMsg)  ← 로드 실패
 ```
 
-- **로드**는 정적 `AMMInterstitial.load(...)`로 시작합니다(인스턴스 생성 불필요).
+- **로드**는 정적 `AMMInterstitial.loadAd(...)`로 시작합니다(인스턴스 생성 불필요).
 - **노출**은 콜백으로 받은 `ad` 객체의 `show(activity)`로 수행합니다. 콜백 안에서 즉시 호출하면 **즉시 노출**, 객체를 보관했다가 나중에 호출하면 **지연 노출(Load-Only)** 입니다.
 - 노출 단계 이벤트(노출/클릭/닫힘/표시 실패)는 `FullScreenContentCallback`으로 수신합니다.
 
@@ -80,7 +80,7 @@ public class InterstitialActivity extends AppCompatActivity {
             .build();
 
         // 정적 load() — 로드 완료 시 콜백으로 광고 객체를 받는다
-        AMMInterstitial.load(this, adInfo, new AMMInterstitialLoadCallback() {
+        AMMInterstitial.loadAd(this, adInfo, new AMMInterstitialLoadCallback() {
             @Override
             public void onSuccessLoadInterstitial(@NonNull String adapterName, @NonNull AMMInterstitial ad) {
                 // 광고 수신 성공 (adapterName: 응답한 광고 네트워크 이름)
@@ -119,7 +119,7 @@ public class InterstitialActivity extends AppCompatActivity {
     protected void onDestroy() {
         // 객체 해제 (필수)
         if (loadedAd != null) {
-            loadedAd.destroy();
+            loadedAd.stop();
             loadedAd = null;
         }
         super.onDestroy();
@@ -146,7 +146,7 @@ class InterstitialActivity : AppCompatActivity() {
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
             .build()
 
-        AMMInterstitial.load(this, adInfo, object : AMMInterstitialLoadCallback() {
+        AMMInterstitial.loadAd(this, adInfo, object : AMMInterstitialLoadCallback() {
             override fun onSuccessLoadInterstitial(adapterName: String, ad: AMMInterstitial) {
                 loadedAd = ad
                 // Kotlin은 프로퍼티 접근(ad.fullScreenContentCallback = ...)도 가능
@@ -166,7 +166,7 @@ class InterstitialActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        loadedAd?.destroy()
+        loadedAd?.stop()
         loadedAd = null
         super.onDestroy()
     }
@@ -181,7 +181,7 @@ class InterstitialActivity : AppCompatActivity() {
 
 ```java
 // 1) 미리 로드: 콜백에서 show() 하지 않고 보관만
-AMMInterstitial.load(this, adInfo, new AMMInterstitialLoadCallback() {
+AMMInterstitial.loadAd(this, adInfo, new AMMInterstitialLoadCallback() {
     @Override public void onSuccessLoadInterstitial(@NonNull String adapterName, @NonNull AMMInterstitial ad) {
         loadedAd = ad;
         loadedAd.setFullScreenContentCallback(fullScreenCallback);
@@ -196,7 +196,7 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 }
 ```
 
-> ℹ️ `AdInfo.Builder.isLoadOnly(true)`로 로드 시점에 자동 노출을 방지할 수도 있습니다. 정적 `load()`는 항상 "로드 후 콜백 반환"이므로, 앱이 `show()`를 호출하기 전까지는 노출되지 않습니다.
+> ℹ️ 모든 로드는 "로드 후 콜백 반환"만 수행하며, 앱이 `show()`를 호출하기 전까지는 노출되지 않습니다. (`AdInfo.Builder.isLoadOnly`는 동작에 영향을 주지 않는 `@Deprecated` 옵션입니다.)
 
 ---
 
@@ -231,9 +231,9 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
 | 화면 전환·백그라운드 (표시 광고 유지) | `loadedAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
-| `Activity.onDestroy()` | `loadedAd.destroy()` (또는 `stopInterstitial()`) | 광고 객체 해제 (필수) |
+| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 객체 해제 (필수) (~~`destroy()`~~/~~`stopInterstitial()`~~은 Deprecated 별칭) |
 
-> ℹ️ `cancelLoad()`는 "로드만 취소", `destroy()`/`stopInterstitial()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
+> ℹ️ `cancelLoad()`는 "로드만 취소", `stop()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
 
 > ⚠️ `show(activity)`는 **Activity Context**가 필요합니다. `load()`는 Application Context로도 가능하나, 노출 시점에는 Activity가 필요합니다.
 
@@ -241,18 +241,18 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 
 ## 구 API에서 전환 (제거됨)
 
-구 `InterstitialAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMInterstitial` 정적 `load()`로 전환하세요.
+구 `InterstitialAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMInterstitial` 정적 `loadAd()`로 전환하세요.
 
 | 구 (제거됨) | 신규 (GAM 스타일) |
 |---|---|
-| `new InterstitialAd(context)` | (인스턴스 생성 불필요) `AMMInterstitial.load(context, adInfo, callback)` |
+| `new InterstitialAd(context)` | (인스턴스 생성 불필요) `AMMInterstitial.loadAd(context, adInfo, callback)` |
 | `setAdInfo(adInfo)` | `load(...)`의 `adInfo` 인자로 전달 |
 | `setAdListener(AdListener)` + `onReceivedAd` | `AMMInterstitialLoadCallback.onSuccessLoadInterstitial(adapterName, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadInterstitial(errorCode, errorMsg)` |
-| `loadInterstitial()` / `startInterstitial()` | `AMMInterstitial.load(...)` (노출은 `ad.show(activity)`) |
+| `loadInterstitial()` / `startInterstitial()` | `AMMInterstitial.loadAd(...)` (노출은 `ad.show(activity)`) |
 | `showInterstitial()` | `ad.show(activity)` |
 | `onEventAd(AdEvent.DISPLAYED)` | `FullScreenContentCallback.onAdShowedFullScreenContent()` |
 | `onEventAd(AdEvent.CLICK)` | `onAdClicked()` |
 | `onEventAd(AdEvent.CLOSE)` | `onAdDismissedFullScreenContent()` |
 | (노출 실패 신호 없음) | `onAdFailedToShowFullScreenContent(AdError)` |
-| `stopInterstitial()` | `destroy()` (또는 `stopInterstitial()` 유지) |
+| `stopInterstitial()` | `stop()` (구 명칭은 `@Deprecated` 별칭으로 유지) |

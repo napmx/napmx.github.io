@@ -15,7 +15,7 @@
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
 | **전면 BACK 키 기본 차단** | **`AdInfo.Builder.setDisableBackKey` 기본값 `true`로 변경 — 뒤로가기 닫기 의존 시 `false` 명시 필요** |
 | **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — `AdInfo.Builder.interstitialAdType`/`popupAdOption`/`setInterstitialAdType`/`setPopupAdOption` 제거. Popup은 내부(서버 설정) 전용, **CountDown 타입은 완전 제거**(관련 상수·뷰 삭제)** |
-| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showReportIcon/showCloseButton` (광고 제어) |
+| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showCloseButton` (광고 제어) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, `AdInfo.Builder.isUseBackgroundAlpha(Boolean)`, `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭을 v2.0.0에서 완전 제거. 정식 메서드로 교체 필요** |
 | **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
@@ -140,7 +140,7 @@ v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제
 | `closeInterstitial()` | `stopInterstitial()` | 동일 동작 별칭이었음 |
 | `onDestroy()` | `stopInterstitial()` | `destroy()`의 별칭 + Activity 메서드와 혼동 유발 → 제거 |
 
-> **로드 메서드 (참고)**: 전면 광고의 정식 로드 메서드는 **`loadInterstitial()`**(유지됨)입니다. `AMMInterstitial`에는 `loadAd()`가 없습니다(`loadAd()`는 배너 `AMMBannerView`의 메서드). 자동 노출은 `startInterstitial()`(로드+노출), 수신 후 표시는 `showInterstitial()`.
+> **로드 메서드 (참고)**: 전면 광고의 정식 로드 메서드는 **`loadAd()`**(인스턴스) 또는 정적 `AMMInterstitial.loadAd(context, adInfo, callback)`입니다. 구 명칭 `loadInterstitial()`/`showInterstitial()`은 `@Deprecated` 별칭으로 유지됩니다. 즉시 노출 `startInterstitial()`은 **제거**되었습니다 — 수신 후 `show(activity)`로 노출하세요.
 
 ```java
 // Before (v1.x) — 제거됨, 컴파일 오류
@@ -275,13 +275,12 @@ adView.setAdViewListener(new AdListener() {
 
 ## Step 6. 새 기능 적용 (선택)
 
-### 광고 신고하기 및 닫기 버튼 제어
+### 전면 광고 닫기 버튼 제어
 
-v2.0.0에서 광고 소재 신고 기능 및 전면 광고 'X' 닫기 버튼 표시 제어 기능이 추가되었습니다. Android 8.0(API 26) 이상에서 PixelCopy 기반 소재 자동 캡처를 지원합니다.
+v2.0.0에서 전면 광고 'X' 닫기 버튼 표시 제어 기능이 추가되었습니다.
 
 ```java
 AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-    .showReportIcon(true)   // ← 신고 아이콘(ⓘ) 활성화 (기본값: false)
     .showCloseButton(true)  // ← 전면 광고 'X' 닫기 버튼 표시 여부 (기본값: true)
     .build();
 ```

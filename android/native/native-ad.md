@@ -187,14 +187,14 @@ public class NativeAdActivity extends AppCompatActivity {
         nativeAdView.setAdInfo(adInfo);
         nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
         nativeAdView.setAdViewListener(adListener);
-        nativeAdView.loadNativeAd();
+        nativeAdView.loadAd();
     }
 
     @Override protected void onResume() { super.onResume(); if (nativeAdView != null) nativeAdView.onResume(); }
     @Override protected void onPause() { if (nativeAdView != null) nativeAdView.onPause(); super.onPause(); }
     @Override
     protected void onDestroy() {
-        if (nativeAdView != null) { nativeAdView.destroy(); nativeAdView = null; }
+        if (nativeAdView != null) { nativeAdView.stop(); nativeAdView = null; }
         super.onDestroy();
     }
 }
@@ -241,14 +241,14 @@ class NativeAdActivity : AppCompatActivity() {
             setAdInfo(adInfo)
             setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
             setAdViewListener(adListener)
-            loadNativeAd()
+            loadAd()
         }
     }
 
     override fun onResume() { super.onResume(); nativeAdView?.onResume() }
     override fun onPause() { nativeAdView?.onPause(); super.onPause() }
     override fun onDestroy() {
-        nativeAdView?.destroy(); nativeAdView = null
+        nativeAdView?.stop(); nativeAdView = null
         super.onDestroy()
     }
 }
@@ -291,4 +291,4 @@ class NativeAdActivity : AppCompatActivity() {
 |----------------|---------------------|------|
 | `onResume()` | `nativeAdView.onResume()` | 동영상 재생 재개 |
 | `onPause()` | `nativeAdView.onPause()` | 동영상 재생 일시 정지 |
-| `onDestroy()` | `nativeAdView.destroy()` | 모든 리소스 해제 (필수) |
+| `onDestroy()` | `nativeAdView.stop()` | 모든 리소스 해제 (필수) (~~`destroy()`~~는 Deprecated 별칭) |

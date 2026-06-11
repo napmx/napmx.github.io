@@ -4,14 +4,14 @@
 
 리워드 동영상 광고는 `AMMRewardVideo`를 사용합니다. 사용자가 동영상을 끝까지 시청하면 **`OnUserEarnedRewardListener.onUserEarnedReward()`** 콜백이 호출되며, 이 시점에 리워드를 지급하세요.
 
-> 🆕 **GAM 스타일 API**: 리워드 광고는 GMA(Google Mobile Ads) / iOS-AdMixer와 동일한 **정적 `load()` → 로드된 광고 객체 반환 → `show(activity, OnUserEarnedRewardListener)`** 구조를 사용합니다. 노출/클릭/닫힘은 `FullScreenContentCallback`으로, 보상 적립은 `OnUserEarnedRewardListener`로 수신합니다. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다 — `AMMRewardVideo` 정적 `load()`로 전환하세요.
+> 🆕 **GAM 스타일 API**: 리워드 광고는 GMA(Google Mobile Ads) / iOS-AdMixer와 동일한 **정적 `loadAd()` → 로드된 광고 객체 반환 → `show(activity, OnUserEarnedRewardListener)`** 구조를 사용합니다. 노출/클릭/닫힘은 `FullScreenContentCallback`으로, 보상 적립은 `OnUserEarnedRewardListener`로 수신합니다. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다 — `AMMRewardVideo` 정적 `loadAd()`로 전환하세요.
 
 ---
 
 ## 기본 흐름
 
 ```
-AMMRewardVideo.load(context, adInfo, callback)
+AMMRewardVideo.loadAd(context, adInfo, callback)
     → onSuccessLoadReward(adapterName, ad)             ← 로드된 광고 객체 전달
         → ad.setFullScreenContentCallback(...)         ← 노출/클릭/재생완료/닫힘 콜백
         → ad.show(activity, onUserEarnedRewardListener) ← 노출 + 보상 리스너 등록
@@ -53,7 +53,7 @@ public class RewardVideoActivity extends AppCompatActivity {
             .build();
 
         // 정적 load() — 로드 완료 시 콜백으로 광고 객체를 받는다
-        AMMRewardVideo.load(this, adInfo, new AMMRewardVideoLoadCallback() {
+        AMMRewardVideo.loadAd(this, adInfo, new AMMRewardVideoLoadCallback() {
             @Override
             public void onSuccessLoadReward(@NonNull String adapterName, @NonNull AMMRewardVideo ad) {
                 loadedAd = ad;
@@ -94,7 +94,7 @@ public class RewardVideoActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (loadedAd != null) {
-            loadedAd.stopRewardVideoAd(); // 또는 destroy()
+            loadedAd.stop();
             loadedAd = null;
         }
         super.onDestroy();
@@ -128,7 +128,7 @@ class RewardVideoActivity : AppCompatActivity() {
             .setMute(false)
             .build()
 
-        AMMRewardVideo.load(this, adInfo, object : AMMRewardVideoLoadCallback() {
+        AMMRewardVideo.loadAd(this, adInfo, object : AMMRewardVideoLoadCallback() {
             override fun onSuccessLoadReward(adapterName: String, ad: AMMRewardVideo) {
                 loadedAd = ad
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -155,7 +155,7 @@ class RewardVideoActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        loadedAd?.stopRewardVideoAd()
+        loadedAd?.stop()
         loadedAd = null
         super.onDestroy()
     }
@@ -256,7 +256,7 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
 | 화면 전환·백그라운드 (표시 광고 유지) | `loadedAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
-| `Activity.onDestroy()` | `loadedAd.stopRewardVideoAd()` (또는 `destroy()`) | 광고 정지 및 리소스 해제 (리스너 참조도 함께 해제됨) |
+| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 정지 및 리소스 해제 (리스너 참조도 함께 해제됨) (~~`destroy()`~~/~~`stopRewardVideoAd()`~~은 Deprecated 별칭) |
 
 ---
 
@@ -275,16 +275,16 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 
 ## 구 API에서 전환 (제거됨)
 
-구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMRewardVideo` 정적 `load()`로 전환하세요.
+구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMRewardVideo` 정적 `loadAd()`로 전환하세요.
 
 | 구 (제거됨) | 신규 (GAM 스타일) |
 |---|---|
-| `new RewardInterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMRewardVideo.load(context, adInfo, callback)` |
+| `new RewardInterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMRewardVideo.loadAd(context, adInfo, callback)` |
 | `setListener(AdListener)` + `onReceivedAd` | `AMMRewardVideoLoadCallback.onSuccessLoadReward(adapterName, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadReward(errorCode, errorMsg)` |
-| `loadRewardVideoAd()` / `startRewardVideoAd()` | `AMMRewardVideo.load(...)` (노출은 `ad.show(activity, listener)`) |
+| `loadRewardVideoAd()` / `startRewardVideoAd()` | `AMMRewardVideo.loadAd(...)` (노출은 `ad.show(activity, listener)`) |
 | `showRewardVideoAd()` | `ad.show(activity, OnUserEarnedRewardListener)` |
 | `onEventAd(AdEvent.EARNEDREWARD)` | `OnUserEarnedRewardListener.onUserEarnedReward()` |
 | `onEventAd(AdEvent.COMPLETION)` | `FullScreenContentCallback.onAdCompleted()` |
 | `onEventAd(AdEvent.DISPLAYED / CLICK / CLOSE)` | `onAdShowedFullScreenContent()` / `onAdClicked()` / `onAdDismissedFullScreenContent()` |
-| `stopRewardVideoAd()` | `stopRewardVideoAd()` (유지) 또는 `destroy()` |
+| `stopRewardVideoAd()` | `stop()` (구 명칭은 `@Deprecated` 별칭으로 유지) |

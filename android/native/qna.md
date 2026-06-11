@@ -65,12 +65,12 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
 
 **Q. 화면 전환/백그라운드 진입 시 표시 중인 광고는 끊지 않고 진행 중 로드만 취소하고 싶습니다.**
 
-`cancelLoad()`를 사용하세요. 내부 상태가 로딩 중일 때만 취소하고, **표시 중(SHOWING)이면 아무 동작도 하지 않습니다**. 전체 정리는 `stopXxx()`/`onDestroy()`입니다.
+`cancelLoad()`를 사용하세요. 내부 상태가 로딩 중일 때만 취소하고, **표시 중(SHOWING)이면 아무 동작도 하지 않습니다**. 전체 정리는 `stop()`입니다.
 
 ```java
-interstitialAd.cancelLoad();        // 진행 중 로드만 취소 (표시 중이면 no-op)
+interstitialAd.cancelLoad();  // 진행 중 로드만 취소 (표시 중이면 no-op)
 // 화면 종료 시:
-interstitialAd.stopInterstitial();  // 전체 리소스 해제 (필수)
+interstitialAd.stop();        // 전체 리소스 해제 (필수)
 ```
 
 | 상황 | 호출 |

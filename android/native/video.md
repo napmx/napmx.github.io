@@ -11,7 +11,7 @@ nap ssp SDK는 두 가지 동영상 광고 포맷을 지원합니다.
 
 > ℹ️ 리워드 지급이 필요한 전면 동영상은 [리워드 동영상 광고](rewarded-video.md)를 참고하세요.
 
-> 🆕 **GAM 스타일 API**: 전면 동영상은 `AMMVideoInterstitial`의 정적 `load()` + `FullScreenContentCallback` 구조를 사용합니다. 기존 `InterstitialVideoAd` 클래스는 **제거**되었습니다 — `AMMVideoInterstitial`로 전환하세요. 인라인 동영상은 `AMMVideoView`(구 `VideoAdView`, 제거됨)를 사용하며 화면 내 View이므로 기존 `AdListener` 모델을 그대로 사용합니다.
+> 🆕 **GAM 스타일 API**: 전면 동영상은 `AMMVideoInterstitial`의 정적 `loadAd()` + `FullScreenContentCallback` 구조를 사용합니다. 기존 `InterstitialVideoAd` 클래스는 **제거**되었습니다 — `AMMVideoInterstitial`로 전환하세요. 인라인 동영상은 `AMMVideoView`(구 `VideoAdView`, 제거됨)를 사용하며 화면 내 View이므로 기존 `AdListener` 모델을 그대로 사용합니다.
 
 ---
 
@@ -117,7 +117,7 @@ public class VideoAdActivity extends AppCompatActivity {
     @Override protected void onPause() { if (videoAdView != null) videoAdView.onPause(); super.onPause(); }
     @Override
     protected void onDestroy() {
-        if (videoAdView != null) { videoAdView.destroy(); videoAdView = null; }
+        if (videoAdView != null) { videoAdView.stop(); videoAdView = null; }
         super.onDestroy();
     }
 }
@@ -167,7 +167,7 @@ class VideoAdActivity : AppCompatActivity() {
     override fun onResume() { super.onResume(); videoAdView?.onResume() }
     override fun onPause() { videoAdView?.onPause(); super.onPause() }
     override fun onDestroy() {
-        videoAdView?.destroy(); videoAdView = null
+        videoAdView?.stop(); videoAdView = null
         super.onDestroy()
     }
 }
@@ -177,18 +177,18 @@ class VideoAdActivity : AppCompatActivity() {
 > - `v2.0.0`부터 `AMMVideoView`는 레이아웃에 추가(`addView`)되는 시점에 자동으로 노출 처리가 수행됩니다.
 > - 따라서 기존의 `showAd()` 메서드는 더 이상 호출할 필요가 없으며(Deprecated), `container.addView(adView)`만으로 충분합니다.
 
-> ℹ️ 인라인 동영상(`AMMVideoView`)은 화면 내 View로 동작하므로 `AdListener`의 이름 있는 이벤트 콜백(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdSkipped` 등)을 사용합니다. 정적 `load()` / `FullScreenContentCallback`은 전면(풀스크린) 포맷에만 적용됩니다.
+> ℹ️ 인라인 동영상(`AMMVideoView`)은 화면 내 View로 동작하므로 `AdListener`의 이름 있는 이벤트 콜백(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdSkipped` 등)을 사용합니다. 정적 `loadAd()` / `FullScreenContentCallback`은 전면(풀스크린) 포맷에만 적용됩니다.
 
 ---
 
 ## 전면 동영상 광고 (AMMVideoInterstitial)
 
-화면 전체를 덮는 전면 동영상 광고를 표시합니다. 전면 배너와 동일한 GAM 스타일(정적 `load()` + `FullScreenContentCallback`) 구조입니다.
+화면 전체를 덮는 전면 동영상 광고를 표시합니다. 전면 배너와 동일한 GAM 스타일(정적 `loadAd()` + `FullScreenContentCallback`) 구조입니다.
 
 ### 호출 흐름
 
 ```
-AMMVideoInterstitial.load(context, adInfo, callback)
+AMMVideoInterstitial.loadAd(context, adInfo, callback)
     → onSuccessLoadVideoInterstitial(adapterName, ad)  ← 로드된 광고 객체 전달
         → ad.setFullScreenContentCallback(...)         ← 노출/클릭/재생완료/닫힘 콜백
         → ad.show(activity)                            ← 노출 (Activity 필요)
@@ -215,7 +215,7 @@ public class InterstitialVideoActivity extends AppCompatActivity {
             .interstitialTimeout(20)      // 타임아웃 (초, 0: 서버 지정)
             .build();
 
-        AMMVideoInterstitial.load(this, adInfo, new AMMVideoInterstitialLoadCallback() {
+        AMMVideoInterstitial.loadAd(this, adInfo, new AMMVideoInterstitialLoadCallback() {
             @Override
             public void onSuccessLoadVideoInterstitial(@NonNull String adapterName, @NonNull AMMVideoInterstitial ad) {
                 loadedAd = ad;
@@ -245,7 +245,7 @@ public class InterstitialVideoActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (loadedAd != null) {
-            loadedAd.stopInterstitialVideoAd(); // 또는 destroy()
+            loadedAd.stop();
             loadedAd = null;
         }
         super.onDestroy();
@@ -273,7 +273,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
             .interstitialTimeout(20)
             .build()
 
-        AMMVideoInterstitial.load(this, adInfo, object : AMMVideoInterstitialLoadCallback() {
+        AMMVideoInterstitial.loadAd(this, adInfo, object : AMMVideoInterstitialLoadCallback() {
             override fun onSuccessLoadVideoInterstitial(adapterName: String, ad: AMMVideoInterstitial) {
                 loadedAd = ad
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -293,7 +293,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        loadedAd?.stopInterstitialVideoAd()
+        loadedAd?.stop()
         loadedAd = null
         super.onDestroy()
     }
@@ -321,7 +321,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
 
 | 메서드 | 기본값 | 설명 |
 |--------|--------|------|
-| `isLoadOnly(boolean)` | `false` | 로드만 수행(전면 동영상 지연 노출). `show()` 호출 시 노출 |
+| ~~`isLoadOnly(boolean)`~~ | `false` | **Deprecated** — 동작에 영향 없음. 전면 동영상은 항상 load-only로 로드되며 `show()` 호출 시 노출 |
 | `interstitialTimeout(int)` | `0` (서버 지정, 약 20초) | 로딩 타임아웃 (초) |
 | `setDisableBackKey(boolean)` | `true` (차단) | **전면 동영상** 뒤로가기 닫기 차단 여부. `false` 설정 시에만 BACK으로 닫기 허용 |
 
@@ -359,28 +359,28 @@ class InterstitialVideoActivity : AppCompatActivity() {
 |----------------|--------------------|------|
 | `onResume()` | `videoAdView.onResume()` | 동영상 재생 재개 |
 | `onPause()` | `videoAdView.onPause()` | 동영상 재생 일시 정지 |
-| `onDestroy()` | `videoAdView.destroy()` | 리소스 해제 (필수) |
+| `onDestroy()` | `videoAdView.stop()` | 리소스 해제 (필수) (~~`destroy()`~~는 Deprecated 별칭) |
 
 **전면 동영상 (AMMVideoInterstitial)**
 
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
 | 화면 전환·백그라운드 (표시 광고 유지) | `loadedAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
-| `Activity.onDestroy()` | `loadedAd.stopInterstitialVideoAd()` (또는 `destroy()`) | 광고 정지 및 리소스 해제 |
+| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 정지 및 리소스 해제 (~~`destroy()`~~/~~`stopInterstitialVideoAd()`~~은 Deprecated 별칭) |
 
 ---
 
 ## 구 API에서 전환 (전면 동영상 — 제거됨)
 
-구 `InterstitialVideoAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMVideoInterstitial` 정적 `load()`로 전환하세요.
+구 `InterstitialVideoAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMVideoInterstitial` 정적 `loadAd()`로 전환하세요.
 
 | 구 (제거됨) | 신규 (GAM 스타일) |
 |---|---|
-| `new InterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMVideoInterstitial.load(context, adInfo, callback)` |
+| `new InterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMVideoInterstitial.loadAd(context, adInfo, callback)` |
 | `setListener(AdListener)` + `onReceivedAd` | `AMMVideoInterstitialLoadCallback.onSuccessLoadVideoInterstitial(adapterName, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadVideoInterstitial(errorCode, errorMsg)` |
-| `loadInterstitialVideoAd()` / `startInterstitialVideoAd()` | `AMMVideoInterstitial.load(...)` (노출은 `ad.show(activity)`) |
+| `loadInterstitialVideoAd()` / `startInterstitialVideoAd()` | `AMMVideoInterstitial.loadAd(...)` (노출은 `ad.show(activity)`) |
 | `showInterstitialVideoAd()` / `showInterstitialVideoAd(activity)` | `ad.show(activity)` |
 | `onEventAd(AdEvent.DISPLAYED / CLICK / COMPLETION / CLOSE)` | `onAdShowedFullScreenContent()` / `onAdClicked()` / `onAdCompleted()` / `onAdDismissedFullScreenContent()` |
 | `closeInterstitialVideoAd()` (CLOSE/SKIPPED 시 필수) | 불필요 — `onAdDismissedFullScreenContent()`로 닫힘 수신 |
-| `stopInterstitialVideoAd()` | `stopInterstitialVideoAd()` (유지) 또는 `destroy()` |
+| `stopInterstitialVideoAd()` | `stop()` (구 명칭은 `@Deprecated` 별칭으로 유지) |

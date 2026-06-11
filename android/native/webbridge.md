@@ -330,7 +330,7 @@ public class NapMxAdBridgeHandler {
             if (banner != null) {
                 ViewGroup parent = (ViewGroup) banner.getParent();
                 if (parent != null) parent.removeView(banner);
-                banner.destroy();
+                banner.stop();
                 banner = null;
             }
         });
@@ -394,7 +394,7 @@ public class NapMxAdBridgeHandler {
                 nativeAdView.setAdInfo(adInfo);
                 nativeAdView.setViewBinder(viewBinder);
                 nativeAdView.setAdViewListener(nativeListener);
-                nativeAdView.loadNativeAd();
+                nativeAdView.loadAd();
             } catch (Exception e) {
                 sendCallback("onNativeFailed", "", "", -1, e.getMessage());
             }
@@ -415,7 +415,7 @@ public class NapMxAdBridgeHandler {
                     .setDisableBackKey(disableBackKey)
                     .build();
 
-                AMMInterstitial.load(activity, adInfo, new AMMInterstitialLoadCallback() {
+                AMMInterstitial.loadAd(activity, adInfo, new AMMInterstitialLoadCallback() {
                     @Override
                     public void onSuccessLoadInterstitial(@NonNull String adapterName,
                                                           @NonNull AMMInterstitial ad) {
@@ -482,7 +482,7 @@ public class NapMxAdBridgeHandler {
                     builder.setCustomParams(customParams);
                 }
 
-                AMMRewardVideo.load(activity, builder.build(), new AMMRewardVideoLoadCallback() {
+                AMMRewardVideo.loadAd(activity, builder.build(), new AMMRewardVideoLoadCallback() {
                     @Override
                     public void onSuccessLoadReward(@NonNull String adapterName,
                                                     @NonNull AMMRewardVideo ad) {
@@ -604,7 +604,7 @@ public class NapMxAdBridgeHandler {
                     .setDisableBackKey(params.optBoolean("disableBackKey", true))
                     .build();
 
-                AMMVideoInterstitial.load(activity, adInfo, new AMMVideoInterstitialLoadCallback() {
+                AMMVideoInterstitial.loadAd(activity, adInfo, new AMMVideoInterstitialLoadCallback() {
                     @Override
                     public void onSuccessLoadVideoInterstitial(@NonNull String adapterName,
                                                                 @NonNull AMMVideoInterstitial ad) {
@@ -659,7 +659,7 @@ public class NapMxAdBridgeHandler {
             if (nativeAdView != null) {
                 ViewGroup parent = (ViewGroup) nativeAdView.getParent();
                 if (parent != null) parent.removeView(nativeAdView);
-                nativeAdView.destroy();
+                nativeAdView.stop();
                 nativeAdView = null;
             }
         });
@@ -670,10 +670,10 @@ public class NapMxAdBridgeHandler {
         activity.runOnUiThread(() -> {
             destroyBanner();
             destroyNative();
-            if (loadedInterstitial != null)      { loadedInterstitial.destroy(); loadedInterstitial = null; }
-            if (loadedRewardVideo != null)        { loadedRewardVideo.stopRewardVideoAd(); loadedRewardVideo = null; }
-            if (videoView != null)                { videoView.destroy(); videoView = null; }
-            if (loadedVideoInterstitial != null)  { loadedVideoInterstitial.stopInterstitialVideoAd(); loadedVideoInterstitial = null; }
+            if (loadedInterstitial != null)      { loadedInterstitial.stop(); loadedInterstitial = null; }
+            if (loadedRewardVideo != null)        { loadedRewardVideo.stop(); loadedRewardVideo = null; }
+            if (videoView != null)                { videoView.stop(); videoView = null; }
+            if (loadedVideoInterstitial != null)  { loadedVideoInterstitial.stop(); loadedVideoInterstitial = null; }
         });
     }
 

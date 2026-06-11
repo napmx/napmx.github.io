@@ -20,7 +20,7 @@ dependencies {
 
 ## 배너 — `AdMixerBanner`
 
-`AndroidView` 호스팅·`destroy()` 해제·생명주기 연결·도착 콜백 가드를 헬퍼가 자동 처리합니다.
+`AndroidView` 호스팅·`stop()` 해제·생명주기 연결·도착 콜백 가드를 헬퍼가 자동 처리합니다.
 
 ```kotlin
 import com.nasmedia.admixerssp.compose.AdMixerBanner
@@ -35,7 +35,7 @@ fun MyScreen() {
 ```
 
 내부 동작:
-- 컴포지션 진입 시 `AMMBannerView` 생성 + `loadAd()`, 이탈 시 `DisposableEffect.onDispose`에서 `destroy()`.
+- 컴포지션 진입 시 `AMMBannerView` 생성 + `loadAd()`, 이탈 시 `DisposableEffect.onDispose`에서 `stop()`.
 - `ON_RESUME/ON_PAUSE`를 `adView.onResume()/onPause()`로 자동 연결 → **백그라운드 갱신/영상 재생 정지**.
 - dispose 이후 도착하는 콜백은 무시(가드) → 스크롤 아웃/슬롯 재사용 시 상태 오염 방지.
 
@@ -57,7 +57,7 @@ AdMixerBanner(adUnitId = "...", listener = listener)
 
 ## 네이티브 — `AdMixerNativeAd`
 
-네이티브 광고는 **레이아웃 바인더(`NativeAdViewBinder`)** 로 제목/이미지/CTA 등을 매핑합니다. 헬퍼가 `loadNativeAd()` → 수신 시 `showAd()`(어댑터 뷰 부착) → 이탈 시 `destroy()`까지 자동 처리합니다.
+네이티브 광고는 **레이아웃 바인더(`NativeAdViewBinder`)** 로 제목/이미지/CTA 등을 매핑합니다. 헬퍼가 `loadAd()` → AndroidView 부착 시 자동 렌더링 → 이탈 시 `stop()`까지 자동 처리합니다(별도 `showAd()` 호출 불필요).
 
 ```kotlin
 import com.nasmedia.admixerssp.compose.AdMixerNativeAd
@@ -149,12 +149,12 @@ fun RewardScreen() {
 
 `admixer-compose`를 쓰지 않고 직접 연동한다면, **아래 두 가지를 반드시** 구현해야 합니다.
 
-### 1) 해제: `DisposableEffect.onDispose`에서 `destroy()`
+### 1) 해제: `DisposableEffect.onDispose`에서 `stop()`
 
 ```kotlin
 val view = remember { AMMBannerView(context).apply { setAdInfo(AdInfo.Builder(adUnitId).build()); loadAd() } }
 AndroidView(factory = { view })
-DisposableEffect(adUnitId) { onDispose { view.destroy() } }
+DisposableEffect(adUnitId) { onDispose { view.stop() } }
 ```
 
 ### 2) 생명주기 연결 (필수)

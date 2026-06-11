@@ -12,12 +12,14 @@
 
 ## 노출 방식
 
-배너 광고는 두 가지 방식으로 노출할 수 있습니다.
+배너 광고는 뷰가 화면에 부착(`addView` 또는 XML 배치)되는 시점에 **자동으로 표시**됩니다. 별도의 `showAd()` 호출은 필요 없습니다.
 
 | 방식 | 설명 | 권장 사용 시나리오 |
 |------|------|--------------------|
-| **즉시 노출** | `addView()` 후 광고 수신 시 자동 표시 | 광고 영역이 항상 고정된 경우 |
-| **지연 노출** | `loadAd()` → `onReceivedAd` 후 `showAd()` 호출 | 특정 시점에 광고를 노출해야 하는 경우 |
+| **고정 영역** | 레이아웃(XML 또는 `addView`)에 미리 배치하고 `loadAd()` | 광고 영역이 항상 고정된 경우 |
+| **지연 노출** | `loadAd()`로 미리 로드 후, 원하는 시점에 `addView()`로 화면에 부착 | 특정 시점에 광고를 노출해야 하는 경우 |
+
+> `showAd()`는 더 이상 호출할 필요가 없으며 `@Deprecated` 처리되었습니다(하위호환을 위해 유지). `AdInfo.isLoadOnly`도 배너에서는 무시됩니다.
 
 ---
 
@@ -81,7 +83,7 @@ public class BannerActivity extends AppCompatActivity {
     @Override protected void onPause() { if (adView != null) adView.onPause(); super.onPause(); }
     @Override
     protected void onDestroy() {
-        if (adView != null) { adView.destroy(); adView = null; }
+        if (adView != null) { adView.stop(); adView = null; }
         super.onDestroy();
     }
 }
@@ -130,7 +132,7 @@ class BannerActivity : AppCompatActivity() {
     override fun onResume() { super.onResume(); adView?.onResume() }
     override fun onPause() { adView?.onPause(); super.onPause() }
     override fun onDestroy() {
-        adView?.destroy(); adView = null
+        adView?.stop(); adView = null
         super.onDestroy()
     }
 }
@@ -206,10 +208,8 @@ class BannerXmlActivity : AppCompatActivity() {
 
 #### Java
 ```java
-// 1. 광고 미리 로드 (화면 표시 없이 백그라운드 로드)
-// isLoadOnly(true): 광고 수신 후 자동 노출하지 않고 loadAd() 완료만 처리
+// 1. 광고 미리 로드 (아직 레이아웃에 추가하지 않음)
 AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
-    .isLoadOnly(true) // ← 지연 노출 필수 설정
     .build();
 
 adView = new AMMBannerView(this);
@@ -218,44 +218,43 @@ adView.setAdViewListener(new AdListener() {
     @Override
     public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
         // 광고 수신 완료 — hasAd 플래그가 true로 설정됨
-        // isLoadOnly(true)이므로 아직 화면에 표시되지 않음
+        // 아직 레이아웃에 추가하지 않았으므로 화면에 표시되지 않음
     }
     // ...
 });
-adView.loadAd(); // 백그라운드 로드 시작 (자동 노출 안 함)
+adView.loadAd(); // 백그라운드 로드 시작
 
-// 2. 원하는 시점에 표시
+// 2. 원하는 시점에 화면에 추가 → 부착되는 즉시 자동 표시 (showAd 호출 불필요)
 showAdButton.setOnClickListener(v -> {
     if (adView.hasAd) {
         container.removeAllViews();
-        container.addView(adView); // 레이아웃에 추가되는 순간 광고가 노출됩니다.
+        container.addView(adView); // addView 시점에 자동 노출
     }
 });
 ```
 
 #### Kotlin
 ```kotlin
-// 1. 광고 미리 로드
+// 1. 광고 미리 로드 (아직 레이아웃에 추가하지 않음)
 val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
-    .isLoadOnly(true) // ← 지연 노출 필수 설정
     .build()
 
 adView = AMMBannerView(this).apply {
     setAdInfo(adInfo)
     setAdViewListener(object : AdListener() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
-            // 수신 완료 — isLoadOnly(true)이므로 자동 노출 안 됨
+            // 수신 완료 — 아직 레이아웃에 추가하지 않았으므로 화면에 표시되지 않음
         }
         // ...
     })
-    loadAd() // 자동 노출 없이 로드만 수행
+    loadAd() // 백그라운드 로드 시작
 }
 
-// 2. 원하는 시점에 표시
+// 2. 원하는 시점에 화면에 추가 → 부착되는 즉시 자동 표시 (showAd 호출 불필요)
 showAdButton.setOnClickListener {
     if (adView?.hasAd == true) {
         container.removeAllViews()
-        container.addView(adView) // 레이아웃에 추가 시 자동 노출
+        container.addView(adView) // addView 시점에 자동 노출
     }
 }
 ```
@@ -282,7 +281,7 @@ showAdButton.setOnClickListener {
 |----------------|--------------|------|
 | `onResume()` | `adView.onResume()` | 광고 갱신 타이머 재개 |
 | `onPause()` | `adView.onPause()` | 광고 갱신 타이머 일시 정지 |
-| `onDestroy()` | `adView.destroy()` | 모든 리소스 해제 (필수) |
+| `onDestroy()` | `adView.stop()` | 모든 리소스 해제 (필수) (~~`destroy()`~~는 Deprecated 별칭) |
 
 > ⚠️ `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. **익명 클래스(anonymous class)**로 구현하면 GC에 의해 수집될 수 있으므로, 반드시 **멤버 변수**로 선언하세요.
 
