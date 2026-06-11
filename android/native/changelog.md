@@ -44,13 +44,6 @@
 - **Naver NAM(nam-bom) `8.14.0` → `8.16.0`**
 - **Mobwith(mobwithSDK) `1.0.2` → `1.0.83`** — ⚠️ `settings.gradle`(또는 프로젝트 `build.gradle`) repositories에 `maven { url 'https://jitpack.io' }` 추가 필요(BlurView 전이 의존).
 
-### 버그 수정 및 안정성
-
-- **네이티브 광고 설명(description) 텍스트 노출 오류 수정**
-- **일부 매체(Adfit, Mobwith, Pangle, Naver 등) 및 특정 소재에서의 네이티브 광고 렌더링 안정성 개선**
-- **Android 13+ 예측형 뒤로가기 동작 시 전면형 광고 BACK 키 오동작 문제 수정**
-- **서버 설정 재동기화 시 광고 로딩 라이프사이클 및 풀스크린 리소스 관리 최적화**
-- **풀스크린 광고 생명주기 및 노출/클릭 로그 전송 신뢰도 상향**
 
 ---
 
