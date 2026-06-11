@@ -281,6 +281,8 @@ class NativeAdActivity : AppCompatActivity() {
 
 > ℹ️ **`setViewBinder()`는 필수입니다.** `setViewBinder()` 없이는 네이티브 광고가 렌더링되지 않습니다.
 
+> ℹ️ **Naver Ad Manager — Native Simple(템플릿형) 광고 — [v2.0.0]**: NAM 통합형 지면에서 Native Simple 광고가 내려오는 경우, 소재 전체를 NAM SDK가 **템플릿으로 렌더링**합니다. 이때 `NativeAdViewBinder`의 레이아웃/뷰 ID 매핑(자산 바인딩)은 적용되지 않으며, 광고 높이는 소재 비율에 따라 자동 결정됩니다. 연동 방법은 일반 네이티브와 동일하며(`loadAd()` → `addView`), 응답 타입 분기는 SDK가 자동 처리합니다.
+
 > ℹ️ **자동 갱신(롤링) — [v2.0.0]**: 배너와 **동일 로직**으로, 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격, 무한 루프는 #59 가드 차단). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 갱신 시에는 뷰가 이미 화면에 부착돼 있으므로 새 소재가 자동으로 다시 렌더링됩니다(`showAd()` 호출 불필요).
 
 ---

@@ -78,7 +78,7 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 
 ## AMMInterstitial (전면 배너)
 
-> 🆕 GAM 스타일 정적 `load()` + `FullScreenContentCallback` 구조. 구 `InterstitialAd` 클래스는 **제거**되었습니다(→ `AMMInterstitial`).
+> 🆕 GAM 스타일 정적 `loadAd()` + `FullScreenContentCallback` 구조. 구 `InterstitialAd` 클래스는 **제거**되었습니다(→ `AMMInterstitial`).
 
 | 멤버 | 설명 |
 |--------|------|
@@ -128,7 +128,7 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 
 ## AMMRewardVideo (리워드 동영상)
 
-> 🆕 GAM 스타일 정적 `load()` + `show(activity, OnUserEarnedRewardListener)` 구조. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다(→ `AMMRewardVideo`).
+> 🆕 GAM 스타일 정적 `loadAd()` + `show(activity, OnUserEarnedRewardListener)` 구조. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다(→ `AMMRewardVideo`).
 
 | 멤버 | 설명 |
 |--------|------|
@@ -161,7 +161,7 @@ AdMixer.getInstance().setObject(AdMixer.AX_OBJ_CONFIG_URL, "https://proxy.exampl
 
 ## 풀스크린 로드 콜백 / 노출 콜백 (GAM 스타일)
 
-전면 / 리워드 / 전면 동영상의 정적 `load()` 결과 콜백과 노출 단계 콜백입니다.
+전면 / 리워드 / 전면 동영상의 정적 `loadAd()` 결과 콜백과 노출 단계 콜백입니다.
 
 **Load 콜백 (abstract class — 로드 결과 1회 통지)**
 

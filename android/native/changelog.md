@@ -5,12 +5,13 @@
 ## v2.0.0 (미출시)
 
 > v1 → v2 메이저 전환. 공개 광고 클래스가 GMA / iOS-AdMixer 정합의 `AMM*` 네이밍으로 통일되고,
-> 풀스크린 광고가 GMA 스타일 정적 `load()` + `FullScreenContentCallback` 구조로 바뀝니다.
+> 풀스크린 광고가 GMA 스타일 정적 `loadAd()` + `FullScreenContentCallback` 구조로 바뀝니다.
 > 자세한 교체 방법은 [v2 마이그레이션 가이드](migration.md)를 참고하세요.
 
 ### 새로운 기능
 
 - **NaverAdManager 어댑터 추가** — Naver Ad Manager(NAM) 미디에이션 지원 (`admixer-naveradmanager`)
+- **NAM Native Simple(템플릿형) 광고 지원** — NAM 통합형 네이티브 지면에서 Native Simple 응답을 별도 연동 코드 없이 자동 렌더링. 템플릿 렌더링 방식이므로 `NativeAdViewBinder` 자산 매핑은 적용되지 않습니다. ([네이티브 가이드](native-ad.md))
 - **Teads 어댑터 추가** — Teads 미디에이션 지원 (`admixer-teads`)
 - **Jetpack Compose 지원** — `@Composable AdMixerBanner(...)` 등 제공. 코어에 Compose 의존성을 강제하지 않는 선택 모듈 (`admixer-compose`). [Compose 가이드](compose.md)
 - **GAM 스타일 풀스크린 광고 API (전면/리워드/전면 동영상)** — 정적 `AMMInterstitial.loadAd(...)` / `AMMRewardVideo.loadAd(...)` / `AMMVideoInterstitial.loadAd(...)`가 로드 완료 시 콜백으로 광고 객체를 반환(인스턴스 생성 불필요). 노출 이벤트는 `FullScreenContentCallback`(`onAdShowedFullScreenContent`/`onAdClicked`/`onAdDismissedFullScreenContent`/`onAdFailedToShowFullScreenContent`)로 수신. ([전면](interstitial.md)·[동영상](video.md)·[리워드](rewarded-video.md))
@@ -19,7 +20,7 @@
 - **`cancelLoad()`** — 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
 - **클라이언트 키 주입 `setAdapterConfig(adapterName, Map)`** — 서버 미제공 시 네트워크 키(예: AppLovin `sdkKey`)를 매체가 주입
 - **인라인 광고 addView 시점 자동 노출** — 배너·네이티브·인라인 동영상은 뷰가 화면에 부착(`addView` 또는 XML 배치)되는 시점에 자동 노출됩니다. `showAd()` 직접 호출은 더 이상 필요 없으며 `@Deprecated`로 유지(하위호환).
-- **사용자 API 표준화 (RFC-20260610)** — 로드는 `loadAd()`(인라인 인스턴스·풀스크린 정적 공통), 해제는 `stop()`으로 통일. 구 명칭(`loadNativeAd()`/`loadInterstitial()`/정적 `load()`/`destroy()`/`stopInterstitial()` 등)은 `@Deprecated` 별칭으로 동작이 유지됩니다.
+- **사용자 API 표준화 (RFC-20260610)** — 로드는 `loadAd()`(인라인 인스턴스·풀스크린 정적 공통), 해제는 `stop()`으로 통일. 구 명칭(`loadNativeAd()`/`loadInterstitial()`/`destroy()`/`stopInterstitial()` 등)은 `@Deprecated` 별칭으로 동작이 유지됩니다.
 
 ### 주요 변경 (Breaking Changes)
 
