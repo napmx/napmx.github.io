@@ -14,7 +14,6 @@
 | **adunit id** | [nap mx 파트너 사이트](https://publisher.admixer.co.kr)에서 애드유닛 생성 후 발급 |
 | **Google App ID** | [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr) 문의 |
 | **Pangle App ID** | [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr) 문의 |
-| **NaverAdManager Publisher ID** | [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr) 문의 |
 
 ---
 
@@ -22,4 +21,4 @@
 
 media key와 adunit id 발급을 위해 먼저 nap mx 파트너 사이트에 가입하세요.
 
-> **nap mx 파트너 사이트 가입하기** — [publisher.admixer.co.kr](https://publisher.admixer.co.kr) — 광고 수익 관리, 리포트, 정산 신청 등 모든 운영을 이 사이트에서 진행합니다.
+> **nap mx 파트너 사이트** — [publisher.admixer.co.kr](https://publisher.admixer.co.kr) 
