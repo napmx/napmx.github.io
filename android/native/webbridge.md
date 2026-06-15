@@ -1,6 +1,6 @@
 # WebBridge — 하이브리드 앱 연동 (Android)
 
-> ℹ️ WebBridge 연동 전, [Android SDK 시작하기](/android/native/getting-started)의 Step 1~4 설정이 완료되었는지 확인하세요.
+> ℹ️ WebBridge 연동 전, [Android SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
 WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap ssp 네이티브 SDK를 JavaScript Bridge를 통해 호출하여 광고를 표시하는 연동 방식입니다.
 

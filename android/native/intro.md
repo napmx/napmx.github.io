@@ -1,0 +1,70 @@
+# nap ssp Android SDK 연동 가이드
+
+> **버전**: 2.0.0  
+> **최소 지원 OS**: Android 5.0 (API 21, Lollipop) 이상  
+> **문의**: nap\_mx@nasmedia.co.kr
+
+---
+
+## nap ssp SDK란?
+
+**nap ssp SDK**는 나스미디어에서 제공하는 Android 광고 수익화 솔루션입니다. 단일 SDK 연동으로 여러 광고 네트워크(미디에이션)를 통해 수익을 극대화할 수 있습니다.
+
+### 지원하는 광고 포맷
+
+| 포맷 | 클래스 | 설명 |
+|------|--------|------|
+| 배너 광고 | `AMMBannerView` | 화면 상단/하단에 고정 표시되는 배너 |
+| 전면 광고 | `AMMInterstitial` | 화면 전체를 덮는 전면 광고 |
+| 네이티브 광고 | `AMMNativeAdView` | 앱 UI에 자연스럽게 통합되는 커스텀 형태 |
+| 리워드 동영상 | `AMMRewardVideo` | 시청 완료 시 리워드를 지급하는 전면 동영상 |
+| 인라인 동영상 | `AMMVideoView` | 화면 내 인라인으로 재생되는 동영상 |
+| 전면 동영상 | `AMMVideoInterstitial` | 화면 전체를 덮는 전면 동영상 |
+
+> 🆕 모든 공개 광고 클래스가 GMA(Google Mobile Ads) / iOS-AdMixer 정합의 `AMM*` 네이밍으로 통일되었습니다. 구 클래스(`AdView` / `NativeAdView` / `VideoAdView` / `InterstitialAd` / `RewardInterstitialVideoAd` / `InterstitialVideoAd`)는 **제거**되었습니다 — 위 표의 `AMM*` 클래스를 사용하세요.
+
+### 지원하는 미디에이션 네트워크
+
+| 네트워크 | 어댑터 상수 |
+|---------|------------|
+| Google AdManager | `AdMixer.ADAPTER_ADMANAGER` |
+| Kakao Adfit | `AdMixer.ADAPTER_ADFIT` |
+| Pangle (TikTok) | `AdMixer.ADAPTER_PANGLE` |
+| AppLovin | `AdMixer.ADAPTER_APPLOVIN` |
+| Unity Ads | `AdMixer.ADAPTER_UNITY` |
+| Mobwith | `AdMixer.ADAPTER_MOBWITH` |
+| Naver Ad Manager | `AdMixer.ADAPTER_NAVER_ADMANAGER` |
+| Teads | `AdMixer.ADAPTER_TEADS` |
+
+---
+
+## 빠른 시작
+
+1. [SDK 시작하기](getting-started.md) — Gradle 설정, 초기화, ProGuard
+2. [배너 광고](banner.md) — 첫 번째 광고 노출
+3. [샘플 프로젝트](#샘플-프로젝트) — 완성된 예제 코드 확인
+
+---
+
+## 샘플 프로젝트
+
+연동 시작 시 샘플 프로젝트를 먼저 적용하여 광고 응답을 확인하는 방식을 권장합니다.
+
+* [Android Java SDK Sample](https://github.com/Nasmedia-Tech/AOS-AdMixerSSP-TestApp/tree/main/AdMixerSDKSample)
+* [Android Kotlin SDK Sample](https://github.com/Nasmedia-Tech/AOS-AdMixerSSP-TestApp/tree/main/AdMixerSDKKotlinSample)
+
+---
+
+## 사전 요구사항
+
+연동 작업 전에 아래 사항을 준비하세요.
+
+> ℹ️ **nap ssp 파트너 사이트**에 가입 후 미디어 등록 및 애드유닛 생성을 완료해야 **media key**와 **adunit id**를 확인할 수 있습니다. media key와 adunit id가 파트너 사이트에 등록된 내용과 상이할 경우 광고가 원활히 노출되지 않을 수 있습니다.
+
+| 항목 | 발급 방법 |
+|------|----------|
+| media key | nap ssp 파트너 사이트에서 미디어 등록 후 발급 |
+| adunit id | nap ssp 파트너 사이트에서 애드유닛 생성 후 발급 |
+| Google App ID | nap_mx@nasmedia.co.kr 문의 |
+| Pangle App ID | nap_mx@nasmedia.co.kr 문의 |
+| NaverAdManager Publisher ID | nap_mx@nasmedia.co.kr 문의 |

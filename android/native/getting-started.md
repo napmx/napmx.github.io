@@ -243,22 +243,6 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 
 ---
 
-## AppLovin 사용 시 GPL 예외 처리
-
-AppLovin SDK를 포함하는 경우, 특정 라이브러리(`libapplovin-native-crash-reporter.so`)가 GPL-2.0 라이선스 이슈를 발생시킬 수 있습니다. 이를 방지하기 위해 `build.gradle`에 아래 설정을 추가하여 해당 파일을 제외하는 것을 권장합니다.
-
-```gradle
-android {
-    // ... 기존 설정 ...
-
-    packagingOptions {
-        exclude 'lib/*/libapplovin-native-crash-reporter.so'
-    }
-}
-```
-
----
-
 ## 네트워크 SDK 중복 예외 처리
 
 이미 자체/타사 솔루션으로 동일한 네트워크 SDK를 운영 중인 경우, `exclude`로 중복을 방지하세요.

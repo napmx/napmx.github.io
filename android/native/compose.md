@@ -73,6 +73,7 @@ fun NativeSlot() {
             .setDescriptionId(R.id.nap_mx_tv_desc)
             .setMainViewId(R.id.nap_mx_iv_main)
             .setCtaId(R.id.nap_mx_btn_cta)
+            .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 — 광고 정보 고지(AdChoices), 미지정 시 우측 상단 자동 오버레이
             .build()
     }
     AdMixerNativeAd(
@@ -84,6 +85,8 @@ fun NativeSlot() {
 ```
 
 > ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration.md)을 참고하세요.
+
+> ℹ️ **AdChoices(광고 정보 고지)** — 레이아웃에 `nap_mx_privacy_container`(View/ViewGroup/ImageView) 슬롯을 두고 `setPrivacyViewId()`로 지정하면 해당 위치에 노출됩니다. 지정하지 않으면 우측 상단에 자동 오버레이됩니다. 슬롯 배치 규칙과 레이아웃 예제는 [네이티브 가이드](native-ad.md)를 참고하세요.
 
 ---
 

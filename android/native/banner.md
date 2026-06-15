@@ -259,13 +259,10 @@ showAdButton.setOnClickListener {
 }
 ```
 
-> ℹ️ **showAd() 메서드 안내**
-> - `v2.0.0`부터 `AMMBannerView`는 레이아웃에 추가(`addView`)되는 시점에 자동으로 노출 처리가 수행됩니다.
-> - 따라서 기존의 `showAd()` 메서드는 더 이상 호출할 필요가 없으며(Deprecated), `container.addView(adView)`만으로 충분합니다.
-
 > ⚠️ **지연 노출 유의사항**
-> - 광고 수신 후 너무 오랜 시간이 지나면 정상 표시되지 않을 수 있습니다.
+> - 광고 수신 후 너무 오랜 시간이 지나면 표시 시 정상 노출되지 않을 수 있습니다.
 > - `adView.loadAd()`만 호출하고 레이아웃에 `addView()`를 하지 않으면 광고가 화면에 표시되지 않습니다.
+> - `addView()`로 화면에 부착하면 자동으로 표시됩니다(`showAd()` 호출 불필요).
 
 ---
 

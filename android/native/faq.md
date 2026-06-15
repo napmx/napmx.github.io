@@ -51,8 +51,6 @@ LogCat에서 `AdMixer` 태그로 필터링하면 SDK 내부 동작을 상세히 
 - **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`를 호출하세요. 부착 즉시 자동 노출됩니다.
 - **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `loadAd()`로 미리 로드한 뒤, 원하는 시점에 `container.addView(adView)`를 호출하면 그 시점에 노출됩니다. (`showAd()`와 `AdInfo.isLoadOnly`는 모두 `@Deprecated`이며 동작에 영향을 주지 않습니다.)
 
-> ℹ️ `v2.0.0`부터 배너의 `showAd()` 호출은 불필요합니다(Deprecated). `addView()`만으로 노출 처리가 자동 수행됩니다.
-
 ---
 
 **Q. AdUnit 설정 사이즈와 다른 광고 사이즈가 노출됩니다.**

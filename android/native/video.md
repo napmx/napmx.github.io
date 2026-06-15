@@ -63,7 +63,7 @@ public class VideoAdActivity extends AppCompatActivity {
     private final AdListener adListener = new AdListener() {
         @Override
         public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-            // 광고 수신 성공 — 레이아웃에 추가 시 자동 노출됩니다.
+            // 광고 수신 성공 — 컨테이너에 추가
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -133,7 +133,6 @@ class VideoAdActivity : AppCompatActivity() {
 
     private val adListener = object : AdListener() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
-            // 레이아웃에 추가 시 자동 노출
             val params = RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -172,10 +171,6 @@ class VideoAdActivity : AppCompatActivity() {
     }
 }
 ```
-
-> ℹ️ **showAd() 메서드 안내**
-> - `v2.0.0`부터 `AMMVideoView`는 레이아웃에 추가(`addView`)되는 시점에 자동으로 노출 처리가 수행됩니다.
-> - 따라서 기존의 `showAd()` 메서드는 더 이상 호출할 필요가 없으며(Deprecated), `container.addView(adView)`만으로 충분합니다.
 
 > ℹ️ 인라인 동영상(`AMMVideoView`)은 화면 내 View로 동작하므로 `AdListener`의 이름 있는 이벤트 콜백(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdSkipped` 등)을 사용합니다. 정적 `loadAd()` / `FullScreenContentCallback`은 전면(풀스크린) 포맷에만 적용됩니다.
 
