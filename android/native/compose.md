@@ -145,6 +145,31 @@ fun RewardScreen() {
 
 ---
 
+## 전면 비디오 — `rememberVideoInterstitialAd`
+
+보상이 없는 **전면 비디오 광고**(`AMMVideoInterstitial`)도 전면·리워드와 동일한 state-holder 패턴으로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고, 이탈 시 `stop()`으로 정식 해제합니다.
+
+```kotlin
+import com.nasmedia.admixerssp.compose.rememberVideoInterstitialAd
+
+@Composable
+fun VideoScreen() {
+    val video = rememberVideoInterstitialAd(
+        adUnitId = MyApplication.ADUNIT_ID_VIDEO,
+        // autoShow = false (기본): 수신 후 원하는 시점에 show() 직접 호출
+    )
+
+    LaunchedEffect(Unit) { video.load() }
+    Button(onClick = { if (video.isLoaded) video.show() }) { Text("전면 비디오 보기") }
+}
+```
+
+- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 내부적으로 정식 메서드 `loadAd()`/`showAd()`/`stop()`를 호출합니다(구 `loadInterstitialVideoAd`/`showInterstitialVideoAd`는 deprecated).
+
+> 🚨 전면과 동일하게 **수신 콜백에서 로드+자동노출을 재호출하지 마세요**(무한 재로드). 노출은 항상 `show()`로 하며, 헬퍼가 이 규약을 강제합니다.
+
+---
+
 ## 헬퍼 없이 직접 호스팅하는 경우
 
 `admixer-compose`를 쓰지 않고 직접 연동한다면, **아래 두 가지를 반드시** 구현해야 합니다.
