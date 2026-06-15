@@ -78,13 +78,13 @@
 
 ### Android / iOS SDK
 
-| SDK 포맷 | 설명 | 지원 크기 |
-|------|------|----------|
-| 배너 (Banner) | 일반 배너 광고 | 320×50, 320×100, 300×250, 320x480 등 |
-| 전면 (Interstitial) | 전체 화면을 덮는 광고로 배너 또는 짧은 영상 광고 노출 | 전체 화면 |
-| 네이티브 (Native) | 광고를 구성하는 asset 제공 | 자유로운 사이즈 구현 |
-| 리워드 동영상 (Rewarded Video) | 시청 완료에 대한 보상 이벤트 제공 | 전체 화면 |
-| 동영상 (Video) | 인스트림/아웃스트림 | 16:9 |
+| SDK 포맷 | 설명 | 지원 크기 | 발급 방법 ([파트너 사이트](https://publisher.admixer.co.kr/)) |
+|------|------|----------|----------|
+| 배너 (Banner) | 일반 배너 광고 | 320×50, 320×100, 300×250, 320x480 등 | Banner > Full Screen 일반 |
+| 전면 (Interstitial) | 전체 화면을 덮는 광고로 배너 또는 짧은 영상 광고 노출 | 전체 화면 | Banner > Full Screen 전면 |
+| 네이티브 (Native) | 광고를 구성하는 asset 제공 | 자유로운 사이즈 구현 | Native |
+| 리워드 동영상 (Rewarded Video) | 시청 완료에 대한 보상 이벤트 제공 | 전체 화면 | Video > Full Screen 전면 > 비디오 유형 Reward |
+| 동영상 (Video) | 인스트림/아웃스트림 | 16:9 | Video > Full Screen 일반 비디오 유형 Instream / Full Screen 전면 비디오 유형 Outstream |
 
 ### Web Script
 
