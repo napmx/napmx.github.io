@@ -245,7 +245,7 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 |--------|--------|------|
 | `setMute(boolean)` | `false` | 동영상 음소거 여부 |
 | `setCustomParams(Map)` | `{}` | S2S Reward Callback 커스텀 파라미터 |
-| `isLoadOnly(boolean)` | `false` | 로드만 수행(지연 노출). `show()` 호출 시 노출 |
+| ~~`isLoadOnly(boolean)`~~ | `false` | **Deprecated** — 동작에 영향 없음. 리워드 광고는 항상 load-only로 로드되며 `show()` 호출 시 노출 |
 | `interstitialTimeout(int)` | `0` (서버 지정) | 로딩 타임아웃 (초) |
 | `setDisableBackKey(boolean)` | `true` (차단) | 리워드 광고 뒤로가기 닫기 차단 여부. `false` 설정 시에만 BACK으로 닫기 허용 |
 

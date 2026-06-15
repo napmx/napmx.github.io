@@ -135,7 +135,7 @@ fun RewardScreen() {
         }
     }
     val reward = rememberRewardVideoAd(
-        adUnitId = MyApplication.ADUNIT_ID_REWARD,
+        adUnitId = MyApplication.ADUNIT_ID_REWARD_VIDEO,
         listener = rewardListener,
     )
 
