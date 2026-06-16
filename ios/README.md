@@ -5,6 +5,10 @@ nap mx iOS SDK 앱 연동 가이드입니다.
 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
+> **최신 버전**: 2.3.6  
+> **최소 지원 OS**: iOS 13.0 이상, Xcode 15.3 이상
+> **CocoaPods와 SPM을 이용한 설치를 지원합니다**
+> **문의**: nap\_mx@nasmedia.co.kr
 
 ## 하위 가이드
 
