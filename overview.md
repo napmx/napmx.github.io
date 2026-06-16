@@ -86,6 +86,9 @@
 | 리워드 동영상 (Rewarded Video) | 시청 완료에 대한 보상 이벤트 제공 | 전체 화면 | Video > Full Screen 전면 > 비디오 유형 Reward |
 | 동영상 (Video) | 인스트림/아웃스트림 | 16:9 | Video > Full Screen 일반 비디오 유형 Instream / Full Screen 전면 비디오 유형 Outstream |
 
+**전면 광고는 전면(Interstitial) - Banner > Full Screen **전면** 연동을 권장드리며, 
+ 동영상(Video) 포맷의 경우, 단일 네트워크만 제공되어 광고 물량이 제한적일 수 있습니다.**
+
 ### Web Script
 
 | 포맷 | 설명 | 지원 크기 |
