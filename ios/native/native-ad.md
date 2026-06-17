@@ -10,6 +10,8 @@
 
 네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
 
+![네이티브 광고 구성](/resources/ios_native_assets.png)
+
 | Asset | 설명 |
 |-------|------|
 | `icon` | 아이콘 이미지 |
@@ -28,6 +30,8 @@
 **Step 1. AMMNativeAdView.xib 파일 추가**
 
 아래의 `AMMNativeAdView.xib` 파일을 프로젝트에 추가합니다. (사이즈별 권장 xib 파일을 사용해주세요.)
+
+<a href="/resources/AMMNativeAdView.xib" download>📎 AMMNativeAdView.xib 다운로드</a>
 
 **Step 2. 인스턴스 변수 생성**
 
