@@ -128,7 +128,7 @@ dependencyResolutionManagement {
 public class MyApplication extends android.app.Application {
 
     // 파트너 사이트에서 발급받은 키값으로 교체하세요
-    public static final String MEDIA_KEY = "발급받은 미디어 키";
+    public static final String MEDIA_KEY = "발급받은 미디어 키 **앱당 1개의 미디어키만 적용 가능**";
     public static final String ADUNIT_ID_BANNER = "배너 애드유닛 ID";
     public static final String ADUNIT_ID_INTERSTITIAL = "전면 배너 애드유닛 ID";
     public static final String ADUNIT_ID_NATIVE = "네이티브 애드유닛 ID";
