@@ -10,7 +10,7 @@
 
 네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
 
-<img src="/resources/ios_native_assets.png" alt="네이티브 광고 구성">
+<img src="/resources/ios_native_assets.png" alt="네이티브 광고 구성" width="480">
 
 | Asset | 설명 |
 |-------|------|
@@ -29,9 +29,17 @@
 
 **Step 1. AMMNativeAdView.xib 파일 추가**
 
-아래의 `AMMNativeAdView.xib` 파일을 프로젝트에 추가합니다. (사이즈별 권장 xib 파일을 사용해주세요.)
+아래의 `AMMNativeAdView.xib` 파일을 프로젝트에 추가합니다. 광고 사이즈에 맞는 권장 xib 파일을 사용해주세요.
 
-<a href="/resources/AMMNativeAdView.xib" download>📎 AMMNativeAdView.xib 다운로드</a>
+| 사이즈 | 다운로드 |
+|--------|----------|
+| 기본 | <a href="/resources/AMMNativeAdView.xib" download>📎 AMMNativeAdView.xib</a> |
+| 320x50 | <a href="/resources/AMMNativeAdView320x50.xib" download>📎 AMMNativeAdView320x50.xib</a> |
+| 320x100 | <a href="/resources/AMMNativeAdView320x100.xib" download>📎 AMMNativeAdView320x100.xib</a> |
+| 300x250 | <a href="/resources/AMMNativeAdView300x250.xib" download>📎 AMMNativeAdView300x250.xib</a> |
+| 320x480 | <a href="/resources/AMMNativeAdView320x480.xib" download>📎 AMMNativeAdView320x480.xib</a> |
+
+> xib 파일의 루트 뷰 클래스는 `AMMNativeAdView`로 동일하므로, 코드에서는 `loadNibNamed("AMMNativeAdView", ...)` 대신 추가한 파일명(예: `"AMMNativeAdView300x250"`)으로 로드해주세요.
 
 **Step 2. 인스턴스 변수 생성**
 
