@@ -6,9 +6,6 @@
 
 ---
 
-## nap mx SDK란?
-
-**nap mx SDK**는 나스미디어에서 제공하는 Android 광고 수익화 솔루션입니다. 단일 SDK 연동으로 여러 광고 네트워크(미디에이션)를 통해 수익을 극대화할 수 있습니다.
 
 ### 지원하는 광고 포맷
 
@@ -33,7 +30,6 @@
 | Mobwith | `AdMixer.ADAPTER_MOBWITH` |
 | Naver Ad Manager | `AdMixer.ADAPTER_NAVER_ADMANAGER` |
 | Teads | `AdMixer.ADAPTER_TEADS` |
-
 ---
 
 ## 빠른 시작
