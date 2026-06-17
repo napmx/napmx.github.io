@@ -54,11 +54,9 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | 메서드 | 타입 | 기본값 | 설명 |
 |--------|------|--------|------|
 | `new Builder(String adUnitId)` | - | - | 필수. adUnit ID 지정 |
-| ~~`isLoadOnly(boolean)`~~ | `boolean` | `false` | **Deprecated** — 동작에 영향 없음. 모든 광고는 load-only로 로드되며 노출은 addView(인라인)/`show()`(전면형)로 제어 |
 | `interstitialTimeout(int)` | `int` | `0` | 전면 광고 타임아웃 (초, 0: 서버 지정) |
-| `setUseBackgroundAlpha(boolean)` | `boolean` | `true` | 전면 광고 배경 반투명 |
 | `setMute(boolean)` | `boolean` | `false` | 동영상 음소거 |
-| `showCloseButton(boolean)` | `boolean` | `true` | 전면 광고 닫기 버튼 표시 |
+| `showCloseButton(boolean)` | `boolean` | `false` | 전면 광고 닫기 버튼 표시 |
 | `setCloseButtonBound(int)` | `int` | `100` | 전면 광고 닫기 'X' 버튼 터치 영역 비율(%, 20~100 범위로 클램프) |
 | `setAdViewBinder(NativeAdViewBinder)` | - | `null` | 네이티브 광고 바인더 설정 (`AMMNativeAdView.setViewBinder()` 권장, 이 메서드는 AdInfo를 통한 대안) |
 | `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 (예: AppLovin `sdkKey`). `AdMixer.ADAPTER_*` 상수를 adapterName으로 사용 |
@@ -74,18 +72,16 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 표시 |
-| ~~`showAd()`~~ | **Deprecated** — addView 시 자동 표시되므로 호출 불필요(하위호환 유지) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
-| ~~`destroy()`~~ | **Deprecated** — `stop()`을 사용 (동일 동작 별칭) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
 
 ---
 
 ## AMMInterstitial (전면 배너)
 
-> 🆕 GAM 스타일 정적 `loadAd()` + `FullScreenContentCallback` 구조. 구 `InterstitialAd` 클래스는 **제거**되었습니다(→ `AMMInterstitial`).
+> ℹ️ 정적 `loadAd()` + `FullScreenContentCallback` 구조. 구 `InterstitialAd` 클래스는 제거되었습니다(→ `AMMInterstitial`).
 
 | 멤버 | 설명 |
 |--------|------|
@@ -93,16 +89,16 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/닫힘/표시실패 콜백 등록 (Kotlin: `fullScreenContentCallback` 프로퍼티) |
 | `show(Activity)` | 전면 광고 표시 (Activity Context 필요) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존). 로딩 중이 아니면 no-op |
-| `stop()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) (~~`destroy()`~~/~~`stopInterstitial()`~~은 Deprecated 별칭) |
+| `stop()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
-> ℹ️ 인스턴스 메서드(`setAdInfo`/`setAdListener`/`loadAd()`/`showAd()`)도 제공되며, 구 명칭(`loadInterstitial`/`showInterstitial`)은 `@Deprecated` 별칭으로 유지됩니다. **즉시 노출 `startInterstitial()`은 v2.0.0에서 제거**되었습니다 — 로드 후 `show()`로 노출하세요. 신규 연동은 정적 `loadAd()`를 권장합니다. (구 `InterstitialAd` 클래스는 제거됨)
+> ℹ️ 인스턴스 메서드(`setAdInfo`/`setAdListener`/`loadAd()`/`showAd()`)도 제공됩니다. **즉시 노출 `startInterstitial()`은 v2.0.0에서 제거**되었습니다 — 로드 후 `show()`로 노출하세요. 신규 연동은 정적 `loadAd()`를 권장합니다. (구 `InterstitialAd` 클래스는 제거됨)
 
 ---
 
 ## AMMVideoInterstitial (전면 동영상)
 
-> 🆕 전면 배너와 동일한 GAM 스타일 구조. 구 `InterstitialVideoAd` 클래스는 **제거**되었습니다(→ `AMMVideoInterstitial`).
+> ℹ️ 전면 광고와 동일한 정적 `loadAd()` + `FullScreenContentCallback` 구조. 구 `InterstitialVideoAd` 클래스는 제거되었습니다(→ `AMMVideoInterstitial`).
 
 | 멤버 | 설명 |
 |--------|------|
@@ -110,7 +106,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
 | `show(Activity)` | 전면 동영상 표시 (Activity Context 필요) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
-| `stop()` | 광고 정지 및 리소스 해제 (필수) (~~`destroy()`~~/~~`stopInterstitialVideoAd()`~~은 Deprecated 별칭) |
+| `stop()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
 ---
@@ -123,19 +119,16 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setViewBinder(NativeAdViewBinder)` | 레이아웃 바인더 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 렌더링 |
-| ~~`loadNativeAd()`~~ | **Deprecated** — `loadAd()`를 사용 (동일 동작 별칭) |
-| ~~`showAd()`~~ | **Deprecated** — addView 시 자동 렌더되므로 호출 불필요(하위호환 유지) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
-| ~~`destroy()`~~ | **Deprecated** — `stop()`을 사용 (동일 동작 별칭) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
 
 ---
 
 ## AMMRewardVideo (리워드 동영상)
 
-> 🆕 GAM 스타일 정적 `loadAd()` + `show(activity, OnUserEarnedRewardListener)` 구조. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다(→ `AMMRewardVideo`).
+> ℹ️ 정적 `loadAd()` + `show(activity, OnUserEarnedRewardListener)` 구조. 구 `RewardInterstitialVideoAd` 클래스는 제거되었습니다(→ `AMMRewardVideo`).
 
 | 멤버 | 설명 |
 |--------|------|
@@ -144,7 +137,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `show(Activity, OnUserEarnedRewardListener)` | 광고 표시 + 보상 적립 리스너 등록 |
 | `show(Activity)` | 광고 표시 (보상 리스너 없이) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
-| `stop()` | 광고 정지 및 리소스 해제 (필수) (~~`destroy()`~~/~~`stopRewardVideoAd()`~~은 Deprecated 별칭) |
+| `stop()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
 > 보상 적립은 `OnUserEarnedRewardListener.onUserEarnedReward()`로 수신합니다(영상 재생 완료 `onAdCompleted()`와는 별개).
@@ -158,15 +151,13 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 노출 |
-| ~~`showAd()`~~ | **Deprecated** — addView 시 자동 노출되므로 호출 불필요(하위호환 유지) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
-| ~~`destroy()`~~ | **Deprecated** — `stop()`을 사용 (동일 동작 별칭) |
 
 ---
 
-## 풀스크린 로드 콜백 / 노출 콜백 (GAM 스타일)
+## 풀스크린 로드 콜백 / 노출 콜백
 
 전면 / 리워드 / 전면 동영상의 정적 `loadAd()` 결과 콜백과 노출 단계 콜백입니다.
 
@@ -187,8 +178,6 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `onAdDismissedFullScreenContent()` | 광고 닫힘 | |
 | `onAdFailedToShowFullScreenContent(AdError)` | 광고 표시 실패 | |
 | `onAdCompleted()` | 비디오 재생 완료 | **AdMixer 확장** (전면비디오/리워드) |
-| `onAdLeftClicked()` | 팝업형 좌측 버튼 클릭 | **AdMixer 확장** (Popup 전면) |
-| `onAdRightClicked()` | 팝업형 우측 버튼 클릭 | **AdMixer 확장** (Popup 전면) |
 
 **OnUserEarnedRewardListener (interface — 리워드 보상 적립)**
 
@@ -243,8 +232,6 @@ public abstract class AdListener {
     public void onAdClosed() {}         // 광고 닫힘
     public void onAdCompleted() {}      // 동영상 재생 완료
     public void onAdSkipped() {}        // 동영상 Skip
-    public void onAdLeftClicked() {}    // 팝업 전면: 왼쪽 버튼 클릭
-    public void onAdRightClicked() {}   // 팝업 전면: 오른쪽 버튼 클릭
     public void onAdRewarded() {}       // 리워드 적립
 }
 ```
@@ -264,8 +251,6 @@ public abstract class AdListener {
 | `DISPLAYED` | `onAdDisplayed()` | 광고가 화면에 표시됨 | 배너, 전면, 네이티브, 동영상 |
 | `CLICK` | `onAdClicked()` | 광고 소재 또는 링크 클릭 | 전체 |
 | `CLOSE` | `onAdClosed()` | 광고 창 닫힘 | 전면, 동영상 |
-| `LEFT_CLICK` | `onAdLeftClicked()` | 팝업형: 왼쪽 버튼 클릭 | 전면(Popup) |
-| `RIGHT_CLICK` | `onAdRightClicked()` | 팝업형: 오른쪽 버튼 클릭 | 전면(Popup) |
 | `COMPLETION` | `onAdCompleted()` | 동영상 재생 완료 | 동영상, 리워드 |
 | `SKIPPED` | `onAdSkipped()` | Skip 버튼 클릭 | 동영상, 리워드 |
 | `EARNEDREWARD` | `onAdRewarded()` | 리워드 획득 (동영상 시청 완료) | 리워드 |
@@ -281,12 +266,12 @@ AdMixerLog.setLogLevel(AdMixerLog.LogLevel.ERROR);   // 운영 환경 (에러만
 AdMixerLog.setLogLevel(AdMixerLog.LogLevel.NONE);    // 로그 완전 비활성화
 ```
 
-| LogLevel | 설명 |
-|---------|------|
-| `VERBOSE` | 모든 로그 출력 (개발 권장) |
-| `DEBUG` | 디버그 이상 출력 |
-| `INFO` | 정보 이상 출력 |
-| `WARN` | 경고 이상 출력 (기본값) |
-| `ERROR` | 에러만 출력 (운영 환경 권장) |
-| `ASSERT` | ASSERT(wtf) 레벨만 출력 |
-| `NONE` | 모든 로그 완전 비활성화 |
+| LogLevel | priority | 설명 |
+|---------|:--------:|------|
+| `NONE` | 0 | 모든 로그 완전 비활성화 |
+| `VERBOSE` | 2 | 모든 로그 출력 (개발 권장) |
+| `DEBUG` | 3 | 디버그 이상 출력 |
+| `INFO` | 4 | 정보 이상 출력 |
+| `WARN` | 5 | 경고 이상 출력 (기본값) |
+| `ERROR` | 6 | 에러만 출력 (운영 환경 권장) |
+| `ASSERT` | 7 | ASSERT(wtf) 레벨만 출력 |

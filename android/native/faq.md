@@ -49,7 +49,7 @@ LogCat에서 `AdMixer` 태그로 필터링하면 SDK 내부 동작을 상세히 
 광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 추가해야 합니다. 뷰가 화면에 부착(addView)되는 시점에 SDK가 **자동으로 노출**하므로 별도의 `showAd()` 호출은 필요 없습니다.
 
 - **콜백 기반 노출**: `loadAd()` 후 `onReceivedAd()` 콜백에서 `container.addView(adView)`를 호출하세요. 부착 즉시 자동 노출됩니다.
-- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `loadAd()`로 미리 로드한 뒤, 원하는 시점에 `container.addView(adView)`를 호출하면 그 시점에 노출됩니다. (`showAd()`와 `AdInfo.isLoadOnly`는 모두 `@Deprecated`이며 동작에 영향을 주지 않습니다.)
+- **완전 지연 노출** (콜백 이후 원하는 시점에 표시): `loadAd()`로 미리 로드한 뒤, 원하는 시점에 `container.addView(adView)`를 호출하면 그 시점에 노출됩니다.
 
 ---
 
@@ -109,12 +109,6 @@ Google AdManager는 기존 운영 중인 지면과 **다른 지면**에 한해 �
 ---
 
 ## 전면 광고
-
-**Q. 전면 광고가 뒤로가기(BACK)로 닫히지 않습니다.**
-
-v2.0.0부터 전면 광고는 **BACK 키를 기본 차단**합니다(닫기는 'X' 버튼으로만). 뒤로가기 닫기를 허용하려면 `AdInfo.Builder.setDisableBackKey(false)`를 명시하세요. 자세한 내용은 [전면 배너 광고 — 뒤로가기 키 정책](interstitial.md#뒤로가기back-키-정책) 참고.
-
----
 
 **Q. 표시 중인 광고는 유지하면서 진행 중 로드만 취소하려면?**
 

@@ -19,7 +19,7 @@
 | **고정 영역** | 레이아웃(XML 또는 `addView`)에 미리 배치하고 `loadAd()` | 광고 영역이 항상 고정된 경우 |
 | **지연 노출** | `loadAd()`로 미리 로드 후, 원하는 시점에 `addView()`로 화면에 부착 | 특정 시점에 광고를 노출해야 하는 경우 |
 
-> `showAd()`는 더 이상 호출할 필요가 없으며 `@Deprecated` 처리되었습니다(하위호환을 위해 유지). `AdInfo.isLoadOnly`도 배너에서는 무시됩니다.
+> `showAd()`는 호출할 필요가 없습니다 — 뷰가 화면에 부착되는 시점에 자동 표시됩니다.
 
 ---
 
@@ -278,7 +278,7 @@ showAdButton.setOnClickListener {
 |----------------|--------------|------|
 | `onResume()` | `adView.onResume()` | 광고 갱신 타이머 재개 |
 | `onPause()` | `adView.onPause()` | 광고 갱신 타이머 일시 정지 |
-| `onDestroy()` | `adView.stop()` | 모든 리소스 해제 (필수) (~~`destroy()`~~는 Deprecated 별칭) |
+| `onDestroy()` | `adView.stop()` | 모든 리소스 해제 (필수) |
 
 > ⚠️ `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. **익명 클래스(anonymous class)**로 구현하면 GC에 의해 수집될 수 있으므로, 반드시 **멤버 변수**로 선언하세요.
 
@@ -295,3 +295,15 @@ showAdButton.setOnClickListener {
 > // ❌ 잘못된 방법
 > adView = new AMMBannerView(getApplicationContext()); // Application context — Adfit 동작 안 함
 > ```
+
+---
+
+## 구 API에서 전환 (배너 · v1.x.x → v2)
+
+구 `AdView` 클래스는 v2에서 제거되었습니다. `AMMBannerView`로 전환하세요. 전체 마이그레이션 절차는 [마이그레이션 가이드](migration.md)를 참고하세요.
+
+| v1.x.x (제거됨) | v2.0.0 |
+|---|---|
+| `AdView` | `AMMBannerView` (메서드 시그니처 동일) |
+| `onEventAd(AdEvent.DISPLAYED / CLICK)` | `onAdDisplayed()` / `onAdClicked()` |
+| `destroy()` / `onDestroy()` | `stop()` |

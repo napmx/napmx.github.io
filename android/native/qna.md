@@ -49,19 +49,7 @@ AdInfo adInfo = new AdInfo.Builder(adUnitId)
 
 ---
 
-## 전면 / 리워드 (생명주기 · 뒤로가기)
-
-**Q. 전면/리워드/인스트림 광고에서 뒤로가기(BACK)로 광고가 그냥 닫혀버립니다.**
-
-v2.0.0부터 **풀스크린 광고는 BACK 키를 기본 차단**합니다(닫기는 'X' 버튼으로만). 비디오/리워드는 항상 차단되며, 정적 전면도 기본 차단입니다. 뒤로가기로 닫기를 **허용**하려면 `AdInfo.Builder.setDisableBackKey(false)`를 명시하세요.
-
-```java
-AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-        .setDisableBackKey(false) // 명시적으로 false → BACK으로 닫기 허용
-        .build();
-```
-
----
+## 전면 / 리워드 (생명주기)
 
 **Q. 화면 전환/백그라운드 진입 시 표시 중인 광고는 끊지 않고 진행 중 로드만 취소하고 싶습니다.**
 

@@ -4,7 +4,9 @@
 
 리워드 동영상 광고는 `AMMRewardVideo`를 사용합니다. 사용자가 동영상을 끝까지 시청하면 **`OnUserEarnedRewardListener.onUserEarnedReward()`** 콜백이 호출되며, 이 시점에 리워드를 지급하세요.
 
-> 🆕 **GAM 스타일 API**: 리워드 광고는 GMA(Google Mobile Ads) / iOS-AdMixer와 동일한 **정적 `loadAd()` → 로드된 광고 객체 반환 → `show(activity, OnUserEarnedRewardListener)`** 구조를 사용합니다. 노출/클릭/닫힘은 `FullScreenContentCallback`으로, 보상 적립은 `OnUserEarnedRewardListener`로 수신합니다. 구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다 — `AMMRewardVideo` 정적 `loadAd()`로 전환하세요.
+> ℹ️ 리워드 광고는 **정적 `loadAd()` → 로드된 광고 객체 반환 → `show(activity, OnUserEarnedRewardListener)`** 구조를 사용합니다. 노출/클릭/닫힘은 `FullScreenContentCallback`으로, 보상 적립은 `OnUserEarnedRewardListener`로 수신합니다.
+>
+> 구 `RewardInterstitialVideoAd` 클래스는 제거되었습니다 — `AMMRewardVideo` 정적 `loadAd()`로 전환하세요.
 
 ---
 
@@ -224,30 +226,13 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 
 ---
 
-## 뒤로가기(BACK) 키 정책
-
-> ⚠️ **v2.0.0**: 리워드 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다(시청 도중 스킵·조기 종료 방지, 닫기는 닫기 버튼 전용). 보상은 시청 완료 시점(`onUserEarnedReward`)에만 지급되므로, BACK 차단 여부와 무관하게 보상 무결성은 항상 유지됩니다.
->
-> 뒤로가기로 닫기를 허용하려면 `AdInfo`에서 명시적으로 해제하세요:
-> ```java
-> AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
->         .setDisableBackKey(false) // 명시적 false → 뒤로가기로 닫기 허용
->         .build();
-> ```
->
-> ℹ️ Android 13(API 33)+ 예측형 뒤로가기(predictive back)가 켜진 앱(예: `targetSdk 35`)에서도 위 차단이 정상 적용됩니다.
-
----
-
 ## AdInfo 옵션 레퍼런스
 
 | 메서드 | 기본값 | 설명 |
 |--------|--------|------|
 | `setMute(boolean)` | `false` | 동영상 음소거 여부 |
 | `setCustomParams(Map)` | `{}` | S2S Reward Callback 커스텀 파라미터 |
-| ~~`isLoadOnly(boolean)`~~ | `false` | **Deprecated** — 동작에 영향 없음. 리워드 광고는 항상 load-only로 로드되며 `show()` 호출 시 노출 |
 | `interstitialTimeout(int)` | `0` (서버 지정) | 로딩 타임아웃 (초) |
-| `setDisableBackKey(boolean)` | `true` (차단) | 리워드 광고 뒤로가기 닫기 차단 여부. `false` 설정 시에만 BACK으로 닫기 허용 |
 
 ---
 
@@ -256,7 +241,7 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
 | 화면 전환·백그라운드 (표시 광고 유지) | `loadedAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
-| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 정지 및 리소스 해제 (리스너 참조도 함께 해제됨) (~~`destroy()`~~/~~`stopRewardVideoAd()`~~은 Deprecated 별칭) |
+| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 정지 및 리소스 해제 (리스너 참조도 함께 해제됨) |
 
 ---
 
@@ -273,11 +258,11 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 
 ---
 
-## 구 API에서 전환 (제거됨)
+## 구 API에서 전환 (리워드 동영상 · v1.x.x → v2)
 
-구 `RewardInterstitialVideoAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMRewardVideo` 정적 `loadAd()`로 전환하세요.
+구 `RewardInterstitialVideoAd` 클래스는 v2에서 제거되었습니다. 아래 매핑을 참고해 `AMMRewardVideo` 정적 `loadAd()`로 전환하세요. 전체 마이그레이션 절차는 [마이그레이션 가이드](migration.md)를 참고하세요.
 
-| 구 (제거됨) | 신규 (GAM 스타일) |
+| v1.x.x (제거됨) | v2.0.0 |
 |---|---|
 | `new RewardInterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMRewardVideo.loadAd(context, adInfo, callback)` |
 | `setListener(AdListener)` + `onReceivedAd` | `AMMRewardVideoLoadCallback.onSuccessLoadReward(adapterName, ad)` |
@@ -287,4 +272,4 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | `onEventAd(AdEvent.EARNEDREWARD)` | `OnUserEarnedRewardListener.onUserEarnedReward()` |
 | `onEventAd(AdEvent.COMPLETION)` | `FullScreenContentCallback.onAdCompleted()` |
 | `onEventAd(AdEvent.DISPLAYED / CLICK / CLOSE)` | `onAdShowedFullScreenContent()` / `onAdClicked()` / `onAdDismissedFullScreenContent()` |
-| `stopRewardVideoAd()` | `stop()` (구 명칭은 `@Deprecated` 별칭으로 유지) |
+| `stopRewardVideoAd()` | `stop()` |

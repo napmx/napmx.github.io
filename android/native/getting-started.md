@@ -60,6 +60,9 @@ dependencies {
     implementation 'io.github.nasmedia-tech:admixer-mobwith:2.0.0'         // Mobwith (mobwithSDK:1.0.83 포함, JitPack 저장소 필요)
     implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'           // Teads (teads-sdk:6.1.0 포함)
+
+    // 선택 — Unity 네이티브 광고용 기본 레이아웃 헬퍼 (직접 NativeAdViewBinder 레이아웃을 구성하면 불필요)
+    implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (admixer-unity와 함께 사용)
 }
 ```
 

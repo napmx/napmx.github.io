@@ -293,4 +293,19 @@ class NativeAdActivity : AppCompatActivity() {
 |----------------|---------------------|------|
 | `onResume()` | `nativeAdView.onResume()` | 동영상 재생 재개 |
 | `onPause()` | `nativeAdView.onPause()` | 동영상 재생 일시 정지 |
-| `onDestroy()` | `nativeAdView.stop()` | 모든 리소스 해제 (필수) (~~`destroy()`~~는 Deprecated 별칭) |
+| `onDestroy()` | `nativeAdView.stop()` | 모든 리소스 해제 (필수) |
+
+---
+
+## 구 API에서 전환 (네이티브 · v1.x.x → v2)
+
+구 `NativeAdView` 클래스는 v2에서 제거되었습니다. `AMMNativeAdView`로 전환하세요. 네이티브 레이아웃 View ID도 `nap_mx_` prefix로 변경되었으니, 전체 절차는 [마이그레이션 가이드](migration.md)를 참고하세요.
+
+| v1.x.x (제거됨) | v2.0.0 |
+|---|---|
+| `NativeAdView` | `AMMNativeAdView` (메서드 시그니처 동일) |
+| `loadNativeAd()` | `loadAd()` |
+| `setViewIds(...)` | `NativeAdViewBinder` 설정으로 통합 (모든 어댑터 공통) |
+| `tv_title` / `iv_icon` / `tv_adv` / `tv_desc` / `iv_main` / `btn_cta` | `nap_mx_tv_title` / `nap_mx_iv_icon` / `nap_mx_tv_adv` / `nap_mx_tv_desc` / `nap_mx_iv_main` / `nap_mx_btn_cta` |
+| `onEventAd(AdEvent.DISPLAYED / CLICK)` | `onAdDisplayed()` / `onAdClicked()` |
+| `destroy()` / `onDestroy()` | `stop()` |

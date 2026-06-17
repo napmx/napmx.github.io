@@ -409,10 +409,8 @@ public class NapMxAdBridgeHandler {
             try {
                 JSONObject params = new JSONObject(jsonParams);
                 String adUnitId = params.getString("adUnitId");
-                boolean disableBackKey = params.optBoolean("disableBackKey", true);
 
                 AdInfo adInfo = new AdInfo.Builder(adUnitId)
-                    .setDisableBackKey(disableBackKey)
                     .build();
 
                 AMMInterstitial.loadAd(activity, adInfo, new AMMInterstitialLoadCallback() {
@@ -601,7 +599,6 @@ public class NapMxAdBridgeHandler {
                 String adUnitId = params.getString("adUnitId");
 
                 AdInfo adInfo = new AdInfo.Builder(adUnitId)
-                    .setDisableBackKey(params.optBoolean("disableBackKey", true))
                     .build();
 
                 AMMVideoInterstitial.loadAd(activity, adInfo, new AMMVideoInterstitialLoadCallback() {

@@ -4,7 +4,10 @@
 
 전면 광고는 `AMMInterstitial`을 사용하여 화면 전체를 덮는 형태의 광고를 표시합니다.
 
-> 🆕 **GAM 스타일 API**: 전면 광고는 GMA(Google Mobile Ads) / iOS-AdMixer와 동일한 **정적 `loadAd()` → 로드된 광고 객체 반환 → `FullScreenContentCallback` 노출 콜백** 구조를 사용합니다. 구 `InterstitialAd` 클래스는 **제거**되었습니다 — `AMMInterstitial` 정적 `loadAd()`로 전환하세요. 마이그레이션은 아래 [구 API에서 전환](#구-api에서-전환-제거됨)을 참고하세요.
+> ℹ️ 전면 광고는 **정적 `loadAd()` → 로드된 광고 객체 반환 → `FullScreenContentCallback` 노출 콜백** 구조를 사용합니다.
+>
+> 구 `InterstitialAd` 클래스는 제거되었습니다 — `AMMInterstitial` 정적 `loadAd()`로 전환하세요.
+> v1.x에서 업그레이드하는 경우 [마이그레이션 가이드](migration.md)와 이 페이지 하단의 "구 API에서 전환" 표를 참고하세요.
 
 ---
 
@@ -27,23 +30,6 @@ AMMInterstitial.loadAd(context, adInfo, callback)
 - **로드**는 정적 `AMMInterstitial.loadAd(...)`로 시작합니다(인스턴스 생성 불필요).
 - **노출**은 콜백으로 받은 `ad` 객체의 `show(activity)`로 수행합니다. 콜백 안에서 즉시 호출하면 **즉시 노출**, 객체를 보관했다가 나중에 호출하면 **지연 노출(Load-Only)** 입니다.
 - 노출 단계 이벤트(노출/클릭/닫힘/표시 실패)는 `FullScreenContentCallback`으로 수신합니다.
-
----
-
-## 뒤로가기(BACK) 키 정책
-
-> ⚠️ **v2.0.0 동작**: 전면 광고는 시스템 **뒤로가기(BACK) 키를 기본 차단**합니다. 광고는 'X' 닫기 버튼으로만 닫히며, 뒤로가기로 임의 종료되지 않습니다(비디오·리워드와 동일 정책).
->
-> 뒤로가기로 닫기를 **허용**하려면 `AdInfo.Builder.setDisableBackKey(false)`를 명시하세요.
-> ```java
-> AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
->         .setDisableBackKey(false) // 명시적 false → 뒤로가기로 닫기 허용
->         .build();
-> ```
->
-> 기존(v1.x)에 뒤로가기 닫기에 의존하던 매체는 위와 같이 `setDisableBackKey(false)`를 명시해야 종전 동작이 유지됩니다.
->
-> ℹ️ Android 13(API 33)+ 예측형 뒤로가기(predictive back)가 켜진 앱(예: `targetSdk 35`)에서도 위 차단이 정상 적용됩니다.
 
 ---
 
@@ -196,7 +182,7 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 }
 ```
 
-> ℹ️ 모든 로드는 "로드 후 콜백 반환"만 수행하며, 앱이 `show()`를 호출하기 전까지는 노출되지 않습니다. (`AdInfo.Builder.isLoadOnly`는 동작에 영향을 주지 않는 `@Deprecated` 옵션입니다.)
+> ℹ️ 모든 로드는 "로드 후 콜백 반환"만 수행하며, 앱이 `show()`를 호출하기 전까지는 노출되지 않습니다.
 
 ---
 
@@ -217,9 +203,6 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 
 | 메서드 | 기본값 | 설명 |
 |--------|--------|------|
-| `setUseBackgroundAlpha(boolean)` | `true` | 배경 반투명 처리 여부 |
-| `setDisableBackKey(boolean)` | `true` (차단) | 뒤로가기(BACK) 키 차단 여부 (`false`: 뒤로가기로 닫기 허용) |
-| ~~`isLoadOnly(boolean)`~~ | `false` | **Deprecated** — 동작에 영향 없음. 전면 광고는 항상 load-only로 로드되며 `show()` 호출 시 노출 |
 | `interstitialTimeout(int)` | `0` (서버 지정, 기본 20초) | 광고 로딩 타임아웃 (초) |
 | `setCloseButtonBound(int)` | `100` | 닫기(X) 버튼 터치 영역 비율(20~100%) |
 
@@ -230,7 +213,7 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | 시점 | 호출 메서드 | 역할 |
 |------|------------|------|
 | 화면 전환·백그라운드 (표시 광고 유지) | `loadedAd.cancelLoad()` | 진행 중 **로드만 취소** (표시 중이면 no-op) |
-| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 객체 해제 (필수) (~~`destroy()`~~/~~`stopInterstitial()`~~은 Deprecated 별칭) |
+| `Activity.onDestroy()` | `loadedAd.stop()` | 광고 객체 해제 (필수) |
 
 > ℹ️ `cancelLoad()`는 "로드만 취소", `stop()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
 
@@ -238,14 +221,14 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 
 ---
 
-## 구 API에서 전환 (제거됨)
+## 구 API에서 전환 (전면 광고 · v1.x.x → v2)
 
-구 `InterstitialAd` 클래스는 **제거**되었습니다. 아래 매핑을 참고해 `AMMInterstitial` 정적 `loadAd()`로 전환하세요.
+구 `InterstitialAd` 클래스는 v2에서 제거되었습니다. 아래 매핑을 참고해 `AMMInterstitial` 정적 `loadAd()`로 전환하세요. 전체 마이그레이션 절차는 [마이그레이션 가이드](migration.md)를 참고하세요.
 
-| 구 (제거됨) | 신규 (GAM 스타일) |
+| v1.x.x (제거됨) | v2.0.0 |
 |---|---|
 | `new InterstitialAd(context)` | (인스턴스 생성 불필요) `AMMInterstitial.loadAd(context, adInfo, callback)` |
-| `setAdInfo(adInfo)` | `load(...)`의 `adInfo` 인자로 전달 |
+| `setAdInfo(adInfo)` | `loadAd(...)`의 `adInfo` 인자로 전달 |
 | `setAdListener(AdListener)` + `onReceivedAd` | `AMMInterstitialLoadCallback.onSuccessLoadInterstitial(adapterName, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadInterstitial(errorCode, errorMsg)` |
 | `loadInterstitial()` / `startInterstitial()` | `AMMInterstitial.loadAd(...)` (노출은 `ad.show(activity)`) |
@@ -254,4 +237,4 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | `onEventAd(AdEvent.CLICK)` | `onAdClicked()` |
 | `onEventAd(AdEvent.CLOSE)` | `onAdDismissedFullScreenContent()` |
 | (노출 실패 신호 없음) | `onAdFailedToShowFullScreenContent(AdError)` |
-| `stopInterstitial()` | `stop()` (구 명칭은 `@Deprecated` 별칭으로 유지) |
+| `stopInterstitial()` | `stop()` |

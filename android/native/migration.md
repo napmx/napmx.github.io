@@ -13,11 +13,10 @@
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
-| **전면 BACK 키 기본 차단** | **`AdInfo.Builder.setDisableBackKey` 기본값 `true`로 변경 — 뒤로가기 닫기 의존 시 `false` 명시 필요** |
 | **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — `AdInfo.Builder.interstitialAdType`/`popupAdOption`/`setInterstitialAdType`/`setPopupAdOption` 제거. Popup은 내부(서버 설정) 전용, **CountDown 타입은 완전 제거**(관련 상수·뷰 삭제)** |
 | 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showCloseButton` (광고 제어) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
-| **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, `AdInfo.Builder.isUseBackgroundAlpha(Boolean)`, `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭을 v2.0.0에서 완전 제거. 정식 메서드로 교체 필요** |
+| **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`), `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭/무효 옵션을 v2.0.0에서 제거. 정식 메서드로 교체 필요** |
 | **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
 | Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
@@ -131,6 +130,8 @@ v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제
 | `InterstitialVideoAd` | `AMMVideoInterstitial` | 전면 비디오 광고 매니저 |
 | `VideoAdView` | `AMMVideoView` | 비디오 광고 뷰 |
 
+> ℹ️ **포맷별 상세 전환 매핑**(이벤트 콜백 포함)은 각 가이드 하단 "구 API에서 전환" 표에서도 확인할 수 있습니다 — [배너](banner.md) · [전면](interstitial.md) · [네이티브](native-ad.md) · [동영상](video.md) · [리워드 동영상](rewarded-video.md).
+
 또한, v1.x에서 `@Deprecated`로 표시되었던 **별칭(alias) 메서드·상수는 v2.0.0에서 완전히 제거**되었습니다. 아래의 정식 메서드로 교체하세요(미교체 시 컴파일 오류).
 
 ### AMMInterstitial (전면 광고)
@@ -201,21 +202,18 @@ AMMBannerView adView = findViewById(R.id.ad_view);
 adView.destroy();
 ```
 
-### AdInfo.Builder
+### AdInfo.Builder — 배경 알파 옵션 제거
 
-| 제거됨 (v1.x) | v2.0.0 정식 메서드 | 비고 |
-|------------|------------|------|
-| `.isUseBackgroundAlpha(Boolean)` | `.setUseBackgroundAlpha(boolean)` | `Boolean` → `boolean` (null 위험 제거) |
+전면 광고 배경 디밍은 v2.0.0에서 **SDK가 고정값으로 자동 적용**합니다. 배경 알파를 제어하던 `isUseBackgroundAlpha(Boolean)`(v1.x)는 제거되었고, `setUseBackgroundAlpha(boolean)`도 **동작에 영향을 주지 않습니다(무효)**. 관련 호출을 제거하세요.
 
 ```java
-// Before (v1.x) — 제거됨
+// Before (v1.x)
 new AdInfo.Builder(ADUNIT_ID)
-    .isUseBackgroundAlpha(true)
+    .isUseBackgroundAlpha(true)   // 제거됨
     .build();
 
-// After (v2.0.0)
+// After (v2.0.0) — 옵션 불필요 (배경 디밍 자동 적용)
 new AdInfo.Builder(ADUNIT_ID)
-    .setUseBackgroundAlpha(true)
     .build();
 ```
 
@@ -243,8 +241,6 @@ new AdInfo.Builder(ADUNIT_ID)
 | `CLOSE` | `onAdClosed()` | 광고 닫힘 |
 | `COMPLETION` | `onAdCompleted()` | 비디오 재생 완료 |
 | `SKIPPED` | `onAdSkipped()` | 비디오 스킵 |
-| `LEFT_CLICK` | `onAdLeftClicked()` | 팝업형 전면 좌측 버튼 클릭 |
-| `RIGHT_CLICK` | `onAdRightClicked()` | 팝업형 전면 우측 버튼 클릭 |
 | `EARNEDREWARD` | `onAdRewarded()` | 보상 적립 |
 | - | `onAdShowFailed(adView, adapterName, errorCode, errorMsg)` | 광고 노출(show) 실패 (신규 추가) |
 
@@ -281,11 +277,11 @@ v2.0.0에서 전면 광고 'X' 닫기 버튼 표시 제어 기능이 추가되�
 
 ```java
 AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-    .showCloseButton(true)  // ← 전면 광고 'X' 닫기 버튼 표시 여부 (기본값: true)
+    .showCloseButton(true)  // ← 전면 광고 'X' 닫기 버튼 표시 여부 (기본값: false)
     .build();
 ```
 
-v2.0.0의 기타 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 9~10**을 참고하세요.
+v2.0.0의 기타 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 8~9**를 참고하세요.
 
 ---
 
@@ -378,24 +374,7 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
 
 ---
 
-## Step 8. 전면 광고 뒤로가기(BACK) 키 — 동작 변경 (확인 필요)
-
-v2.0.0부터 **전면 광고는 시스템 뒤로가기(BACK) 키를 기본 차단**합니다(비디오·리워드와 동일 정책). 광고는 'X' 닫기 버튼으로만 닫힙니다.
-
-> ⚠️ 기존(v1.x)에 **뒤로가기로 전면 광고를 닫던 동작에 의존**하는 매체는, 아래와 같이 명시적으로 해제해야 종전 동작이 유지됩니다.
-
-```java
-// v1.x 동작(뒤로가기로 닫기)을 유지하려면:
-AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-        .setDisableBackKey(false) // 명시적 false → 뒤로가기 닫기 허용
-        .build();
-```
-
-`AdInfo.Builder.setDisableBackKey`의 **기본값이 `true`(차단)** 로 변경되었습니다.
-
----
-
-## Step 9. 진행 중 로드만 취소 — `cancelLoad()` (선택)
+## Step 8. 진행 중 로드만 취소 — `cancelLoad()` (선택)
 
 표시 중인 광고를 끊지 않고 미완료 로드만 취소하는 `cancelLoad()`가 추가되었습니다(전면·리워드·전면 동영상 공통).
 
@@ -403,12 +382,12 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
 // 화면 전환·백그라운드: 진행 중 로드만 취소 (표시 중이면 no-op)
 interstitialAd.cancelLoad();
 // 화면 종료: 전체 정리
-interstitialAd.stopInterstitial();
+interstitialAd.stop();
 ```
 
 ---
 
-## Step 10. 개인정보 동의 / 테스트 설정 전파 (선택)
+## Step 9. 개인정보 동의 / 테스트 설정 전파 (선택)
 
 GDPR/CCPA/COPPA 동의값과 테스트 설정을 `AdMixer` 전역에 설정하면 워터폴에서 각 네트워크로 자동 전파됩니다.
 
