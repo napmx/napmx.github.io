@@ -61,7 +61,6 @@
 | adunit id | nap mx 파트너 사이트에서 애드유닛 생성 후 발급 |
 | Google App ID | nap_mx@nasmedia.co.kr 문의 |
 | Pangle App ID | nap_mx@nasmedia.co.kr 문의 |
-| NaverAdManager Publisher ID | nap_mx@nasmedia.co.kr 문의 |
 
 ---
 
