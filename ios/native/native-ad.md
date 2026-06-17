@@ -10,7 +10,7 @@
 
 네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
 
-![네이티브 광고 구성](/resources/ios_native_assets.png)
+<img src="/resources/ios_native_assets.png" alt="네이티브 광고 구성">
 
 | Asset | 설명 |
 |-------|------|
