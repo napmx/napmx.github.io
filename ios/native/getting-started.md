@@ -133,7 +133,7 @@ Google AdManager 사용 시:
 <string>발급받은_GAD_APP_ID</string>
 ```
 
-> Google App ID 발급은 nap ssp 운영팀(nap_mx@nasmedia.co.kr)으로 문의해주세요.
+> Google App ID 발급은 nap mx 운영팀(nap_mx@nasmedia.co.kr)으로 문의해주세요.
 
 ---
 

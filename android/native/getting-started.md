@@ -109,7 +109,7 @@ dependencyResolutionManagement {
 <application>
     <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
-        android:value="nap ssp 운영팀으로부터 발급받은 Google App ID" />
+        android:value="nap mx 운영팀으로부터 발급받은 Google App ID" />
 </application>
 ```
 

@@ -19,7 +19,7 @@
 
 해당 유닛에 네트워크 **필수 키**(예: Pangle `placement_id`, AppLovin `zone_id`)가 서버에 프로비저닝되지 않은 경우입니다. 두 가지 방법이 있습니다.
 
-1. (권장) nap ssp 운영팀에 요청하여 **media-conf에 키 프로비저닝**.
+1. (권장) nap mx 운영팀에 요청하여 **media-conf에 키 프로비저닝**.
 2. (보완) 매체가 `AdInfo.Builder.setAdapterConfig(adapterName, Map)`로 키를 직접 주입. 서버 값이 우선이며 **서버에 없는 키만** 채워집니다.
 
 ```java

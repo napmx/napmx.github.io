@@ -128,7 +128,7 @@ public class AdManager : MonoBehaviour
 }
 ```
 
-> Pangle, UnityAds App ID 발급은 nap ssp 운영팀(nap_mx@nasmedia.co.kr)으로 문의해주세요.
+> Pangle, UnityAds App ID 발급은 nap mx 운영팀(nap_mx@nasmedia.co.kr)으로 문의해주세요.
 >
 > AppLovin SDK Key: `nObIkviLd_FQIkP6yMGsTI7vKdDheVRJfwRkxzH7ie0T2o2slTnPIBcbTRelfXPuwGQcPf2bVGKTtaxtTrR0c9`
 
