@@ -221,7 +221,6 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | `setDisableBackKey(boolean)` | `true` (차단) | 뒤로가기(BACK) 키 차단 여부 (`false`: 뒤로가기로 닫기 허용) |
 | ~~`isLoadOnly(boolean)`~~ | `false` | **Deprecated** — 동작에 영향 없음. 전면 광고는 항상 load-only로 로드되며 `show()` 호출 시 노출 |
 | `interstitialTimeout(int)` | `0` (서버 지정, 기본 20초) | 광고 로딩 타임아웃 (초) |
-| `showCloseButton(boolean)` | `true` | 닫기(X) 버튼 표시 여부 |
 | `setCloseButtonBound(int)` | `100` | 닫기(X) 버튼 터치 영역 비율(20~100%) |
 
 ---
