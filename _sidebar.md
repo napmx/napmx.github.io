@@ -57,6 +57,7 @@
     - [동영상](/ios/native/video)
     - [비즈보드](/ios/native/bizboard)
     - [**WebBridge — 하이브리드 앱**](/ios/native/webbridge)
+    - [릴리즈 노트](/ios/native/changelog)
   - Unity
     - [시작하기 - Unity](/ios/unity/getting-started)
     - [배너 - Unity](/ios/unity/banner)

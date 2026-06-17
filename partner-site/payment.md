@@ -42,9 +42,26 @@
 
 사업자 유형에 따라 세금계산서 또는 인보이스를 발행해야 합니다.
 
-- **국내 법인/개인사업자**: 수익금 신청한 달의 1일 ~ 마지막날 이내 세금계산서 발행  
-  - 세금계산서 수신 이메일: nap_mx@nasmedia.co.kr (**작성일자 : 신청한 월과 동일하게 발행**)
-- **해외 사업자**: 수익금 신청한 달의 1일 ~ 마지막날 이내 인보이스 발행
+### 국내 법인/개인사업자
+
+수익금 신청한 달의 **1일 ~ 마지막날** 이내 세금계산서를 발행해 주세요. (**작성일자 : 신청한 월과 동일하게 발행**)
+
+<div class="callout info">
+  <strong>📧 세금계산서 수신 이메일</strong>
+  <ul>
+    <li><a href="mailto:nap_mx@nasmedia.co.kr">nap_mx@nasmedia.co.kr</a></li>
+    <li><a href="mailto:tax@nasmedia.co.kr">tax@nasmedia.co.kr</a></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <strong>📎 케이티나스미디어 사업자등록증</strong>
+  <p><a href="/resources/kt_nasmedia_business_registration.pdf" target="_blank">주식회사 케이티나스미디어 사업자등록증 다운로드 (PDF)</a></p>
+</div>
+
+### 해외 사업자
+
+수익금 신청한 달의 **1일 ~ 마지막날** 이내 인보이스를 발행해 주세요.
 
 > 세금계산서/인보이스 발행 없는 경우, 수익금 신청이 반려될 수 있습니다.
 
