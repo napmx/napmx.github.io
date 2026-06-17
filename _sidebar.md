@@ -21,7 +21,7 @@
 
 - **<i class="fa-brands fa-android nav-icon icon-android"></i> Android SDK**
   - [개요](/android/)
-  - Native
+  - Native (v2)
     - [시작하기](/android/native/getting-started)
     - [온보딩 체크리스트](/android/native/onboarding-checklist)
     - [배너 광고](/android/native/banner)
