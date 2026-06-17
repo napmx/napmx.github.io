@@ -20,7 +20,7 @@
 - **`cancelLoad()`** — 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
 - **클라이언트 키 주입 `setAdapterConfig(adapterName, Map)`** — 서버 미제공 시 네트워크 키(예: AppLovin `sdkKey`)를 매체가 주입
 - **인라인 광고 addView 시점 자동 노출** — 배너·네이티브·인라인 동영상은 뷰가 화면에 부착(`addView` 또는 XML 배치)되는 시점에 자동 노출됩니다. `showAd()` 직접 호출은 더 이상 필요 없습니다.
-- **사용자 API 표준화 (RFC-20260610)** — 로드는 `loadAd()`(인라인 인스턴스·풀스크린 정적 공통), 해제는 `stop()`으로 통일했습니다.
+- **사용자 API 표준화** — 로드는 `loadAd()`(인라인 인스턴스·풀스크린 정적 공통), 해제는 `stop()`으로 통일했습니다.
 
 ### 주요 변경 (Breaking Changes)
 
@@ -29,8 +29,7 @@
 - **공개 광고 클래스 6종 → `AMM*` 네이밍 통일** (메서드 시그니처 동일, 클래스명만 변경):
   `AdView`→`AMMBannerView`, `NativeAdView`→`AMMNativeAdView`, `VideoAdView`→`AMMVideoView`, `InterstitialAd`→`AMMInterstitial`, `RewardInterstitialVideoAd`→`AMMRewardVideo`, `InterstitialVideoAd`→`AMMVideoInterstitial`. 레이아웃 XML의 클래스 경로도 변경해야 합니다.
 - **`AdListener` 이벤트 콜백 분리** — 단일 `onEventAd(adView, AdEvent)` → 이름 있는 메서드(`onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted`/`onAdSkipped`/`onAdRewarded` 등). `AdListener`는 `abstract class`로 전환되어 필요한 메서드만 override(필수 구현 없음). `onReceivedAd`/`onFailedToReceiveAd` 시그니처는 동일. ([Step 5-B](migration.md))
-- **전면 광고 Basic 전용** — 전면은 Basic 타입만 제공. `AdInfo.Builder`의 `interstitialAdType`/`setInterstitialAdType`/`popupAdOption`/`setPopupAdOption` 제거, **CountDown 타입 완전 제거**(`AdMixer.GAUGE`/`TEXT` 등 관련 상수 삭제). ([전면 가이드](interstitial.md))
-- **팝업형 전면(Popup) 포맷 및 `LEFT_CLICK`/`RIGHT_CLICK` 이벤트 완전 제거 (REQ-20260615)** — 공개 클래스 `PopupInterstitialAdOption`·내부 `AXAdInterstitialPopupOption` 삭제, `InterstitialAdType`는 `Basic`만 유지(`Popup` enum 값 제거), 팝업 좌/우 버튼 UI 및 `onAdLeftClicked()`/`onAdRightClicked()`(`FullScreenContentCallback`·`AdListener` 공통) 콜백과 어댑터 이벤트 체인(`AdEvent.LEFT_CLICK`/`RIGHT_CLICK`, `AXAdEvent.EVT_AD_LEFT_BUTTON_CLICKED`/`EVT_AD_RIGHT_BUTTON_CLICKED`)을 일괄 삭제. 서버 요청은 항상 `fullscreen_type=basic`/`interstitial_ad_type=0`.
+- **전면 광고 Basic 전용** — 전면은 Basic 타입만 제공합니다. 전면 타입/팝업/카운트다운 관련 `AdInfo.Builder` 옵션(`interstitialAdType`/`setInterstitialAdType`/`popupAdOption`/`setPopupAdOption`)과 관련 상수(`AdMixer.GAUGE`/`TEXT` 등)가 제거되었습니다. ([전면 가이드](interstitial.md))
 - **네이티브 View ID prefix** — `tv_title` 등 6개 → `nap_mx_tv_title` 등으로 변경(타 라이브러리 리소스 충돌 방지). 레이아웃 및 `NativeAdViewBinder` 수정 필요. ([v2 마이그레이션 가이드](migration.md))
 - **deprecated 별칭 API 제거** — `onDestroy()`/`closeInterstitial()`→`stopInterstitial()` 등 동일 동작의 정식 메서드로 교체. 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`)은 무효화(전면 배경 디밍은 고정값 자동 적용). ([v2 마이그레이션 가이드](migration.md))
 - **배너·네이티브 자동 갱신 옵션 정리** — 클라이언트 `isRetry`/`maxRetryCountInSlot` 제거. 자동 갱신/재로드는 서버 광고단위 `interval`(초) > 0일 때만 동작(무한 루프는 내부 가드 차단).
@@ -51,7 +50,7 @@
 
 - **서버 interval 자동 갱신(롤링)이 동작하지 않던 문제 수정** — 노출 중(SHOWING) 재로드가 내부 가드에 차단되던 문제, 갱신 중 배너 영역이 화면 전체로 팽창하던 문제, 네이티브 갱신이 무음 중단되던 문제를 수정. 배너·네이티브가 서버 `interval`마다 정상 갱신됩니다.
 - **전면 동영상이 인라인 경로로 잘못 로드되어 화면에 표시되지 않을 수 있던 문제 수정**.
-- **네이티브 광고가 일부 매체/소재에서 표시되지 않던 문제 수정** — Adfit(난독화 빌드 에셋 추출), Mobwith(메인 이미지 렌더), Pangle(광고 로고), Naver(고지 라벨), 일부 에셋이 비어 있거나 누락된 소재 처리 등.
+- **네이티브 광고가 일부 네트워크/소재에서 표시되지 않던 문제 수정** — 일부 에셋이 비어 있거나 누락된 소재의 렌더링 안정성 개선.
 - **media-conf 재동기화 시 풀스크린 광고 중복 로드/컨트롤러 중복 생성 문제 수정**.
 - **Naver `PUBLISHER_CD`를 SDK가 제공·고정** — 호스트 앱 매니페스트 설정 불필요.
 - 풀스크린(전면/리워드/동영상) 표시 안정성 및 리소스 해제 개선, 노출/클릭 로그 정확도 개선.

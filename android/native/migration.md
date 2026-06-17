@@ -23,6 +23,36 @@
 
 ---
 
+## 마이그레이션 순서 (한눈에)
+
+1. **Gradle 버전** `2.0.0` 변경 + 새 어댑터(NaverAdManager/Teads) 저장소 추가 → [Step 1](#step-1-gradle-버전-업데이트)
+2. **ProGuard 규칙** 교체 → [Step 2](#step-2-proguard-규칙-업데이트)
+3. **`registerAdapter()` 호출 제거**(자동 등록) → [Step 3](#step-3-registeradapter-호출-제거)
+4. **구 클래스 → `AMM*` 전환** + 제거된 별칭 메서드 교체 → [Step 5](#step-5-제거된-클래스-및-api-교체-필수--breaking-change)
+5. **`AdListener` 이벤트 콜백 분리**(`onEventAd` → named 메서드) → [Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)
+6. **네이티브 View ID** `nap_mx_` prefix + `setViewIds()` 제거 → [Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)
+7. **빌드 → 컴파일 오류 해소**(아래 표) → **광고 노출 검증**([맨 아래 체크리스트](#업그레이드-후-검증-체크리스트))
+
+---
+
+## 컴파일 오류 빠른 해결
+
+업그레이드 직후 가장 흔한 컴파일 오류와 해결 매핑입니다. 대부분 클래스명/메서드명 변경이라 기계적으로 교체하면 됩니다.
+
+| 증상 (컴파일/런타임) | 원인 | 해결 |
+|---|---|---|
+| `cannot find symbol: class AdView`/`InterstitialAd` 등 | 구 광고 클래스 제거 | `AMM*` 클래스로 교체 ([Step 5](#step-5-제거된-클래스-및-api-교체-필수--breaking-change)) |
+| `method onEventAd ... does not override` | `AdListener.onEventAd` 제거 | 이름 있는 메서드로 분리 ([Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)) |
+| `cannot find symbol: method onDestroy()` | 별칭 제거 | `stop()`(인라인) / `stopXxx()`(풀스크린)로 교체 |
+| `cannot find symbol: method startInterstitial()` 등 | 즉시 노출 API 제거 | 수신 콜백 이후 `show(activity)` 호출 |
+| `cannot find symbol: method setViewIds(...)` | 제거됨 | `NativeAdViewBinder` 설정으로 통합 ([Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)) |
+| `cannot find symbol: method isUseBackgroundAlpha(...)` | 배경 알파 옵션 제거(무효) | 호출 제거 (전면 배경 디밍은 자동 적용) |
+| `cannot find symbol: method setInterstitialAdType/setPopupAdOption(...)` | 전면 Basic 전용 | 해당 호출 제거 |
+| `cannot find symbol: AdMixer.GAUGE`/`TEXT` | CountDown 상수 제거 | 관련 코드 제거 |
+| 빌드는 되나 네이티브가 비거나 미표시 | View ID prefix 변경 | 레이아웃·바인더에 `nap_mx_` 적용 ([Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)) |
+
+---
+
 ## Step 1. Gradle 버전 업데이트
 
 `build.gradle` 의존성 버전을 `2.0.0`으로 변경하세요.
@@ -412,6 +442,25 @@ v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변�
 
 ---
 
+## 업그레이드 후 검증 체크리스트
+
+빌드가 통과한 뒤 아래 항목을 실기기에서 확인하면 대부분의 연동 이슈를 사전에 잡을 수 있습니다.
+
+- [ ] 빌드 성공(컴파일 오류 0) — [컴파일 오류 빠른 해결](#컴파일-오류-빠른-해결) 표로 잔여 오류 해소
+- [ ] `AdMixer.getInstance().initialize(...)`가 `Application.onCreate()`에서 1회 호출
+- [ ] (AdManager 사용 시) 매니페스트 `com.google.android.gms.ads.APPLICATION_ID` 설정
+- [ ] `registerAdapter()` 및 네트워크 SDK 수동 init(`PAGSdk.init`/`MobileAds.initialize`) 호출 제거
+- [ ] 각 포맷 광고 **수신·노출** 확인(VERBOSE 로그 `adb logcat -s AdMixer`)
+- [ ] 네이티브: `nap_mx_` View ID + `setViewBinder()` 적용, 누락 asset 케이스에서도 레이아웃 정상
+- [ ] 전면/리워드/전면 동영상: 수신 후 `show(activity)` 노출, 닫힘/`onDestroy`에서 `stop()` 호출
+- [ ] 배너/네이티브: `onResume`/`onPause`/`stop` 생명주기 연결
+- [ ] 리워드: `onUserEarnedReward()`(또는 `onAdRewarded()`)에서만 보상 지급
+- [ ] 개인정보 동의/테스트 전역 설정 적용 ([privacy.md](privacy.md))
+
+> 광고가 안 나오거나 빌드가 막히면 [FAQ](faq.md)·[Q&A](qna.md)·[에러 코드](error-codes.md)를 먼저 확인하세요.
+
+---
+
 ## 문의
 
-업그레이드 관련 문의사항은 **nap_mx@nasmedia.co.kr**로 연락하세요.
+업그레이드 관련 문의사항은 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 연락하세요.

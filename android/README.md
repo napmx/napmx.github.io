@@ -2,7 +2,7 @@
 
 > **버전**: 2.0.0  
 > **최소 지원 OS**: Android 5.0 (API 21, Lollipop) 이상  
-> **문의**: nap\_mx@nasmedia.co.kr
+> **문의**: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 
@@ -20,16 +20,17 @@
 
 ### 지원하는 미디에이션 네트워크
 
-| 네트워크 | 어댑터 상수 |
-|---------|------------|
-| Google AdManager | `AdMixer.ADAPTER_ADMANAGER` |
-| Kakao Adfit | `AdMixer.ADAPTER_ADFIT` |
-| Pangle (TikTok) | `AdMixer.ADAPTER_PANGLE` |
-| AppLovin | `AdMixer.ADAPTER_APPLOVIN` |
-| Unity Ads | `AdMixer.ADAPTER_UNITY` |
-| Mobwith | `AdMixer.ADAPTER_MOBWITH` |
-| Naver Ad Manager | `AdMixer.ADAPTER_NAVER_ADMANAGER` |
-| Teads | `AdMixer.ADAPTER_TEADS` |
+| 네트워크 |
+|---------|
+| Google AdManager |
+| Kakao Adfit |
+| Pangle (TikTok) |
+| AppLovin |
+| Unity Ads |
+| Mobwith |
+| Naver Ad Manager |
+| Teads |
+
 ---
 
 ## 빠른 시작

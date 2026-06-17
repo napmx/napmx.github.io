@@ -3,7 +3,7 @@
 > **최신 버전**: 2.3.6  
 > **최소 지원 OS**: iOS 13.0 이상, Xcode 15.3 이상  
 > **설치 방식**: CocoaPods, Swift Package Manager(SPM) 지원  
-> **문의**: nap\_mx@nasmedia.co.kr
+> **문의**: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 
