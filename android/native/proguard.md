@@ -10,7 +10,7 @@
 
 ```proguard
 ##############################################
-# nap ssp AdMixer SDK — ProGuard Rules
+# nap mx AdMixer SDK — ProGuard Rules
 ##############################################
 
 # ✅ 필수 — Core SDK

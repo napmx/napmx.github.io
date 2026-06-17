@@ -1,4 +1,4 @@
-# nap ssp Android SDK 연동 가이드
+# nap mx Android SDK 연동 가이드
 
 > **버전**: 2.0.0  
 > **최소 지원 OS**: Android 5.0 (API 21, Lollipop) 이상  
@@ -6,9 +6,9 @@
 
 ---
 
-## nap ssp SDK란?
+## nap mx SDK란?
 
-**nap ssp SDK**는 나스미디어에서 제공하는 Android 광고 수익화 솔루션입니다. 단일 SDK 연동으로 여러 광고 네트워크(미디에이션)를 통해 수익을 극대화할 수 있습니다.
+**nap mx SDK**는 나스미디어에서 제공하는 Android 광고 수익화 솔루션입니다. 단일 SDK 연동으로 여러 광고 네트워크(미디에이션)를 통해 수익을 극대화할 수 있습니다.
 
 ### 지원하는 광고 포맷
 
@@ -59,12 +59,12 @@
 
 연동 작업 전에 아래 사항을 준비하세요.
 
-> ℹ️ **nap ssp 파트너 사이트**에 가입 후 미디어 등록 및 애드유닛 생성을 완료해야 **media key**와 **adunit id**를 확인할 수 있습니다. media key와 adunit id가 파트너 사이트에 등록된 내용과 상이할 경우 광고가 원활히 노출되지 않을 수 있습니다.
+> ℹ️ **nap mx 파트너 사이트**에 가입 후 미디어 등록 및 애드유닛 생성을 완료해야 **media key**와 **adunit id**를 확인할 수 있습니다. media key와 adunit id가 파트너 사이트에 등록된 내용과 상이할 경우 광고가 원활히 노출되지 않을 수 있습니다.
 
 | 항목 | 발급 방법 |
 |------|----------|
-| media key | nap ssp 파트너 사이트에서 미디어 등록 후 발급 |
-| adunit id | nap ssp 파트너 사이트에서 애드유닛 생성 후 발급 |
+| media key | nap mx 파트너 사이트에서 미디어 등록 후 발급 |
+| adunit id | nap mx 파트너 사이트에서 애드유닛 생성 후 발급 |
 | Google App ID | nap_mx@nasmedia.co.kr 문의 |
 | Pangle App ID | nap_mx@nasmedia.co.kr 문의 |
 | NaverAdManager Publisher ID | nap_mx@nasmedia.co.kr 문의 |

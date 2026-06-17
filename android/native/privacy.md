@@ -112,7 +112,7 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
 | Pangle | `AdMixer.ADAPTER_PANGLE` (`"Pangle"`) | `app_id`, `placement_id` |
 | AppLovin | `AdMixer.ADAPTER_APPLOVIN` (`"AppLovin"`) | `zone_id`, `sdkKey` |
 
-> ℹ️ 일반적으로 네트워크 키는 nap ssp 서버(media-conf)가 공급합니다. `setAdapterConfig`는 서버 미제공 상황의 보완 수단입니다.
+> ℹ️ 일반적으로 네트워크 키는 nap mx 서버(media-conf)가 공급합니다. `setAdapterConfig`는 서버 미제공 상황의 보완 수단입니다.
 
 ---
 

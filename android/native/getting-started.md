@@ -1,6 +1,6 @@
 # SDK 시작하기
 
-이 페이지에서는 nap ssp Android SDK를 프로젝트에 추가하고 초기화하는 방법을 안내합니다.
+이 페이지에서는 nap mx Android SDK를 프로젝트에 추가하고 초기화하는 방법을 안내합니다.
 
 ---
 
@@ -115,7 +115,7 @@ dependencyResolutionManagement {
 
 ### Naver Ad Manager 사용 시
 
-별도 설정이 필요 없습니다. Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp가 SDK(`admixer-naveradmanager` aar)에서 제공·관리하므로 **호스트 앱 매니페스트에 설정하지 마세요.** (SDK 동기화 시 자동 포함)
+별도 설정이 필요 없습니다. Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx가 SDK(`admixer-naveradmanager` aar)에서 제공·관리하므로 **호스트 앱 매니페스트에 설정하지 마세요.** (SDK 동기화 시 자동 포함)
 
 > ℹ️ Google App ID는 **nap_mx@nasmedia.co.kr**로 문의하여 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
 
@@ -272,7 +272,7 @@ dependencies {
 > ⚠️ exclude 적용 후 반드시 아래를 확인하세요.
 > 1. Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 포함되어 있는지 확인
 > 2. 빌드 정상 여부 확인
-> 3. nap ssp 광고 및 기존 광고 모두 정상 동작 여부 확인
+> 3. nap mx 광고 및 기존 광고 모두 정상 동작 여부 확인
 
 ---
 

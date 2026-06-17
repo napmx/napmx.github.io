@@ -1,6 +1,6 @@
 # v2.0.0 마이그레이션 가이드
 
-이 문서는 nap ssp Android SDK **v1.x → v2.0.0** 업그레이드 시 필요한 변경 사항을 설명합니다.
+이 문서는 nap mx Android SDK **v1.x → v2.0.0** 업그레이드 시 필요한 변경 사항을 설명합니다.
 
 ---
 
@@ -128,7 +128,7 @@ AdMixer.registerAdapter(AdMixer.ADAPTER_PANGLE);
 
 `build.gradle`에 의존성을 추가하면 어댑터는 `initialize()` 호출 시 자동으로 등록됩니다.
 
-> ℹ️ Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp가 SDK(`admixer-naveradmanager` aar)에서 제공·관리합니다. **호스트 앱 매니페스트에 별도로 설정하지 마세요.** (이전 안내에서 호스트가 Publisher ID를 추가하도록 했으나, SDK 제공 방식으로 변경되었습니다.)
+> ℹ️ Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx가 SDK(`admixer-naveradmanager` aar)에서 제공·관리합니다. **호스트 앱 매니페스트에 별도로 설정하지 마세요.** (이전 안내에서 호스트가 Publisher ID를 추가하도록 했으나, SDK 제공 방식으로 변경되었습니다.)
 
 ### Teads 추가 시
 

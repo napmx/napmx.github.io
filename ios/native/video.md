@@ -12,7 +12,7 @@
 
 ### 동영상 뷰 인스턴스 생성 및 설정
 
-동영상 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMVideoAdView` 인스턴스 변수를 생성합니다.
+동영상 광고를 노출할 ViewController에 nap mx Mediation을 import하여 `AMMVideoAdView` 인스턴스 변수를 생성합니다.
 
 ```swift
 import AdMixerMediation
@@ -114,7 +114,7 @@ extension VideoAdViewController: AMMVideoViewDelegate {
 
 ### 전면 동영상 뷰 인스턴스 생성 및 설정
 
-전면 동영상 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMVideoInterstitial` 인스턴스 변수를 생성합니다.
+전면 동영상 광고를 노출할 ViewController에 nap mx Mediation을 import하여 `AMMVideoInterstitial` 인스턴스 변수를 생성합니다.
 
 ```swift
 import AdMixerMediation

@@ -2,7 +2,7 @@
 
 ---
 
-## v2.0.0 (미출시)
+## v2.0.0 (2026-06-17)
 
 > v1 → v2 메이저 전환. 공개 광고 클래스가 iOS-AdMixer 정합의 `AMM*` 네이밍으로 통일되고,
 > 풀스크린 광고가 정적 `loadAd()` + `FullScreenContentCallback` 구조로 바뀝니다.

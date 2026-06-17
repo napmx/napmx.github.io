@@ -8,7 +8,7 @@
 
 **Q. 각 네트워크 SDK를 `Application`에서 직접 초기화해야 하나요? (`PAGSdk.init`, `MobileAds.initialize` 등)**
 
-대부분 **불필요**합니다. nap ssp는 워터폴에서 각 네트워크 SDK를 어댑터가 **요청 시 자동(lazy) 초기화**합니다.
+대부분 **불필요**합니다. nap mx는 워터폴에서 각 네트워크 SDK를 어댑터가 **요청 시 자동(lazy) 초기화**합니다.
 
 - `Application`에서 **제거 가능**: Pangle `PAGSdk.init(...)` 블록, Google `MobileAds.initialize()`.
 - **유지 필수**: `AdMixer.getInstance().initialize(...)`(코어), Google AdManager의 `com.google.android.gms.ads.APPLICATION_ID` 매니페스트 meta-data.
@@ -43,7 +43,7 @@ AdInfo adInfo = new AdInfo.Builder(adUnitId)
 
 **Q. Naver Ad Manager의 `PUBLISHER_CD`는 우리가 매니페스트에 넣어야 하나요?**
 
-**아니요.** `com.naver.gfpsdk.PUBLISHER_CD`는 nap ssp(네트워크 사업자)가 **SDK(`admixer-naveradmanager` aar)에서 제공·관리**합니다. 매체 앱은 별도로 설정하지 마세요(이미 추가했다면 제거 권장). 최신 SDK 동기화 시 자동 포함됩니다.
+**아니요.** `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx(네트워크 사업자)가 **SDK(`admixer-naveradmanager` aar)에서 제공·관리**합니다. 매체 앱은 별도로 설정하지 마세요(이미 추가했다면 제거 권장). 최신 SDK 동기화 시 자동 포함됩니다.
 
 > 운영 환경에서 광고가 노필(GFP_NO_FILL)이라면, 이는 PUBLISHER_CD가 아니라 **운영 Ad Unit ID 프로비저닝** 이슈입니다. 운영 Ad Unit으로 전환이 필요한지 운영팀에 확인하세요.
 

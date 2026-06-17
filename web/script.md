@@ -1,6 +1,6 @@
 # WEB Script 연동
 
-nap ssp Script를 mobile web 사이트와 PC web 사이트에 연동하기 위한 가이드 문서입니다.  
+nap mx Script를 mobile web 사이트와 PC web 사이트에 연동하기 위한 가이드 문서입니다.  
 연동 및 이용 방법 문의: nap_mx@nasmedia.co.kr
 
 ---
@@ -9,13 +9,13 @@ nap ssp Script를 mobile web 사이트와 PC web 사이트에 연동하기 위�
 
 [파트너 사이트](https://publisher.admixer.co.kr/)에 가입 후 미디어 등록 및 애드유닛 생성을 완료하면 연동에 필요한 **Media Key**와 **Adunit ID**를 확인할 수 있습니다.
 
-> nap ssp에서 제공하는 Google 광고를 사용하기 위해서는 Google 광고 진행에 대한 안내사항에 따른 절차가 모두 마무리되어야 합니다.
+> nap mx에서 제공하는 Google 광고를 사용하기 위해서는 Google 광고 진행에 대한 안내사항에 따른 절차가 모두 마무리되어야 합니다.
 
 ---
 
 ## 1. Script 확인 및 삽입 방법
 
-nap ssp 파트너 사이트([https://publisher.admixer.co.kr/](https://publisher.admixer.co.kr/))에 접속하여 Adunit별 Script를 확인합니다.
+nap mx 파트너 사이트([https://publisher.admixer.co.kr/](https://publisher.admixer.co.kr/))에 접속하여 Adunit별 Script를 확인합니다.
 
 - **확인방법 1**: 미디어 > 미디어 관리 > 미디어 상세보기 > 스크립트 확인
 - **확인방법 2**: 미디어 > 미디어 관리 > Adunit 상세보기 > 스크립트 확인
@@ -101,7 +101,7 @@ admixer_m({
 - 비디오 소재: 비디오 광고 노출 → 광고 닫기 → 리워드 이벤트 발생
 
 ```html
-<!-- 버튼 클릭 시 nap ssp WEB SDK 호출 -->
+<!-- 버튼 클릭 시 nap mx WEB SDK 호출 -->
 <button id="testBtn">테스트 버튼 클릭</button>
 <div id="{DIV ID}"></div>
 
@@ -116,7 +116,7 @@ document.getElementById("testBtn").addEventListener("click", function () {
   });
 });
 
-// 리워드 적용 시: nap ssp WEB SDK REWARD 종료 후 message 이벤트 수신
+// 리워드 적용 시: nap mx WEB SDK REWARD 종료 후 message 이벤트 수신
 window.addEventListener('message', function(event) {
   if (event.data?.type === 'napsspBR') {
     switch (event.data.msg) {

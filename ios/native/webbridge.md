@@ -2,7 +2,7 @@
 
 > ℹ️ WebBridge 연동 전, [iOS SDK 시작하기](getting-started.md)의 Step 1~3 설정이 완료되었는지 확인하세요.
 
-WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap ssp 네이티브 SDK를 JavaScript Bridge를 통해 호출하여 광고를 표시하는 연동 방식입니다.
+WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap mx 네이티브 SDK를 JavaScript Bridge를 통해 호출하여 광고를 표시하는 연동 방식입니다.
 
 > 💡 **노출 방식**  
 > 배너·네이티브·인라인 동영상은 **WebView 위에 네이티브 뷰를 오버레이**하는 방식입니다. HTML 내부에 직접 광고를 렌더링하는 것이 아니라, 네이티브 뷰가 WebView 위에 겹쳐져 표시됩니다.
@@ -15,7 +15,7 @@ WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap ssp 네이티�
 [Web JS] ──── NapMxBridge.requestBanner() ────→ [Native Bridge Handler]
                                                         │
                                                         ▼
-                                                  [nap ssp SDK]
+                                                  [nap mx SDK]
                                                    loadAd() / load()
                                                         │
 [Web JS] ←── NapMxBridgeCallback.onBannerLoaded() ────  │
@@ -53,7 +53,7 @@ Android와 iOS의 호출 방식 차이를 추상화하는 JS 래퍼입니다. �
 
 ```javascript
 /**
- * nap ssp WebBridge — 플랫폼 통합 래퍼
+ * nap mx WebBridge — 플랫폼 통합 래퍼
  *
  * Android: window.NapMxBridge.methodName(JSON.stringify(params))
  * iOS:     window.webkit.messageHandlers.methodName.postMessage(params)

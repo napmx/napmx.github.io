@@ -86,7 +86,7 @@ implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```
-exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남는지, nap ssp 광고와 기존 광고가 모두 정상 동작하는지 확인하세요. 자세한 내용은 [네트워크 SDK 중복 예외 처리](getting-started.md#네트워크-sdk-중복-예외-처리)를 참고하세요.
+exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남는지, nap mx 광고와 기존 광고가 모두 정상 동작하는지 확인하세요. 자세한 내용은 [네트워크 SDK 중복 예외 처리](getting-started.md#네트워크-sdk-중복-예외-처리)를 참고하세요.
 
 ---
 

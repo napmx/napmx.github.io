@@ -10,7 +10,7 @@
 
 ### Banner 뷰 인스턴스 생성 및 설정
 
-배너 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMBannerView` 인스턴스 변수를 생성합니다.
+배너 광고를 노출할 ViewController에 nap mx Mediation을 import하여 `AMMBannerView` 인스턴스 변수를 생성합니다.
 
 ```swift
 import AdMixerMediation

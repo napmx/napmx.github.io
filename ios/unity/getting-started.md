@@ -1,6 +1,6 @@
 # iOS SDK 시작하기 - Unity
 
-Unity 프로젝트에서 nap ssp iOS SDK를 연동하기 위한 가이드 문서이며, nap ssp Mediation을 지원합니다.
+Unity 프로젝트에서 nap mx iOS SDK를 연동하기 위한 가이드 문서이며, nap mx Mediation을 지원합니다.
 
 ---
 
@@ -24,9 +24,9 @@ Assets > Import Package > Custom Package > NAPSSPSDK.unitypackage
 
 ## 2. Xcode 설정
 
-nap ssp SDK는 **Xcode 16 이상**, **iOS deployment target 13.0 이상** 환경에서 동작합니다.
+nap mx SDK는 **Xcode 16 이상**, **iOS deployment target 13.0 이상** 환경에서 동작합니다.
 
-nap ssp SDK는 CocoaPods를 지원합니다.
+nap mx SDK는 CocoaPods를 지원합니다.
 
 ### 2-1. CocoaPods를 통한 설치
 
@@ -37,7 +37,7 @@ sudo gem install cocoapods
 pod init
 ```
 
-초기화 시 생성된 `Podfile`에 nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 아래와 같이 추가합니다.
+초기화 시 생성된 `Podfile`에 nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 아래와 같이 추가합니다.
 
 ```ruby
 pod 'NapSSP'
@@ -104,7 +104,7 @@ SDK 초기화 시 Delegate를 수신할 GameObject의 이름을 함께 전달합
 
 **② NAPSSPPluginIOS.cs 파일 추가**
 
-nap ssp의 delegate를 이용하려면 `Plugins/IOS` 폴더 하위의 `NAPSSPPluginIOS.cs` 파일을 해당 GameObject에 추가해주세요.
+nap mx의 delegate를 이용하려면 `Plugins/IOS` 폴더 하위의 `NAPSSPPluginIOS.cs` 파일을 해당 GameObject에 추가해주세요.
 
 ---
 
@@ -112,8 +112,8 @@ nap ssp의 delegate를 이용하려면 `Plugins/IOS` 폴더 하위의 `NAPSSPPlu
 
 반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 호출해주세요.
 
-- **MEDIA_KEY**: nap ssp 파트너 사이트에서 발급받은 미디어 키
-- **ADUNIT**: nap ssp 파트너 사이트에서 발급받은 애드유닛 ID 리스트
+- **MEDIA_KEY**: nap mx 파트너 사이트에서 발급받은 미디어 키
+- **ADUNIT**: nap mx 파트너 사이트에서 발급받은 애드유닛 ID 리스트
 
 ```csharp
 using UnityEngine;

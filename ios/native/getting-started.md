@@ -29,7 +29,7 @@ sudo gem install cocoapods
 pod init
 ```
 
-초기화 시 생성된 `Podfile`에 nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 아래와 같이 추가합니다.
+초기화 시 생성된 `Podfile`에 nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 아래와 같이 추가합니다.
 
 ```ruby
 target 'MyApp' do
@@ -53,7 +53,7 @@ pod install --repo-update
 
 ### 1-2. SPM을 통한 설치
 
-nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추가합니다.
+nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추가합니다.
 
 **Project > Package Dependencies 탭** 이동 후 아래 패키지를 추가합니다.
 
