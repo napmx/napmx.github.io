@@ -11,6 +11,7 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 ## 사전 준비
 
 [파트너 사이트](https://publisher.admixer.co.kr/)에 가입 후 미디어 등록 및 애드유닛 생성을 완료하면 연동에 필요한 **Media Key**와 **Adunit ID**를 확인할 수 있습니다.
+**앱 당 1개의 Media key만 사용 가능합니다 **
 
 > 하기 네트워크는 연동을 위해 별도 key 값이 필요합니다. 발급은 nap_mx@nasmedia.co.kr로 문의해주세요.
 > - Google App ID / Pangle App ID / Unity Ads App ID
@@ -57,15 +58,15 @@ nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추
 
 | 패키지 | 설명 | Repository URL |
 |--------|------|----------------|
-| nap ssp Mediation (Mediation) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
-| nap ssp Mediation (Core) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| nap mx Mediation (Mediation) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
+| nap mx Mediation (Core) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
 | Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
 | Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
 | Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
 | Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
 | AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
 
-> Unity Ads를 nap ssp Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
+> Unity Ads를 nap mx Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
 
 ### 1-3. Google 네트워크 - SDK 입찰 광고 소스 설정
 
