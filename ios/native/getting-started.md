@@ -41,6 +41,7 @@ target 'MyApp' do
   pod 'AdMixerMediationPangle'   # Pangle
   pod 'AdMixerMediationAppLovin' # AppLovin
   pod 'AdMixerMediationUnityAds' # UnityAds
+  pod 'AdMixerMediationNAM'      # Naver AdManager
 end
 ```
 
@@ -65,6 +66,7 @@ nap ssp Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추
 | Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
 | Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
 | AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
+| Naver AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-NAM-SPM` |
 
 > Unity Ads를 nap mx Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
 
@@ -146,6 +148,7 @@ import GoogleMobileAds
 import PAGAdSDK
 import AppLovinSDK
 import UnityAds
+import GFPSDK
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 
@@ -166,13 +169,23 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         pangleConfig.appID = "앱ID"
         PAGSdk.start(with: pangleConfig) { isSuccess, error in }
 
-        // AppLovin 초기화 (해당 네트워크 사용 시, SDK key 값 적용 필수)
-        let sdkKey = "nObIkviLd_FQIkP6yMGsTI7vKdDheVRJfwRkxzH7ie0T2o2slTnPIBcbTRelfXPuwGQcPf2bVGKTtaxtTrR0c9"
-        let config = ALSdkInitializationConfiguration(sdkKey: sdkKey)
+        // AppLovin 초기화 (해당 네트워크 사용 시, key 값 적용 필수)
+        let appLovinKey = "nObIkviLd_FQIkP6yMGsTI7vKdDheVRJfwRkxzH7ie0T2o2slTnPIBcbTRelfXPuwGQcPf2bVGKTtaxtTrR0c9"
+        let config = ALSdkInitializationConfiguration(sdkKey: appLovinKey)
         ALSdk.shared().initialize(with: config) { _ in }
 
         // UnityAds 초기화 (해당 네트워크 사용 시)
         UnityAds.initialize("앱ID")
+
+        // Naver AdManager 초기화 (해당 네트워크 사용 시, key 값 적용 필수)
+        let namKey = "N248971943"
+        GFPAdManager.setup(withPublisherCd: namKey, target: nil) { (error: GFPError?) in
+            if let error {
+                print("NAM init Error: \(error.description)")
+            } else {
+                print("NAM init success, isSdkInitialized: \(GFPAdManager.isSdkInitialized())")
+            }
+        }
 
         return true
     }
