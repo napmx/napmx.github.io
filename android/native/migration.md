@@ -8,13 +8,13 @@
 
 | 구분 | 내용 |
 |------|------|
-| 새 기능 | NaverAdManager·Teads 어댑터 추가, 광고 신고 및 닫기 버튼 제어 추가 |
+| 새 기능 | NaverAdManager·Teads 어댑터 추가, 광고 신고 추가 |
 | **어댑터 등록 간소화** | **`registerAdapter()` 호출 불필요 — Gradle 의존성 추가만으로 자동 등록** |
 | **네이티브 View ID 변경** | **`tv_title` 등 → `nap_mx_tv_title` 등 — 레이아웃 및 ViewBinder 코드 수정 필요** |
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
 | **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — `AdInfo.Builder.interstitialAdType`/`popupAdOption`/`setInterstitialAdType`/`setPopupAdOption` 제거. Popup은 내부(서버 설정) 전용, **CountDown 타입은 완전 제거**(관련 상수·뷰 삭제)** |
-| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파), `AdInfo.Builder.showCloseButton` (광고 제어) |
+| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`), `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭/무효 옵션을 v2.0.0에서 제거. 정식 메서드로 교체 필요** |
 | **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
@@ -271,17 +271,7 @@ adView.setAdViewListener(new AdListener() {
 
 ## Step 6. 새 기능 적용 (선택)
 
-### 전면 광고 닫기 버튼 제어
-
-v2.0.0에서 전면 광고 'X' 닫기 버튼 표시 제어 기능이 추가되었습니다.
-
-```java
-AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
-    .showCloseButton(true)  // ← 전면 광고 'X' 닫기 버튼 표시 여부 (기본값: false)
-    .build();
-```
-
-v2.0.0의 기타 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 8~9**를 참고하세요.
+v2.0.0의 선택 신규 기능(진행 중 로드만 취소 `cancelLoad()`, 개인정보 동의/테스트 설정 전파)은 아래 **Step 8~9**를 참고하세요.
 
 ---
 
