@@ -1,12 +1,12 @@
-# 네이티브 광고 (iOS Native)
+# 네이티브 광고
 
-네이티브 광고를 추가하기 전 [iOS SDK 시작하기 - Native](/ios/native/getting-started) 설정을 완료해주세요.
+네이티브 광고를 추가하기 전 [시작하기](/ios/native/getting-started) 설정을 완료해주세요.
 
 네이티브 광고는 광고 요청 후 즉시 노출하는 방식을 지원합니다.
 
 ---
 
-## 1. 구성
+## 구성 Asset
 
 네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
 
@@ -25,7 +25,7 @@
 
 ---
 
-## 2. 네이티브 인스턴스 생성 및 설정
+## 네이티브 인스턴스 생성 및 설정
 
 **Step 1. AMMNativeAdView.xib 파일 추가**
 
@@ -68,7 +68,7 @@ class NativeAdViewController: UIViewController {
 
 ---
 
-## 3. 광고 요청
+## 광고 요청
 
 `load()`를 호출하여 네이티브 광고를 로드하고 보여줍니다.
 
@@ -78,7 +78,7 @@ nativeAd.load()
 
 ---
 
-## 4. 리소스 해제
+## 리소스 해제
 
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
@@ -95,7 +95,7 @@ override func viewDidDisappear(_ animated: Bool) {
 
 ---
 
-## 5. Delegate
+## Delegate
 
 네이티브 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.  
 델리게이트를 사용하려면 `AMMNativeDelegate`를 추가해야 합니다.

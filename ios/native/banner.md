@@ -1,14 +1,14 @@
-# 배너 구현 (iOS Native)
+# 배너 광고
 
-배너 광고를 추가하기 전 [iOS SDK 시작하기 - Native](/ios/native/getting-started) 설정을 완료해주세요.
+배너 광고를 추가하기 전 [시작하기](/ios/native/getting-started) 설정을 완료해주세요.
 
 ---
 
-## 1. 배너(Banner) 광고
+## 배너(Banner) 광고
 
 배너 광고는 광고 요청 후 즉시 노출하는 방식을 지원합니다.
 
-### 1-1. Banner 뷰 인스턴스 생성 및 설정
+### Banner 뷰 인스턴스 생성 및 설정
 
 배너 광고를 노출할 ViewController에 nap ssp Mediation을 import하여 `AMMBannerView` 인스턴스 변수를 생성합니다.
 
@@ -40,7 +40,7 @@ class ViewController: UIViewController {
 }
 ```
 
-### 1-2. 광고 요청 및 노출
+### 광고 요청 및 노출
 
 `load()`를 사용하여 배너 광고를 로드하고 bannerView 영역 내에서 보여줍니다.
 
@@ -48,7 +48,7 @@ class ViewController: UIViewController {
 bannerView.load()
 ```
 
-### 1-3. 리소스 해제
+### 리소스 해제
 
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
@@ -63,7 +63,7 @@ override func viewDidDisappear(_ animated: Bool) {
 }
 ```
 
-### 1-4. Delegate
+### Delegate
 
 배너 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.  
 델리게이트를 사용하려면 `AMMBannerViewDelegate`를 추가해야 합니다.
@@ -93,11 +93,11 @@ extension ViewController: AMMBannerViewDelegate {
 
 ---
 
-## 2. 전면 배너(Interstitial) 광고
+## 전면 배너(Interstitial) 광고
 
 전면 배너는 광고 요청 후 받은 뒤, 원하는 시점에 노출하는 방식을 지원합니다.
 
-### 2-1. 네트워크에 따른 전면 광고 형태
+### 네트워크에 따른 전면 광고 형태
 
 | 네트워크 | 소재 | 노출 형태 | 전면 형태 옵션 |
 |---------|------|----------|--------------|
@@ -108,7 +108,7 @@ extension ViewController: AMMBannerViewDelegate {
 | Pangle | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 | 네트워크사 제공 설정 값 (커스텀 불가) |
 | Unity Ads | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 | 네트워크사 제공 설정 값 (커스텀 불가) |
 
-### 2-2. 전면 배너 인스턴스 생성 및 설정
+### 전면 배너 인스턴스 생성 및 설정
 
 배너 소재로 응답되는 Admixer, Adfit 네트워크를 사용하는 경우 설정이 필요합니다.
 
@@ -155,7 +155,7 @@ class InterstitialViewController: UIViewController {
 }
 ```
 
-### 2-3. 광고 요청
+### 광고 요청
 
 `load()`를 사용하여 전면 배너 광고를 로드합니다.
 
@@ -174,7 +174,7 @@ AMMInterstitial.load(adUnitID: "ADUNIT_ID", config: config) { [weak self] inters
 }
 ```
 
-### 2-4. 광고 노출
+### 광고 노출
 
 `show()`를 사용하여 로드된 광고를 보여줍니다.
 
@@ -182,7 +182,7 @@ AMMInterstitial.load(adUnitID: "ADUNIT_ID", config: config) { [weak self] inters
 interstitial?.show(rootViewController: self)
 ```
 
-### 2-5. 리소스 해제
+### 리소스 해제
 
 ```swift
 override func viewDidDisappear(_ animated: Bool) {
@@ -195,7 +195,7 @@ override func viewDidDisappear(_ animated: Bool) {
 }
 ```
 
-### 2-6. Delegate
+### Delegate
 
 | 메서드 | 설명 |
 |--------|------|

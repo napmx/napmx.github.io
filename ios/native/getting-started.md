@@ -1,4 +1,4 @@
-# iOS SDK 시작하기 - Native
+# SDK 시작하기
 
 iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지원합니다.
 

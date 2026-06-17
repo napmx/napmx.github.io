@@ -1,12 +1,12 @@
-# 리워드 동영상 (iOS Native)
+# 리워드 동영상 광고
 
-리워드 동영상 광고를 추가하기 전 [iOS SDK 시작하기 - Native](/ios/native/getting-started) 설정을 완료해주세요.
+리워드 동영상 광고를 추가하기 전 [시작하기](/ios/native/getting-started) 설정을 완료해주세요.
 
 리워드 동영상 광고는 광고 요청 후 받은 뒤, 원하는 시점에 노출하는 방식을 지원합니다.
 
 ---
 
-## 1. 리워드 동영상 인스턴스 생성 및 설정
+## 리워드 동영상 인스턴스 생성 및 설정
 
 광고를 노출할 ViewController에 `AMMRewardVideo` 인스턴스 변수를 생성합니다.
 
@@ -21,7 +21,7 @@ class RewardedAdViewController: UIViewController {
 
 ---
 
-## 2. 광고 요청
+## 광고 요청
 
 `load()`를 호출하여 리워드 동영상 광고를 로드합니다.
 
@@ -53,7 +53,7 @@ class RewardedAdViewController: UIViewController {
 
 ---
 
-## 3. 광고 노출
+## 광고 노출
 
 `show()`를 호출하여 로드된 리워드 동영상 광고를 보여줍니다.
 
@@ -63,7 +63,7 @@ rewardVideo?.show(rootViewController: self)
 
 ---
 
-## 4. 리소스 해제
+## 리소스 해제
 
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
 
@@ -80,7 +80,7 @@ override func viewDidDisappear(_ animated: Bool) {
 
 ---
 
-## 5. Delegate
+## Delegate
 
 리워드 동영상 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.  
 델리게이트를 사용하려면 `AMMRewardVideoDelegate`를 추가해야 합니다.
@@ -127,7 +127,7 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
 
 ---
 
-## 6. S2S Reward Callback (선택사항)
+## S2S Reward Callback (선택사항)
 
 매체사가 정의한 외부 서버로 해당 유저에게 리워드 지급이 완료되었음을 전달하는 기능입니다.  
 콜백 수신까지 몇 분 정도 지연될 수 있습니다.
