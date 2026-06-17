@@ -2,7 +2,7 @@
 
 파트너 사이트 메뉴: **수익금 > 수익금 신청**
 
-이용 방법 문의: nap_mx@nasmedia.co.kr
+이용 방법 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 

@@ -117,7 +117,7 @@ dependencyResolutionManagement {
 
 별도 설정이 필요 없습니다. Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx가 SDK(`admixer-naveradmanager` aar)에서 제공·관리하므로 **호스트 앱 매니페스트에 설정하지 마세요.** (SDK 동기화 시 자동 포함)
 
-> ℹ️ Google App ID는 **nap_mx@nasmedia.co.kr**로 문의하여 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
+> ℹ️ Google App ID는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 문의하여 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
 
 ---
 

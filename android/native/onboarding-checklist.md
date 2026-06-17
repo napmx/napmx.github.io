@@ -5,7 +5,7 @@
 ## 1. 공통 (필수)
 
 - `AdMixer.getInstance().initialize(context, MEDIA_KEY, adUnits)` — `Application.onCreate`에서 1회.
-- 미디어 키 / 광고 단위 ID는 nap mx 운영팀(**nap_mx@nasmedia.co.kr**) 발급.
+- 미디어 키 / 광고 단위 ID는 nap mx 운영팀(**[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**) 발급.
 - 네트워크 SDK는 **어댑터가 워터폴에서 자동(lazy) 초기화** — `Application`에서 `PAGSdk.init`/`MobileAds.initialize` 등 직접 호출 불필요.
 
 ---
@@ -32,4 +32,4 @@
 
 ## 문의
 
-**nap_mx@nasmedia.co.kr**
+**[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**

@@ -118,4 +118,4 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
 
 ## 문의
 
-개인정보/테스트 설정 관련 문의는 **nap_mx@nasmedia.co.kr**로 연락해 주세요.
+개인정보/테스트 설정 관련 문의는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 연락해 주세요.

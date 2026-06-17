@@ -22,7 +22,7 @@
 
 ### Step 1: 비즈보드 코드 발급
 
-운영팀(nap_mx@nasmedia.co.kr)에 문의하여 비즈보드 코드를 발급받으세요.
+운영팀([nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr))에 문의하여 비즈보드 코드를 발급받으세요.
 
 ### Step 2: 리포트용 애드유닛 발급
 
@@ -39,7 +39,7 @@ Adfit 비즈보드 공식 가이드를 참고하여 연동합니다.
 
 ### Step 4: 지면 심사 신청
 
-SDK 연동 후 테스트 광고가 정상 노출되는 지면 스크린샷을 **nap_mx@nasmedia.co.kr**로 전송하여 심사를 신청하세요.
+SDK 연동 후 테스트 광고가 정상 노출되는 지면 스크린샷을 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 전송하여 심사를 신청하세요.
 
 ```
 [비즈보드 심사 흐름]
@@ -50,4 +50,4 @@ SDK 연동 후 테스트 광고가 정상 노출되는 지면 스크린샷을 **
 
 ## 문의
 
-비즈보드 연동 및 코드 발급 관련 문의는 **nap_mx@nasmedia.co.kr**로 연락하세요.
+비즈보드 연동 및 코드 발급 관련 문의는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 연락하세요.

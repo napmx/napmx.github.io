@@ -224,4 +224,4 @@ LazyColumn {
 
 ## 문의
 
-Compose 연동 문의는 **nap_mx@nasmedia.co.kr** 로 연락해 주세요.
+Compose 연동 문의는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)** 로 연락해 주세요.

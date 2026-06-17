@@ -4,7 +4,7 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 
 > 최신 버전의 Admixer SDK와 최신 버전의 Xcode 사용을 권장합니다.  
 > Admixer iOS SDK는 **iOS 13.0 이상**, **Xcode 15.3 이상** 에서 사용하실 수 있으며, CocoaPods와 SPM을 이용한 설치를 지원합니다.  
-> 연동 및 이용 방법 문의: nap_mx@nasmedia.co.kr
+> 연동 및 이용 방법 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
 
@@ -13,7 +13,7 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 [파트너 사이트](https://publisher.admixer.co.kr/)에 가입 후 미디어 등록 및 애드유닛 생성을 완료하면 연동에 필요한 **Media Key**와 **Adunit ID**를 확인할 수 있습니다.
 **앱 당 1개의 Media key만 사용 가능합니다 **
 
-> 하기 네트워크는 연동을 위해 별도 key 값이 필요합니다. 발급은 nap_mx@nasmedia.co.kr로 문의해주세요.
+> 하기 네트워크는 연동을 위해 별도 key 값이 필요합니다. 발급은 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해주세요.
 > - Google App ID / Pangle App ID / Unity Ads App ID
 
 ---
@@ -133,7 +133,7 @@ Google AdManager 사용 시:
 <string>발급받은_GAD_APP_ID</string>
 ```
 
-> Google App ID 발급은 nap mx 운영팀(nap_mx@nasmedia.co.kr)으로 문의해주세요.
+> Google App ID 발급은 nap mx 운영팀([nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr))으로 문의해주세요.
 
 ---
 

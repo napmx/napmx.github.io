@@ -4,7 +4,7 @@ nap mx에서 응답할 네트워크 광고가 없는 경우, 하우스애드 기
 
 파트너 사이트 메뉴: **미디어 > 하우스애드**
 
-이용 방법 문의: nap_mx@nasmedia.co.kr
+이용 방법 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 > 하우스애드를 사용하기 전, nap mx 파트너 사이트에서 미디어 등록 및 애드유닛 등록이 먼저 완료되어야 합니다.
 
