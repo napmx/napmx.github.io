@@ -74,3 +74,11 @@
 - **<i class="fa-solid fa-plug nav-icon icon-api"></i> API 연동**
   - [광고 연동 API](/api/ad-api)
   - [리포트 API](/api/report-api)
+
+<div class="sidebar-legacy">
+  <a href="https://nasmob.atlassian.net/wiki/spaces/AS/overview?homepageId=798818431" target="_blank">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    구버전 SDK 연동 가이드
+    <i class="fa-solid fa-arrow-up-right-from-square legacy-ext"></i>
+  </a>
+</div>
