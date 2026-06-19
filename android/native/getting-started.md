@@ -57,7 +57,6 @@ dependencies {
     implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'          // Pangle (pag-sdk:8.0.0.5 포함)
     implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.6.3 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'           // Unity Ads (unity-ads:4.18.1 포함)
-    implementation 'io.github.nasmedia-tech:admixer-mobwith:2.0.0'         // Mobwith (mobwithSDK:1.0.83 포함, JitPack 저장소 필요)
     implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'           // Teads (teads-sdk:6.1.0 포함)
 
@@ -83,7 +82,6 @@ dependencyResolutionManagement {
         // Teads 사용 시 필수
         maven { url "https://sdk.teads.tv/android/repo" }
         maven { url "https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod" }
-        // Mobwith 사용 시 필수 (mobwithSDK 1.0.83+ 전이 의존 com.github.Dimezis:BlurView)
         maven { url 'https://jitpack.io' }
     }
 }
@@ -95,7 +93,6 @@ dependencyResolutionManagement {
 | Kakao Adfit | `devrepo.kakao.com` 추가 필요 |
 | Pangle | `artifact.bytedance.com` 추가 필요 |
 | Teads | `sdk.teads.tv`, `teads.jfrog.io` 추가 필요 |
-| Mobwith | `jitpack.io` 추가 필요 (1.0.83+ BlurView 전이 의존) |
 
 ---
 
@@ -237,7 +234,6 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 -keep class com.nasmedia.pangle.** { *; }           # Pangle
 -keep class com.nasmedia.applovin.** { *; }         # AppLovin
 -keep class com.nasmedia.unity.** { *; }            # Unity Ads
--keep class com.nasmedia.mobwith.** { *; }          # Mobwith
 -keep class com.nasmedia.naveradmanager.** { *; }   # Naver Ad Manager
 -keep class com.nasmedia.teads.** { *; }            # Teads
 ```
