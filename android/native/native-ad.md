@@ -185,7 +185,7 @@ public class NativeAdActivity extends AppCompatActivity {
         // ② AMMNativeAdView 생성 및 로드
         nativeAdView = new AMMNativeAdView(this); // Activity context 사용 (Adfit 필수)
         nativeAdView.setAdInfo(adInfo);
-        nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
+        nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·NaverAd 전체 적용
         nativeAdView.setAdViewListener(adListener);
         nativeAdView.loadAd();
     }
@@ -239,7 +239,7 @@ class NativeAdActivity : AppCompatActivity() {
 
         nativeAdView = AMMNativeAdView(this).apply {
             setAdInfo(adInfo)
-            setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 전체 적용
+            setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·NaverAd 전체 적용
             setAdViewListener(adListener)
             loadAd()
         }
