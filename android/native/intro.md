@@ -32,7 +32,6 @@
 | Pangle (TikTok) |
 | AppLovin |
 | Unity Ads |
-| Mobwith |
 | Naver Ad Manager |
 | Teads |
 

@@ -82,7 +82,6 @@ dependencyResolutionManagement {
         // Teads 사용 시 필수
         maven { url "https://sdk.teads.tv/android/repo" }
         maven { url "https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod" }
-        maven { url 'https://jitpack.io' }
     }
 }
 ```
@@ -93,6 +92,42 @@ dependencyResolutionManagement {
 | Kakao Adfit | `devrepo.kakao.com` 추가 필요 |
 | Pangle | `artifact.bytedance.com` 추가 필요 |
 | Teads | `sdk.teads.tv`, `teads.jfrog.io` 추가 필요 |
+
+### 1-4. 네트워크 SDK 지원 버전 범위
+
+각 어댑터(`admixer-*`)는 아래 **번들(검증) 버전**으로 빌드·검증되었습니다. 어댑터 aar에는 해당 네트워크 SDK가 전이 의존으로 포함되므로, 별도로 버전을 지정하지 않아도 번들 버전이 자동 적용됩니다.
+
+> ℹ️ **최소 / 최대**는 각 네트워크 벤더의 릴리스 호환성 기준 권장 범위입니다. 어댑터가 호출하는 SDK 클래스·메서드·인자가 해당 범위에서 존재·동일한지 **소스 레벨로 교차검증**(2026-06-19)을 거쳤습니다. 다만 운영 적용 전 해당 버전으로 빌드·동작을 한 번 더 확인하는 것을 권장합니다.
+
+| 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
+|---|---|---|---|---|---|
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.0.0** | 2.0.0 | 자체 SDK |
+| Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
+| Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
+| Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
+| AppLovin | `com.applovin:applovin-sdk` | 13.2.0 (권장 13.4.0+) | **13.6.3** | 13.6.3 | 12.x 이하 미지원 |
+| Unity Ads | `com.unity3d.ads:unity-ads` | 4.16.x (권장 4.18.0) | **4.18.1** | 4.18.1 | 4.x 라인 |
+| Naver Ad Manager | `com.naver.gfpsdk:nam-bom` | 8.14.0 | **8.16.0** | 8.17.0 | 8.x(BOM이 모듈 버전 고정) |
+| Teads | `tv.teads.sdk.android:sdk` | 6.0.4 | **6.1.0** | 6.1.0 | 6.x 통합 SDK(5.x는 레거시) |
+
+> ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어, 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
+> ```gradle
+> configurations.all {
+>     resolutionStrategy {
+>         force 'com.google.android.gms:play-services-ads:25.2.0'
+>     }
+> }
+> ```
+
+#### 네트워크별 최소 Android API (런타임 요구)
+
+번들된 네트워크 SDK가 요구하는 최소 Android API가 코어 SDK(API 21)보다 높을 수 있습니다. 해당 어댑터를 추가하면 **호스트 앱의 `minSdkVersion`이 아래 값 이상**이어야 합니다.
+
+| 네트워크 | 최소 Android API |
+|---|---|
+| AdMixer (Core), Kakao Adfit, Teads | API 21 (Android 5.0) |
+| Google AdManager, Pangle, Unity Ads, Naver Ad Manager | API 23 (Android 6.0) |
+| AppLovin | API 24 (Android 7.0) — `applovin-sdk:13.6.3` 기준 |
 
 ---
 

@@ -71,7 +71,6 @@ adb logcat -s AdMixer
 | Kakao Adfit | `https://devrepo.kakao.com/nexus/content/groups/public/` |
 | Pangle | `https://artifact.bytedance.com/repository/pangle/` |
 | Teads | `https://sdk.teads.tv/android/repo`, `https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod` |
-| Mobwith | `https://jitpack.io` (BlurView 전이 의존) |
 
 Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral()` 만으로 해결됩니다. 자세한 설정은 [SDK 시작하기](getting-started.md#1-3-네트워크별-추가-maven-저장소)를 참고하세요.
 
@@ -87,12 +86,6 @@ implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0") {
 }
 ```
 exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남는지, nap mx 광고와 기존 광고가 모두 정상 동작하는지 확인하세요. 자세한 내용은 [네트워크 SDK 중복 예외 처리](getting-started.md#네트워크-sdk-중복-예외-처리)를 참고하세요.
-
----
-
-**Q. Mobwith를 추가했더니 `BlurView`(`com.github.Dimezis:BlurView`)를 못 찾습니다.**
-
-Mobwith 1.0.83+는 BlurView를 전이 의존하며, BlurView는 JitPack에 배포됩니다. 저장소에 `maven { url 'https://jitpack.io' }`를 추가하세요.
 
 ---
 
@@ -288,7 +281,6 @@ ProGuard/R8 규칙 누락이 원인일 수 있습니다. AdMixer Core와 사용�
 -keep class com.nasmedia.pangle.** { *; }
 -keep class com.nasmedia.applovin.** { *; }
 -keep class com.nasmedia.unity.** { *; }
--keep class com.nasmedia.mobwith.** { *; }
 -keep class com.nasmedia.naveradmanager.** { *; }
 -keep class com.nasmedia.teads.** { *; }
 ```

@@ -22,7 +22,6 @@
 -keep class com.nasmedia.pangle.** { *; }           # Pangle
 -keep class com.nasmedia.applovin.** { *; }         # AppLovin
 -keep class com.nasmedia.unity.** { *; }            # Unity Ads
--keep class com.nasmedia.mobwith.** { *; }          # Mobwith
 -keep class com.nasmedia.naveradmanager.** { *; }   # Naver Ad Manager
 -keep class com.nasmedia.teads.** { *; }            # Teads
 ```
@@ -40,7 +39,6 @@
 | Pangle | ✅ | - |
 | AppLovin | ✅ | - |
 | Unity Ads | ✅ | - |
-| Mobwith | ✅ | - |
 | Naver Ad Manager | ✅ | - |
 | Teads | ✅ | - |
 

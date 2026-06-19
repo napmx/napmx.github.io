@@ -55,7 +55,7 @@ AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATM
 | **Unity Ads** | MetaData `gdpr.consent` | MetaData `privacy.consent`(= !doNotSell) | MetaData `user.nonbehavioral` |
 | **Pangle** | TCF 자동(8.x `setGDPRConsent` 제거) | `setPAConsent` | 미지원(번들 8.0.0.5 API 부재) |
 | **Google AdManager** | UMP(별도 동의 흐름) | UMP(별도) | `RequestConfiguration.setTagForChildDirectedTreatment` |
-| Teads / Adfit / Mobwith / Naver | TCF 자동/제한적 | 제한적 | 제한적 |
+| Teads / Adfit / Naver | TCF 자동/제한적 | 제한적 | 제한적 |
 
 > ⚠️ 미설정 항목은 해당 네트워크에 적용하지 않습니다. 일부 네트워크는 공식 SDK가 해당 privacy API를 제공하지 않아 전파되지 않을 수 있습니다(표의 "미지원" 참고).
 

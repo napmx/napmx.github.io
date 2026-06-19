@@ -19,7 +19,7 @@
 | **Pangle** | `placement_id`(필수), `app_id` | 없음 | 키는 media-conf 또는 `setAdapterConfig` |
 | **AppLovin** | `zone_id`(필수) | 없음 | SDK key는 `setAdapterConfig("AppLovin",{"sdkKey":...})` |
 | **Unity Ads** | `game_id`, `placement_id` | 없음 | |
-| **Teads / Adfit / Mobwith** | placement_id / data-ad-unit / zone_id | 없음 |  |
+| **Teads / Adfit** | placement_id / data-ad-unit | 없음 |  |
 
 ---
 

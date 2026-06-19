@@ -43,7 +43,6 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `AdMixer.ADAPTER_PANGLE` | Pangle (TikTok) |
 | `AdMixer.ADAPTER_APPLOVIN` | AppLovin |
 | `AdMixer.ADAPTER_UNITY` | Unity Ads |
-| `AdMixer.ADAPTER_MOBWITH` | Mobwith |
 | `AdMixer.ADAPTER_NAVER_ADMANAGER` | Naver Ad Manager |
 | `AdMixer.ADAPTER_TEADS` | Teads |
 

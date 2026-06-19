@@ -64,9 +64,9 @@ exclude 후 의존성 트리에서 해당 SDK가 1개만 남는지 확인하세�
 
 ---
 
-**Q. Teads/Adfit/Pangle/Mobwith를 추가했더니 의존성을 못 찾습니다(`Failed to resolve`).**
+**Q. Teads/Adfit/Pangle를 추가했더니 의존성을 못 찾습니다(`Failed to resolve`).**
 
-해당 네트워크 전용 Maven 저장소를 `settings.gradle`에 추가해야 합니다(Adfit=`devrepo.kakao.com`, Pangle=`artifact.bytedance.com`, Teads=`sdk.teads.tv`+`teads.jfrog.io`, Mobwith=`jitpack.io`). [FAQ — 빌드/Gradle](faq.md#빌드--gradle) 참고.
+해당 네트워크 전용 Maven 저장소를 `settings.gradle`에 추가해야 합니다(Adfit=`devrepo.kakao.com`, Pangle=`artifact.bytedance.com`, Teads=`sdk.teads.tv`+`teads.jfrog.io`). [FAQ — 빌드/Gradle](faq.md#빌드--gradle) 참고.
 
 ---
 
