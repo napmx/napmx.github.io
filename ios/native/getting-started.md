@@ -194,6 +194,23 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 ---
 
+## Step 4. 에러 코드
+
+광고 수신에 실패한 경우, delegate 메서드를 통해 nap mx Error 객체를 전달받을 수 있습니다.
+각각의 에러에 대한 설명은 아래 표를 참고해 주세요.
+
+| no | 에러 코드 | 설명 |
+|----|----------|------|
+| 0 | `missingBaseURL` | api 요청에 필요한 base URL이 누락된 경우 |
+| 1 | `invalidURLString` | 유효하지 않은 URL로 요청하는 경우 |
+| 2 | `invalidServerResponse` | 서버로부터 유효하지 않은 응답을 받은 경우. 네트워크 상태를 확인하거나 관리자에게 문의하세요. |
+| 3 | `decodeError` | 데이터 처리에 오류가 있는 경우 |
+| 4 | `apiResponseFail` | 서버 통신에 실패한 경우. 서버 상태를 확인하거나 잠시 후 다시 시도해 주세요. |
+| 5 | `vastParsingError` | 비디오 광고 데이터 처리에 오류가 있는 경우 |
+| 6 | `emptyAd` | 노출 가능한 광고가 없는 경우. 잠시 후 다시 광고 요청을 시도해 주세요. |
+
+---
+
 ## 다음 단계
 
 - [배너 광고 연동하기](/ios/native/banner)
