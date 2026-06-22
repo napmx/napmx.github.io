@@ -99,26 +99,18 @@ extension ViewController: AMMBannerViewDelegate {
 
 ### 네트워크에 따른 전면 광고 형태
 
-| 네트워크 | 소재 | 노출 형태 | 전면 형태 옵션 |
-|---------|------|----------|--------------|
-| Admixer | 배너 | 레이어 팝업 형태로 배너 노출 | basic, popup, countDown |
-| Adfit | 배너 | 레이어 팝업 형태로 배너 노출 | basic, popup, countDown |
-| Google | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 | 네트워크사 제공 설정 값 (커스텀 불가) |
-| Applovin | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 | 네트워크사 제공 설정 값 (커스텀 불가) |
-| Pangle | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 | 네트워크사 제공 설정 값 (커스텀 불가) |
-| Unity Ads | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 | 네트워크사 제공 설정 값 (커스텀 불가) |
+| 네트워크 | 소재 | 노출 형태 |
+|---------|------|----------|
+| Admixer | 배너 | 레이어 팝업 형태로 배너 노출 |
+| Adfit | 배너 | 레이어 팝업 형태로 배너 노출 |
+| Google | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 |
+| Applovin | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 |
+| Pangle | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 |
+| Unity Ads | 짧은 초수의 영상 또는 배너 | 풀스크린 노출 |
 
 ### 전면 배너 인스턴스 생성 및 설정
 
-배너 소재로 응답되는 Admixer, Adfit 네트워크를 사용하는 경우 설정이 필요합니다.
-
-`AMMInterstitial`에서는 전면 배너 형식으로 `basic`, `popup`, `countDown` 세 가지 형태를 제공하며, 일부 네트워크에만 적용됩니다.
-
-| 형식 | 설명 |
-|------|------|
-| `basic` | 우측 상단에 "X" 이미지 형태의 닫기 버튼 노출 |
-| `popup` | 광고 소재 하단에 텍스트 형태의 닫기 버튼 노출 |
-| `countDown` | 설정된 시간이 지난 후 닫기 버튼 노출 |
+배너 소재로 응답되는 Admixer, Adfit 네트워크를 사용하는 경우, 닫기 버튼의 터치 영역 비율을 설정할 수 있습니다.
 
 ```swift
 import AdMixerMediation
@@ -131,26 +123,9 @@ class InterstitialViewController: UIViewController {
         super.viewDidLoad()
 
         let config = AMMInterstitialConfig()
-        config.viewType = .popup
 
-        // popup 형식 설정 (닫기 버튼 텍스트, 텍스트 색상, 버튼 배경색)
-        config.popupOption = AMMInterstitialPopupOption(
-            buttonTitle: "닫기",
-            buttonTextColor: .white,
-            buttonBackgroundColor: .black
-        )
-
-        // countDown 형식 설정
-        // countDownTime: 카운트다운 시간 (최소 2초 ~ 최대 5초)
-        // countDownType: .gauge (게이지 형태), .text (텍스트 형태)
-        config.countDownOption = AMMInterstitialCountDownOption(
-            countDownTime: 4,
-            countDownType: .gauge
-        )
-
-        // 닫기 버튼 터치 영역 비율 (0.2 ~ 1.0, default: 1.0)
-        // basic, countDown 형에만 적용됩니다.
-        config.closeButtonTouchAreaRatio = 1.0
+        // 닫기 버튼 터치 영역 비율 (0.0 ~ 1.0, default: 0.6)
+        config.closeButtonTouchAreaRatio = 0.6
     }
 }
 ```

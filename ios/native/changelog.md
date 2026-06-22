@@ -6,6 +6,7 @@
 
 - 뷰형 광고(배너/네이티브/비디오) load API 추가
 - AdFit 비즈보드 타입 지원
+- 전면배너 표시 옵션(popup/countDown) 제거
 - 버그 픽스
 - 어댑터 버전 업데이트
    - AdMixerMediationGAM v1.1.0
