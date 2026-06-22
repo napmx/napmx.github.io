@@ -41,39 +41,39 @@
 
 > xib 파일의 루트 뷰 클래스는 `AMMNativeAdView`로 동일하므로, 코드에서는 `loadNibNamed("AMMNativeAdView", ...)` 대신 추가한 파일명(예: `"AMMNativeAdView300x250"`)으로 로드해주세요.
 
-**Step 2. 인스턴스 변수 생성**
+**Step 2. 광고 요청 및 노출**
 
-광고를 노출할 ViewController에 `AMMNativeAdViewContainer` 인스턴스 변수를 생성합니다.
+`AMMNativeAdView.xib`를 로드해 `nativeAdView`를 만들고, `AMMNativeAdViewContainer.load()`에 전달합니다. 로드가 완료되면 completion으로 전달받은 컨테이너를 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
 
 class NativeAdViewController: UIViewController {
 
-    var nativeAd: AMMNativeAdViewContainer!
+    var nativeAd: AMMNativeAdViewContainer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let nibView = Bundle.main.loadNibNamed("AMMNativeAdView", owner: nil, options: nil)?.first
-        let nativeAdView = nibView as? AMMNativeAdView
+        guard let nativeAdView = nibView as? AMMNativeAdView else { return }
 
-        nativeAd = AMMNativeAdViewContainer(rootViewController: self)
-        nativeAd.nativeAdView = nativeAdView
-        nativeAd.adUnitID = "ADUNIT_ID"
-        nativeAd.delegate = self
+        // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
+        AMMNativeAdViewContainer.load(adUnitID: ADUNIT_ID, rootViewController: self, nativeAdView: nativeAdView) { [weak self] container, adapterName, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                // 광고 로드 실패
+                return
+            }
+
+            guard let container = container else { return }
+            self.nativeAd = container
+            container.delegate = self
+            self.view.addSubview(container)
+        }
     }
 }
-```
-
----
-
-## 광고 요청
-
-`load()`를 호출하여 네이티브 광고를 로드하고 보여줍니다.
-
-```swift
-nativeAd.load()
 ```
 
 ---
@@ -87,7 +87,7 @@ override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
 
     if isMovingFromParent || isBeingDismissed {
-        nativeAd.stop()
+        nativeAd?.stop()
         nativeAd = nil
     }
 }
@@ -102,22 +102,19 @@ override func viewDidDisappear(_ animated: Bool) {
 
 | 메서드 | 설명 |
 |--------|------|
-| `onSuccessNative()` | 네이티브 광고 호출 성공 |
-| `onFailNative()` | 네이티브 광고 호출 실패 |
-| `onTapNative()` | 네이티브 광고 탭 |
+| `onSuccessShowNative()` | 네이티브 광고 노출 성공 |
+| `onClickNative()` | 네이티브 광고 클릭 |
+
+> 광고 로드 성공/실패는 `load()`의 completion(`container`, `error`)으로 전달됩니다.
 
 ```swift
 extension NativeAdViewController: AMMNativeDelegate {
 
-    func onSuccessNative() {
-        // 광고 로드 성공
+    func onSuccessShowNative() {
+        // 광고 노출 성공
     }
 
-    func onFailNative() {
-        // 광고 로드 실패
-    }
-
-    func onTapNative() {
+    func onClickNative() {
         // 광고 클릭
     }
 }

@@ -2,6 +2,19 @@
 
 ---
 
+## v2.3.7 (2026-06-22)
+
+- 뷰형 광고(배너/네이티브/비디오) load API 추가
+- AdFit 비즈보드 타입 지원
+- 버그 픽스
+- 어댑터 버전 업데이트
+   - AdMixerMediationGAM v1.1.0
+   - AdMixerMediationAdFit v1.1.0
+   - AdMixerMediationNAM v1.1.0
+   - AdMixerMediationPangle v1.1.0
+
+---
+
 ## v2.3.6 (2026-06-02)
 
 - 버그 픽스

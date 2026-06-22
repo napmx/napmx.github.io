@@ -8,24 +8,35 @@
 
 배너 광고는 광고 요청 후 즉시 노출하는 방식을 지원합니다.
 
-### Banner 뷰 인스턴스 생성 및 설정
+### 광고 요청 및 노출
 
-배너 광고를 노출할 ViewController에 nap mx Mediation을 import하여 `AMMBannerView` 인스턴스 변수를 생성합니다.
+`AMMBannerView.load()`로 배너 광고를 요청합니다. 로드가 완료되면 completion으로 배너 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
 
 class ViewController: UIViewController {
 
-    var bannerView: AMMBannerView!
+    var bannerView: AMMBannerView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        bannerView = AMMBannerView(rootViewController: self)
-        addBannerViewToView(bannerView)
-        bannerView.adUnitId = "ADUNIT_ID"
-        bannerView.delegate = self
+        // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
+        AMMBannerView.load(adUnitID: ADUNIT_ID, rootViewController: self) { [weak self] banner, adapterName, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                // 광고 로드 실패
+                return
+            }
+
+            guard let banner = banner else { return }
+            self.bannerView = banner
+            banner.delegate = self
+            // addSubview 시점(화면 진입)에 자동으로 노출됩니다
+            self.addBannerViewToView(banner)
+        }
     }
 
     func addBannerViewToView(_ bannerView: UIView) {
@@ -40,14 +51,6 @@ class ViewController: UIViewController {
 }
 ```
 
-### 광고 요청 및 노출
-
-`load()`를 사용하여 배너 광고를 로드하고 bannerView 영역 내에서 보여줍니다.
-
-```swift
-bannerView.load()
-```
-
 ### 리소스 해제
 
 `stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
@@ -57,7 +60,7 @@ override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
 
     if isMovingFromParent || isBeingDismissed {
-        bannerView.stop()
+        bannerView?.stop()
         bannerView = nil
     }
 }
@@ -70,22 +73,19 @@ override func viewDidDisappear(_ animated: Bool) {
 
 | 메서드 | 설명 |
 |--------|------|
-| `onSuccessBanner` | 배너 광고 로드 성공 |
-| `onFailBanner` | 배너 광고 로드 실패 |
-| `onTapBanner` | 배너 광고 탭 |
+| `onSuccessShowBanner` | 배너 광고 노출 성공 |
+| `onClickBanner` | 배너 광고 클릭 |
+
+> 광고 로드 성공/실패는 `load()`의 completion(`banner`, `error`)으로 전달됩니다.
 
 ```swift
 extension ViewController: AMMBannerViewDelegate {
 
-    func onSuccessBanner() {
-        // 광고 로드 성공
+    func onSuccessShowBanner() {
+        // 광고 노출 성공
     }
 
-    func onFailBanner() {
-        // 광고 로드 실패
-    }
-
-    func onTapBanner() {
+    func onClickBanner() {
         // 광고 클릭
     }
 }

@@ -10,45 +10,48 @@
 
 동영상 광고는 광고 요청 후 즉시 노출하는 방식을 지원합니다.
 
-### 동영상 뷰 인스턴스 생성 및 설정
+### 광고 요청 및 노출
 
-동영상 광고를 노출할 ViewController에 nap mx Mediation을 import하여 `AMMVideoAdView` 인스턴스 변수를 생성합니다.
+`AMMVideoView.load()`로 동영상 광고를 요청합니다. 로드가 완료되면 completion으로 동영상 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
 
 class VideoAdViewController: UIViewController {
 
-    var ammVideoView: AMMVideoAdView!
+    var ammVideoView: AMMVideoView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        ammVideoView = AMMVideoAdView(rootViewController: self)
-        addBannerViewToView(ammVideoView)
-        ammVideoView.adUnitID = "ADUNIT_ID"
-        ammVideoView.delegate = self
+        // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
+        AMMVideoView.load(adUnitID: ADUNIT_ID, rootViewController: self) { [weak self] video, adapterName, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                // 광고 로드 실패
+                return
+            }
+
+            guard let video = video else { return }
+            self.ammVideoView = video
+            video.delegate = self
+            // addSubview 시점(화면 진입)에 자동으로 노출됩니다
+            self.addVideoViewToView(video)
+        }
     }
 
-    func addBannerViewToView(_ bannerView: UIView) {
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bannerView)
+    func addVideoViewToView(_ videoView: UIView) {
+        videoView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(videoView)
         NSLayoutConstraint.activate([
-            bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-            bannerView.heightAnchor.constraint(equalToConstant: 200)
+            videoView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            videoView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            videoView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
 }
-```
-
-### 광고 요청 및 노출
-
-`load()`를 사용하여 동영상 광고를 로드하고 videoView 영역 내에서 보여줍니다.
-
-```swift
-ammVideoView.load()
 ```
 
 ### 리소스 해제
@@ -60,7 +63,7 @@ override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
 
     if isMovingFromParent || isBeingDismissed {
-        ammVideoView.stop()
+        ammVideoView?.stop()
         ammVideoView = nil
     }
 }
@@ -73,29 +76,26 @@ override func viewDidDisappear(_ animated: Bool) {
 
 | 메서드 | 설명 |
 |--------|------|
-| `onSuccessVideo` | 동영상 광고 로드 성공 |
-| `onFailVideo` | 동영상 광고 로드 실패 |
+| `onSuccessShowVideo` | 동영상 광고 노출 성공 |
+| `onClickVideo` | 동영상 광고 클릭(더보기) |
 | `onSkipVideo` | 동영상 광고 내 skip 버튼 클릭 |
-| `onTapAdViewMore` | 동영상 광고 내 더보기 버튼 클릭 |
 | `onCompleteVideo` | 동영상 광고 재생 완료 |
+
+> 광고 로드 성공/실패는 `load()`의 completion(`video`, `error`)으로 전달됩니다.
 
 ```swift
 extension VideoAdViewController: AMMVideoViewDelegate {
 
-    func onSuccessVideo() {
-        // 광고 로드 성공
+    func onSuccessShowVideo() {
+        // 광고 노출 성공
     }
 
-    func onFailVideo() {
-        // 광고 로드 실패
+    func onClickVideo() {
+        // 더보기 클릭
     }
 
     func onSkipVideo() {
         // skip 버튼 클릭
-    }
-
-    func onTapAdViewMore() {
-        // 더보기 버튼 클릭
     }
 
     func onCompleteVideo() {
