@@ -119,6 +119,7 @@ window.NapMxBridgeCallback = {
     // 네이티브
     onNativeLoaded:     function(data) { /* 네이티브 광고 로드 성공 */ },
     onNativeFailed:     function(data) { /* 네이티브 광고 로드 실패 */ },
+    onNativeDisplayed:  function(data) { /* 네이티브 광고 표시됨 */ },
     onNativeClicked:    function(data) { /* 네이티브 광고 클릭 */ },
 
     // 전면 배너
@@ -137,11 +138,12 @@ window.NapMxBridgeCallback = {
     onRewardVideoDismissed: function(data) { /* 닫힘 */ },
 
     // 인라인 동영상
-    onVideoLoaded:    function(data) { /* 로드 성공 */ },
-    onVideoFailed:    function(data) { /* 로드 실패 */ },
-    onVideoCompleted: function(data) { /* 재생 완료 */ },
-    onVideoClicked:   function(data) { /* 더보기 클릭 */ },
-    onVideoSkipped:   function(data) { /* 스킵 */ },
+    onVideoLoaded:     function(data) { /* 로드 성공 */ },
+    onVideoFailed:     function(data) { /* 로드 실패 */ },
+    onVideoDisplayed:  function(data) { /* 표시됨 */ },
+    onVideoCompleted:  function(data) { /* 재생 완료 */ },
+    onVideoClicked:    function(data) { /* 더보기 클릭 */ },
+    onVideoSkipped:    function(data) { /* 스킵 */ },
 
     // 전면 동영상
     onVideoInterstitialLoaded:    function(data) { /* 로드 성공 */ },
@@ -236,7 +238,7 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
     private var nativeAd: AMMNativeAdViewContainer?
     private var interstitial: AMMInterstitial?
     private var rewardVideo: AMMRewardVideo?
-    private var videoView: AMMVideoAdView?
+    private var videoView: AMMVideoView?
     private var videoInterstitial: AMMVideoInterstitial?
 
     init(viewController: UIViewController) {
@@ -267,117 +269,155 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
         }
     }
 
+    // JS 로 전달받은 adUnitId(String) 를 SDK 가 요구하는 Int 로 변환. 변환 실패 시 nil
+    private func parseAdUnitId(_ params: [String: Any]) -> (str: String, id: Int)? {
+        let str = params["adUnitId"] as? String ?? ""
+        guard let id = Int(str) else { return nil }
+        return (str, id)
+    }
+
     // ── 네이티브 ──────────────────────────────────
     private func requestNative(params: [String: Any], in vc: UIViewController) {
-        let adUnitId = params["adUnitId"] as? String ?? ""
-        
+        guard let (adUnitIdStr, adUnitID) = parseAdUnitId(params) else { return }
+
         let nibView = Bundle.main.loadNibNamed("AMMNativeAdView", owner: nil, options: nil)?.first
-        let nativeAdView = nibView as? AMMNativeAdView
-        
-        nativeAd = AMMNativeAdViewContainer(rootViewController: vc)
-        nativeAd?.nativeAdView = nativeAdView
-        nativeAd?.adUnitID = adUnitId
-        nativeAd?.delegate = self
-        
-        guard let nativeContainer = nativeAdView, let parent = webView?.superview else { return }
-        
-        nativeContainer.translatesAutoresizingMaskIntoConstraints = false
-        parent.addSubview(nativeContainer)
-        
-        NSLayoutConstraint.activate([
-            nativeContainer.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-            nativeContainer.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-            nativeContainer.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        nativeAd?.load()
+        guard let nativeAdView = nibView as? AMMNativeAdView else { return }
+
+        // static load: 로드 완료 시 completion 으로 컨테이너를 받아 addSubview → 화면 진입 시 노출
+        AMMNativeAdViewContainer.load(adUnitID: adUnitID, rootViewController: vc, nativeAdView: nativeAdView) { [weak self] container, adapterName, error in
+            guard let self else { return }
+            if let error {
+                self.sendCallback("onNativeFailed", adUnitId: adUnitIdStr, errorMsg: error.localizedDescription)
+                return
+            }
+            guard let container, let parent = self.webView?.superview else { return }
+            self.nativeAd = container
+            container.delegate = self
+            container.translatesAutoresizingMaskIntoConstraints = false
+            parent.addSubview(container)
+            NSLayoutConstraint.activate([
+                container.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+                container.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+                container.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor)
+            ])
+            self.sendCallback("onNativeLoaded", adUnitId: adUnitIdStr, adapterName: adapterName ?? "")
+        }
     }
 
     // ── 배너 ─────────────────────────────────────
     private func requestBanner(params: [String: Any], in vc: UIViewController) {
-        let adUnitId = params["adUnitId"] as? String ?? ""
+        guard let (adUnitIdStr, adUnitID) = parseAdUnitId(params) else { return }
         let position = params["position"] as? String ?? "bottom"
 
-        bannerView = AMMBannerView(rootViewController: vc)
-        bannerView?.adUnitId = adUnitId
-        bannerView?.delegate = self
-        guard let banner = bannerView, let parent = webView?.superview else { return }
+        AMMBannerView.load(adUnitID: adUnitID, rootViewController: vc) { [weak self] banner, adapterName, error in
+            guard let self else { return }
+            if let error {
+                self.sendCallback("onBannerFailed", adUnitId: adUnitIdStr, errorMsg: error.localizedDescription)
+                return
+            }
+            guard let banner, let parent = self.webView?.superview else { return }
+            self.bannerView = banner
+            banner.delegate = self
+            banner.translatesAutoresizingMaskIntoConstraints = false
+            parent.addSubview(banner)
 
-        banner.translatesAutoresizingMaskIntoConstraints = false
-        parent.addSubview(banner)
-
-        if position == "top" {
-            NSLayoutConstraint.activate([
-                banner.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-                banner.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-                banner.topAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.topAnchor)
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                banner.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-                banner.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-                banner.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor)
-            ])
+            if position == "top" {
+                NSLayoutConstraint.activate([
+                    banner.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+                    banner.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+                    banner.topAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.topAnchor)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    banner.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+                    banner.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+                    banner.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor)
+                ])
+            }
+            self.sendCallback("onBannerLoaded", adUnitId: adUnitIdStr, adapterName: adapterName ?? "")
         }
-        banner.load()
     }
 
     // ── 전면 배너 ────────────────────────────────
     private func requestInterstitial(params: [String: Any], in vc: UIViewController) {
-        let adUnitId = params["adUnitId"] as? String ?? ""
-        let viewType = params["viewType"] as? String ?? "basic"
+        guard let (adUnitIdStr, adUnitID) = parseAdUnitId(params) else { return }
 
+        // 닫기 버튼 터치 영역 비율만 설정 가능 (0.0~1.0, default 0.6)
         let config = AMMInterstitialConfig()
-        switch viewType {
-        case "popup":    config.viewType = .popup
-        case "countDown": config.viewType = .countDown
-        default:         config.viewType = .basic
-        }
 
-        AMMInterstitial.load(adUnitID: adUnitId, config: config) { [weak self] interstitial, error in
+        AMMInterstitial.load(adUnitID: adUnitID, config: config) { [weak self] interstitial, adapterName, error in
             guard let self else { return }
-            if let error { self.sendCallback("onInterstitialFailed", adUnitId: adUnitId, errorMsg: error.localizedDescription); return }
-            if let interstitial { self.interstitial = interstitial; self.interstitial?.delegate = self; self.sendCallback("onInterstitialLoaded", adUnitId: adUnitId) }
+            if let error {
+                self.sendCallback("onInterstitialFailed", adUnitId: adUnitIdStr, errorMsg: error.localizedDescription)
+                return
+            }
+            if let interstitial {
+                self.interstitial = interstitial
+                self.interstitial?.delegate = self
+                self.sendCallback("onInterstitialLoaded", adUnitId: adUnitIdStr, adapterName: adapterName ?? "")
+            }
         }
     }
 
     // ── 리워드 ───────────────────────────────────
     private func requestRewardVideo(params: [String: Any], in vc: UIViewController) {
-        let adUnitId = params["adUnitId"] as? String ?? ""
+        guard let (adUnitIdStr, adUnitID) = parseAdUnitId(params) else { return }
         let customParam = params["customParams"] as? [String: String]
 
-        AMMRewardVideo.load(adUnitID: adUnitId, customParam: customParam) { [weak self] reward, error in
+        AMMRewardVideo.load(adUnitID: adUnitID, customParam: customParam) { [weak self] reward, adapterName, error in
             guard let self else { return }
-            if let error { self.sendCallback("onRewardVideoFailed", adUnitId: adUnitId, errorMsg: error.localizedDescription); return }
-            if let reward { self.rewardVideo = reward; self.rewardVideo?.delegate = self; self.sendCallback("onRewardVideoLoaded", adUnitId: adUnitId) }
+            if let error {
+                self.sendCallback("onRewardVideoFailed", adUnitId: adUnitIdStr, errorMsg: error.localizedDescription)
+                return
+            }
+            if let reward {
+                self.rewardVideo = reward
+                self.rewardVideo?.delegate = self
+                self.sendCallback("onRewardVideoLoaded", adUnitId: adUnitIdStr, adapterName: adapterName ?? "")
+            }
         }
     }
 
     // ── 인라인 동영상 ────────────────────────────
     private func requestVideo(params: [String: Any], in vc: UIViewController) {
-        let adUnitId = params["adUnitId"] as? String ?? ""
-        videoView = AMMVideoAdView(rootViewController: vc)
-        videoView?.adUnitID = adUnitId
-        videoView?.delegate = self
-        guard let video = videoView, let parent = webView?.superview else { return }
-        video.translatesAutoresizingMaskIntoConstraints = false
-        parent.addSubview(video)
-        NSLayoutConstraint.activate([
-            video.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-            video.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-            video.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor),
-            video.heightAnchor.constraint(equalToConstant: 200)
-        ])
-        video.load()
+        guard let (adUnitIdStr, adUnitID) = parseAdUnitId(params) else { return }
+
+        AMMVideoView.load(adUnitID: adUnitID, rootViewController: vc) { [weak self] video, adapterName, error in
+            guard let self else { return }
+            if let error {
+                self.sendCallback("onVideoFailed", adUnitId: adUnitIdStr, errorMsg: error.localizedDescription)
+                return
+            }
+            guard let video, let parent = self.webView?.superview else { return }
+            self.videoView = video
+            video.delegate = self
+            video.translatesAutoresizingMaskIntoConstraints = false
+            parent.addSubview(video)
+            NSLayoutConstraint.activate([
+                video.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+                video.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+                video.bottomAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor),
+                video.heightAnchor.constraint(equalToConstant: 200)
+            ])
+            self.sendCallback("onVideoLoaded", adUnitId: adUnitIdStr, adapterName: adapterName ?? "")
+        }
     }
 
     // ── 전면 동영상 ──────────────────────────────
     private func requestVideoInterstitial(params: [String: Any], in vc: UIViewController) {
-        let adUnitId = params["adUnitId"] as? String ?? ""
-        AMMVideoInterstitial.load(adUnitID: adUnitId) { [weak self] vi, error in
+        guard let (adUnitIdStr, adUnitID) = parseAdUnitId(params) else { return }
+
+        AMMVideoInterstitial.load(adUnitID: adUnitID) { [weak self] vi, adapterName, error in
             guard let self else { return }
-            if let error { self.sendCallback("onVideoInterstitialFailed", adUnitId: adUnitId, errorMsg: error.localizedDescription); return }
-            if let vi { self.videoInterstitial = vi; self.videoInterstitial?.delegate = self; self.sendCallback("onVideoInterstitialLoaded", adUnitId: adUnitId) }
+            if let error {
+                self.sendCallback("onVideoInterstitialFailed", adUnitId: adUnitIdStr, errorMsg: error.localizedDescription)
+                return
+            }
+            if let vi {
+                self.videoInterstitial = vi
+                self.videoInterstitial?.delegate = self
+                self.sendCallback("onVideoInterstitialLoaded", adUnitId: adUnitIdStr, adapterName: adapterName ?? "")
+            }
         }
     }
 
@@ -402,22 +442,21 @@ class NapMxAdBridgeHandler: NSObject, WKScriptMessageHandler {
 }
 
 // MARK: - Delegates
+// 로드 성공/실패는 각 load(...) 의 completion 으로 전달되며, delegate 는 표시·클릭 등 이후 이벤트만 통지한다.
 extension NapMxAdBridgeHandler: AMMNativeDelegate {
-    func onSuccessNative() { sendCallback("onNativeLoaded") }
-    func onFailNative()    { sendCallback("onNativeFailed") }
-    func onTapNative()     { sendCallback("onNativeClicked") }
+    func onSuccessShowNative() { sendCallback("onNativeDisplayed") }
+    func onClickNative()       { sendCallback("onNativeClicked") }
 }
 
 extension NapMxAdBridgeHandler: AMMBannerViewDelegate {
-    func onSuccessBanner()  { sendCallback("onBannerLoaded") }
-    func onFailBanner()     { sendCallback("onBannerFailed") }
-    func onTapBanner()      { sendCallback("onBannerClicked") }
+    func onSuccessShowBanner()  { sendCallback("onBannerDisplayed") }
+    func onClickBanner()        { sendCallback("onBannerClicked") }
 }
 
 extension NapMxAdBridgeHandler: AMMInterstitialDelegate {
     func onSuccessShowInterstitial()                { sendCallback("onInterstitialShowed") }
     func onFailShowInterstitial(error: Error?)      { sendCallback("onInterstitialFailed", errorMsg: error?.localizedDescription ?? "") }
-    func onTapInterstitial()                        { sendCallback("onInterstitialClicked") }
+    func onClickInterstitial()                      { sendCallback("onInterstitialClicked") }
     func onCloseInterstitial()                      { interstitial = nil; sendCallback("onInterstitialDismissed") }
 }
 
@@ -425,24 +464,23 @@ extension NapMxAdBridgeHandler: AMMRewardVideoDelegate {
     func onSuccessShowReward()                      { sendCallback("onRewardVideoShowed") }
     func onFailShowReward(error: Error?)             { sendCallback("onRewardVideoFailed", errorMsg: error?.localizedDescription ?? "") }
     func onCloseRewardVideo()                       { rewardVideo = nil; sendCallback("onRewardVideoDismissed") }
-    func onTapRewardVideo()                         { sendCallback("onRewardVideoClicked") }
+    func onClickRewardVideo()                       { sendCallback("onRewardVideoClicked") }
     func onRewardVideoComplete()                    { sendCallback("onRewardVideoCompleted") }
     func onRewardVideoEarned()                      { sendCallback("onRewardEarned") }
 }
 
 extension NapMxAdBridgeHandler: AMMVideoViewDelegate {
-    func onSuccessVideo()   { sendCallback("onVideoLoaded") }
-    func onFailVideo()      { sendCallback("onVideoFailed") }
-    func onSkipVideo()      { sendCallback("onVideoSkipped") }
-    func onTapAdViewMore()  { sendCallback("onVideoClicked") }
-    func onCompleteVideo()  { sendCallback("onVideoCompleted") }
+    func onSuccessShowVideo()  { sendCallback("onVideoDisplayed") }
+    func onClickVideo()        { sendCallback("onVideoClicked") }
+    func onSkipVideo()         { sendCallback("onVideoSkipped") }
+    func onCompleteVideo()     { sendCallback("onVideoCompleted") }
 }
 
 extension NapMxAdBridgeHandler: AMMVideoInterstitialDelegate {
     func onSuccessShowVideoInterstitial()           { sendCallback("onVideoInterstitialShowed") }
     func onFailShowVideoInterstitial(error: Error?) { sendCallback("onVideoInterstitialFailed", errorMsg: error?.localizedDescription ?? "") }
     func onCloseVideoInterstitial()                 { videoInterstitial = nil; sendCallback("onVideoInterstitialDismissed") }
-    func onTapVideoInterstitialViewMore()           { sendCallback("onVideoInterstitialClicked") }
+    func onClickVideoInterstitial()                 { sendCallback("onVideoInterstitialClicked") }
     func onCompleteVideoInterstitial()              { sendCallback("onVideoInterstitialCompleted") }
 }
 ```
@@ -483,8 +521,7 @@ window.NapMxBridgeCallback = {
 };
 
 NapMxBridge.requestInterstitial({
-    adUnitId: "YOUR_INTERSTITIAL_ADUNIT_ID",
-    viewType: "basic"
+    adUnitId: "YOUR_INTERSTITIAL_ADUNIT_ID"
 });
 </script>
 ```
