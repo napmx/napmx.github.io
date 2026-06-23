@@ -35,7 +35,8 @@ class RewardedAdViewController: UIViewController {
 
         let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
 
-        AMMRewardVideo.load(adUnitID: "ADUNIT_ID", customParam: customParam) { [weak self] reward, error in
+        // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
+        AMMRewardVideo.load(adUnitID: ADUNIT_ID, customParam: customParam) { [weak self] reward, adapterName, error in
             guard let self = self else { return }
 
             if let error = error {
@@ -92,7 +93,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onSuccessShowReward()` | 리워드 동영상 광고 노출 성공 |
 | `onFailShowReward()` | 리워드 동영상 광고 노출 실패 |
 | `onCloseRewardVideo()` | 리워드 동영상 광고 닫기 |
-| `onTapRewardVideo()` | 리워드 동영상 광고 탭 |
+| `onClickRewardVideo()` | 리워드 동영상 광고 클릭 |
 | `onRewardVideoComplete()` | 리워드 동영상 재생 완료 |
 | `onRewardVideoEarned()` | 리워드 동영상 리워드 지급 완료 |
 
@@ -111,7 +112,7 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
         // 광고 닫힘
     }
 
-    func onTapRewardVideo() {
+    func onClickRewardVideo() {
         // 광고 클릭
     }
 
@@ -151,7 +152,7 @@ CustomParm을 통해 콜백에서 추가 데이터를 수집할 수 있습니다
 
 ```swift
 let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
-AMMRewardVideo.load(adUnitID: "ADUNIT_ID", customParam: customParam) { reward, error in
+AMMRewardVideo.load(adUnitID: ADUNIT_ID, customParam: customParam) { reward, adapterName, error in
     // ...
 }
 ```

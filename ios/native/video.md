@@ -137,7 +137,8 @@ class VideoInterstitialViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        AMMVideoInterstitial.load(adUnitID: "ADUNIT_ID") { [weak self] videoInterstitial, error in
+        // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
+        AMMVideoInterstitial.load(adUnitID: ADUNIT_ID) { [weak self] videoInterstitial, adapterName, error in
             guard let self = self else { return }
 
             if let error = error {
@@ -183,7 +184,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onSuccessShowVideoInterstitial` | 전면 동영상 광고 노출 성공 |
 | `onFailShowVideoInterstitial` | 전면 동영상 광고 노출 실패 |
 | `onCloseVideoInterstitial` | 전면 동영상 광고 닫기 |
-| `onTapVideoInterstitialViewMore` | 전면 동영상 광고 내 더보기 버튼 클릭 |
+| `onClickVideoInterstitial` | 전면 동영상 광고 내 더보기 버튼 클릭 |
 | `onCompleteVideoInterstitial` | 전면 동영상 광고 재생 완료 |
 
 ```swift
@@ -201,7 +202,7 @@ extension VideoInterstitialViewController: AMMVideoInterstitialDelegate {
         // 광고 닫힘
     }
 
-    func onTapVideoInterstitialViewMore() {
+    func onClickVideoInterstitial() {
         // 더보기 버튼 클릭
     }
 

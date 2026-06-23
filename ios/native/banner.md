@@ -135,7 +135,8 @@ class InterstitialViewController: UIViewController {
 `load()`를 사용하여 전면 배너 광고를 로드합니다.
 
 ```swift
-AMMInterstitial.load(adUnitID: "ADUNIT_ID", config: config) { [weak self] interstitial, error in
+// ADUNIT_ID: 발급받은 광고 단위 ID (Int)
+AMMInterstitial.load(adUnitID: ADUNIT_ID, config: config) { [weak self] interstitial, adapterName, error in
     guard let self = self else { return }
 
     if let error = error {
@@ -176,7 +177,7 @@ override func viewDidDisappear(_ animated: Bool) {
 |--------|------|
 | `onSuccessShowInterstitial` | 전면 광고 노출 성공 |
 | `onFailShowInterstitial` | 전면 광고 노출 실패 |
-| `onTapInterstitial` | 전면 광고 탭 |
+| `onClickInterstitial` | 전면 광고 클릭 |
 | `onCloseInterstitial` | 전면 광고 닫기 |
 
 ```swift
@@ -190,7 +191,7 @@ extension InterstitialViewController: AMMInterstitialDelegate {
         // 광고 노출 실패
     }
 
-    func onTapInterstitial() {
+    func onClickInterstitial() {
         // 광고 클릭
     }
 
