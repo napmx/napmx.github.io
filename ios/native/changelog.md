@@ -13,6 +13,9 @@
    - AdMixerMediationAdFit v1.1.0
    - AdMixerMediationNAM v1.1.0
    - AdMixerMediationPangle v1.1.0
+   - AdMixerMediationAppLovin v1.1.0
+   - AdMixerMediationUnityAds v1.1.0
+   - AdMixerMediationTeads v1.0.0 (신규)
 
 ---
 

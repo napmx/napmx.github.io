@@ -42,6 +42,7 @@ target 'MyApp' do
   pod 'AdMixerMediationAppLovin' # AppLovin
   pod 'AdMixerMediationUnityAds' # UnityAds
   pod 'AdMixerMediationNAM'      # Naver AdManager
+  pod 'AdMixerMediationTeads'    # Teads
 end
 ```
 
@@ -67,6 +68,7 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 | Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
 | AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
 | Naver AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-NAM-SPM` |
+| Teads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Teads-SPM.git` |
 
 > Unity Ads를 nap mx Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
 
@@ -101,6 +103,7 @@ Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 �
 | `AdMixerMediationPangle` | Ads-Global | `7.4.0.8` 이상 &#126; `7.8.8.9` 이하 | |
 | `AdMixerMediationUnityAds` | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 이하 | |
 | `AdMixerMediationAppLovin` | AppLovinSDK | `13.3.1` 이상 &#126; `13.5.2` 이하 | |
+| `AdMixerMediationTeads` | TeadsSDK | `6.0` 이상 &#126; `7.0` 미만 | |
 
 > 기존 적용 중인 네트워크사 버전이 있는 경우, 매체 버전과 nap mx 버전 중 더 낮은 버전으로 탑재됩니다.
 > 별도로 사용 중이신 네트워크 버전이 없으신 경우, 범위 내에서 가장 최신 버전으로 탑재됩니다.
