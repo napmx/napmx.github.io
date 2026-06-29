@@ -90,8 +90,6 @@ Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 �
 | `GoogleMobileAdsMediationInMobi` | InMobi |
 | `GoogleMobileAdsMediationMoloco` | Moloco |
 
-> 버전 고정이 필요한 경우: Pangle `v7.9.600`, AppLovin `v13.5.100`
-
 **SPM** — 각 광고 소스 의 어댑터를 개별 package dependency로 추가
 
 <p>1단계: Xcode에서 <strong>File &gt; Add Package Dependencies</strong>로 이동합니다.</p>
@@ -102,17 +100,16 @@ Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 �
 
 <p>4단계: 앱 타겟(App target)에 추가합니다.</p>
 
-| GitHub Repository URL | 네트워크 |
-|-----|---------|
-| `https://github.com/googleads/googleads-mobile-ios-mediation-pangle` | Pangle |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-meta` | Meta |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-applovin` | AppLovin |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-unity` | Unity Ads |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-liftoffmonetize` | Liftoff Monetize |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-mintegral` | Mintegral |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-dtexchange` | DT Exchange |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-inmobi` | InMobi |
-| `https://github.com/googleads/googleads-mobile-ios-mediation-moloco` | Moloco |
+| GitHub Repository URL | 네트워크 | 비고 |
+|-----------------------|----------|------|
+| `https://github.com/googleads/googleads-mobile-ios-mediation-pangle` | Pangle | nap mx 미디에이션으로 Pangle 사용하는 경우, v7.9.600 버전 고정|
+| `https://github.com/googleads/googleads-mobile-ios-mediation-meta` | Meta | |
+| `https://github.com/googleads/googleads-mobile-ios-mediation-applovin` | AppLovin | nap mx 미디에이션으로 AppLovin 사용하는 경우, v13.5.100 버전 고정 |
+| `https://github.com/googleads/googleads-mobile-ios-mediation-liftoffmonetize` | Liftoff Monetize | |
+| `https://github.com/googleads/googleads-mobile-ios-mediation-mintegral` | Mintegral | |
+| `https://github.com/googleads/googleads-mobile-ios-mediation-dtexchange` | DT Exchange | |
+| `https://github.com/googleads/googleads-mobile-ios-mediation-inmobi` | InMobi | |
+| `https://github.com/googleads/googleads-mobile-ios-mediation-moloco` | Moloco | |
 
 ### 1-4. 타 네트워크 SDK 버전 정보
 
