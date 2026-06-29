@@ -93,10 +93,10 @@ Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 �
 > 버전 고정이 필요한 경우: Pangle `v7.9.600`, AppLovin `v13.5.100`
 
 **SPM** — 각 광고 소스 의 어댑터를 개별 package dependency로 추가
-1단계: Xcode에서 **[File] > [Add Package Dependencies]**로 이동합니다.
-2단계: 연동하고자 하는 광고 네트워크의 특정 GitHub Repository URL을 입력합니다.
-3단계: 중요한 업데이트 및 버그 수정을 지속적으로 수신하실 수 있도록,Dependency Rule을 'Up to Next Major Version'(권장)으로 설정해 주시기 바랍니다.
-4단계: 앱 타겟(App target)에 추가합니다.
+1단계: Xcode에서 **[File] > [Add Package Dependencies]**로 이동합니다. <br>
+2단계: 연동하고자 하는 광고 네트워크의 특정 GitHub Repository URL을 입력합니다. <br>
+3단계: 중요한 업데이트 및 버그 수정을 지속적으로 수신하실 수 있도록,Dependency Rule을 'Up to Next Major Version'(권장)으로 설정해 주시기 바랍니다. <br>
+4단계: 앱 타겟(App target)에 추가합니다. <br>
 
 | GitHub Repository URL | 네트워크 |
 |-----|---------|
