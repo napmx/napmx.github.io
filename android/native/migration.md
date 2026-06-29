@@ -274,6 +274,8 @@ new AdInfo.Builder(ADUNIT_ID)
 | `EARNEDREWARD` | `onAdRewarded()` | 보상 적립 |
 | - | `onAdShowFailed(adView, adapterName, errorCode, errorMsg)` | 광고 노출(show) 실패 (신규 추가) |
 
+> ℹ️ 좌측 `AdEvent` 상수명은 **v1.x 기준**입니다. v2.0.0에서 `AdEvent`는 **SDK 내부 전용**으로 전환되었고, 내부적으로 `COMPLETION`은 `COMPLETE`로 리네임되었습니다. 앱 코드는 더 이상 `AdEvent`를 직접 참조하지 않으므로(이름 있는 메서드만 override) 이 리네임은 연동에 영향을 주지 않습니다.
+
 ```java
 // Before (v1.x) — onEventAd 제거됨, 컴파일 오류
 adView.setAdViewListener(new AdListener() {

@@ -253,6 +253,8 @@ public abstract class AdListener {
 | `SKIPPED` | `onAdSkipped()` | Skip 버튼 클릭 | 동영상, 리워드 |
 | `EARNEDREWARD` | `onAdRewarded()` | 리워드 획득 (동영상 시청 완료) | 리워드 |
 
+> ℹ️ 좌측 `AdEvent` 상수명은 **구(v1.x) 기준**입니다. v2.0.0에서 `AdEvent`는 **SDK 내부 전용**으로 전환되었고, 내부적으로 `COMPLETION`은 `COMPLETE`로 리네임되었습니다. 앱은 `AdEvent`를 직접 참조하지 않고 위의 이름 있는 메서드만 override합니다.
+
 ---
 
 ## AdMixerLog (디버그 로그)
