@@ -119,6 +119,7 @@ window.NapMxBridgeCallback = {
     // 네이티브
     onNativeLoaded:     function(data) { /* 네이티브 광고 로드 성공 */ },
     onNativeFailed:     function(data) { /* 네이티브 광고 로드 실패 */ },
+    onNativeDisplayed:  function(data) { /* 네이티브 광고 표시됨 */ },
     onNativeClicked:    function(data) { /* 네이티브 광고 클릭 */ },
 
     // 전면 배너
@@ -139,6 +140,7 @@ window.NapMxBridgeCallback = {
     // 인라인 동영상
     onVideoLoaded:    function(data) { /* 로드 성공 */ },
     onVideoFailed:    function(data) { /* 로드 실패 */ },
+    onVideoDisplayed: function(data) { /* 표시됨 */ },
     onVideoCompleted: function(data) { /* 재생 완료 */ },
     onVideoClicked:   function(data) { /* 더보기 클릭 */ },
     onVideoSkipped:   function(data) { /* 스킵 */ },
@@ -363,6 +365,11 @@ public class NapMxAdBridgeHandler {
             sendCallback("onNativeFailed", adUnitId, adapterName, errorCode, errorMsg);
         }
         @Override
+        public void onAdDisplayed() {
+            String adUnitId = nativeAdView != null ? nativeAdView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onNativeDisplayed", adUnitId, "", 0, "");
+        }
+        @Override
         public void onAdClicked() {
             String adUnitId = nativeAdView != null ? nativeAdView.getAdInfo().getAdUnitId() : "";
             sendCallback("onNativeClicked", adUnitId, "", 0, "");
@@ -552,6 +559,11 @@ public class NapMxAdBridgeHandler {
         public void onFailedToReceiveAd(Object adView, String adapterName, int errorCode, String errorMsg) {
             String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
             sendCallback("onVideoFailed", adUnitId, adapterName, errorCode, errorMsg);
+        }
+        @Override
+        public void onAdDisplayed() {
+            String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
+            sendCallback("onVideoDisplayed", adUnitId, "", 0, "");
         }
         @Override
         public void onAdCompleted() {

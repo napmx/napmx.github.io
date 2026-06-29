@@ -157,6 +157,11 @@ public class NativeAdActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onAdDisplayed() {
+            // 광고 화면에 표시됨 (어댑터 렌더링 완료 시점)
+        }
+
+        @Override
         public void onAdClicked() {
             // 광고 클릭
         }
@@ -216,6 +221,7 @@ class NativeAdActivity : AppCompatActivity() {
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
                                           errorCode: Int, errorMsg: String?) { }
+        override fun onAdDisplayed() { /* 광고 표시됨 */ }
         override fun onAdClicked() { /* 클릭 처리 */ }
     }
 

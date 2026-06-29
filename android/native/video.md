@@ -82,6 +82,11 @@ public class VideoAdActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onAdDisplayed() {
+            // 광고 화면에 표시됨
+        }
+
+        @Override
         public void onAdCompleted() {
             // 동영상 재생 완료
             tvComplete.setVisibility(View.VISIBLE);
@@ -144,6 +149,7 @@ class VideoAdActivity : AppCompatActivity() {
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
                                           errorCode: Int, errorMsg: String?) { }
+        override fun onAdDisplayed() { /* 광고 표시됨 */ }
         override fun onAdCompleted() { tvComplete.visibility = View.VISIBLE }
         override fun onAdSkipped() { /* Skip됨 */ }
     }
