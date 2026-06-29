@@ -94,10 +94,13 @@ Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 �
 
 **SPM** — 각 광고 소스 의 어댑터를 개별 package dependency로 추가
 
-1. Xcode에서 **File > Add Package Dependencies**로 이동합니다.
-2. 연동하고자 하는 광고 네트워크의 GitHub Repository URL을 입력합니다.
-3. 중요 업데이트 및 버그 수정을 지속적으로 수신할 수 있도록 Dependency Rule을 **Up to Next Major Version**(권장)으로 설정합니다.
-4. 앱 타겟(App target)에 추가합니다.
+<p>1단계: Xcode에서 <strong>File &gt; Add Package Dependencies</strong>로 이동합니다.</p>
+
+<p>2단계: 연동하고자 하는 광고 네트워크의 GitHub Repository URL을 입력합니다.</p>
+
+<p>3단계: 중요 업데이트 및 버그 수정을 지속적으로 수신할 수 있도록 Dependency Rule을 <strong>Up to Next Major Version</strong>(권장)으로 설정합니다.</p>
+
+<p>4단계: 앱 타겟(App target)에 추가합니다.</p>
 
 | GitHub Repository URL | 네트워크 |
 |-----|---------|
