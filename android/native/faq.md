@@ -191,10 +191,10 @@ Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플
 
 ---
 
-**Q. EARNEDREWARD와 COMPLETION의 차이는? Skip하면 리워드가 지급되나요?**
+**Q. EARNEDREWARD와 COMPLETE의 차이는? Skip하면 리워드가 지급되나요?**
 
 - `onAdRewarded()`(EARNEDREWARD): 리워드 지급 조건 충족(시청 완료). **리워드 지급은 이 시점**에서 처리하세요. (정적 `loadAd` 방식은 `OnUserEarnedRewardListener.onUserEarnedReward()`)
-- `onAdCompleted()`(COMPLETION): 동영상 재생이 끝까지 완료. 네트워크에 따라 EARNEDREWARD와 동시 또는 별도로 발생
+- `onAdCompleted()`(COMPLETE): 동영상 재생이 끝까지 완료. 네트워크에 따라 EARNEDREWARD와 동시 또는 별도로 발생
 - `onAdSkipped()`(SKIPPED): **리워드 미지급** 상황. 리워드는 반드시 EARNEDREWARD에서만 지급하세요.
 
 ---
