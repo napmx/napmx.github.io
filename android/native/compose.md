@@ -173,6 +173,30 @@ fun VideoScreen() {
 
 ---
 
+## 콜백 매트릭스
+
+`admixer-compose`의 모든 헬퍼는 **단일 `AdListener`** 로 이벤트를 전달합니다. View API에서 전면류가 쓰던 `FullScreenContentCallback` 대신, Compose에서는 배너·네이티브·전면·전면비디오·리워드가 모두 `AdListener` 한 인터페이스로 통일됩니다. (헬퍼가 `destroyed` 가드로 dispose 이후 도착하는 콜백은 자동 무시)
+
+포맷별로 실제 발화하는 콜백은 다음과 같습니다.
+
+| `AdListener` 콜백 | 배너 | 네이티브 | 전면 | 전면비디오 | 리워드 |
+|---|:---:|:---:|:---:|:---:|:---:|
+| `onReceivedAd` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `onFailedToReceiveAd` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `onAdShowFailed` | – | – | ✅ | ✅ | ✅ |
+| `onAdDisplayed` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `onAdClicked` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `onAdClosed` | – | – | ✅ | ✅ | ✅ |
+| `onAdCompleted` | – | – | – | ✅ | ✅ |
+| `onAdSkipped` | – | – | – | ✅ | ✅ |
+| `onAdRewarded` | – | – | – | – | ✅ |
+
+- `–` 는 해당 포맷에서 발생하지 않는 이벤트입니다(예: 배너/네이티브는 닫힘·재생완료·스킵 이벤트 없음).
+- `onAdShowFailed` 는 **로드 성공 후 표시(show) 단계 실패**로, 인라인(배너/네이티브)에는 해당되지 않습니다.
+- 배너/네이티브는 `listener` 파라미터로, 전면류는 `rememberInterstitialAd`/`rememberVideoInterstitialAd`/`rememberRewardVideoAd`의 `listener` 인자로 위 콜백을 받습니다. 보상 적립은 `onAdRewarded`로 통지됩니다.
+
+---
+
 ## 헬퍼 없이 직접 호스팅하는 경우
 
 `admixer-compose`를 쓰지 않고 직접 연동한다면, **아래 두 가지를 반드시** 구현해야 합니다.

@@ -837,6 +837,69 @@ NapMxBridge.requestVideoInterstitial({
 
 ---
 
+## JS 콜백 ↔ 네이티브 소스 매핑
+
+각 JS 콜백(`window.NapMxBridgeCallback.*`)이 네이티브의 어떤 리스너 메서드에서 발사되는지 정리한 표입니다. 인라인 포맷(배너·네이티브·인라인동영상)은 `AdListener`, 전면 포맷(전면·리워드·전면동영상)은 **로드 콜백 + `FullScreenContentCallback`**(리워드는 추가로 `OnUserEarnedRewardListener`)에서 매핑됩니다.
+
+### 배너 — `AdListener`
+| JS 콜백 | 네이티브 소스 |
+|---|---|
+| `onBannerLoaded` | `onReceivedAd` |
+| `onBannerFailed` | `onFailedToReceiveAd` |
+| `onBannerDisplayed` | `onAdDisplayed` |
+| `onBannerClicked` | `onAdClicked` |
+
+### 네이티브 — `AdListener`
+| JS 콜백 | 네이티브 소스 |
+|---|---|
+| `onNativeLoaded` | `onReceivedAd` |
+| `onNativeFailed` | `onFailedToReceiveAd` |
+| `onNativeDisplayed` | `onAdDisplayed` |
+| `onNativeClicked` | `onAdClicked` |
+
+### 인라인 동영상 — `AdListener`
+| JS 콜백 | 네이티브 소스 |
+|---|---|
+| `onVideoLoaded` | `onReceivedAd` |
+| `onVideoFailed` | `onFailedToReceiveAd` |
+| `onVideoDisplayed` | `onAdDisplayed` |
+| `onVideoCompleted` | `onAdCompleted` |
+| `onVideoSkipped` | `onAdSkipped` |
+| `onVideoClicked` | `onAdClicked` |
+
+### 전면 — `AMMInterstitialLoadCallback` + `FullScreenContentCallback`
+| JS 콜백 | 네이티브 소스 |
+|---|---|
+| `onInterstitialLoaded` | `AMMInterstitialLoadCallback.onSuccessLoadInterstitial` |
+| `onInterstitialFailed` | `onFailLoadInterstitial` / `FullScreenContentCallback.onAdFailedToShowFullScreenContent` |
+| `onInterstitialShowed` | `onAdShowedFullScreenContent` |
+| `onInterstitialClicked` | `onAdClicked` |
+| `onInterstitialDismissed` | `onAdDismissedFullScreenContent` |
+
+### 리워드 동영상 — `AMMRewardVideoLoadCallback` + `FullScreenContentCallback` + `OnUserEarnedRewardListener`
+| JS 콜백 | 네이티브 소스 |
+|---|---|
+| `onRewardVideoLoaded` | `AMMRewardVideoLoadCallback.onSuccessLoadReward` |
+| `onRewardVideoFailed` | `onFailLoadReward` / `onAdFailedToShowFullScreenContent` |
+| `onRewardVideoShowed` | `onAdShowedFullScreenContent` |
+| `onRewardVideoCompleted` | `onAdCompleted` |
+| `onRewardVideoDismissed` | `onAdDismissedFullScreenContent` |
+| `onRewardEarned` | `OnUserEarnedRewardListener.onUserEarnedReward` (`show(activity, …)`) |
+
+### 전면 동영상 — `AMMVideoInterstitialLoadCallback` + `FullScreenContentCallback`
+| JS 콜백 | 네이티브 소스 |
+|---|---|
+| `onVideoInterstitialLoaded` | `AMMVideoInterstitialLoadCallback.onSuccessLoadVideoInterstitial` |
+| `onVideoInterstitialFailed` | `onFailLoadVideoInterstitial` / `onAdFailedToShowFullScreenContent` |
+| `onVideoInterstitialShowed` | `onAdShowedFullScreenContent` |
+| `onVideoInterstitialClicked` | `onAdClicked` |
+| `onVideoInterstitialCompleted` | `onAdCompleted` |
+| `onVideoInterstitialDismissed` | `onAdDismissedFullScreenContent` |
+
+> ℹ️ 전면류의 `*Failed` JS 콜백은 **로드 실패**(load 콜백)와 **표시 실패**(`onAdFailedToShowFullScreenContent`) 양쪽에서 발사됩니다. 필요 시 `errorCode`로 구분하세요.
+
+---
+
 ## 주의사항
 
 ### Lifecycle 관리
