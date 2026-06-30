@@ -262,6 +262,69 @@ class NativeAdActivity : AppCompatActivity() {
 
 ---
 
+## 방법 2: 지연 노출 (원하는 시점에 표시)
+
+광고를 미리 로드한 후 특정 이벤트(예: 콘텐츠 진입, 버튼 클릭) 시점에 표시하는 방식입니다.
+
+| 방식 | 설명 |
+|------|------|
+| 즉시 노출 | `onReceivedAd` 콜백 시점에 바로 `addView()` 호출 |
+| 지연 노출 | `loadAd()`로 미리 로드 후, 원하는 시점에 `addView()` |
+
+#### Java
+```java
+// 1. 광고 미리 로드 (아직 레이아웃에 추가하지 않음)
+nativeAdView = new AMMNativeAdView(this);
+nativeAdView.setAdInfo(adInfo);
+nativeAdView.setViewBinder(viewBinder);
+nativeAdView.setAdViewListener(new AdListener() {
+    @Override
+    public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+        // 수신 완료 — hasAd = true
+        // 아직 레이아웃에 추가하지 않았으므로 표시되지 않음
+    }
+});
+nativeAdView.loadAd();
+
+// 2. 원하는 시점에 화면에 추가 → 자동 노출
+showAdButton.setOnClickListener(v -> {
+    if (nativeAdView.hasAd) {
+        container.removeAllViews();
+        container.addView(nativeAdView);
+    }
+});
+```
+
+#### Kotlin
+```kotlin
+nativeAdView = AMMNativeAdView(this).apply {
+    setAdInfo(adInfo)
+    setViewBinder(viewBinder)
+    setAdViewListener(object : AdListener() {
+        override fun onReceivedAd(adapterName: String, adView: Any) { }
+    })
+    loadAd()
+}
+
+showAdButton.setOnClickListener {
+    if (nativeAdView?.hasAd == true) {
+        container.removeAllViews()
+        container.addView(nativeAdView)
+    }
+}
+```
+
+> ⚠️ **지연 노출 유의사항**
+> - 광고 수신 후 너무 오랜 시간이 지나면 정상 노출되지 않을 수 있습니다.
+> - `loadAd()`만 호출하고 `addView()`를 하지 않으면 광고가 표시되지 않습니다.
+> - `addView()` 부착 시점에 자동 노출됩니다 (`showAd()` 호출 불필요).
+
+> ℹ️ **자동 갱신(롤링)** — `addView()` 부착 이후부터 갱신 타이머가 동작합니다. 부착 전(프리로드 보유 구간)에는 갱신이 발생하지 않습니다.
+
+> ℹ️ **AdListener 보유** — 내부적으로 WeakReference로 보유되므로 멤버 변수로 선언 권장합니다.
+
+---
+
 ## NativeAdViewBinder 옵션
 
 `NativeAdViewBinder.Builder`에서 설정 가능한 메서드입니다.
