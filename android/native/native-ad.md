@@ -133,6 +133,144 @@
 
 ## 코드 구현
 
+가장 기본적인 방식으로, 광고 수신에 성공하면 바로 화면에 붙여 표시합니다. 연동은 아래 4단계로 이루어집니다.
+
+| 단계 | 하는 일 |
+|------|---------|
+| Step 1 | `NativeAdViewBinder`로 레이아웃 ↔ asset View 매핑 |
+| Step 2 | `AMMNativeAdView` 생성 후 `loadAd()`로 로드 |
+| Step 3 | `AdListener`로 수신 콜백을 받아 화면에 부착 |
+| Step 4 | Activity 라이프사이클에 연결 |
+
+### Step 1. NativeAdViewBinder — 레이아웃 바인딩
+
+레이아웃 XML의 View ID와 광고 asset을 연결합니다. 이 설정은 **모든 어댑터(AdMixer·AdManager·Adfit·Pangle·NaverAd)에 공통 적용**되므로 한 번만 만들면 됩니다.
+
+```java
+// Java
+NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+    .setIconImageId(R.id.nap_mx_iv_icon)
+    .setTitleId(R.id.nap_mx_tv_title)
+    .setAdvertiserId(R.id.nap_mx_tv_adv)
+    .setDescriptionId(R.id.nap_mx_tv_desc)
+    .setMainViewId(R.id.nap_mx_iv_main)
+    .setCtaId(R.id.nap_mx_btn_cta)
+    .setPrivacyViewId(R.id.nap_mx_privacy_container) // 선택: 미지정 시 우측 상단 자동 오버레이
+    .build();
+```
+```kotlin
+// Kotlin
+val viewBinder = NativeAdViewBinder.Builder(R.layout.item_native_ad)
+    .setIconImageId(R.id.nap_mx_iv_icon)
+    .setTitleId(R.id.nap_mx_tv_title)
+    .setAdvertiserId(R.id.nap_mx_tv_adv)
+    .setDescriptionId(R.id.nap_mx_tv_desc)
+    .setMainViewId(R.id.nap_mx_iv_main)
+    .setCtaId(R.id.nap_mx_btn_cta)
+    .setPrivacyViewId(R.id.nap_mx_privacy_container) // 선택: 미지정 시 우측 상단 자동 오버레이
+    .build()
+```
+> ℹ️ 생성자에 넘기는 `R.layout.item_native_ad`가 [위에서 작성한 레이아웃](#레이아웃-xml-작성)입니다. 각 `setXxxId()`는 해당 asset을 표시할 View ID를 지정하며, 필요한 asset만 골라 설정하면 됩니다.
+
+### Step 2. AMMNativeAdView 생성 및 로드
+
+`AdInfo`(광고 단위 ID)를 담아 `AMMNativeAdView`를 만들고 `loadAd()`로 요청합니다.
+
+```java
+// Java
+AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build();
+
+nativeAdView = new AMMNativeAdView(this); // ⚠️ Activity Context 사용 (Adfit 필수)
+nativeAdView.setAdInfo(adInfo);
+nativeAdView.setViewBinder(viewBinder);   // ✅ 필수 — 없으면 렌더링되지 않음
+nativeAdView.setAdViewListener(adListener); // Step 3에서 정의
+nativeAdView.loadAd();
+```
+```kotlin
+// Kotlin
+val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build()
+
+nativeAdView = AMMNativeAdView(this).apply { // ⚠️ Activity Context 사용 (Adfit 필수)
+    setAdInfo(adInfo)
+    setViewBinder(viewBinder)   // ✅ 필수 — 없으면 렌더링되지 않음
+    setAdViewListener(adListener) // Step 3에서 정의
+    loadAd()
+}
+```
+> ⚠️ `getApplicationContext()`가 아닌 **Activity Context**로 생성해야 합니다(Adfit 미지원). `setViewBinder()`는 **필수**이며, 빠뜨리면 광고가 그려지지 않습니다.
+
+### Step 3. AdListener — 수신 콜백에서 화면에 부착
+
+로드 결과를 콜백으로 받습니다. 수신에 성공(`onReceivedAd`)하면 컨테이너에 `addView()`로 붙이며, **부착 시점에 자동 렌더링**되므로 별도의 `showAd()` 호출은 필요 없습니다.
+
+```java
+// Java
+private final AdListener adListener = new AdListener() {
+    @Override
+    public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+        // 수신 성공 → 화면에 부착 (부착 시점에 자동 렌더링)
+        if (nativeAdView != null && nativeAdView.hasAd) {
+            container.removeAllViews();
+            container.addView(nativeAdView);
+        }
+    }
+    @Override
+    public void onFailedToReceiveAd(@Nullable Object adView,
+            @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
+        // 수신 실패 (errorCode/errorMsg로 원인 확인)
+    }
+    @Override
+    public void onAdDisplayed() { /* 렌더링 완료 — 화면에 표시됨 */ }
+    @Override
+    public void onAdClicked()   { /* 광고 클릭 */ }
+};
+```
+```kotlin
+// Kotlin
+private val adListener = object : AdListener() {
+    override fun onReceivedAd(adapterName: String, adView: Any) {
+        // 수신 성공 → 화면에 부착 (부착 시점에 자동 렌더링)
+        if (nativeAdView?.hasAd == true) {
+            container.removeAllViews()
+            container.addView(nativeAdView)
+        }
+    }
+    override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
+                                      errorCode: Int, errorMsg: String?) {
+        // 수신 실패 (errorCode/errorMsg로 원인 확인)
+    }
+    override fun onAdDisplayed() { /* 렌더링 완료 — 화면에 표시됨 */ }
+    override fun onAdClicked()   { /* 광고 클릭 */ }
+}
+```
+> ℹ️ `AdListener`는 내부적으로 WeakReference로 보유되므로, 익명 객체를 지역 변수가 아닌 **멤버 변수**로 선언하세요.
+
+### Step 4. 라이프사이클 연결
+
+Activity 생명주기에 맞춰 아래 메서드를 호출합니다. `onDestroy()`의 `stop()`은 리소스 누수 방지를 위해 **필수**입니다.
+
+```java
+// Java
+@Override protected void onResume()  { super.onResume(); if (nativeAdView != null) nativeAdView.onResume(); }
+@Override protected void onPause()   { if (nativeAdView != null) nativeAdView.onPause(); super.onPause(); }
+@Override protected void onDestroy() {
+    if (nativeAdView != null) { nativeAdView.stop(); nativeAdView = null; }
+    super.onDestroy();
+}
+```
+```kotlin
+// Kotlin
+override fun onResume()  { super.onResume(); nativeAdView?.onResume() }
+override fun onPause()   { nativeAdView?.onPause(); super.onPause() }
+override fun onDestroy() {
+    nativeAdView?.stop(); nativeAdView = null
+    super.onDestroy()
+}
+```
+
+<details>
+<summary>📋 전체 코드 (복사용) — Java / Kotlin</summary>
+
 #### Java
 ```java
 public class NativeAdActivity extends AppCompatActivity {
@@ -143,38 +281,24 @@ public class NativeAdActivity extends AppCompatActivity {
     private final AdListener adListener = new AdListener() {
         @Override
         public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-            // 광고 수신 성공 — 레이아웃에 추가하면 부착 시점에 자동 렌더링 (showAd 호출 불필요)
             if (nativeAdView != null && nativeAdView.hasAd) {
                 container.removeAllViews();
-                container.addView(nativeAdView); // addView 시점에 자동 렌더링
+                container.addView(nativeAdView); // 부착 시점에 자동 렌더링
             }
         }
-
         @Override
         public void onFailedToReceiveAd(@Nullable Object adView,
-                @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
-            // 광고 수신 실패
-        }
-
-        @Override
-        public void onAdDisplayed() {
-            // 광고 화면에 표시됨 (어댑터 렌더링 완료 시점)
-        }
-
-        @Override
-        public void onAdClicked() {
-            // 광고 클릭
-        }
+                @NonNull String adapterName, int errorCode, @Nullable String errorMsg) { }
+        @Override public void onAdDisplayed() { }
+        @Override public void onAdClicked() { }
     };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_native);
-
         container = findViewById(R.id.container_native);
 
-        // ① NativeAdViewBinder — 모든 어댑터가 공유하는 레이아웃 바인딩 설정
         NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
             .setIconImageId(R.id.nap_mx_iv_icon)
             .setTitleId(R.id.nap_mx_tv_title)
@@ -182,23 +306,21 @@ public class NativeAdActivity extends AppCompatActivity {
             .setDescriptionId(R.id.nap_mx_tv_desc)
             .setMainViewId(R.id.nap_mx_iv_main)
             .setCtaId(R.id.nap_mx_btn_cta)
-            .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
+            .setPrivacyViewId(R.id.nap_mx_privacy_container)
             .build();
 
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build();
 
-        // ② AMMNativeAdView 생성 및 로드
-        nativeAdView = new AMMNativeAdView(this); // Activity context 사용 (Adfit 필수)
+        nativeAdView = new AMMNativeAdView(this); // Activity Context (Adfit 필수)
         nativeAdView.setAdInfo(adInfo);
-        nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·NaverAd 전체 적용
+        nativeAdView.setViewBinder(viewBinder);   // 필수
         nativeAdView.setAdViewListener(adListener);
         nativeAdView.loadAd();
     }
 
-    @Override protected void onResume() { super.onResume(); if (nativeAdView != null) nativeAdView.onResume(); }
-    @Override protected void onPause() { if (nativeAdView != null) nativeAdView.onPause(); super.onPause(); }
-    @Override
-    protected void onDestroy() {
+    @Override protected void onResume()  { super.onResume(); if (nativeAdView != null) nativeAdView.onResume(); }
+    @Override protected void onPause()   { if (nativeAdView != null) nativeAdView.onPause(); super.onPause(); }
+    @Override protected void onDestroy() {
         if (nativeAdView != null) { nativeAdView.stop(); nativeAdView = null; }
         super.onDestroy();
     }
@@ -216,19 +338,18 @@ class NativeAdActivity : AppCompatActivity() {
         override fun onReceivedAd(adapterName: String, adView: Any) {
             if (nativeAdView?.hasAd == true) {
                 container.removeAllViews()
-                container.addView(nativeAdView) // addView 시점에 자동 렌더링 (showAd 호출 불필요)
+                container.addView(nativeAdView) // 부착 시점에 자동 렌더링
             }
         }
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
                                           errorCode: Int, errorMsg: String?) { }
-        override fun onAdDisplayed() { /* 광고 표시됨 */ }
-        override fun onAdClicked() { /* 클릭 처리 */ }
+        override fun onAdDisplayed() { }
+        override fun onAdClicked() { }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_native)
-
         container = findViewById(R.id.container_native)
 
         val viewBinder = NativeAdViewBinder.Builder(R.layout.item_native_ad)
@@ -238,21 +359,21 @@ class NativeAdActivity : AppCompatActivity() {
             .setDescriptionId(R.id.nap_mx_tv_desc)
             .setMainViewId(R.id.nap_mx_iv_main)
             .setCtaId(R.id.nap_mx_btn_cta)
-            .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
+            .setPrivacyViewId(R.id.nap_mx_privacy_container)
             .build()
 
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_NATIVE).build()
 
-        nativeAdView = AMMNativeAdView(this).apply {
+        nativeAdView = AMMNativeAdView(this).apply { // Activity Context (Adfit 필수)
             setAdInfo(adInfo)
-            setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·NaverAd 전체 적용
+            setViewBinder(viewBinder)   // 필수
             setAdViewListener(adListener)
             loadAd()
         }
     }
 
-    override fun onResume() { super.onResume(); nativeAdView?.onResume() }
-    override fun onPause() { nativeAdView?.onPause(); super.onPause() }
+    override fun onResume()  { super.onResume(); nativeAdView?.onResume() }
+    override fun onPause()   { nativeAdView?.onPause(); super.onPause() }
     override fun onDestroy() {
         nativeAdView?.stop(); nativeAdView = null
         super.onDestroy()
@@ -260,68 +381,48 @@ class NativeAdActivity : AppCompatActivity() {
 }
 ```
 
----
+</details>
 
-## 방법 2: 프리로드 후 노출 (원하는 시점에 표시)
+### 응용: 원하는 시점에 노출하기 (프리로드)
 
-광고를 미리 로드한 후 특정 이벤트(예: 콘텐츠 진입, 버튼 클릭) 시점에 표시하는 방식입니다.
+위 예제는 `onReceivedAd` 콜백에서 **즉시** `addView()`를 호출합니다. 광고를 미리 로드해 두고 특정 이벤트(콘텐츠 진입, 버튼 클릭 등) 시점에 표시하고 싶다면, **`addView()` 호출만 그 시점으로 옮기면 됩니다.** ViewBinder·`loadAd()` 등 나머지는 위와 동일합니다.
 
-| 방식 | 설명 |
-|------|------|
-| 즉시 노출 | `onReceivedAd` 콜백 시점에 바로 `addView()` 호출 |
-| 프리로드 후 노출 | `loadAd()`로 미리 로드 후, 원하는 시점에 `addView()` |
-
-#### Java
 ```java
-// 1. 광고 미리 로드 (아직 레이아웃에 추가하지 않음)
-nativeAdView = new AMMNativeAdView(this);
-nativeAdView.setAdInfo(adInfo);
-nativeAdView.setViewBinder(viewBinder);
-nativeAdView.setAdViewListener(new AdListener() {
+// Java — 콜백에서는 부착하지 않고, 원하는 시점에 부착
+adListener = new AdListener() {
     @Override
     public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
-        // 수신 완료 — hasAd = true
-        // 아직 레이아웃에 추가하지 않았으므로 표시되지 않음
+        // 수신 완료(hasAd = true)까지만. 아직 부착하지 않았으므로 표시되지 않음
     }
-});
-nativeAdView.loadAd();
+};
 
-// 2. 원하는 시점에 화면에 추가 → 자동 노출
 showAdButton.setOnClickListener(v -> {
     if (nativeAdView.hasAd) {
         container.removeAllViews();
-        container.addView(nativeAdView);
+        container.addView(nativeAdView); // 이 시점에 노출
     }
 });
 ```
-
-#### Kotlin
 ```kotlin
-nativeAdView = AMMNativeAdView(this).apply {
-    setAdInfo(adInfo)
-    setViewBinder(viewBinder)
-    setAdViewListener(object : AdListener() {
-        override fun onReceivedAd(adapterName: String, adView: Any) { }
-    })
-    loadAd()
+// Kotlin — 콜백에서는 부착하지 않고, 원하는 시점에 부착
+adListener = object : AdListener() {
+    override fun onReceivedAd(adapterName: String, adView: Any) {
+        // 수신 완료(hasAd = true)까지만. 아직 부착하지 않았으므로 표시되지 않음
+    }
 }
 
 showAdButton.setOnClickListener {
     if (nativeAdView?.hasAd == true) {
         container.removeAllViews()
-        container.addView(nativeAdView)
+        container.addView(nativeAdView) // 이 시점에 노출
     }
 }
 ```
 
-> ⚠️ **프리로드 후 노출 유의사항**
+> ⚠️ **프리로드 유의사항**
 > - 광고 수신 후 너무 오랜 시간이 지나면 정상 노출되지 않을 수 있습니다.
 > - `loadAd()`만 호출하고 `addView()`를 하지 않으면 광고가 표시되지 않습니다.
-> - `addView()` 부착 시점에 자동 노출됩니다 (`showAd()` 호출 불필요).
-
-> ℹ️ **자동 갱신(롤링)** — `addView()` 부착 이후부터 갱신 타이머가 동작합니다. 부착 전(프리로드 보유 구간)에는 갱신이 발생하지 않습니다.
-
-> ℹ️ **AdListener 보유** — 내부적으로 WeakReference로 보유되므로 멤버 변수로 선언 권장합니다.
+> - 부착 전(프리로드 보유 구간)에는 [자동 갱신](#주의사항)이 발생하지 않으며, `addView()` 부착 이후부터 갱신 타이머가 동작합니다.
 
 ---
 
