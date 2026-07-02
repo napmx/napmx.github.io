@@ -47,13 +47,13 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.0.0'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.0.1'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
     implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:25.2.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.0'           // Kakao Adfit (ads-base:3.21.17 포함)
+    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.1'           // Kakao Adfit (ads-base:3.21.17 포함)
     implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'          // Pangle (pag-sdk:8.0.0.5 포함)
     implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.6.3 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'           // Unity Ads (unity-ads:4.18.1 포함)
@@ -101,9 +101,9 @@ dependencyResolutionManagement {
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
-| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.0.0** | 2.0.0 | 자체 SDK |
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.0.1** | 2.0.1 | 자체 SDK — 네이티브 바인더 브릿지 (Breaking 1건) |
 | Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
-| Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
+| Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 — admixer-adfit 2.0.1 네이티브 비즈보드 지원 |
 | Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
 | AppLovin | `com.applovin:applovin-sdk` | 13.2.0 (권장 13.4.0+) | **13.6.3** | 13.6.3 | 12.x 이하 미지원 |
 | Unity Ads | `com.unity3d.ads:unity-ads` | 4.16.x (권장 4.18.0) | **4.18.1** | 4.18.1 | 4.x 라인 |
@@ -289,7 +289,7 @@ dependencies {
     }
 
     // 이미 Kakao Adfit SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.0") {
+    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.1") {
         exclude group: "com.kakao.adfit", module: "ads-base"
     }
 
