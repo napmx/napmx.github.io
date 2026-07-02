@@ -29,7 +29,6 @@
     - [전면 광고](/android/native/interstitial)
     - [동영상 광고](/android/native/video)
     - [리워드 동영상](/android/native/rewarded-video)
-    - [비즈보드](/android/native/bizboard)
     - [Jetpack Compose 연동](/android/native/compose)
     - [**WebBridge — 하이브리드 앱**](/android/native/webbridge)
     - [개인정보 / 테스트 설정](/android/native/privacy)
@@ -55,7 +54,6 @@
     - [네이티브 광고](/ios/native/native-ad)
     - [리워드 동영상](/ios/native/rewarded-video)
     - [동영상](/ios/native/video)
-    - [비즈보드](/ios/native/bizboard)
     - [**WebBridge — 하이브리드 앱**](/ios/native/webbridge)
     - [릴리즈 노트](/ios/native/changelog)
   - Unity
