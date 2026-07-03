@@ -2,6 +2,16 @@
 
 ---
 
+## v2.0.1 (2026-07-02)
+
+- `admixer-ssp` `2.0.1` — 코어 (네이티브 바인더 브릿지, Breaking 1건)
+- `admixer-adfit` `2.0.1` — 네이티브 비즈보드(BizBoard) 지원
+- `admixer-gma-nextgen` `2.0.0` — 첫 출시 (GMA NextGen 어댑터)
+- `admixer-bom` `2026.07.01` — 첫 출시 (POM-only BOM)
+- 나머지 어댑터(`admanager`/`applovin`/`unity`/`naveradmanager`/`pangle`/`teads`/`compose`/`unity-nativeadlayout`)는 `2.0.0`을 유지하며 코어 2.0.1과 호환됩니다.
+
+---
+
 ## v2.0.0 (2026-06-17)
 
 > v1 → v2 메이저 전환. 공개 광고 클래스가 iOS-AdMixer 정합의 `AMM*` 네이밍으로 통일되고,
