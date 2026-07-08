@@ -1,9 +1,5 @@
 # 릴리즈 노트
-## v2.3.7 (2026-07-02)
-- 어댑터 버전 업데이트
-   - AdMixerMediationNAM v1.1.1
 
----
 
 ## v2.3.7 (2026-06-22)
 
@@ -19,6 +15,9 @@
    - AdMixerMediationAppLovin v1.1.0
    - AdMixerMediationUnityAds v1.1.0
    - AdMixerMediationTeads v1.0.0 (신규)
+   - AdMixerMediationNAM v1.1.1 (2026-07-02)
+- 코어 버전 업데이트
+   - AdMixer v1.2.1 (2026-07-08)
 
 ---
 
