@@ -88,20 +88,13 @@
         android:maxLines="3"
         android:ellipsize="end" />
 
-    <!-- 메인 이미지 / 동영상 (NativeMainAdView 필수) -->
+    <!-- 메인 이미지 / 동영상 -->
     <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
         android:id="@+id/nap_mx_iv_main"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_below="@id/nap_mx_tv_desc"
         android:layout_marginTop="8dp">
-
-        <!-- 내부에 ImageView 배치 (메인 이미지용) -->
-        <ImageView
-            android:id="@+id/nap_mx_iv_main_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
 
     </com.nasmedia.admixerssp.common.nativeads.NativeMainAdView>
 
