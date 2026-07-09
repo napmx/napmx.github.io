@@ -1,4 +1,4 @@
-<img width="1121" height="817" alt="image" src="https://github.com/user-attachments/assets/e546830a-1d7b-4973-bd6e-ba3eff0c0eca" /># 수익금 지급 신청하기
+# 수익금 지급 신청하기
 
 파트너 사이트 메뉴: **수익금 > 수익금 신청**
 
