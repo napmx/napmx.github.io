@@ -335,6 +335,18 @@ class InterstitialVideoActivity : AppCompatActivity() {
 | `onAdDismissedFullScreenContent()` | 광고 창 닫힘 |
 | `onAdFailedToShowFullScreenContent(AdError)` | 노출 실패 |
 
+> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 전면 동영상 객체는 `setAdListener(AdListener)`도 지원하며, 이 경로로 등록하면 `onAdSkipped`·`onAdCompleted`·`onAdDisplayed`·`onAdClicked`·`onAdClosed`를 모두 받을 수 있습니다.
+> ```java
+> ad.setAdListener(new AdListener() {
+>     @Override public void onAdDisplayed() { /* 노출됨 */ }
+>     @Override public void onAdCompleted() { /* 재생 완료 */ }
+>     @Override public void onAdSkipped()   { /* 사용자가 Skip 클릭 */ }
+>     @Override public void onAdClicked()   { /* 클릭 */ }
+>     @Override public void onAdClosed()    { /* 닫힘 */ }
+> });
+> ```
+> `setFullScreenContentCallback`과 `setAdListener`는 **동일 슬롯을 공유하므로 둘 중 하나만** 등록하세요(GAM 스타일 네이밍이 필요하면 FSCC, 스킵이 필요하면 AdListener).
+
 ---
 
 ## 라이프사이클 관리

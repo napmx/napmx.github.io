@@ -44,6 +44,38 @@ allprojects {
 
 > ⚠️ 라이브러리 버전은 항상 **최신 버전**으로 유지하세요. 구버전 사용 시 광고 수신율이 저하되거나 보안 취약점이 발생할 수 있습니다.
 
+의존성은 아래 두 방식 중 하나를 선택합니다. **BOM(방법 A)을 권장**합니다 — 멤버 버전을 한 곳에서 고정해 버전 불일치·구버전 사용을 방지합니다.
+
+#### 방법 A — BOM 사용 (권장)
+
+`admixer-bom`을 import하면 각 멤버는 **버전을 생략**해도 BOM이 지정한 버전으로 자동 고정됩니다.
+
+```gradle
+dependencies {
+    // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.01')
+
+    // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
+    implementation 'io.github.nasmedia-tech:admixer-ssp'
+    // ✅ 필수 — Google Advertising ID
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+
+    // 선택 — 사용하는 미디에이션 네트워크만 추가 (버전 생략)
+    implementation 'io.github.nasmedia-tech:admixer-admanager'       // Google AdManager
+    implementation 'io.github.nasmedia-tech:admixer-adfit'           // Kakao Adfit
+    implementation 'io.github.nasmedia-tech:admixer-pangle'          // Pangle
+    implementation 'io.github.nasmedia-tech:admixer-applovin'        // AppLovin
+    implementation 'io.github.nasmedia-tech:admixer-unity'           // Unity Ads
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager'  // Naver Ad Manager
+    implementation 'io.github.nasmedia-tech:admixer-teads'           // Teads
+    implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout'  // Unity 네이티브 레이아웃 헬퍼
+}
+```
+
+#### 방법 B — 개별 버전 지정
+
+BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현재 배포된 최신 버전** 기준 — 이후 [Maven Central](https://central.sonatype.com/namespace/io.github.nasmedia-tech)에서 최신 버전을 확인해 갱신하세요.)
+
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
@@ -59,8 +91,6 @@ dependencies {
     implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'           // Unity Ads (unity-ads:4.18.1 포함)
     implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'           // Teads (teads-sdk:6.1.0 포함)
-
-    // 선택 — Unity 네이티브 광고용 기본 레이아웃 헬퍼 (직접 NativeAdViewBinder 레이아웃을 구성하면 불필요)
     implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (admixer-unity와 함께 사용)
 }
 ```

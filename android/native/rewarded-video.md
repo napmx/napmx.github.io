@@ -178,6 +178,16 @@ class RewardVideoActivity : AppCompatActivity() {
 
 > 보상 적립은 `FullScreenContentCallback`이 아니라 **`show(activity, OnUserEarnedRewardListener)`** 의 `onUserEarnedReward()`로 수신합니다.
 
+> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 리워드 광고 객체는 `setAdListener(AdListener)`도 지원하며, 이 경로로 등록하면 `onAdSkipped`·`onAdCompleted`·`onAdDisplayed`·`onAdClicked`·`onAdClosed`를 받습니다.
+> ```java
+> ad.setAdListener(new AdListener() {
+>     @Override public void onAdCompleted() { /* 재생 완료 (보상과 별개) */ }
+>     @Override public void onAdSkipped()   { /* 사용자가 Skip 클릭 (보상 미적립) */ }
+>     @Override public void onAdClosed()    { /* 닫힘 */ }
+> });
+> ```
+> `setFullScreenContentCallback`과 `setAdListener`는 **동일 슬롯을 공유하므로 둘 중 하나만** 등록하세요. 보상 적립(`onUserEarnedReward`)은 어느 경로를 쓰든 `show(activity, OnUserEarnedRewardListener)`로 별도 수신합니다.
+
 ---
 
 ## S2S Reward Callback (서버 간 리워드 검증)

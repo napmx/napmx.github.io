@@ -54,7 +54,6 @@
 - **AdManager 표준 배너 → anchored adaptive 전환** — iOS와 동일하게 표준 배너를 디바이스 너비 기반 anchored adaptive 배너로 요청(높이는 SDK가 산출). MREC(300x250)·320x480 고정 슬롯은 종전대로 유지. 호스트 앱 API 변경 없음(렌더 사이즈만 변동).
 - **AppLovin `13.5.0` → `13.6.3`**
 - **Naver NAM(nam-bom) `8.14.0` → `8.16.0`**
-- **Mobwith(mobwithSDK) `1.0.2` → `1.0.83`** — ⚠️ `settings.gradle`(또는 프로젝트 `build.gradle`) repositories에 `maven { url 'https://jitpack.io' }` 추가 필요(BlurView 전이 의존).
 
 ### 버그 수정 및 안정성
 
@@ -144,12 +143,6 @@
 ## v1.0.13 (2025-08-29)
 
 - 전면 옵션 기능 추가 및 고도화
-
----
-
-## v1.0.12 (2025-08-14)
-
-- Mobwith(`admixer-mobwith`) `1.0.3` 업데이트
 
 ---
 

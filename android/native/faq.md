@@ -312,7 +312,7 @@ ProGuard/R8 규칙 누락이 원인일 수 있습니다. AdMixer Core와 사용�
 
 **Q. 카카오 비즈보드를 연동하려면?**
 
-비즈보드는 별도 코드 발급이 필요합니다. 발급 및 심사는 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의하고, 연동 방법은 [비즈보드 가이드](bizboard.md)를 참고하세요.
+비즈보드는 별도 코드 발급이 필요합니다. 발급 및 심사, 연동 방법은 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의하세요.
 
 ---
 

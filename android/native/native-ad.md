@@ -16,7 +16,7 @@
 | 아이콘 | `nap_mx_iv_icon` | 광고주 아이콘 이미지 (ImageView) | 선택 |
 | 광고주 | `nap_mx_tv_adv` | 광고주명 (TextView) | 선택 |
 | 설명 | `nap_mx_tv_desc` | 광고 설명 텍스트 (TextView) | 선택 |
-| 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 (NativeMainAdView) | AdMixer 단독: 1개 이상 필수 |
+| 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 슬롯 (빈 `FrameLayout` 등 ViewGroup 컨테이너) | AdMixer 단독: 1개 이상 필수 |
 | CTA 버튼 | `nap_mx_btn_cta` | 행동 유도 버튼 (Button) | 선택 |
 | 광고 정보 고지 | `nap_mx_privacy_container` | 정보 고지 / AdChoices (View/ViewGroup/ImageView) | 선택 (미지정 시 우측 상단 자동 오버레이) |
 
@@ -88,15 +88,14 @@
         android:maxLines="3"
         android:ellipsize="end" />
 
-    <!-- 메인 이미지 / 동영상 -->
-    <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
+    <!-- 메인 이미지 / 동영상 슬롯 -->
+    <!-- 빈 FrameLayout 등 ViewGroup 컨테이너면 됩니다. 내부에 자식 뷰를 넣지 마세요(SDK가 채웁니다). -->
+    <FrameLayout
         android:id="@+id/nap_mx_iv_main"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_below="@id/nap_mx_tv_desc"
-        android:layout_marginTop="8dp">
-
-    </com.nasmedia.admixerssp.common.nativeads.NativeMainAdView>
+        android:layout_marginTop="8dp" />
 
     <!-- CTA(행동 유도) 버튼 -->
     <Button
@@ -430,7 +429,7 @@ showAdButton.setOnClickListener {
 | `setTitleId(int viewId)` | 제목 TextView ID |
 | `setAdvertiserId(int viewId)` | 광고주명 TextView ID |
 | `setDescriptionId(int viewId)` | 설명 TextView ID |
-| `setMainViewId(int viewId)` | 메인 이미지/동영상 NativeMainAdView ID |
+| `setMainViewId(int viewId)` | 메인 이미지/동영상 슬롯(컨테이너 ViewGroup) View ID |
 | `setCtaId(int viewId)` | CTA 버튼 View ID |
 | `setPrivacyViewId(int viewId)` | 광고 정보 고지 (AdChoices) 컨테이너 / 뷰 ID |
 

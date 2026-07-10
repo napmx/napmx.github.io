@@ -70,13 +70,10 @@ implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.0'
 implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'
 implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'
 implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-mobwith:2.0.0'
 // 신규 — v2.0.0에서 추가됨
 implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'
 implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'
 ```
-
-**Mobwith 내장 SDK 버전 변경**: `1.0.2` → `1.0.68`
 
 ---
 
@@ -94,7 +91,6 @@ v2.0.0에서 ProGuard 규칙이 강화되었습니다. `proguard-rules.pro`의 �
 -keep class com.nasmedia.pangle.** { *; }
 -keep class com.nasmedia.applovin.** { *; }
 -keep class com.nasmedia.unity.** { *; }
--keep class com.nasmedia.mobwith.** { *; }
 -keep class com.nasmedia.naveradmanager.** { *; }   # 신규
 -keep class com.nasmedia.teads.** { *; }            # 신규
 ```
@@ -361,14 +357,14 @@ new NativeAdViewBinder.Builder(R.layout.item_native_ad)
 
 ### setViewIds 제거 (v2.0.0 Breaking Change)
 
-v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. AdMixer·AdManager·Adfit·Pangle·Mobwith·NaverAd 모든 어댑터가 `NativeAdViewBinder`를 직접 읽으므로, `setViewIds()` 호출을 제거하고 위의 `NativeAdViewBinder` 설정만으로 동작합니다.
+v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. AdMixer·AdManager·Adfit·Pangle·NaverAd 모든 어댑터가 `NativeAdViewBinder`를 직접 읽으므로, `setViewIds()` 호출을 제거하고 위의 `NativeAdViewBinder` 설정만으로 동작합니다.
 
 ```java
 // Before (v1.x) — 제거하세요
 Map<String, Integer> ids = new HashMap<>();
 ids.put("iv_image", R.id.my_image_view);
 new AdInfo.Builder(ADUNIT_ID)
-    .setViewIds(AdMixer.ADAPTER_MOBWITH, ids)
+    .setViewIds(AdMixer.ADAPTER_ADFIT, ids)
     .build();
 
 // After (v2.0.0) — NativeAdViewBinder 설정만으로 충분
