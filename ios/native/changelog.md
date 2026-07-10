@@ -16,6 +16,7 @@
    - AdMixerMediationUnityAds v1.1.0
    - AdMixerMediationTeads v1.0.0 (신규)
    - AdMixerMediationNAM v1.1.1 (2026-07-02)
+   - AdMixerMediationNAM v1.2.0 (2026-07-10)
 - 코어 버전 업데이트
    - AdMixer v1.2.1 (2026-07-08)
 
