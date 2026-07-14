@@ -12,7 +12,7 @@
 
 ### 광고 요청 및 노출
 
-`AMMVideoView.load()`로 동영상 광고를 요청합니다. 로드가 완료되면 completion으로 동영상 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
+`AMMVideoView.loadAd()`로 동영상 광고를 요청합니다. 로드가 완료되면 completion으로 동영상 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
@@ -25,7 +25,7 @@ class VideoAdViewController: UIViewController {
         super.viewDidLoad()
 
         // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
-        AMMVideoView.load(adUnitID: ADUNIT_ID, rootViewController: self) { [weak self] video, adapterName, error in
+        AMMVideoView.loadAd(adUnitID: ADUNIT_ID, rootViewController: self) { [weak self] video, adapterType, error in
             guard let self = self else { return }
 
             if let error = error {
@@ -81,7 +81,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onSkipVideo` | 동영상 광고 내 skip 버튼 클릭 |
 | `onCompleteVideo` | 동영상 광고 재생 완료 |
 
-> 광고 로드 성공/실패는 `load()`의 completion(`video`, `error`)으로 전달됩니다.
+> 광고 로드 성공/실패는 `loadAd()`의 completion(`video`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
 
 ```swift
 extension VideoAdViewController: AMMVideoViewDelegate {
@@ -127,7 +127,7 @@ class VideoInterstitialViewController: UIViewController {
 
 ### 광고 요청
 
-`load()`를 사용하여 전면 동영상 광고를 로드합니다.
+`loadAd()`를 사용하여 전면 동영상 광고를 로드합니다.
 
 ```swift
 class VideoInterstitialViewController: UIViewController {
@@ -138,7 +138,7 @@ class VideoInterstitialViewController: UIViewController {
         super.viewDidLoad()
 
         // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
-        AMMVideoInterstitial.load(adUnitID: ADUNIT_ID) { [weak self] videoInterstitial, adapterName, error in
+        AMMVideoInterstitial.loadAd(adUnitID: ADUNIT_ID) { [weak self] videoInterstitial, adapterType, error in
             guard let self = self else { return }
 
             if let error = error {

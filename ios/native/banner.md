@@ -10,7 +10,7 @@
 
 ### 광고 요청 및 노출
 
-`AMMBannerView.load()`로 배너 광고를 요청합니다. 로드가 완료되면 completion으로 배너 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
+`AMMBannerView.loadAd()`로 배너 광고를 요청합니다. 로드가 완료되면 completion으로 배너 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
@@ -23,7 +23,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
-        AMMBannerView.load(adUnitID: ADUNIT_ID, rootViewController: self) { [weak self] banner, adapterName, error in
+        AMMBannerView.loadAd(adUnitID: ADUNIT_ID, rootViewController: self) { [weak self] banner, adapterType, error in
             guard let self = self else { return }
 
             if let error = error {
@@ -76,7 +76,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onSuccessShowBanner` | 배너 광고 노출 성공 |
 | `onClickBanner` | 배너 광고 클릭 |
 
-> 광고 로드 성공/실패는 `load()`의 completion(`banner`, `error`)으로 전달됩니다.
+> 광고 로드 성공/실패는 `loadAd()`의 completion(`banner`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
 
 ```swift
 extension ViewController: AMMBannerViewDelegate {
@@ -132,11 +132,11 @@ class InterstitialViewController: UIViewController {
 
 ### 광고 요청
 
-`load()`를 사용하여 전면 배너 광고를 로드합니다.
+`loadAd()`를 사용하여 전면 배너 광고를 로드합니다.
 
 ```swift
 // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
-AMMInterstitial.load(adUnitID: ADUNIT_ID, config: config) { [weak self] interstitial, adapterName, error in
+AMMInterstitial.loadAd(adUnitID: ADUNIT_ID, config: config) { [weak self] interstitial, adapterType, error in
     guard let self = self else { return }
 
     if let error = error {

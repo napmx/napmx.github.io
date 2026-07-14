@@ -1,6 +1,16 @@
 # 릴리즈 노트
 
 
+## v2.4.0 (2026-07-14)
+
+- 광고 로드 API 개선 (`loadAd`)
+- 안정성 개선
+- 어댑터 버전 업데이트
+   - AdMixerMediationGAM v1.2.0
+   - AdMixerMediationNAM v1.3.0
+
+---
+
 ## v2.3.7 (2026-06-22)
 
 - 뷰형 광고(배너/네이티브/비디오) load API 추가

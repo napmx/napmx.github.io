@@ -43,7 +43,7 @@
 
 **Step 2. 광고 요청 및 노출**
 
-`AMMNativeAdView.xib`를 로드해 `nativeAdView`를 만들고, `AMMNativeAdViewContainer.load()`에 전달합니다. 로드가 완료되면 completion으로 전달받은 컨테이너를 `addSubview`하면 노출됩니다.
+`AMMNativeAdView.xib`를 로드해 `nativeAdView`를 만들고, `AMMNativeAdViewContainer.loadAd()`에 전달합니다. 로드가 완료되면 completion으로 전달받은 컨테이너를 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
@@ -59,7 +59,7 @@ class NativeAdViewController: UIViewController {
         guard let nativeAdView = nibView as? AMMNativeAdView else { return }
 
         // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
-        AMMNativeAdViewContainer.load(adUnitID: ADUNIT_ID, rootViewController: self, nativeAdView: nativeAdView) { [weak self] container, adapterName, error in
+        AMMNativeAdViewContainer.loadAd(adUnitID: ADUNIT_ID, rootViewController: self, nativeAdView: nativeAdView) { [weak self] container, adapterType, error in
             guard let self = self else { return }
 
             if let error = error {
@@ -105,7 +105,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onSuccessShowNative()` | 네이티브 광고 노출 성공 |
 | `onClickNative()` | 네이티브 광고 클릭 |
 
-> 광고 로드 성공/실패는 `load()`의 completion(`container`, `error`)으로 전달됩니다.
+> 광고 로드 성공/실패는 `loadAd()`의 completion(`container`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
 
 ```swift
 extension NativeAdViewController: AMMNativeDelegate {

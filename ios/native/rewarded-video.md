@@ -23,7 +23,7 @@ class RewardedAdViewController: UIViewController {
 
 ## 광고 요청
 
-`load()`를 호출하여 리워드 동영상 광고를 로드합니다.
+`loadAd()`를 호출하여 리워드 동영상 광고를 로드합니다.
 
 ```swift
 class RewardedAdViewController: UIViewController {
@@ -36,7 +36,7 @@ class RewardedAdViewController: UIViewController {
         let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
 
         // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
-        AMMRewardVideo.load(adUnitID: ADUNIT_ID, customParam: customParam) { [weak self] reward, adapterName, error in
+        AMMRewardVideo.loadAd(adUnitID: ADUNIT_ID, customParam: customParam) { [weak self] reward, adapterType, error in
             guard let self = self else { return }
 
             if let error = error {
@@ -152,7 +152,7 @@ CustomParm을 통해 콜백에서 추가 데이터를 수집할 수 있습니다
 
 ```swift
 let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
-AMMRewardVideo.load(adUnitID: ADUNIT_ID, customParam: customParam) { reward, adapterName, error in
+AMMRewardVideo.loadAd(adUnitID: ADUNIT_ID, customParam: customParam) { reward, adapterType, error in
     // ...
 }
 ```
