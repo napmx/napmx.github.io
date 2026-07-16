@@ -28,27 +28,11 @@
 
 ## v2.0.1 (2026-07-02)
 
-> 네이티브 뷰바인더 연동을 뷰 경로로 정리하고, 변경 모듈만 독립 배포합니다.
-> `admixer-ssp`/`admixer-adfit` 2.0.1, `admixer-gma-nextgen` 2.0.0(첫 출시), `admixer-bom` 2026.07.01(첫 출시).
-> 나머지 어댑터는 2.0.0을 유지하며 코어 2.0.1과 호환됩니다. 상세: [Release Notes 2.0.1](../../RELEASE_NOTES_2.0.1.md)
+> 변경된 모듈만 개별 배포: `admixer-ssp`·`admixer-adfit` **2.0.1**, `admixer-gma-nextgen` **2.0.0**(첫 출시), `admixer-bom` **2026.07.01**(첫 출시). 나머지 어댑터는 2.0.0을 유지하며 코어 2.0.1과 호환됩니다. 상세: [Release Notes 2.0.1](../../RELEASE_NOTES_2.0.1.md)
 
-### 새로운 기능
+### ⚠️ Breaking
 
-- **GMA NextGen 어댑터 첫 출시** — Google Mobile Ads NextGen SDK 연동 (`admixer-gma-nextgen`). classic `admixer-admanager`와 별도 모듈이며 통합 시 택1.
-- **Adfit 네이티브 비즈보드(BizBoard) 지원** — Adfit 네이티브 경로에서 비즈보드 요청 처리 (`admixer-adfit`).
-- **BOM(Bill of Materials) 첫 배포** — `admixer-bom`(POM-only). `platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')`로 import 시 멤버 아티팩트 버전을 생략할 수 있습니다.
-
-### 버그 수정
-
-- **네이티브 뷰바인더 브릿지** — 뷰의 `AMMNativeAdView.setViewBinder(...)`로만 설정한 바인더가 어댑터까지 전달되지 않아 모든 네이티브 어댑터가 `"No value for nativeViewBinder"`로 실패하던 문제 수정. 로드 직전 뷰의 바인더를 `AdInfo`로 자동 브릿지(최초 로드·롤링 재로드 모두).
-
-### 주요 변경 (Breaking Changes)
-
-- **`AdInfo.Builder.setAdViewBinder(NativeAdViewBinder)` 제거** — 네이티브 바인더는 뷰 경로 `AMMNativeAdView.setViewBinder(...)`로 설정합니다(업계 표준: 바인딩은 뷰의 렌더링 관심사).
-
-### 기타
-
-- **어댑터-코어 버전 호환성 검사 제거** — 어댑터 `initAdapter`의 코어-어댑터 버전 강제 검사를 제거해, 변경된 모듈만 독립적으로 새 버전을 배포할 수 있습니다(어댑터-코어 lockstep 불요).
+- **`AdInfo.Builder.setAdViewBinder(NativeAdViewBinder)` 제거** — 네이티브 바인더는 뷰 경로 `AMMNativeAdView.setViewBinder(...)`로 설정하세요(업계 표준: 바인딩은 뷰의 렌더링 관심사).
 
 ---
 
