@@ -262,13 +262,14 @@ public class NapMxAdBridgeHandler {
 
     private final AdListener bannerListener = new AdListener() {
         @Override
-        public void onReceivedAd(String adapterName, Object adView) {
-            sendCallback("onBannerLoaded", "", adapterName, 0, "");
+        public void onReceivedAd(AdNetworkType networkType, Object adView) {
+            // networkType로 switch: switch(networkType){ case PANGLE: ... }
+            sendCallback("onBannerLoaded", "", networkType.getAdapterName(), 0, "");
         }
         @Override
-        public void onFailedToReceiveAd(Object adView, String adapterName,
+        public void onFailedToReceiveAd(Object adView, AdNetworkType networkType,
                                         int errorCode, String errorMsg) {
-            sendCallback("onBannerFailed", "", adapterName, errorCode, errorMsg);
+            sendCallback("onBannerFailed", "", networkType.getAdapterName(), errorCode, errorMsg);
         }
         @Override
         public void onAdDisplayed() {
@@ -342,7 +343,7 @@ public class NapMxAdBridgeHandler {
 
     private final AdListener nativeListener = new AdListener() {
         @Override
-        public void onReceivedAd(String adapterName, Object adView) {
+        public void onReceivedAd(AdNetworkType networkType, Object adView) {
             activity.runOnUiThread(() -> {
                 if (nativeAdView != null && nativeAdView.hasAd) {
                     ViewGroup parent = (ViewGroup) webView.getParent();
@@ -355,14 +356,14 @@ public class NapMxAdBridgeHandler {
                         lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                         parent.addView(nativeAdView, lp);
                     }
-                    sendCallback("onNativeLoaded", nativeAdView.getAdInfo().getAdUnitId(), adapterName, 0, "");
+                    sendCallback("onNativeLoaded", nativeAdView.getAdInfo().getAdUnitId(), networkType.getAdapterName(), 0, "");
                 }
             });
         }
         @Override
-        public void onFailedToReceiveAd(Object adView, String adapterName, int errorCode, String errorMsg) {
+        public void onFailedToReceiveAd(Object adView, AdNetworkType networkType, int errorCode, String errorMsg) {
             String adUnitId = nativeAdView != null ? nativeAdView.getAdInfo().getAdUnitId() : "";
-            sendCallback("onNativeFailed", adUnitId, adapterName, errorCode, errorMsg);
+            sendCallback("onNativeFailed", adUnitId, networkType.getAdapterName(), errorCode, errorMsg);
         }
         @Override
         public void onAdDisplayed() {
@@ -392,7 +393,7 @@ public class NapMxAdBridgeHandler {
                 .setDescriptionId(activity.getResources().getIdentifier("nap_mx_tv_desc", "id", activity.getPackageName()))
                 .setMainViewId(activity.getResources().getIdentifier("nap_mx_iv_main", "id", activity.getPackageName()))
                 .setCtaId(activity.getResources().getIdentifier("nap_mx_btn_cta", "id", activity.getPackageName()))
-                .setPrivacyViewId(activity.getResources().getIdentifier("nap_mx_privacy_container", "id", activity.getPackageName())) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
+                .setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP) // ✅ 선택 — AdChoices 모서리, 기본 RIGHT_TOP
                 .build();
 
                 AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
@@ -422,9 +423,10 @@ public class NapMxAdBridgeHandler {
 
                 AMMInterstitial.loadAd(activity, adInfo, new AMMInterstitialLoadCallback() {
                     @Override
-                    public void onSuccessLoadInterstitial(@NonNull String adapterName,
+                    public void onSuccessLoadInterstitial(@NonNull AdNetworkType networkType,
                                                           @NonNull AMMInterstitial ad) {
                         loadedInterstitial = ad;
+                        String adapterName = networkType.getAdapterName();
                         ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override public void onAdShowedFullScreenContent() {
                                 sendCallback("onInterstitialShowed", adUnitId, adapterName, 0, "");
@@ -489,9 +491,10 @@ public class NapMxAdBridgeHandler {
 
                 AMMRewardVideo.loadAd(activity, builder.build(), new AMMRewardVideoLoadCallback() {
                     @Override
-                    public void onSuccessLoadReward(@NonNull String adapterName,
+                    public void onSuccessLoadReward(@NonNull AdNetworkType networkType,
                                                     @NonNull AMMRewardVideo ad) {
                         loadedRewardVideo = ad;
+                        String adapterName = networkType.getAdapterName();
                         ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override public void onAdShowedFullScreenContent() {
                                 sendCallback("onRewardVideoShowed", adUnitId, adapterName, 0, "");
@@ -538,7 +541,8 @@ public class NapMxAdBridgeHandler {
 
     private final AdListener videoListener = new AdListener() {
         @Override
-        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+        public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
+            String adapterName = networkType.getAdapterName();
             activity.runOnUiThread(() -> {
                 if (videoView != null) {
                     ViewGroup parent = (ViewGroup) webView.getParent();
@@ -556,9 +560,9 @@ public class NapMxAdBridgeHandler {
             });
         }
         @Override
-        public void onFailedToReceiveAd(Object adView, String adapterName, int errorCode, String errorMsg) {
+        public void onFailedToReceiveAd(Object adView, AdNetworkType networkType, int errorCode, String errorMsg) {
             String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
-            sendCallback("onVideoFailed", adUnitId, adapterName, errorCode, errorMsg);
+            sendCallback("onVideoFailed", adUnitId, networkType.getAdapterName(), errorCode, errorMsg);
         }
         @Override
         public void onAdDisplayed() {
@@ -615,9 +619,10 @@ public class NapMxAdBridgeHandler {
 
                 AMMVideoInterstitial.loadAd(activity, adInfo, new AMMVideoInterstitialLoadCallback() {
                     @Override
-                    public void onSuccessLoadVideoInterstitial(@NonNull String adapterName,
+                    public void onSuccessLoadVideoInterstitial(@NonNull AdNetworkType networkType,
                                                                 @NonNull AMMVideoInterstitial ad) {
                         loadedVideoInterstitial = ad;
+                        String adapterName = networkType.getAdapterName();
                         ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override public void onAdShowedFullScreenContent() {
                                 sendCallback("onVideoInterstitialShowed", adUnitId, adapterName, 0, "");

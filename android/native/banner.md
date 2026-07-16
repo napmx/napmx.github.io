@@ -33,14 +33,23 @@ public class BannerActivity extends AppCompatActivity {
     private AMMBannerView adView;
     private final AdListener adListener = new AdListener() {
         @Override
-        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+        public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
             // 광고 수신 성공 — addView 이후 자동 표시됨
+            // networkType로 switch: switch(networkType){ case PANGLE: ... }
         }
 
         @Override
         public void onFailedToReceiveAd(@Nullable Object adView,
+                @NonNull AdNetworkType networkType, int errorCode, @Nullable String errorMsg) {
+            // 특정 네트워크의 수신 실패
+        }
+
+        // ⚠️ 필수 — 아래 String 버전도 함께 구현하세요. 전 네트워크 No-Ad는 이쪽으로만 옵니다.
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onFailedToReceiveAd(@Nullable Object adView,
                 @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
-            // 광고 수신 실패
+            // 최종 수신 실패 (adapterName = "Mediation" / "SDK")
         }
 
         @Override
@@ -97,12 +106,18 @@ class BannerActivity : AppCompatActivity() {
     private var adView: AMMBannerView? = null
 
     private val adListener = object : AdListener() {
-        override fun onReceivedAd(adapterName: String, adView: Any) {
+        override fun onReceivedAd(networkType: AdNetworkType, adView: Any) {
             // 광고 수신 성공
         }
+        override fun onFailedToReceiveAd(adView: Any?, networkType: AdNetworkType,
+                                          errorCode: Int, errorMsg: String?) {
+            // 특정 네트워크의 수신 실패
+        }
+        // ⚠️ 필수 — String 버전도 함께. 전 네트워크 No-Ad는 이쪽으로만 옵니다.
+        @Suppress("DEPRECATION")
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
                                           errorCode: Int, errorMsg: String?) {
-            // 광고 수신 실패
+            // 최종 수신 실패 (adapterName = "Mediation" / "SDK")
         }
         override fun onAdDisplayed() { /* 광고 표시됨 */ }
         override fun onAdClicked() { /* 광고 클릭 */ }
@@ -216,7 +231,7 @@ adView = new AMMBannerView(this);
 adView.setAdInfo(adInfo);
 adView.setAdViewListener(new AdListener() {
     @Override
-    public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+    public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
         // 광고 수신 완료 — hasAd 플래그가 true로 설정됨
         // 아직 레이아웃에 추가하지 않았으므로 화면에 표시되지 않음
     }
@@ -242,7 +257,7 @@ val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
 adView = AMMBannerView(this).apply {
     setAdInfo(adInfo)
     setAdViewListener(object : AdListener() {
-        override fun onReceivedAd(adapterName: String, adView: Any) {
+        override fun onReceivedAd(networkType: AdNetworkType, adView: Any) {
             // 수신 완료 — 아직 레이아웃에 추가하지 않았으므로 화면에 표시되지 않음
         }
         // ...
@@ -267,6 +282,21 @@ showAdButton.setOnClickListener {
 ---
 
 > **[v2.0.0]** 배너 자동 갱신/실패 재시도는 서버(media-conf) 광고 단위 `interval`(초)이 **0보다 클 때만** 동작합니다(서버 0/미설정 → 단발성, 자동 재로드 없음). 기존 클라이언트 `isRetry` 옵션은 제거되었습니다.
+
+---
+
+## ⚠️ 수신 실패 콜백은 **두 가지를 모두** 구현하세요
+
+`onFailedToReceiveAd`에는 오버로드가 둘 있고, **역할이 다릅니다.**
+
+| 오버로드 | 언제 오나 |
+|---|---|
+| `onFailedToReceiveAd(adView, **AdNetworkType** networkType, ...)` | 개별 네트워크의 실패 (워터폴 진행 중) |
+| `onFailedToReceiveAd(adView, **String** adapterName, ...)` | **전 네트워크 No-Ad**(`"Mediation"`), SDK 미초기화·AdUnit 누락(`"SDK"`), 커스텀 어댑터 |
+
+**enum 버전만 구현하면 "광고가 하나도 안 붙었다"는 최종 결과를 영영 받지 못합니다.** `AdNetworkType`에는 `SDK`/`Mediation`에 해당하는 값이 없어서, SDK가 String 오버로드로 통지하는데 그쪽이 비어 있으면 조용히 사라집니다. 로딩 인디케이터가 무한 대기하는 증상이 여기서 나옵니다.
+
+> ℹ️ String 오버로드는 `@Deprecated`(3.0 제거 예정)이지만, **그때까지는 최종 실패의 유일한 통지 경로**이므로 반드시 유지하세요. 3.0에서 제거될 때 대체 경로가 함께 제공됩니다.
 
 ---
 

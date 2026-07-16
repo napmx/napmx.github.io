@@ -8,10 +8,23 @@ Compose 앱에서 nap mx 광고를 연동하는 방법입니다. 코어 SDK는 V
 
 ## 의존성 추가
 
+**방법 A — BOM 사용 (권장)** — 버전 생략, BOM이 관리:
+
 ```gradle
 dependencies {
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.0.0'        // 코어(필수)
-    implementation 'io.github.nasmedia-tech:admixer-compose:2.0.0'    // Compose 헬퍼
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')
+    implementation 'io.github.nasmedia-tech:admixer-ssp'        // 코어(필수)
+    implementation 'io.github.nasmedia-tech:admixer-compose'    // Compose 헬퍼
+    // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
+}
+```
+
+**방법 B — 개별 버전 지정** (현재 배포 버전 기준):
+
+```gradle
+dependencies {
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.0'        // 코어(필수)
+    implementation 'io.github.nasmedia-tech:admixer-compose:2.0.1'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
 }
 ```
@@ -44,8 +57,10 @@ fun MyScreen() {
 ```kotlin
 val listener = remember {
     object : AdListener() {
-        override fun onReceivedAd(adapterName: String, ad: Any) {}
-        override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {}
+        override fun onReceivedAd(networkType: AdNetworkType, ad: Any) {
+            // networkType로 switch: switch(networkType){ case PANGLE: ... }
+        }
+        override fun onFailedToReceiveAd(ad: Any?, networkType: AdNetworkType, code: Int, msg: String?) {}
         override fun onAdDisplayed() {}
         override fun onAdClicked() {}
     }
@@ -73,7 +88,7 @@ fun NativeSlot() {
             .setDescriptionId(R.id.nap_mx_tv_desc)
             .setMainViewId(R.id.nap_mx_iv_main)
             .setCtaId(R.id.nap_mx_btn_cta)
-            .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 — 광고 정보 고지(AdChoices), 미지정 시 우측 상단 자동 오버레이
+            .setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP) // ✅ 선택 — AdChoices 모서리, 기본 RIGHT_TOP
             .build()
     }
     AdMixerNativeAd(
@@ -86,7 +101,7 @@ fun NativeSlot() {
 
 > ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration.md)을 참고하세요.
 
-> ℹ️ **AdChoices(광고 정보 고지)** — 레이아웃에 `nap_mx_privacy_container`(View/ViewGroup/ImageView) 슬롯을 두고 `setPrivacyViewId()`로 지정하면 해당 위치에 노출됩니다. 지정하지 않으면 우측 상단에 자동 오버레이됩니다. 슬롯 배치 규칙과 레이아웃 예제는 [네이티브 가이드](native-ad.md)를 참고하세요.
+> ℹ️ **AdChoices(광고 정보 고지)** — SDK가 자동 오버레이하므로 레이아웃 슬롯이 필요 없습니다. 위치는 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`으로 4개 모서리 중 하나를 지정하며(기본 `RIGHT_TOP`), 전 네트워크에 동일 적용됩니다. 자세한 내용은 [네이티브 가이드](native-ad.md#광고-정보-고지adchoices-위치-지정)를 참고하세요.
 
 ---
 
@@ -124,13 +139,14 @@ fun MyScreen() {
 
 ```kotlin
 import com.nasmedia.admixerssp.compose.rememberRewardVideoAd
+import com.nasmedia.admixerssp.common.core.AdNetworkType
 
 @Composable
 fun RewardScreen() {
     val rewardListener = remember {
         object : AdListener() {
-            override fun onReceivedAd(adapterName: String, ad: Any) {}
-            override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {}
+            override fun onReceivedAd(networkType: AdNetworkType, ad: Any) {}
+            override fun onFailedToReceiveAd(ad: Any?, networkType: AdNetworkType, code: Int, msg: String?) {}
             override fun onAdRewarded() { /* 보상 지급 */ }
         }
     }
@@ -190,6 +206,23 @@ fun VideoScreen() {
 | `onAdCompleted` | – | – | – | ✅ | ✅ |
 | `onAdSkipped` | – | – | – | ✅ | ✅ |
 | `onAdRewarded` | – | – | – | – | ✅ |
+
+> 🚨 **`onFailedToReceiveAd`는 String 오버로드도 함께 구현해야 합니다.** 위 표의 ✅는 "이벤트가 발생한다"는 뜻이고, **어느 오버로드로 오는지는 구분하지 않습니다.** 개별 네트워크 실패는 `AdNetworkType` 버전으로 오지만, **전 네트워크 No-Ad(`"Mediation"`)·SDK 미초기화(`"SDK"`)는 String 버전으로만** 옵니다(`AdNetworkType`에 해당 값이 없음). enum만 override하면 최종 실패를 못 받아 로딩 상태가 무한 대기합니다.
+>
+> ```kotlin
+> val listener = remember {
+>     object : AdListener() {
+>         override fun onFailedToReceiveAd(ad: Any?, networkType: AdNetworkType, code: Int, msg: String?) {
+>             // 개별 네트워크 실패
+>         }
+>         // ⚠️ 필수 — 최종 No-Ad는 이쪽으로만 옵니다
+>         @Suppress("DEPRECATION")
+>         override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {
+>             isLoading = false // 로딩 해제 등 최종 처리
+>         }
+>     }
+> }
+> ```
 
 - `–` 는 해당 포맷에서 발생하지 않는 이벤트입니다(예: 배너/네이티브는 닫힘·재생완료·스킵 이벤트 없음).
 - `onAdShowFailed` 는 **로드 성공 후 표시(show) 단계 실패**로, 인라인(배너/네이티브)에는 해당되지 않습니다.

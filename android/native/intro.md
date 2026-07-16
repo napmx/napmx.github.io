@@ -34,6 +34,7 @@
 | Unity Ads |
 | Naver Ad Manager |
 | Teads |
+| 🧪 GMA NextGen **(beta)** — Google Mobile Ads NextGen SDK. AdManager·NaverAd와 택1([시작하기](getting-started.md)) |
 
 ---
 

@@ -64,8 +64,9 @@ public class VideoAdActivity extends AppCompatActivity {
 
     private final AdListener adListener = new AdListener() {
         @Override
-        public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {
+        public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
             // 광고 수신 성공 — 컨테이너에 추가
+            // networkType로 switch: switch(networkType){ case PANGLE: ... }
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -77,8 +78,16 @@ public class VideoAdActivity extends AppCompatActivity {
 
         @Override
         public void onFailedToReceiveAd(@Nullable Object adView,
+                @NonNull AdNetworkType networkType, int errorCode, @Nullable String errorMsg) {
+            // 특정 네트워크의 수신 실패
+        }
+
+        // ⚠️ 필수 — 아래 String 버전도 함께 구현하세요. 전 네트워크 No-Ad는 이쪽으로만 옵니다.
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onFailedToReceiveAd(@Nullable Object adView,
                 @NonNull String adapterName, int errorCode, @Nullable String errorMsg) {
-            // 광고 수신 실패
+            // 최종 수신 실패 (adapterName = "Mediation" / "SDK")
         }
 
         @Override
@@ -139,7 +148,7 @@ class VideoAdActivity : AppCompatActivity() {
     private lateinit var tvComplete: TextView
 
     private val adListener = object : AdListener() {
-        override fun onReceivedAd(adapterName: String, adView: Any) {
+        override fun onReceivedAd(networkType: AdNetworkType, adView: Any) {
             val params = RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -147,7 +156,13 @@ class VideoAdActivity : AppCompatActivity() {
             container.removeView(videoAdView)
             container.addView(videoAdView, params)
         }
+        // ⚠️ 필수 — String 버전도 함께. 전 네트워크 No-Ad는 이쪽으로만 옵니다.
+        @Suppress("DEPRECATION")
         override fun onFailedToReceiveAd(adView: Any?, adapterName: String,
+                                          errorCode: Int, errorMsg: String?) {
+            // 최종 수신 실패 (adapterName = "Mediation" / "SDK")
+        }
+        override fun onFailedToReceiveAd(adView: Any?, networkType: AdNetworkType,
                                           errorCode: Int, errorMsg: String?) { }
         override fun onAdDisplayed() { /* 광고 표시됨 */ }
         override fun onAdCompleted() { tvComplete.visibility = View.VISIBLE }
@@ -184,6 +199,21 @@ class VideoAdActivity : AppCompatActivity() {
 
 ---
 
+## ⚠️ 수신 실패 콜백은 **두 가지를 모두** 구현하세요
+
+`onFailedToReceiveAd`에는 오버로드가 둘 있고, **역할이 다릅니다.**
+
+| 오버로드 | 언제 오나 |
+|---|---|
+| `onFailedToReceiveAd(adView, `**`AdNetworkType`**` networkType, ...)` | 개별 네트워크의 실패 (워터폴 진행 중) |
+| `onFailedToReceiveAd(adView, `**`String`**` adapterName, ...)` | **전 네트워크 No-Ad**(`"Mediation"`), SDK 미초기화·AdUnit 누락(`"SDK"`), 커스텀 어댑터 |
+
+**enum 버전만 구현하면 "광고가 하나도 안 붙었다"는 최종 결과를 영영 받지 못합니다.** `AdNetworkType`에는 `SDK`/`Mediation`에 해당하는 값이 없어서, SDK가 String 오버로드로 통지하는데 그쪽이 비어 있으면 조용히 사라집니다. 로딩 인디케이터가 무한 대기하는 증상이 여기서 나옵니다.
+
+> ℹ️ String 오버로드는 `@Deprecated`(3.0 제거 예정)이지만, **그때까지는 최종 실패의 유일한 통지 경로**이므로 반드시 유지하세요. 3.0에서 제거될 때 대체 경로가 함께 제공됩니다.
+
+---
+
 ## 전면 동영상 광고 (AMMVideoInterstitial)
 
 화면 전체를 덮는 전면 동영상 광고를 표시합니다. 전면 광고와 동일한 정적 `loadAd()` + `FullScreenContentCallback` 구조입니다.
@@ -192,7 +222,7 @@ class VideoAdActivity : AppCompatActivity() {
 
 ```
 AMMVideoInterstitial.loadAd(context, adInfo, callback)
-    → onSuccessLoadVideoInterstitial(adapterName, ad)  ← 로드된 광고 객체 전달
+    → onSuccessLoadVideoInterstitial(networkType, ad)  ← 로드된 광고 객체 전달
         → ad.setFullScreenContentCallback(...)         ← 노출/클릭/재생완료/닫힘 콜백
         → ad.show(activity)                            ← 노출 (Activity 필요)
     → onFailLoadVideoInterstitial(errorCode, errorMsg) ← 로드 실패
@@ -220,7 +250,7 @@ public class InterstitialVideoActivity extends AppCompatActivity {
 
         AMMVideoInterstitial.loadAd(this, adInfo, new AMMVideoInterstitialLoadCallback() {
             @Override
-            public void onSuccessLoadVideoInterstitial(@NonNull String adapterName, @NonNull AMMVideoInterstitial ad) {
+            public void onSuccessLoadVideoInterstitial(@NonNull AdNetworkType networkType, @NonNull AMMVideoInterstitial ad) {
                 loadedAd = ad;
 
                 ad.setFullScreenContentCallback(new FullScreenContentCallback() {
@@ -277,7 +307,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
             .build()
 
         AMMVideoInterstitial.loadAd(this, adInfo, object : AMMVideoInterstitialLoadCallback() {
-            override fun onSuccessLoadVideoInterstitial(adapterName: String, ad: AMMVideoInterstitial) {
+            override fun onSuccessLoadVideoInterstitial(networkType: AdNetworkType, ad: AMMVideoInterstitial) {
                 loadedAd = ad
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                     override fun onAdShowedFullScreenContent() { /* 노출됨 */ }
@@ -335,7 +365,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
 | `onAdDismissedFullScreenContent()` | 광고 창 닫힘 |
 | `onAdFailedToShowFullScreenContent(AdError)` | 노출 실패 |
 
-> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 전면 동영상 객체는 `setAdListener(AdListener)`도 지원하며, 이 경로로 등록하면 `onAdSkipped`·`onAdCompleted`·`onAdDisplayed`·`onAdClicked`·`onAdClosed`를 모두 받을 수 있습니다.
+> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdClosed`)은 `FullScreenContentCallback`으로도 받을 수 있으며, `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
 > ```java
 > ad.setAdListener(new AdListener() {
 >     @Override public void onAdDisplayed() { /* 노출됨 */ }
@@ -375,7 +405,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
 | v1.x.x (제거됨) | v2.0.0 |
 |---|---|
 | `new InterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMVideoInterstitial.loadAd(context, adInfo, callback)` |
-| `setListener(AdListener)` + `onReceivedAd` | `AMMVideoInterstitialLoadCallback.onSuccessLoadVideoInterstitial(adapterName, ad)` |
+| `setListener(AdListener)` + `onReceivedAd` | `AMMVideoInterstitialLoadCallback.onSuccessLoadVideoInterstitial(networkType, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadVideoInterstitial(errorCode, errorMsg)` |
 | `loadInterstitialVideoAd()` / `startInterstitialVideoAd()` | `AMMVideoInterstitial.loadAd(...)` (노출은 `ad.show(activity)`) |
 | `showInterstitialVideoAd()` / `showInterstitialVideoAd(activity)` | `ad.show(activity)` |

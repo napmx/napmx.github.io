@@ -13,11 +13,6 @@ AdMixer.getInstance().initialize(Context context, String mediaKey, ArrayList<Str
 // AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE = 0
 AdMixer.setTagForChildDirectedTreatment(int id)
 
-// 개인정보 동의 (워터폴에서 각 네트워크로 자동 전파) — 선택
-AdMixer.setGdprConsent(boolean hasUserConsent)   // GDPR 사용자 동의
-AdMixer.setCcpaDoNotSell(boolean doNotSell)      // CCPA Do-Not-Sell 플래그
-AdMixer.setUsPrivacy(String usPrivacyString)     // CCPA US Privacy 문자열(예 "1YNN")
-
 // 테스트 설정 — 선택
 AdMixer.setTestMode(boolean enabled)
 AdMixer.setTestDeviceIds(List<String> ids)
@@ -25,12 +20,11 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 | 개인정보/테스트 메서드 | 설명 |
 |------|------|
-| `setGdprConsent(boolean)` | GDPR 사용자 동의 여부. 미설정 시 적용 안 함 |
-| `setCcpaDoNotSell(boolean)` | CCPA "Do Not Sell" 플래그 |
-| `setUsPrivacy(String)` | CCPA US Privacy 문자열(IAB CMP 연동 시) |
+| `setTagForChildDirectedTreatment(int)` | 아동 대상 앱 여부(-1 미설정/0 false/1 true). **아동 대상 앱은 필수** — [개인정보 / 테스트 설정](privacy.md) |
 | `setTestMode(boolean)` / `isTestMode()` | 전역 테스트 모드 |
 | `setTestDeviceIds(List<String>)` / `getTestDeviceIds()` | 테스트 디바이스 광고 ID 목록 |
-| `setTagForChildDirectedTreatment(int)` | COPPA(-1 미설정/0 false/1 true) |
+
+> ℹ️ **GDPR/CCPA 동의 전파**가 필요한 경우(해외 서비스·EU/미국 트래픽)는 네트워크 조합에 따라 안내가 달라집니다. [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요.
 
 > 네트워크별 전파 매핑은 [개인정보 동의 및 테스트 설정](privacy.md) 참고.
 
@@ -45,8 +39,11 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `AdMixer.ADAPTER_UNITY` | Unity Ads |
 | `AdMixer.ADAPTER_NAVER_ADMANAGER` | Naver Ad Manager |
 | `AdMixer.ADAPTER_TEADS` | Teads |
+| `AdMixer.ADAPTER_GMA_NEXTGEN` | 🧪 GMA NextGen **(beta)** — AdManager와 택1 ([시작하기](getting-started.md)) |
+| `AdMixer.ADAPTER_ADMIXER` | AdMixer 자체 광고 |
+| `AdMixer.ADAPTER_ADMIXER_HOUSE` | AdMixer 하우스 광고 |
 
----
+> 🚨 **상수의 문자열 값은 릴리스에 따라 바뀔 수 있습니다.** Java는 `public static final String`을 컴파일 시점에 앱 바이너리로 인라인하므로, SDK 업그레이드 시 **반드시 재컴파일**하세요. 문자열 비교 분기가 필요하다면 `AdNetworkType` enum 사용을 권장합니다. ([릴리즈 노트](changelog.md))
 
 ## AdInfo.Builder
 
@@ -162,9 +159,9 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 | 콜백 클래스 | 성공 콜백 | 실패 콜백 |
 |---|---|---|
-| `AMMInterstitialLoadCallback` | `onSuccessLoadInterstitial(String adapterName, AMMInterstitial ad)` | `onFailLoadInterstitial(int errorCode, String errorMsg)` |
-| `AMMRewardVideoLoadCallback` | `onSuccessLoadReward(String adapterName, AMMRewardVideo ad)` | `onFailLoadReward(int errorCode, String errorMsg)` |
-| `AMMVideoInterstitialLoadCallback` | `onSuccessLoadVideoInterstitial(String adapterName, AMMVideoInterstitial ad)` | `onFailLoadVideoInterstitial(int errorCode, String errorMsg)` |
+| `AMMInterstitialLoadCallback` | `onSuccessLoadInterstitial(AdNetworkType networkType, AMMInterstitial ad)` | `onFailLoadInterstitial(int errorCode, String errorMsg)` |
+| `AMMRewardVideoLoadCallback` | `onSuccessLoadReward(AdNetworkType networkType, AMMRewardVideo ad)` | `onFailLoadReward(int errorCode, String errorMsg)` |
+| `AMMVideoInterstitialLoadCallback` | `onSuccessLoadVideoInterstitial(AdNetworkType networkType, AMMVideoInterstitial ad)` | `onFailLoadVideoInterstitial(int errorCode, String errorMsg)` |
 
 **FullScreenContentCallback (abstract class — 노출 단계, 필요한 메서드만 오버라이드)**
 
@@ -214,13 +211,17 @@ AdMixer.setTestDeviceIds(List<String> ids)
 > **[REQ-20260609 / v2.0.0]** 기존 단일 `onEventAd(adView, AdEvent)`는 **이름 있는 이벤트 메서드로 분리**되었습니다. `AdListener`는 `abstract class`이며 **모든 메서드가 기본 no-op**이라 **필요한 메서드만 override**하면 됩니다(필수 구현 없음). 기존 `onEventAd` 구현은 아래 named 메서드로 이전해야 합니다(Breaking Change).
 
 ```java
+import com.nasmedia.admixerssp.common.core.AdNetworkType;
+
 public abstract class AdListener {
-    // ── 로드 콜백 ──
-    public void onReceivedAd(@NonNull String adapterName, @NonNull Object adView) {}
-    public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapterName,
+    // ── 로드 콜백 (권장: AdNetworkType enum 오버로드) ──
+    public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
+        // networkType로 switch: switch(networkType){ case PANGLE: ... }
+    }
+    public void onFailedToReceiveAd(@Nullable Object adView, @NonNull AdNetworkType networkType,
                                     int errorCode, @Nullable String errorMsg) {}
     // 노출(show) 실패 — 로드 실패와 구분되는 표시 단계 실패
-    public void onAdShowFailed(@Nullable Object adView, @NonNull String adapterName,
+    public void onAdShowFailed(@Nullable Object adView, @NonNull AdNetworkType networkType,
                                int errorCode, @Nullable String errorMsg) {}
 
     // ── 이벤트 콜백 (필요한 것만 override) ──
@@ -232,6 +233,10 @@ public abstract class AdListener {
     public void onAdRewarded() {}       // 리워드 적립
 }
 ```
+
+> **[REQ-20260713]** 위 3개 콜백(`onReceivedAd`/`onFailedToReceiveAd`/`onAdShowFailed`)은 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드도 여전히 호출되지만 **`@Deprecated`(3.0에서 제거 예정)** 이므로 신규 구현은 enum 버전을 사용하세요. `String` 문자열이 필요하면 `networkType.getAdapterName()`으로 얻을 수 있습니다.
+
+> ⚠️ 내부 실패(no-fill "All adapters failed.", 미초기화 등 — 합성 이름 SDK/Mediation)와 `AdMixer.registerAdapter(String)`로 등록한 커스텀 어댑터(enum 미등재)는 **String 오버로드로만 통지**됩니다. 따라서 로드/표시 실패 처리는 String 버전(`onFailedToReceiveAd(adView, String adapterName, ...)`/`onAdShowFailed(...)`)도 함께 구현하세요.
 
 > ⚠️ 배너(`AMMBannerView`)는 `AdListener`를 내부적으로 `WeakReference`로 보유합니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
 >

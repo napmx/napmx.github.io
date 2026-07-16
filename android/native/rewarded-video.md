@@ -14,7 +14,7 @@
 
 ```
 AMMRewardVideo.loadAd(context, adInfo, callback)
-    → onSuccessLoadReward(adapterName, ad)             ← 로드된 광고 객체 전달
+    → onSuccessLoadReward(networkType, ad)             ← 로드된 광고 객체 전달
         → ad.setFullScreenContentCallback(...)         ← 노출/클릭/재생완료/닫힘 콜백
         → ad.show(activity, onUserEarnedRewardListener) ← 노출 + 보상 리스너 등록
             → onUserEarnedReward()                     ← 🎁 리워드 지급 시점 (시청 완료)
@@ -22,6 +22,8 @@ AMMRewardVideo.loadAd(context, adInfo, callback)
 ```
 
 > ℹ️ **보상 적립(`onUserEarnedReward`)** 과 **영상 재생 완료(`onAdCompleted`)** 는 별개의 이벤트입니다. 리워드 지급은 반드시 `onUserEarnedReward()` 시점에 처리하세요.
+
+> ℹ️ **커스텀 어댑터를 쓰는 경우** — `AdMixer.registerAdapter(String)`로 등록한 어댑터는 `AdNetworkType`에 등재되어 있지 않아, 로드 **성공** 콜백이 `String adapterName` 오버로드로만 통지됩니다. 커스텀 어댑터를 사용한다면 그 오버로드도 함께 구현하세요. (로드 **실패** `onFailLoadReward`는 어댑터와 무관하게 항상 호출되므로 별도 조치가 필요 없습니다.)
 
 ---
 
@@ -57,7 +59,7 @@ public class RewardVideoActivity extends AppCompatActivity {
         // 정적 load() — 로드 완료 시 콜백으로 광고 객체를 받는다
         AMMRewardVideo.loadAd(this, adInfo, new AMMRewardVideoLoadCallback() {
             @Override
-            public void onSuccessLoadReward(@NonNull String adapterName, @NonNull AMMRewardVideo ad) {
+            public void onSuccessLoadReward(@NonNull AdNetworkType networkType, @NonNull AMMRewardVideo ad) {
                 loadedAd = ad;
 
                 // 노출/클릭/재생완료/닫힘은 FullScreenContentCallback으로 수신
@@ -131,7 +133,7 @@ class RewardVideoActivity : AppCompatActivity() {
             .build()
 
         AMMRewardVideo.loadAd(this, adInfo, object : AMMRewardVideoLoadCallback() {
-            override fun onSuccessLoadReward(adapterName: String, ad: AMMRewardVideo) {
+            override fun onSuccessLoadReward(networkType: AdNetworkType, ad: AMMRewardVideo) {
                 loadedAd = ad
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                     override fun onAdShowedFullScreenContent() { /* 노출됨 */ }
@@ -178,7 +180,9 @@ class RewardVideoActivity : AppCompatActivity() {
 
 > 보상 적립은 `FullScreenContentCallback`이 아니라 **`show(activity, OnUserEarnedRewardListener)`** 의 `onUserEarnedReward()`로 수신합니다.
 
-> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 리워드 광고 객체는 `setAdListener(AdListener)`도 지원하며, 이 경로로 등록하면 `onAdSkipped`·`onAdCompleted`·`onAdDisplayed`·`onAdClicked`·`onAdClosed`를 받습니다.
+> ℹ️ **표시 결과는 광고당 정확히 1회만 전달됩니다.** `show()` 이후 `onAdShowedFullScreenContent()`(표시됨) 또는 `onAdFailedToShowFullScreenContent()`(표시 실패) 중 하나만 최종 결과로 수신하며, 네트워크가 표시 결과를 통지하지 않으면 SDK가 표시 실패를 백스톱으로 전달합니다. 표시 실패가 전달된 뒤의 상반된 콜백(닫힘/스킵/표시됨/중복 실패)은 억제되어 이중·모순 콜백을 방어할 필요가 없습니다. **단, 보상 적립(`onUserEarnedReward`)은 유실 방지를 위해 예외적으로 항상 전달됩니다.**
+
+> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdClosed`)은 `FullScreenContentCallback`으로도 받을 수 있으며, `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
 > ```java
 > ad.setAdListener(new AdListener() {
 >     @Override public void onAdCompleted() { /* 재생 완료 (보상과 별개) */ }
@@ -275,7 +279,7 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | v1.x.x (제거됨) | v2.0.0 |
 |---|---|
 | `new RewardInterstitialVideoAd(context)` | (인스턴스 생성 불필요) `AMMRewardVideo.loadAd(context, adInfo, callback)` |
-| `setListener(AdListener)` + `onReceivedAd` | `AMMRewardVideoLoadCallback.onSuccessLoadReward(adapterName, ad)` |
+| `setListener(AdListener)` + `onReceivedAd` | `AMMRewardVideoLoadCallback.onSuccessLoadReward(networkType, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadReward(errorCode, errorMsg)` |
 | `loadRewardVideoAd()` / `startRewardVideoAd()` | `AMMRewardVideo.loadAd(...)` (노출은 `ad.show(activity, listener)`) |
 | `showRewardVideoAd()` | `ad.show(activity, OnUserEarnedRewardListener)` |

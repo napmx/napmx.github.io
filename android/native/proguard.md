@@ -24,6 +24,7 @@
 -keep class com.nasmedia.unity.** { *; }            # Unity Ads
 -keep class com.nasmedia.naveradmanager.** { *; }   # Naver Ad Manager
 -keep class com.nasmedia.teads.** { *; }            # Teads
+-keep class com.nasmedia.gmanextgen.** { *; }       # 🧪 GMA NextGen (beta)
 ```
 
 ---
@@ -41,6 +42,7 @@
 | Unity Ads | ✅ | - |
 | Naver Ad Manager | ✅ | - |
 | Teads | ✅ | - |
+| 🧪 GMA NextGen **(beta)** | ✅ | AdManager·NaverAd와 공존 불가 |
 
 ---
 

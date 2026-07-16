@@ -1,63 +1,47 @@
-# 개인정보 동의 및 테스트 설정
+# 개인정보 / 테스트 설정
 
-이 페이지에서는 GDPR/CCPA/COPPA 등 **개인정보 동의값**과 **테스트 모드/테스트 디바이스** 설정을 안내합니다.
+이 페이지에서는 **아동 대상(child-directed) 설정**과 **테스트 모드/테스트 디바이스** 설정을 안내합니다.
 
-> ℹ️ 이 설정들은 **선택 사항**이며, QA·심사·프라이버시 규제 대응 시 사용합니다. 설정하지 않으면 SDK는 해당 항목을 하위 네트워크에 적용하지 않습니다(미설정 유지).
-
----
-
-## 동작 방식
-
-`AdMixer`에 전역으로 1회 설정하면, 워터폴에서 각 광고가 로드될 때 SDK가 **각 미디에이션 네트워크의 privacy/test API로 자동 전파**합니다. 동의 수집(CMP) UI는 매체/CMP의 책임이며, 본 API는 **수집된 값의 전파**만 담당합니다.
-
-```mermaid
-flowchart LR
-    A["AdMixer.setGdprConsent / setCcpaDoNotSell /<br/>setTagForChildDirectedTreatment / setTestMode / setTestDeviceIds"] --> B["AdMixer 전역 보관"]
-    B --> C["워터폴: 어댑터 init 직후 자동 전파"]
-    C --> D["네트워크 SDK privacy/test API<br/>(AppLovin · Unity · Pangle · AdManager …)"]
-```
+> ℹ️ 두 설정 모두 `AdMixer`에 **전역으로 1회** 설정하면 워터폴에서 각 광고가 로드될 때 SDK가 각 네트워크로 전파합니다.
 
 ---
 
-## 개인정보 동의 (Privacy / Consent)
+## 아동 대상 앱 설정 (Child-Directed)
 
-`Application.onCreate()` 또는 동의 수집 직후에 설정하세요.
+> 🚨 **아동 대상 앱이라면 반드시 설정하세요.** Google Play의 **Families 정책**은 아동 대상 앱이 광고 SDK에 child-directed 플래그를 전달하도록 요구하며, 이는 **국가와 무관하게** 적용됩니다. 누락 시 정책 위반 및 Google Ad Manager 계정 조치 대상이 될 수 있습니다.
+
+`Application.onCreate()`에서 설정하세요.
 
 #### Java
 ```java
-// GDPR 사용자 동의 여부 (EU 대상)
-AdMixer.setGdprConsent(true);
-
-// CCPA "Do Not Sell" 플래그 (US 대상)
-AdMixer.setCcpaDoNotSell(false);
-
-// CCPA US Privacy 문자열 (IAB CMP 연동 시)
-AdMixer.setUsPrivacy("1YNN");
-
-// COPPA(아동 대상) 여부
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);  // 아동 대상
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE); // 일반 대상
 ```
 
 #### Kotlin
 ```kotlin
-AdMixer.setGdprConsent(true)
-AdMixer.setCcpaDoNotSell(false)
-AdMixer.setUsPrivacy("1YNN")
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)
 ```
 
-### 네트워크별 전파 매핑
+### 네트워크별 전파
 
-| 네트워크 | GDPR | CCPA | COPPA |
-|---|---|---|---|
-| **AppLovin** | `setHasUserConsent` | `setDoNotSell` | 미지원(13.x에서 연령 API 제거) |
-| **Unity Ads** | MetaData `gdpr.consent` | MetaData `privacy.consent`(= !doNotSell) | MetaData `user.nonbehavioral` |
-| **Pangle** | TCF 자동(8.x `setGDPRConsent` 제거) | `setPAConsent` | 미지원(번들 8.0.0.5 API 부재) |
-| **Google AdManager** | UMP(별도 동의 흐름) | UMP(별도) | `RequestConfiguration.setTagForChildDirectedTreatment` |
-| Teads / Adfit / Naver | TCF 자동/제한적 | 제한적 | 제한적 |
+| 네트워크 | 전파 방식 |
+|---|---|
+| **Google AdManager** · **GMA NextGen** | `RequestConfiguration.setTagForChildDirectedTreatment` |
+| **Unity Ads** | MetaData `user.nonbehavioral` |
+| 그 외 | 해당 네트워크 SDK가 관련 API를 제공하지 않아 전파되지 않습니다 |
 
-> ⚠️ 미설정 항목은 해당 네트워크에 적용하지 않습니다. 일부 네트워크는 공식 SDK가 해당 privacy API를 제공하지 않아 전파되지 않을 수 있습니다(표의 "미지원" 참고).
+> ⚠️ 미설정 시 어떤 네트워크에도 적용하지 않습니다(미설정 유지).
+
+---
+
+## GDPR / CCPA 동의 전파
+
+국내(한국) 서비스는 GDPR(EU)·CCPA(미국 캘리포니아) 적용 대상이 아니므로 별도 설정이 필요하지 않습니다.
+
+**해외 서비스로 확장하거나 EU·미국 트래픽이 있는 경우**, 네트워크마다 동의 전달 방식과 지원 범위가 달라 지면 구성에 따라 안내가 달라집니다. **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의**해 주시면 사용 중인 네트워크 조합에 맞춰 안내해 드립니다.
+
+> ℹ️ Google·Pangle·Teads·Naver는 매체가 **IAB TCF 규격 CMP**를 연동하면 각 네트워크 SDK가 동의 문자열을 자동으로 읽어갑니다. 이 경로는 SDK 설정 없이 동작합니다.
 
 ---
 

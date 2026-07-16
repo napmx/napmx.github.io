@@ -21,7 +21,7 @@
 
 ```
 AMMInterstitial.loadAd(context, adInfo, callback)
-    → onSuccessLoadInterstitial(adapterName, ad)   ← 로드된 광고 객체 전달
+    → onSuccessLoadInterstitial(networkType, ad)   ← 로드된 광고 객체 전달
         → ad.setFullScreenContentCallback(...)     ← 노출/클릭/닫힘/표시실패 콜백 등록
         → ad.show(activity)                        ← 원하는 시점에 노출 (Activity 필요)
     → onFailLoadInterstitial(errorCode, errorMsg)  ← 로드 실패
@@ -30,6 +30,9 @@ AMMInterstitial.loadAd(context, adInfo, callback)
 - **로드**는 정적 `AMMInterstitial.loadAd(...)`로 시작합니다(인스턴스 생성 불필요).
 - **노출**은 콜백으로 받은 `ad` 객체의 `show(activity)`로 수행합니다. 콜백 안에서 즉시 호출하면 **즉시 노출**, 객체를 보관했다가 나중에 호출하면 **지연 노출(Load-Only)** 입니다.
 - 노출 단계 이벤트(노출/클릭/닫힘/표시 실패)는 `FullScreenContentCallback`으로 수신합니다.
+
+
+> ℹ️ **커스텀 어댑터를 쓰는 경우** — `AdMixer.registerAdapter(String)`로 등록한 어댑터는 `AdNetworkType`에 등재되어 있지 않아, 로드 **성공** 콜백이 `String adapterName` 오버로드로만 통지됩니다. 커스텀 어댑터를 사용한다면 그 오버로드도 함께 구현하세요. (로드 **실패** `onFailLoad*`는 어댑터와 무관하게 항상 호출되므로 별도 조치가 필요 없습니다.)
 
 ---
 
@@ -68,8 +71,8 @@ public class InterstitialActivity extends AppCompatActivity {
         // 정적 load() — 로드 완료 시 콜백으로 광고 객체를 받는다
         AMMInterstitial.loadAd(this, adInfo, new AMMInterstitialLoadCallback() {
             @Override
-            public void onSuccessLoadInterstitial(@NonNull String adapterName, @NonNull AMMInterstitial ad) {
-                // 광고 수신 성공 (adapterName: 응답한 광고 네트워크 이름)
+            public void onSuccessLoadInterstitial(@NonNull AdNetworkType networkType, @NonNull AMMInterstitial ad) {
+                // 광고 수신 성공 (networkType: 응답한 광고 네트워크)
                 loadedAd = ad;
 
                 // 노출 단계 콜백 등록 (GAM FullScreenContentCallback과 동일 구조)
@@ -133,7 +136,7 @@ class InterstitialActivity : AppCompatActivity() {
             .build()
 
         AMMInterstitial.loadAd(this, adInfo, object : AMMInterstitialLoadCallback() {
-            override fun onSuccessLoadInterstitial(adapterName: String, ad: AMMInterstitial) {
+            override fun onSuccessLoadInterstitial(networkType: AdNetworkType, ad: AMMInterstitial) {
                 loadedAd = ad
                 // Kotlin은 프로퍼티 접근(ad.fullScreenContentCallback = ...)도 가능
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -168,7 +171,7 @@ class InterstitialActivity : AppCompatActivity() {
 ```java
 // 1) 미리 로드: 콜백에서 show() 하지 않고 보관만
 AMMInterstitial.loadAd(this, adInfo, new AMMInterstitialLoadCallback() {
-    @Override public void onSuccessLoadInterstitial(@NonNull String adapterName, @NonNull AMMInterstitial ad) {
+    @Override public void onSuccessLoadInterstitial(@NonNull AdNetworkType networkType, @NonNull AMMInterstitial ad) {
         loadedAd = ad;
         loadedAd.setFullScreenContentCallback(fullScreenCallback);
         // show() 호출하지 않음 → 지연 노출 대기
@@ -196,6 +199,8 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 | `onAdClicked()` | 광고 소재 클릭 | |
 | `onAdDismissedFullScreenContent()` | 광고 닫힘 | |
 | `onAdFailedToShowFullScreenContent(AdError)` | 노출 실패 | `AdError.getCode()` / `getMessage()` |
+
+> ℹ️ **표시 결과는 광고당 정확히 1회만 전달됩니다.** `show()` 이후 `onAdShowedFullScreenContent()`(표시됨) 또는 `onAdFailedToShowFullScreenContent()`(표시 실패) 중 **하나만** 최종 결과로 수신합니다. 네트워크(어댑터)가 표시 결과를 통지하지 않아 일정 시간 내 아무 신호가 없으면 SDK가 표시 실패를 백스톱으로 전달합니다. 표시 실패가 전달된 뒤 뒤늦게 도착하는 상반된 콜백(닫힘/표시됨/중복 실패)은 억제되므로, **이중·모순 콜백을 방어할 필요가 없습니다.**
 
 ---
 
@@ -229,7 +234,7 @@ if (loadedAd != null && loadedAd.hasInterstitial) {
 |---|---|
 | `new InterstitialAd(context)` | (인스턴스 생성 불필요) `AMMInterstitial.loadAd(context, adInfo, callback)` |
 | `setAdInfo(adInfo)` | `loadAd(...)`의 `adInfo` 인자로 전달 |
-| `setAdListener(AdListener)` + `onReceivedAd` | `AMMInterstitialLoadCallback.onSuccessLoadInterstitial(adapterName, ad)` |
+| `setAdListener(AdListener)` + `onReceivedAd` | `AMMInterstitialLoadCallback.onSuccessLoadInterstitial(networkType, ad)` |
 | `onFailedToReceiveAd(...)` | `onFailLoadInterstitial(errorCode, errorMsg)` |
 | `loadInterstitial()` / `startInterstitial()` | `AMMInterstitial.loadAd(...)` (노출은 `ad.show(activity)`) |
 | `showInterstitial()` | `ad.show(activity)` |

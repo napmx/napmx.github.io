@@ -53,7 +53,7 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.01')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
@@ -68,7 +68,10 @@ dependencies {
     implementation 'io.github.nasmedia-tech:admixer-unity'           // Unity Ads
     implementation 'io.github.nasmedia-tech:admixer-naveradmanager'  // Naver Ad Manager
     implementation 'io.github.nasmedia-tech:admixer-teads'           // Teads
-    implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout'  // Unity 네이티브 레이아웃 헬퍼
+    implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout'  // Unity 네이티브 레이아웃 헬퍼 (선택 — 직접 NativeAdViewBinder 레이아웃을 구성하면 불필요)
+
+    // 🧪 (beta) — Google Mobile Ads NextGen SDK. admixer-admanager와 택1 (아래 주의 참고)
+    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen'
 }
 ```
 
@@ -79,21 +82,52 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.0.1'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.0'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'       // Google AdManager (play-services-ads:25.2.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.1'           // Kakao Adfit (ads-base:3.21.17 포함)
-    implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'          // Pangle (pag-sdk:8.0.0.5 포함)
-    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'        // AppLovin (applovin-sdk:13.6.3 포함)
-    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'           // Unity Ads (unity-ads:4.18.1 포함)
-    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'           // Teads (teads-sdk:6.1.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (admixer-unity와 함께 사용)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.1'       // Google AdManager (play-services-ads:25.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.2'           // Kakao Adfit (ads-base:3.21.17 포함)
+    implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.1'          // Pangle (pag-sdk:8.0.0.5 포함)
+    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.1'        // AppLovin (applovin-sdk:13.6.3 포함)
+    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.1'           // Unity Ads (unity-ads:4.18.1 포함)
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.1'  // Naver Ad Manager (nam-bom:8.16.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-teads:2.0.1'           // Teads (teads-sdk:6.1.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (선택 — admixer-unity와 함께, 직접 NativeAdViewBinder 레이아웃 구성 시 불필요)
+
+    // 🧪 (beta) — Google Mobile Ads NextGen SDK (ads-mobile-sdk:1.2.1 포함). admixer-admanager와 택1
+    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.0.1'
 }
 ```
+
+---
+
+### 🧪 GMA NextGen (beta) — 도입 전 필독
+
+Google이 차세대로 발표한 **Mobile Ads NextGen SDK** 연동 어댑터입니다. **beta 단계**이며, 기존 `admixer-admanager`(classic)를 대체하는 별도 모듈입니다.
+
+> 🚨 **classic `play-services-ads`를 쓰는 어댑터와 같은 앱에 넣을 수 없습니다.**
+> NextGen SDK는 classic `com.google.android.gms:play-services-ads`의 **전역 exclude**를 요구합니다. 따라서:
+>
+> | 어댑터 | NextGen과 공존 |
+> |---|---|
+> | `admixer-admanager` (classic) | ❌ **불가** — 택1 |
+> | `admixer-naveradmanager` | ❌ **불가** — 내부적으로 GAM 미디에이션(nam-dfp) 사용 |
+> | `admixer-adfit` · `admixer-pangle` · `admixer-applovin` · `admixer-unity` · `admixer-teads` | ✅ 가능 |
+>
+> **국내 지면은 대부분 AdManager·NaverAd를 함께 사용하므로, NextGen 도입 시 두 네트워크를 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
+
+사용 시 `build.gradle`에 exclude를 추가하세요.
+
+```gradle
+configurations.all {
+    exclude group: 'com.google.android.gms', module: 'play-services-ads'
+}
+```
+
+- **minSdk 24** 이상 필요 (classic AdManager는 23)
+- 미디에이션은 Ad Manager 또는 no-mediation만 호환
 
 ### 1-3. 네트워크별 추가 Maven 저장소
 
@@ -127,18 +161,19 @@ dependencyResolutionManagement {
 
 각 어댑터(`admixer-*`)는 아래 **번들(검증) 버전**으로 빌드·검증되었습니다. 어댑터 aar에는 해당 네트워크 SDK가 전이 의존으로 포함되므로, 별도로 버전을 지정하지 않아도 번들 버전이 자동 적용됩니다.
 
-> ℹ️ **최소 / 최대**는 각 네트워크 벤더의 릴리스 호환성 기준 권장 범위입니다. 어댑터가 호출하는 SDK 클래스·메서드·인자가 해당 범위에서 존재·동일한지 **소스 레벨로 교차검증**(2026-06-19)을 거쳤습니다. 다만 운영 적용 전 해당 버전으로 빌드·동작을 한 번 더 확인하는 것을 권장합니다.
+> ℹ️ **최소 / 최대**는 각 네트워크 벤더의 릴리스 호환성 기준 권장 범위입니다. 어댑터가 호출하는 SDK 클래스·메서드·인자가 해당 범위에서 존재·동일한지 **소스 레벨로 교차검증**하고, 실제 Gradle resolve 결과 및 네이티브 라이브러리 16KB 정렬까지 **전수 재점검**(2026-07-12)했습니다. 다만 운영 적용 전 해당 버전으로 빌드·동작을 한 번 더 확인하는 것을 권장합니다.
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
-| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.0.1** | 2.0.1 | 자체 SDK — 네이티브 바인더 브릿지 (Breaking 1건) |
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.1.0** | 2.1.0 | 자체 SDK |
 | Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
-| Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 — admixer-adfit 2.0.1 네이티브 비즈보드 지원 |
+| Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
 | Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
 | AppLovin | `com.applovin:applovin-sdk` | 13.2.0 (권장 13.4.0+) | **13.6.3** | 13.6.3 | 12.x 이하 미지원 |
 | Unity Ads | `com.unity3d.ads:unity-ads` | 4.16.x (권장 4.18.0) | **4.18.1** | 4.18.1 | 4.x 라인 |
 | Naver Ad Manager | `com.naver.gfpsdk:nam-bom` | 8.14.0 | **8.16.0** | 8.17.0 | 8.x(BOM이 모듈 버전 고정) |
-| Teads | `tv.teads.sdk.android:sdk` | 6.0.4 | **6.1.0** | 6.1.0 | 6.x 통합 SDK(5.x는 레거시) |
+| Teads | `tv.teads.sdk.android:sdk` | 6.0.4 (권장 6.1.0) | **6.1.0** | 6.1.0 | 6.x 통합 SDK(5.x는 레거시) |
+| 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | AdManager·NaverAd와 공존 불가 |
 
 > ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어, 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
 > ```gradle
@@ -158,6 +193,26 @@ dependencyResolutionManagement {
 | AdMixer (Core), Kakao Adfit, Teads | API 21 (Android 5.0) |
 | Google AdManager, Pangle, Unity Ads, Naver Ad Manager | API 23 (Android 6.0) |
 | AppLovin | API 24 (Android 7.0) — `applovin-sdk:13.6.3` 기준 |
+| 🧪 GMA NextGen **(beta)** | API 24 (Android 7.0) — NextGen SDK 요구 |
+
+### 1-5. Kotlin 툴체인 요구사항
+
+일부 네트워크 SDK는 최신 Kotlin 런타임(`kotlin-stdlib`)을 전이 의존으로 포함합니다. 아래 어댑터를 추가하는 경우 **호스트 앱을 Kotlin 2.0 이상(권장 2.1+)으로 빌드**하세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
+
+| 사용 구성 | 매체 앱 최소 Kotlin | 근거 |
+|---|---|---|
+| **코어(`admixer-ssp`)만** | Kotlin 1.8+ / **Java-only 가능** | 코어는 낮은 stdlib만 요구 |
+| + Google AdManager | **Kotlin 2.1+** | GMA가 최소 Kotlin 2.1.0 요구 |
+| + Kakao Adfit | **Kotlin 2.0+** | ads-base가 stdlib 2.0.x + coroutines 유입 |
+| + Naver Ad Manager | **Kotlin 2.1+** | GFP SDK(Kotlin 기반) |
+| + 🧪 GMA NextGen **(beta)** | **Kotlin 2.1+** | GMA 계열과 동일 |
+| + Pangle / AppLovin / Unity / Teads | 영향 없음 | 모두 Java 기반, Kotlin 미강제 |
+
+> ℹ️ Java 8/11/17 모두 무방합니다. 코어만 임베드하는 앱의 지원 범위(Kotlin 1.8+/Java-only)는 변하지 않습니다. 위 상승은 각 네트워크 SDK 벤더가 요구하는 최소치이며 SDK가 추가로 강제한 것이 아닙니다.
+
+### 1-6. Android 15 · 16KB 페이지 크기
+
+Google Play는 Android 15 이상 타깃 앱에 대해 64비트 네이티브 라이브러리의 **16KB 페이지 정렬**을 요구합니다. 네이티브 라이브러리를 포함하는 **Pangle·AppLovin**의 `.so`가 모두 16KB 정렬로 출하됨을 실측 확인했으며(그 외 네트워크는 네이티브 라이브러리 미포함), **전 네트워크가 16KB 요건을 충족**합니다. 매체 측 추가 조치는 필요하지 않습니다.
 
 ---
 
@@ -180,6 +235,21 @@ dependencyResolutionManagement {
 별도 설정이 필요 없습니다. Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx가 SDK(`admixer-naveradmanager` aar)에서 제공·관리하므로 **호스트 앱 매니페스트에 설정하지 마세요.** (SDK 동기화 시 자동 포함)
 
 > ℹ️ Google App ID는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 문의하여 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
+
+### 네트워크 보안 설정(networkSecurityConfig)을 직접 선언하는 경우
+
+코어 SDK는 광고 네트워크(매체사/DSP) 호환을 위해 `<application>`에 `android:networkSecurityConfig`를 선언합니다. **매체 앱이 자체 `networkSecurityConfig`를 선언하면** 매니페스트 병합 충돌이 발생하므로, 앱 매니페스트 `<application>`에 `tools:replace`를 지정해 매체 설정이 우선하도록 하세요. (매체가 자체 NSC를 선언하지 않으면 별도 조치 불필요)
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application
+        android:networkSecurityConfig="@xml/your_network_security_config"
+        tools:replace="android:networkSecurityConfig">
+        ...
+    </application>
+</manifest>
+```
 
 ---
 
@@ -268,20 +338,16 @@ class MyApplication : Application() {
 ### 선택 초기화 옵션 (개인정보 동의 / 테스트)
 
 ```java
-// COPPA(아동 대상 앱) 여부 설정
+// 아동 대상 앱 여부 — 아동 대상이라면 필수 (Google Play Families 정책)
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);  // 아동 대상
 AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE); // 일반 대상
-
-// 개인정보 동의 — 워터폴에서 각 네트워크로 자동 전파
-AdMixer.setGdprConsent(true);          // GDPR 사용자 동의 (EU)
-AdMixer.setCcpaDoNotSell(false);       // CCPA Do-Not-Sell (US)
 
 // 테스트 모드 / 테스트 디바이스 (QA·심사용)
 AdMixer.setTestMode(true);
 AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```
 
-> ℹ️ 개인정보 동의·테스트 설정의 네트워크별 전파 매핑은 [개인정보 동의 및 테스트 설정](privacy.md)을 참고하세요.
+> ℹ️ 네트워크별 전파 매핑은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 
@@ -314,17 +380,17 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```gradle
 dependencies {
     // 이미 Google AdManager SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0") {
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.1") {
         exclude group: "com.google.android.gms", module: "play-services-ads"
     }
 
     // 이미 Kakao Adfit SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.1") {
+    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.2") {
         exclude group: "com.kakao.adfit", module: "ads-base"
     }
 
     // 이미 Pangle SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-pangle:2.0.0") {
+    implementation("io.github.nasmedia-tech:admixer-pangle:2.0.1") {
         exclude group: "com.pangle.global", module: "pag-sdk"
     }
 }

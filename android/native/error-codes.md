@@ -24,7 +24,7 @@
 ```java
 // 에러 코드 비교 예시
 @Override
-public void onFailedToReceiveAd(@Nullable Object adView, @NonNull String adapterName,
+public void onFailedToReceiveAd(@Nullable Object adView, @NonNull AdNetworkType networkType,
                                   int errorCode, @Nullable String errorMsg) {
     if (errorCode == AdMixer.AX_ERR_NO_ADS || errorCode == AdMixer.AX_ERR_NO_FILL) {
         // 광고 재고 없음 — 일정 시간 후 재요청

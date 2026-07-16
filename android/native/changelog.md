@@ -2,13 +2,120 @@
 
 ---
 
+## v2.1.0 (2026-07-16) — 콜드스타트 로딩 최적화 · 미디에이션 응답 일관성 · 네이티브 렌더링 정합
+
+> 광고 요청부터 노출까지의 로딩 지연을 단축하고, 어댑터 동작 편차와 무관하게 매체 앱에 일관된 응답을 보장하도록 코어를 강화했습니다. 네이티브 광고에는 **레이아웃 코드 수정이 필요한 변경 1건**(`setPrivacyViewId` 제거)과 **화면이 바뀔 수 있는 변경 2건**(메인 미디어 슬롯 크기, Pangle 광고 로고 위치)이 포함됩니다.
+
+> ℹ️ 이번 릴리스는 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). BOM(`admixer-bom:2026.07.02`)으로 버전을 묶어 연동하는 것을 권장합니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.1.0** |
+> | `admixer-adfit` | **2.0.2** |
+> | `admixer-admanager` · `admixer-gma-nextgen` · `admixer-applovin` · `admixer-unity` · `admixer-naveradmanager` · `admixer-pangle` · `admixer-teads` · `admixer-compose` | **2.0.1** |
+> | `admixer-unity-nativeadlayout` | 2.0.0 (변경 없음) |
+> | `admixer-bom` | **2026.07.02** |
+
+### ⚠️ 어댑터 식별자 **값** 변경 (Breaking — 재컴파일 필수)
+
+`AdMixer.ADAPTER_*` 상수의 **문자열 값**이 바뀌었습니다. 상수 이름은 그대로라 **컴파일 오류가 나지 않습니다.**
+
+| 상수 | 이전 값 | 새 값 |
+|---|---|---|
+| `AdMixer.ADAPTER_ADMANAGER` | `"AdManager"` | `"GoogleAdManager"` |
+| `AdMixer.ADAPTER_ADFIT` | `"KaKao Adfit"` | `"AdFit"` |
+| `AdMixer.ADAPTER_ADMIXER_HOUSE` | `"houseAd"` | `"HouseAd"` |
+
+> 🚨 **반드시 재컴파일하세요.** Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이너리로 복사(인라인)** 합니다. 이전 버전으로 빌드된 앱에는 옛 문자열이 그대로 박혀 있어, SDK만 올리고 재컴파일하지 않으면 **오류 없이 조용히 동작이 어긋납니다.**
+>
+> 영향받는 코드:
+> - `adapterName.equals(AdMixer.ADAPTER_ADFIT)` 같은 **문자열 비교 분기** → 항상 `false`
+> - `setAdapterConfig(AdMixer.ADAPTER_ADFIT, ...)` 같은 **어댑터 키 주입** → 매칭 실패로 설정 미반영
+>
+> **권장** — 문자열 비교 대신 아래의 `AdNetworkType` enum 오버로드로 전환하면 이런 문제가 구조적으로 사라집니다.
+
+### 콜백 — 네트워크 식별을 `AdNetworkType` enum으로 (신규 · 기존 방식 Deprecated)
+
+- **`AdNetworkType` enum 오버로드 추가** — `onReceivedAd` / `onFailedToReceiveAd` / `onAdShowFailed` 3종이 네트워크를 문자열(`String adapterName`) 대신 **타입 안전한 enum**(`AdNetworkType networkType`)으로 전달합니다. `switch(networkType) { case PANGLE: ... }`처럼 분기할 수 있어 오타로 인한 분기 누락이 사라집니다.
+- **기존 `String adapterName` 오버로드는 `@Deprecated`** — 지금은 그대로 동작하며 **다음 메이저(3.0)에서 제거 예정**입니다. 신규 구현은 enum 버전을 사용하세요. 문자열이 필요하면 `networkType.getAdapterName()`으로 얻습니다.
+  > ⚠️ 단, **전 네트워크 No-Ad 등 내부 실패**(어댑터가 아닌 SDK/미디에이션 레벨 실패)는 enum에 대응 값이 없어 **`String` 오버로드로만 통지**됩니다. 최종 No-Ad를 놓치지 않으려면 **두 오버로드를 함께 유지**하세요. ([API 레퍼런스](api-reference.md))
+
+### 네이티브 — 광고 정보 고지(AdChoices) 위치 지정 (신규)
+
+- **`NativeAdViewBinder.Builder.setAdChoicesPosition(AdChoicesPosition)` 추가** — 광고 정보 고지 아이콘을 4개 모서리(`LEFT_TOP` / `RIGHT_TOP` / `LEFT_BOTTOM` / `RIGHT_BOTTOM`) 중 원하는 곳에 노출합니다. 미지정 시 **우측 상단**(기존 동작과 동일). **모든 네이티브 네트워크**(AdMixer 자체·AdManager·GMA NextGen·NaverAd·Pangle·Adfit)에 동일하게 적용됩니다. ([네이티브 가이드](native-ad.md#광고-정보-고지adchoices-위치-지정))
+- **레이아웃에 고지 슬롯이 더 이상 필요 없습니다** — SDK가 자동으로 오버레이합니다.
+- **GMA NextGen 고지 아이콘 위치 명시** — 기존에는 네트워크 SDK 기본값에 의존했으나, 이제 우측 상단(또는 지정 모서리)으로 명시합니다.
+
+### 네이티브 — 주요 변경 (Breaking Changes)
+
+- **`NativeAdViewBinder.Builder.setPrivacyViewId(int)` 제거** — 호출 중이라면 컴파일 오류가 발생하므로 **`setAdChoicesPosition()`으로 교체**하세요. 레이아웃의 `nap_mx_privacy_container` 슬롯도 삭제할 수 있습니다(SDK가 자동 오버레이).
+  > 임의 위치(예: 상단 중앙)를 지정하는 기능은 제공하지 않습니다. 네트워크 SDK마다 아이콘 소유권이 달라(일부는 SDK가 자기 뷰 계층에 직접 그림) 모서리 밖 위치는 네트워크 간 동작을 보장할 수 없기 때문입니다. 실제로 Google AdManager는 매체가 지정한 컨테이너를 무시하고 자체 오버레이를 그립니다. 워터폴은 어느 네트워크가 채울지 매체가 통제할 수 없으므로, 지면마다 위치가 달라지는 것을 막기 위해 4모서리로 일원화했습니다.
+
+### 네이티브 — 렌더링 정합 (⚠️ 화면 변경 가능)
+
+- **메인 미디어 슬롯이 선언한 크기를 그대로 지킵니다** — 이전에는 AdMixer 자체 광고에 한해 SDK가 소재 비율에 맞춰 슬롯보다 작게 렌더링했고, 그래서 같은 레이아웃이라도 워터폴 승자에 따라 높이가 달라졌습니다(예: 144×96 카드에 1200×628 소재 → 144×75로 축소, 카드 하단에 배경 노출). 이제 AdManager·Pangle·NaverAd·Adfit과 동일하게 슬롯을 채웁니다.
+  - **영향**: 슬롯 비율 ≠ 소재 비율인 경우 여백(레터박스)의 **위치**가 하단 몰림 → 상·하 분산으로 바뀝니다(총량 동일). 슬롯 비율 = 소재 비율이면 변화 없음. `wrap_content` 슬롯도 변화 없음.
+  - **권장**: 여백을 없애려면 슬롯 비율을 소재 비율(대부분 1.91:1)에 맞추세요. ([네이티브 가이드](native-ad.md))
+- **Pangle 광고 로고 위치 — 좌측 상단 → 우측 상단** — 전 네트워크 기본값을 우측 상단으로 통일했습니다. 좌측 상단을 유지하려면 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`을 지정하세요.
+
+### 성능 (콜드스타트 로딩 최적화)
+
+- **콜드스타트 첫 광고 로딩 단축** — ① 마지막 성공 서버 config를 캐시로 즉시 웜업하여 첫 로드가 서버 응답을 기다리지 않고 미디에이션을 시작, ② config에 포함된 네트워크 SDK를 백그라운드에서 선(先)초기화(Pre-Init), ③ WebView 엔진 1회 선(先)워밍으로 첫 배너/전면의 렌더러 초기화 비용 제거, ④ 블로킹 HTTP를 전용 네트워크 스레드 풀로 분리해 저속망·멀티슬롯 큐 대기 해소, ⑤ config 첫 도착 디바운스 0ms.
+- **광고 식별자(IFA) 영속화** — GMS 응답 전/실패 시에도 직전 IFA로 조기 요청이 가능하도록 보강.
+
+### 미디에이션 응답 일관성
+
+- **리워드 1회 지급 보장** — 네트워크마다 완료/획득 이벤트 발화 방식이 달라도, 매체 앱에는 리워드 콜백이 **정확히 1회만** 전달됩니다.
+- **표시 실패의 일관 통지** — 전면/리워드가 로드 후 표시되지 못한 경우, 5초 내 결과가 없으면 표시 실패 콜백을 백스톱으로 전달합니다(무음 방지). 로드만 성공하고 표시하지 않으면 임프레션을 집계하지 않고, 실제 표시 시에만 통지·집계합니다.
+- **단일 결정적 결과 보장** — 백스톱이 표시 실패를 통지한 뒤 뒤늦게 도착하는 어댑터의 상반된 콜백(중복 표시 실패, 표시 실패 후 닫힘/스킵/표시됨)은 억제되어, 매체 앱은 한 번의 광고당 **정확히 하나의 결정적 결과**(표시됨 또는 표시 실패)만 받습니다. 리워드 적립 콜백은 유실 방지를 위해 예외적으로 항상 전달됩니다. **호스트 앱 API·콜백 시그니처 변경 없음.**
+- **콜백 스레드 일관성** — 백그라운드에서 콜백하는 네트워크와 무관하게 광고 이벤트는 항상 메인스레드로 전달됩니다.
+
+### 임프레션 정확화 (⚠️ 자체 광고 지표 영향)
+
+- **실제 노출 시점 발사** — 자체(AdMixer) 배너·전면의 임프레션 비콘을 '로드 완료'가 아닌 **'실제 화면 노출'** 시점(배너: 화면 뷰포트 50% 이상 노출 / 전면: Activity 실제 표시)에 발사하도록 글로벌 표준에 정렬했습니다.
+- **영향**: 로드 후 미표시분·오프스크린 프리페치의 과다 집계가 제거되어 **자체 광고 임프레션 수치가 소폭 하락(정확화)**할 수 있습니다. **정산 로직/앱 이벤트(`onAdDisplayed`)는 변경 없음.** 네트워크 SDK가 집계하는 임프레션(GAM/AppLovin 등)은 해당 없음.
+
+### 안정성
+
+- 전면 광고 닫힘 후 Activity 누수, SDK 종료 시 메인스레드 블로킹(~수초) 제거, 취소된 요청의 커넥션·풀 점유 해소.
+- 어댑터 개별 버그 수정: AdManager 배너 로드 NPE, GMA NextGen 초기화 고착, Pangle 네이티브 늦은 뷰 부착, Mobwith 전면 표시 안정성, Teads 늦은 응답 정리, Adfit·AppLovin 배너 일시정지/재개.
+
+### 연동 요구사항 안내 (신규 — 확인 권장)
+
+- **Kotlin 툴체인**: Google AdManager·Kakao Adfit·Naver Ad Manager 어댑터를 포함하는 앱은 이들 네트워크 SDK가 요구하는 최신 Kotlin 런타임에 맞춰 **호스트 앱을 Kotlin 2.0 이상(권장 2.1+)으로 빌드**하세요. 코어(`admixer-ssp`)만 사용하는 앱은 종전대로 Kotlin 1.8+/Java-only로 무방합니다. ([시작하기](getting-started.md))
+- **네트워크 보안 설정**: 코어 SDK가 광고 생태계 호환을 위해 `networkSecurityConfig`를 앱 레벨로 선언합니다. 매체 앱이 **자체 `android:networkSecurityConfig`를 선언하는 경우** 매니페스트 병합 충돌을 피하려면 `<application>`에 `tools:replace="android:networkSecurityConfig"`를 지정하세요. ([시작하기](getting-started.md))
+
+### 네트워크 SDK 버전 · 16KB 페이지 대응
+
+- 번들 네트워크 SDK 버전은 현행 유지(변경 없음): AdManager `play-services-ads 25.2.0` · Adfit `3.21.17` · Pangle `8.0.0.5` · AppLovin `13.6.3` · Unity `4.18.1` · Naver `nam-bom 8.16.0` · Teads `6.1.0`.
+- **Android 15 16KB 페이지 크기**: 네이티브 라이브러리를 포함하는 Pangle·AppLovin의 `.so`가 모두 16KB 정렬로 출하됨을 실측 확인했습니다(그 외 네트워크는 네이티브 라이브러리 미포함). **전 네트워크 16KB 안전.**
+- (참고) Unity Ads는 벤더가 직접연동 방식의 지원을 축소하고 있어, 중기적으로 대체 연동 방식 전환을 검토 중입니다.
+
+---
+
 ## v2.0.1 (2026-07-02)
 
-- `admixer-ssp` `2.0.1` — 코어 (네이티브 바인더 브릿지, Breaking 1건)
-- `admixer-adfit` `2.0.1` — 네이티브 비즈보드(BizBoard) 지원
-- `admixer-gma-nextgen` `2.0.0` — GMA NextGen 어댑터 지원
-- `admixer-bom` `2026.07.01` — 첫 출시 (POM-only BOM)
-- 나머지 어댑터(`admanager`/`applovin`/`unity`/`naveradmanager`/`pangle`/`teads`/`compose`/`unity-nativeadlayout`)는 `2.0.0`을 유지하며 코어 2.0.1과 호환됩니다.
+> 네이티브 뷰바인더 연동을 뷰 경로로 정리하고, 변경 모듈만 독립 배포합니다.
+> `admixer-ssp`/`admixer-adfit` 2.0.1, `admixer-gma-nextgen` 2.0.0(첫 출시), `admixer-bom` 2026.07.01(첫 출시).
+> 나머지 어댑터는 2.0.0을 유지하며 코어 2.0.1과 호환됩니다. 상세: [Release Notes 2.0.1](../../RELEASE_NOTES_2.0.1.md)
+
+### 새로운 기능
+
+- **GMA NextGen 어댑터 첫 출시** — Google Mobile Ads NextGen SDK 연동 (`admixer-gma-nextgen`). classic `admixer-admanager`와 별도 모듈이며 통합 시 택1.
+- **Adfit 네이티브 비즈보드(BizBoard) 지원** — Adfit 네이티브 경로에서 비즈보드 요청 처리 (`admixer-adfit`).
+- **BOM(Bill of Materials) 첫 배포** — `admixer-bom`(POM-only). `platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')`로 import 시 멤버 아티팩트 버전을 생략할 수 있습니다.
+
+### 버그 수정
+
+- **네이티브 뷰바인더 브릿지** — 뷰의 `AMMNativeAdView.setViewBinder(...)`로만 설정한 바인더가 어댑터까지 전달되지 않아 모든 네이티브 어댑터가 `"No value for nativeViewBinder"`로 실패하던 문제 수정. 로드 직전 뷰의 바인더를 `AdInfo`로 자동 브릿지(최초 로드·롤링 재로드 모두).
+
+### 주요 변경 (Breaking Changes)
+
+- **`AdInfo.Builder.setAdViewBinder(NativeAdViewBinder)` 제거** — 네이티브 바인더는 뷰 경로 `AMMNativeAdView.setViewBinder(...)`로 설정합니다(업계 표준: 바인딩은 뷰의 렌더링 관심사).
+
+### 기타
+
+- **어댑터-코어 버전 호환성 검사 제거** — 어댑터 `initAdapter`의 코어-어댑터 버전 강제 검사를 제거해, 변경된 모듈만 독립적으로 새 버전을 배포할 수 있습니다(어댑터-코어 lockstep 불요).
 
 ---
 

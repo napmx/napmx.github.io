@@ -56,7 +56,7 @@ AdInfo adInfo = new AdInfo.Builder(adUnitId)
 이미 같은 네트워크 SDK를 직접(또는 타 솔루션으로) 사용 중인 경우입니다. 어댑터 의존성에서 중복 모듈을 `exclude` 하세요.
 
 ```gradle
-implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0") {
+implementation("io.github.nasmedia-tech:admixer-admanager:2.0.1") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```
@@ -125,13 +125,15 @@ adView.setAdViewListener(adListener);
 
 **Q. GDPR/CCPA 동의값을 SSP가 하위 네트워크로 전파하나요?**
 
-네. `AdMixer.setGdprConsent / setCcpaDoNotSell / setTagForChildDirectedTreatment`로 설정하면 워터폴에서 각 어댑터가 자기 네트워크 privacy API로 전파합니다. 정확한 매핑은 [개인정보 동의 및 테스트 설정](privacy.md)을 참고하세요(일부 네트워크는 공식 API 부재로 미전파).
+국내(한국) 서비스는 GDPR(EU)·CCPA(캘리포니아) 적용 대상이 아니라 별도 설정이 필요하지 않습니다. **해외 서비스로 확장하거나 EU·미국 트래픽이 있다면** 네트워크마다 동의 전달 방식과 지원 범위가 달라 지면 구성에 따라 안내가 달라집니다 — [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요.
+
+참고로 **Google·Pangle·Teads·Naver**는 매체가 IAB **TCF 규격 CMP**를 연동하면 각 네트워크 SDK가 동의 문자열을 자동으로 읽어갑니다(SDK 설정 불요). EU 트래픽이 있는데 동의가 반영되지 않는 것 같다면 앱의 CMP(TCF v2) 연동부터 확인하세요.
 
 ---
 
-**Q. Pangle은 `setGdprConsent`가 반영되지 않는 것 같습니다.**
+**Q. 아동 대상 앱은 무엇을 설정하나요?**
 
-Pangle 8.x는 **퍼블리셔 CMP의 TCF v2 동의 문자열**로 GDPR 동의를 자동 처리하므로, `setGdprConsent` 값은 Pangle로 전파하지 않습니다(CCPA는 전파). EU 트래픽이 있다면 앱의 CMP(TCF v2) 연동을 확인하세요.
+`AdMixer.setTagForChildDirectedTreatment(...)`를 설정하세요. Google Play **Families 정책**은 국가와 무관하게 적용되므로 국내 서비스도 필수입니다. AdManager·GMA NextGen·Unity로 전파되며, 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 
@@ -150,12 +152,6 @@ v2.0.0부터 AdManager **표준 배너는 디바이스 너비 기반 anchored ad
 ---
 
 ## 개인정보 / 테스트
-
-**Q. CCPA는 US Privacy 문자열과 DoNotSell 플래그 중 무엇을 쓰나요?**
-
-국내(KR) 서비스로 CCPA 대상이 아니면 설정이 불필요합니다. 필요 시 단순한 `setCcpaDoNotSell(boolean)`을 권장하며, IAB CMP를 연동한 경우에만 `setUsPrivacy("1YNN")` 문자열을 사용하세요.
-
----
 
 **Q. QA용 테스트 광고를 실기기에서 띄우려면?**
 

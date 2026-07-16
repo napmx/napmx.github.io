@@ -81,7 +81,7 @@ Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral(
 해당 어댑터 의존성에서 중복 모듈을 `exclude` 하세요.
 
 ```gradle
-implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0") {
+implementation("io.github.nasmedia-tech:admixer-admanager:2.0.1") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```
@@ -290,15 +290,15 @@ ProGuard/R8 규칙 누락이 원인일 수 있습니다. AdMixer Core와 사용�
 
 ## 개인정보 및 테스트
 
-**Q. GDPR/CCPA/COPPA 동의를 네트워크마다 일일이 설정해야 하나요?**
+**Q. 아동 대상 앱인데 뭘 설정해야 하나요?**
 
-아니요. `AdMixer.setGdprConsent(...)`, `setCcpaDoNotSell(...)`, `setTagForChildDirectedTreatment(...)`를 전역으로 설정하면 워터폴에서 각 네트워크로 자동 전파됩니다. 단, 일부 네트워크는 공식 API 부재로 미전파될 수 있어 정확한 매핑은 [개인정보 동의 및 테스트 설정](privacy.md)을 확인하세요.
+`AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)`를 `Application.onCreate()`에서 설정하세요. Google Play **Families 정책**은 국가와 무관하게 적용되므로 국내 서비스도 필수입니다. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 
-**Q. CCPA는 `setCcpaDoNotSell`과 `setUsPrivacy` 중 무엇을 쓰나요?**
+**Q. GDPR/CCPA 동의는 어떻게 전달하나요?**
 
-국내(KR) 서비스로 CCPA 대상이 아니면 설정이 불필요합니다. 필요 시 단순한 `setCcpaDoNotSell(boolean)`을 권장하고, IAB CMP를 연동한 경우에만 `setUsPrivacy("1YNN")` 문자열을 사용하세요.
+국내(한국) 서비스는 GDPR(EU)·CCPA(캘리포니아) 적용 대상이 아니라 별도 설정이 필요하지 않습니다. **해외 서비스로 확장하거나 EU·미국 트래픽이 있다면** 네트워크마다 지원 범위가 달라 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요. 사용 중인 네트워크 조합에 맞춰 안내해 드립니다.
 
 ---
 
@@ -312,7 +312,7 @@ ProGuard/R8 규칙 누락이 원인일 수 있습니다. AdMixer Core와 사용�
 
 **Q. 카카오 비즈보드를 연동하려면?**
 
-비즈보드는 별도 코드 발급이 필요합니다. 발급 및 심사, 연동 방법은 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의하세요.
+비즈보드는 별도 코드 발급이 필요합니다. 발급 및 심사는 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의하고, 연동 방법은 [비즈보드 가이드](bizboard.md)를 참고하세요.
 
 ---
 

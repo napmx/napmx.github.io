@@ -1,6 +1,10 @@
-# v2.0.0 마이그레이션 가이드
+# v2 마이그레이션 가이드
 
-이 문서는 nap mx Android SDK **v1.x → v2.0.0** 업그레이드 시 필요한 변경 사항을 설명합니다.
+이 문서는 nap mx Android SDK **v1.x → v2 최신 버전** 업그레이드 시 필요한 변경 사항을 설명합니다.
+
+> ℹ️ **이미 v2.0.x를 쓰고 계신다면** Step 1~7은 건너뛰고 [v2.0.x → 최신 버전](#v20x--최신-버전-업그레이드)만 확인하세요.
+>
+> 코드 예제는 **최신 버전 기준**입니다. 버전은 [BOM](#step-1-gradle-버전-업데이트)으로 관리하는 것을 권장합니다.
 
 ---
 
@@ -14,18 +18,18 @@
 | **`setViewIds()` 제거** | **v2.0.0에서 완전 제거 — `NativeAdViewBinder`가 모든 어댑터 View ID 처리** |
 | **`setAdapterConfig()` 추가** | **어댑터별 String 초기화 파라미터 설정 (AppLovin `sdkKey` 등)** |
 | **전면 타입 Basic 전용 (Breaking)** | **전면 광고는 Basic만 제공 — `AdInfo.Builder.interstitialAdType`/`popupAdOption`/`setInterstitialAdType`/`setPopupAdOption` 제거. Popup은 내부(서버 설정) 전용, **CountDown 타입은 완전 제거**(관련 상수·뷰 삭제)** |
-| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setGdprConsent/setUsPrivacy/setCcpaDoNotSell/setTestMode/setTestDeviceIds` (개인정보·테스트 전파) |
+| 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setTestMode`/`setTestDeviceIds` (테스트 설정) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`), `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭/무효 옵션을 v2.0.0에서 제거. 정식 메서드로 교체 필요** |
 | **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
 | ProGuard | 규칙 강화 — 아래 최신 규칙으로 교체 필요 |
-| Gradle 버전 | `2.0.0.SNAPSHOT` → `2.0.0` |
+| Gradle 버전 | v1.x 버전 → 최신 버전 (BOM 권장) |
 
 ---
 
 ## 마이그레이션 순서 (한눈에)
 
-1. **Gradle 버전** `2.0.0` 변경 + 새 어댑터(NaverAdManager/Teads) 저장소 추가 → [Step 1](#step-1-gradle-버전-업데이트)
+1. **Gradle 버전** 최신으로 변경(BOM 권장) + 새 어댑터(NaverAdManager/Teads) 저장소 추가 → [Step 1](#step-1-gradle-버전-업데이트)
 2. **ProGuard 규칙** 교체 → [Step 2](#step-2-proguard-규칙-업데이트)
 3. **`registerAdapter()` 호출 제거**(자동 등록) → [Step 3](#step-3-registeradapter-호출-제거)
 4. **구 클래스 → `AMM*` 전환** + 제거된 별칭 메서드 교체 → [Step 5](#step-5-제거된-클래스-및-api-교체-필수--breaking-change)
@@ -50,30 +54,37 @@
 | `cannot find symbol: method setInterstitialAdType/setPopupAdOption(...)` | 전면 Basic 전용 | 해당 호출 제거 |
 | `cannot find symbol: AdMixer.GAUGE`/`TEXT` | CountDown 상수 제거 | 관련 코드 제거 |
 | 빌드는 되나 네이티브가 비거나 미표시 | View ID prefix 변경 | 레이아웃·바인더에 `nap_mx_` 적용 ([Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)) |
+| `cannot find symbol: method setPrivacyViewId(int)` | **v2.0.x 이후 제거** | `setAdChoicesPosition()`으로 교체 ([v2.0.x → 최신](#v20x--최신-버전-업그레이드)) |
+| `cannot find symbol: method setAdViewBinder(...)` | **v2.0.1에서 제거** | `AMMNativeAdView.setViewBinder()`로 교체 ([v2.0.x → 최신](#v20x--최신-버전-업그레이드)) |
+
+> 🚨 **컴파일 오류 없이 조용히 깨지는 변경도 있습니다** — 어댑터 식별자 상수의 **값**이 바뀌어 재컴파일이 필요합니다. [v2.0.x → 최신 버전](#v20x--최신-버전-업그레이드)을 반드시 확인하세요.
 
 ---
 
 ## Step 1. Gradle 버전 업데이트
 
-`build.gradle` 의존성 버전을 `2.0.0`으로 변경하세요.
+**BOM 사용을 권장합니다.** 모듈마다 버전이 갈릴 수 있어(코어와 어댑터가 독립 배포됨) BOM이 조합 호환을 보장하고, 업그레이드 시 **BOM 버전 한 줄만** 바꾸면 됩니다.
 
 ```gradle
-// Before
+// Before (v1.x)
 implementation 'io.github.nasmedia-tech:admixer-ssp:1.0.21'
 implementation 'io.github.nasmedia-tech:admixer-admanager:1.0.21'
 // ...
 
-// After
-implementation 'io.github.nasmedia-tech:admixer-ssp:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-unity:2.0.0'
-// 신규 — v2.0.0에서 추가됨
-implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.0'
-implementation 'io.github.nasmedia-tech:admixer-teads:2.0.0'
+// After (권장 — BOM으로 버전 관리, 멤버는 버전 생략)
+implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')
+implementation 'io.github.nasmedia-tech:admixer-ssp'
+implementation 'io.github.nasmedia-tech:admixer-admanager'
+implementation 'io.github.nasmedia-tech:admixer-adfit'
+implementation 'io.github.nasmedia-tech:admixer-pangle'
+implementation 'io.github.nasmedia-tech:admixer-applovin'
+implementation 'io.github.nasmedia-tech:admixer-unity'
+// 신규 — v2에서 추가됨
+implementation 'io.github.nasmedia-tech:admixer-naveradmanager'
+implementation 'io.github.nasmedia-tech:admixer-teads'
 ```
+
+> ℹ️ **최신 BOM 버전**은 [SDK 시작하기](getting-started.md)에서 확인하세요. BOM 없이 개별 버전을 직접 지정하는 방법도 시작하기 가이드에 있습니다.
 
 ---
 
@@ -268,30 +279,47 @@ new AdInfo.Builder(ADUNIT_ID)
 | `COMPLETION` | `onAdCompleted()` | 비디오 재생 완료 |
 | `SKIPPED` | `onAdSkipped()` | 비디오 스킵 |
 | `EARNEDREWARD` | `onAdRewarded()` | 보상 적립 |
-| - | `onAdShowFailed(adView, adapterName, errorCode, errorMsg)` | 광고 노출(show) 실패 (신규 추가) |
+| - | `onAdShowFailed(adView, networkType, errorCode, errorMsg)` | 광고 노출(show) 실패 (신규 추가) |
 
 > ℹ️ 좌측 `AdEvent` 상수명은 **v1.x 기준**입니다. v2.0.0에서 `AdEvent`는 **SDK 내부 전용**으로 전환되었고, 내부적으로 `COMPLETION`은 `COMPLETE`로 리네임되었습니다. 앱 코드는 더 이상 `AdEvent`를 직접 참조하지 않으므로(이름 있는 메서드만 override) 이 리네임은 연동에 영향을 주지 않습니다.
 
 ```java
-// Before (v1.x) — onEventAd 제거됨, 컴파일 오류
+// Before (v1.x) — onEventAd 제거됨, 컴파일 오류. v1은 네트워크를 String으로 전달했습니다.
 adView.setAdViewListener(new AdListener() {
     @Override public void onReceivedAd(String adapterName, Object ad) { /* ... */ }
-    @Override public void onFailedToReceiveAd(Object ad, String name, int code, String msg) { /* ... */ }
+    @Override public void onFailedToReceiveAd(Object ad, String adapterName, int code, String msg) { /* ... */ }
     @Override public void onEventAd(Object ad, AdEvent event) {
         if (event == AdEvent.CLICK) { /* 클릭 */ }
         else if (event == AdEvent.COMPLETION) { /* 완료 */ }
     }
 });
 
-// After (v2.0.0) — 필요한 이벤트만 override
+// After (최신) — 필요한 이벤트만 override
 adView.setAdViewListener(new AdListener() {
-    @Override public void onReceivedAd(String adapterName, Object ad) { /* ... */ }
-    @Override public void onFailedToReceiveAd(Object ad, String name, int code, String msg) { /* ... */ }
-    @Override public void onAdShowFailed(Object ad, String name, int code, String msg) { /* 표시 실패 */ }
+    @Override public void onReceivedAd(AdNetworkType networkType, Object ad) {
+        // networkType로 switch: switch(networkType){ case PANGLE: ... }
+    }
+    @Override public void onFailedToReceiveAd(Object ad, AdNetworkType networkType, int code, String msg) {
+        // 개별 네트워크의 수신 실패
+    }
+
+    // ⚠️ 필수 — 전 네트워크 No-Ad는 이 String 버전으로만 옵니다 (아래 경고 참고)
+    @SuppressWarnings("deprecation")
+    @Override public void onFailedToReceiveAd(Object ad, String adapterName, int code, String msg) {
+        // 최종 수신 실패 (adapterName = "Mediation" / "SDK")
+    }
+
+    @Override public void onAdShowFailed(Object ad, AdNetworkType networkType, int code, String msg) { /* 표시 실패 */ }
     @Override public void onAdClicked() { /* 클릭 */ }
     @Override public void onAdCompleted() { /* 완료 */ }
 });
 ```
+
+> **[REQ-20260713]** `onReceivedAd`/`onFailedToReceiveAd`/`onAdShowFailed`는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드는 `@Deprecated`(3.0에서 제거 예정)이며, 문자열이 필요하면 `networkType.getAdapterName()`으로 얻으세요.
+>
+> **단, `@Deprecated`라고 지우면 안 됩니다** — 아래 경고대로 최종 실패는 String 경로가 유일합니다.
+
+> ⚠️ 내부 실패(no-fill "All adapters failed.", 미초기화 등 — 합성 이름 SDK/Mediation)와 `AdMixer.registerAdapter(String)`로 등록한 커스텀 어댑터(enum 미등재)는 **String 오버로드로만 통지**됩니다. 따라서 로드/표시 실패 처리는 String 버전(`onFailedToReceiveAd(adView, String adapterName, ...)`/`onAdShowFailed(...)`)도 함께 구현하세요.
 
 > ℹ️ 전면형태(전면/리워드/전면 동영상)는 `FullScreenContentCallback`(GAM 규약)도 그대로 사용할 수 있습니다(변경 없음).
 
@@ -344,16 +372,21 @@ new NativeAdViewBinder.Builder(R.layout.item_native_ad)
     .build();
 
 // After
-new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
     .setTitleId(R.id.nap_mx_tv_title)
     .setIconImageId(R.id.nap_mx_iv_icon)
     .setAdvertiserId(R.id.nap_mx_tv_adv)
     .setDescriptionId(R.id.nap_mx_tv_desc)
     .setMainViewId(R.id.nap_mx_iv_main)
     .setCtaId(R.id.nap_mx_btn_cta)
-    .setPrivacyViewId(R.id.nap_mx_privacy_container) // ✅ 선택 (미지정 시 우측 상단 자동 오버레이)
+    .setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP) // ✅ 선택 — AdChoices 모서리, 기본 RIGHT_TOP
     .build();
+
+// ✅ 필수 — 만든 바인더를 뷰에 연결해야 적용됩니다 (누락 시 네이티브가 표시되지 않음)
+nativeAdView.setViewBinder(viewBinder);
 ```
+
+> ⚠️ **바인더는 반드시 `AMMNativeAdView.setViewBinder()`로 연결하세요.** `AdInfo.Builder.setAdViewBinder()`는 v2.0.1에서 제거되었습니다(바인딩은 뷰의 렌더링 관심사라는 업계 표준에 맞춤). 연결하지 않으면 어댑터가 바인더를 받지 못해 네이티브 광고가 표시되지 않습니다.
 
 ### setViewIds 제거 (v2.0.0 Breaking Change)
 
@@ -405,19 +438,18 @@ interstitialAd.stop();
 
 ---
 
-## Step 9. 개인정보 동의 / 테스트 설정 전파 (선택)
-
-GDPR/CCPA/COPPA 동의값과 테스트 설정을 `AdMixer` 전역에 설정하면 워터폴에서 각 네트워크로 자동 전파됩니다.
+## Step 9. 아동 대상 설정 / 테스트 설정 (선택)
 
 ```java
-AdMixer.setGdprConsent(true);
-AdMixer.setUsPrivacy("1YNN"); // CCPA US Privacy 문자열 설정
-AdMixer.setCcpaDoNotSell(false); // CCPA Do Not Sell 플래그 설정
+// 아동 대상 앱이라면 필수 — Google Play Families 정책
+AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);
+
+// 테스트 설정
 AdMixer.setTestMode(true);
 AdMixer.setTestDeviceIds(Arrays.asList("..."));
 ```
 
-자세한 매핑은 [개인정보 동의 및 테스트 설정](privacy.md)을 참고하세요.
+자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 
@@ -440,6 +472,44 @@ v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변�
 
 ---
 
+## v2.0.x → 최신 버전 업그레이드
+
+이미 **v2.0.0 / v2.0.1을 사용 중**이라면 위 Step 1~9는 해당되지 않습니다. 아래만 확인하세요.
+
+### 컴파일 오류가 나는 변경
+
+| 증상 | 원인 | 조치 |
+|---|---|---|
+| `cannot find symbol: method setPrivacyViewId(int)` | `NativeAdViewBinder.Builder.setPrivacyViewId()` 제거 | `setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP)`으로 교체. 레이아웃의 `nap_mx_privacy_container` 슬롯도 삭제 가능(SDK가 자동 오버레이) |
+| `cannot find symbol: method setAdViewBinder(...)` | `AdInfo.Builder.setAdViewBinder()` 제거 **(v2.0.1)** | `AMMNativeAdView.setViewBinder(viewBinder)`로 교체 |
+
+### 🚨 컴파일 오류 **없이** 조용히 깨지는 변경
+
+**어댑터 식별자 상수의 값이 바뀌었습니다.** 이름은 그대로라 빌드는 통과합니다.
+
+| 상수 | 이전 값 | 새 값 |
+|---|---|---|
+| `AdMixer.ADAPTER_ADMANAGER` | `"AdManager"` | `"GoogleAdManager"` |
+| `AdMixer.ADAPTER_ADFIT` | `"KaKao Adfit"` | `"AdFit"` |
+| `AdMixer.ADAPTER_ADMIXER_HOUSE` | `"houseAd"` | `"HouseAd"` |
+
+Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이너리로 복사**합니다. SDK만 올리고 재컴파일하지 않으면 옛 문자열이 앱에 남아, `adapterName.equals(AdMixer.ADAPTER_ADFIT)` 같은 분기와 `setAdapterConfig(AdMixer.ADAPTER_ADFIT, ...)` 키가 **오류 없이 어긋납니다.**
+
+> ✅ **조치** — 반드시 **클린 빌드로 재컴파일**하세요. 근본적으로는 문자열 비교 대신 `AdNetworkType` enum 오버로드로 전환하면 이 문제가 재발하지 않습니다.
+
+### 화면이 바뀔 수 있는 변경
+
+- **네이티브 메인 미디어 슬롯이 선언한 크기를 그대로 지킵니다.** 이전에는 AdMixer 자체 광고만 소재 비율로 축소돼 슬롯보다 작게 그려졌습니다. 슬롯 비율 ≠ 소재 비율이면 여백 위치가 하단 몰림 → 상·하 분산으로 바뀝니다. ([네이티브 가이드](native-ad.md))
+- **Pangle 광고 로고가 좌측 상단 → 우측 상단**으로 이동합니다. 좌측 상단 유지는 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`.
+
+### 권장 (선택)
+
+- `onReceivedAd`/`onFailedToReceiveAd`/`onAdShowFailed`의 **`AdNetworkType` enum 오버로드로 전환** — `String` 오버로드는 `@Deprecated`(3.0 제거 예정). 단 **최종 No-Ad는 String 경로가 유일**하므로 그쪽은 남겨두세요([위 Step 5-B 경고](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)).
+
+전체 변경 내역은 [릴리즈 노트](changelog.md)를 확인하세요.
+
+---
+
 ## 업그레이드 후 검증 체크리스트
 
 빌드가 통과한 뒤 아래 항목을 실기기에서 확인하면 대부분의 연동 이슈를 사전에 잡을 수 있습니다.
@@ -453,7 +523,7 @@ v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변�
 - [ ] 전면/리워드/전면 동영상: 수신 후 `show(activity)` 노출, 닫힘/`onDestroy`에서 `stop()` 호출
 - [ ] 배너/네이티브: `onResume`/`onPause`/`stop` 생명주기 연결
 - [ ] 리워드: `onUserEarnedReward()`(또는 `onAdRewarded()`)에서만 보상 지급
-- [ ] 개인정보 동의/테스트 전역 설정 적용 ([privacy.md](privacy.md))
+- [ ] 아동 대상 앱이면 `setTagForChildDirectedTreatment` 설정 / 테스트 설정 적용 ([privacy.md](privacy.md))
 
 > 광고가 안 나오거나 빌드가 막히면 [FAQ](faq.md)·[Q&A](qna.md)·[에러 코드](error-codes.md)를 먼저 확인하세요.
 
