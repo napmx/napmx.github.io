@@ -1,6 +1,21 @@
 # 릴리즈 노트
 
 
+## v2.4.2 (2026-07-20)
+
+- 안정성 개선 (메모리 누수 · 스레드 안전성 · 콜백 정합성)
+- Teads — deprecated API 마이그레이션, TeadsSDK `6.2` 이상 요구
+- 어댑터 버전 업데이트
+   - AdMixerMediationGAM v1.2.1
+   - AdMixerMediationAdFit v1.1.1
+   - AdMixerMediationAppLovin v1.1.1
+   - AdMixerMediationPangle v1.2.1
+   - AdMixerMediationUnityAds v1.1.1
+   - AdMixerMediationNAM v1.3.1
+   - AdMixerMediationTeads v1.1.0 (TeadsSDK 6.2 이상)
+
+---
+
 ## v2.4.1 (2026-07-15)
 
 - 시뮬레이터에서 앱이 실행되지 않는 문제 수정 (v2.4.0)
