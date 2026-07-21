@@ -1,6 +1,6 @@
 # nap mx Android SDK 연동 가이드
 
-> **버전**: 2.0.0  
+> **버전**: 2.1.1  
 > **최소 지원 OS**: Android 5.0 (API 21, Lollipop) 이상  
 > **문의**: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 

@@ -72,7 +72,7 @@ implementation 'io.github.nasmedia-tech:admixer-admanager:1.0.21'
 // ...
 
 // After (권장 — BOM으로 버전 관리, 멤버는 버전 생략)
-implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')
+implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.03')
 implementation 'io.github.nasmedia-tech:admixer-ssp'
 implementation 'io.github.nasmedia-tech:admixer-admanager'
 implementation 'io.github.nasmedia-tech:admixer-adfit'
@@ -265,7 +265,7 @@ new AdInfo.Builder(ADUNIT_ID)
 **[REQ-20260609]** `AdListener`의 단일 `onEventAd(adView, AdEvent)`가 **이름 있는 이벤트 메서드로 분리**되었습니다. 전면용 `FullScreenContentCallback`과 동일한 named-method 스타일로 통일하기 위함입니다.
 
 - `AdListener`가 `interface` → `abstract class`로 바뀌어 **모든 메서드가 기본 no-op**입니다(필요한 것만 override, 필수 구현 없음).
-- `onReceivedAd` / `onFailedToReceiveAd`는 시그니처 동일(그대로 동작).
+- **[v2.1.1]** 로드 실패는 **2-인자 표준 콜백 `onFailedToReceiveAd(int errorCode, String errorMsg)`** 로 단순화되었습니다(기존 4-인자 오버로드는 `@Deprecated`, 기본 구현이 표준 콜백으로 위임 — 기존 구현 동작 불변).
 - 로드 실패(`onFailedToReceiveAd`)와 구분되는 **표시 단계 실패** 시 호출되는 `onAdShowFailed`가 추가되었습니다.
 - `AdEvent` enum은 SDK 내부 전용으로 전환되었습니다(외부 콜백에서 미사용).
 
@@ -299,14 +299,9 @@ adView.setAdViewListener(new AdListener() {
     @Override public void onReceivedAd(AdNetworkType networkType, Object ad) {
         // networkType로 switch: switch(networkType){ case PANGLE: ... }
     }
-    @Override public void onFailedToReceiveAd(Object ad, AdNetworkType networkType, int code, String msg) {
-        // 개별 네트워크의 수신 실패
-    }
 
-    // ⚠️ 필수 — 전 네트워크 No-Ad는 이 String 버전으로만 옵니다 (아래 경고 참고)
-    @SuppressWarnings("deprecation")
-    @Override public void onFailedToReceiveAd(Object ad, String adapterName, int code, String msg) {
-        // 최종 수신 실패 (adapterName = "Mediation" / "SDK")
+    @Override public void onFailedToReceiveAd(int code, String msg) {
+        // 광고 수신 실패
     }
 
     @Override public void onAdShowFailed(Object ad, AdNetworkType networkType, int code, String msg) { /* 표시 실패 */ }
@@ -315,11 +310,9 @@ adView.setAdViewListener(new AdListener() {
 });
 ```
 
-> **[REQ-20260713]** `onReceivedAd`/`onFailedToReceiveAd`/`onAdShowFailed`는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드는 `@Deprecated`(3.0에서 제거 예정)이며, 문자열이 필요하면 `networkType.getAdapterName()`으로 얻으세요.
->
-> **단, `@Deprecated`라고 지우면 안 됩니다** — 아래 경고대로 최종 실패는 String 경로가 유일합니다.
+> **[v2.1.1]** 로드 실패는 **2-인자 표준 콜백 `onFailedToReceiveAd(int, String)` 하나만** 구현하면 됩니다. 내부 No-Fill("All adapters failed.")·미초기화·커스텀 어댑터 실패 포함 모든 수신 실패가 이 콜백으로 통지됩니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며, 기본 구현이 표준 콜백으로 위임하므로 기존 구현은 수정 없이 동작합니다. (v2.1.0 이하에서 필요했던 "String 오버로드 병행 구현"은 더 이상 불필요합니다.)
 
-> ⚠️ 내부 실패(no-fill "All adapters failed.", 미초기화 등 — 합성 이름 SDK/Mediation)와 `AdMixer.registerAdapter(String)`로 등록한 커스텀 어댑터(enum 미등재)는 **String 오버로드로만 통지**됩니다. 따라서 로드/표시 실패 처리는 String 버전(`onFailedToReceiveAd(adView, String adapterName, ...)`/`onAdShowFailed(...)`)도 함께 구현하세요.
+> **[REQ-20260713]** `onReceivedAd`/`onAdShowFailed`는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드는 `@Deprecated`(3.0에서 제거 예정)이며, 문자열이 필요하면 `networkType.getAdapterName()`으로 얻으세요. 단, `AdMixer.registerAdapter(String)`로 등록한 **커스텀 어댑터**(enum 미등재)의 로드 성공은 String 오버로드로만 통지되므로, 커스텀 어댑터 사용 시 `onReceivedAd(String, ...)`을 함께 구현하세요.
 
 > ℹ️ 전면형태(전면/리워드/전면 동영상)는 `FullScreenContentCallback`(GAM 규약)도 그대로 사용할 수 있습니다(변경 없음).
 
@@ -504,7 +497,8 @@ Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이�
 
 ### 권장 (선택)
 
-- `onReceivedAd`/`onFailedToReceiveAd`/`onAdShowFailed`의 **`AdNetworkType` enum 오버로드로 전환** — `String` 오버로드는 `@Deprecated`(3.0 제거 예정). 단 **최종 No-Ad는 String 경로가 유일**하므로 그쪽은 남겨두세요([위 Step 5-B 경고](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)).
+- **[v2.1.1]** 로드 실패는 **2-인자 표준 콜백 `onFailedToReceiveAd(int, String)`로 전환** — 내부 No-Fill 포함 모든 수신 실패를 하나로 수신하며, 4-인자 오버로드 병행 구현이 불필요해집니다([위 Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)).
+- `onReceivedAd`/`onAdShowFailed`의 **`AdNetworkType` enum 오버로드로 전환** — `String` 오버로드는 `@Deprecated`(3.0 제거 예정).
 
 전체 변경 내역은 [릴리즈 노트](changelog.md)를 확인하세요.
 

@@ -2,6 +2,22 @@
 
 ---
 
+## v2.1.1 (2026-07-21)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). BOM(`admixer-bom:2026.07.03`)으로 버전을 묶어 연동하는 것을 권장합니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.1.1** |
+> | `admixer-teads` | **2.1.0** |
+> | `admixer-adfit` | **2.0.3** |
+> | `admixer-admanager` · `admixer-gma-nextgen` · `admixer-applovin` · `admixer-unity` · `admixer-naveradmanager` · `admixer-pangle` · `admixer-compose` | **2.0.2** |
+> | `admixer-unity-nativeadlayout` | 2.0.0 (변경 없음) |
+> | `admixer-bom` | **2026.07.03** |
+
+
+---
+
 ## v2.1.0 (2026-07-16)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). BOM(`admixer-bom:2026.07.02`)으로 버전을 묶어 연동하는 것을 권장합니다.

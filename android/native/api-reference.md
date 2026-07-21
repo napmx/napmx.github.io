@@ -54,7 +54,6 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setMute(boolean)` | `boolean` | `false` | 동영상 음소거 |
 | `setCloseButtonBound(int)` | `int` | `100` | 전면 광고 닫기 'X' 버튼 터치 영역 비율(%, 20~100 범위로 클램프) |
 | `setAdapterConfig(String adapterName, Map<String,String> config)` | - | `{}` | 어댑터별 초기화 파라미터 설정 (예: AppLovin `sdkKey`). `AdMixer.ADAPTER_*` 상수를 adapterName으로 사용 |
-| `setCustomParams(Map<String,String>)` | - | `{}` | S2S Callback 커스텀 파라미터 |
 | `build()` | `AdInfo` | - | AdInfo 인스턴스 생성 |
 
 ---
@@ -134,7 +133,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `stop()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
 
-> 보상 적립은 `OnUserEarnedRewardListener.onUserEarnedReward()`로 수신합니다(영상 재생 완료 `onAdCompleted()`와는 별개).
+> 보상 적립은 `OnUserEarnedRewardListener.onUserEarnedReward()`로 수신합니다(영상 재생 완료 `onAdCompleted()`와는 별개). 지급 식별자가 필요하면 `onUserEarnedReward(RewardInfo)` 오버로드를 구현하세요.
 
 ---
 
@@ -178,6 +177,13 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | 콜백 | 설명 |
 |------|------|
 | `onUserEarnedReward()` | 사용자가 시청을 완료해 보상을 획득함. `AMMRewardVideo.show(activity, listener)`로 등록 |
+| `onUserEarnedReward(RewardInfo)` | 지급 식별자(`RewardInfo.getTransactionId()`) 포함 오버로드(`default` 메서드 — 선택 구현). 구현하면 무인자 버전 대신 이것만 호출됨. [리워드 가이드](rewarded-video.md#리워드-지급-식별자-rewardinfo-transaction_id) |
+
+**RewardInfo (class — 리워드 지급 식별자)**
+
+| 메서드 | 설명 |
+|--------|------|
+| `getTransactionId()` | 지급 1건당 고유 UUID — 지급 이력 기록·중복 지급 방지 키 |
 
 **AdError (class — 표시 실패 정보)**
 
@@ -214,12 +220,11 @@ AdMixer.setTestDeviceIds(List<String> ids)
 import com.nasmedia.admixerssp.common.core.AdNetworkType;
 
 public abstract class AdListener {
-    // ── 로드 콜백 (권장: AdNetworkType enum 오버로드) ──
+    // ── 로드 콜백 ──
     public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
         // networkType로 switch: switch(networkType){ case PANGLE: ... }
     }
-    public void onFailedToReceiveAd(@Nullable Object adView, @NonNull AdNetworkType networkType,
-                                    int errorCode, @Nullable String errorMsg) {}
+    public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) {}
     // 노출(show) 실패 — 로드 실패와 구분되는 표시 단계 실패
     public void onAdShowFailed(@Nullable Object adView, @NonNull AdNetworkType networkType,
                                int errorCode, @Nullable String errorMsg) {}
@@ -231,12 +236,15 @@ public abstract class AdListener {
     public void onAdCompleted() {}      // 동영상 재생 완료
     public void onAdSkipped() {}        // 동영상 Skip
     public void onAdRewarded() {}       // 리워드 적립
+    public void onAdRewarded(@NonNull RewardInfo rewardInfo) {}  // 지급 식별자 포함 오버로드 (선택)
 }
 ```
 
-> **[REQ-20260713]** 위 3개 콜백(`onReceivedAd`/`onFailedToReceiveAd`/`onAdShowFailed`)은 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드도 여전히 호출되지만 **`@Deprecated`(3.0에서 제거 예정)** 이므로 신규 구현은 enum 버전을 사용하세요. `String` 문자열이 필요하면 `networkType.getAdapterName()`으로 얻을 수 있습니다.
+> 로드 실패는 `onFailedToReceiveAd(int errorCode, String errorMsg)` 하나로 통지됩니다 — 전 네트워크 No-Fill·미초기화·커스텀 어댑터 실패를 포함한 모든 수신 실패가 이 콜백으로 옵니다(풀스크린 `onFailLoadXxx`와 동형).
 
-> ⚠️ 내부 실패(no-fill "All adapters failed.", 미초기화 등 — 합성 이름 SDK/Mediation)와 `AdMixer.registerAdapter(String)`로 등록한 커스텀 어댑터(enum 미등재)는 **String 오버로드로만 통지**됩니다. 따라서 로드/표시 실패 처리는 String 버전(`onFailedToReceiveAd(adView, String adapterName, ...)`/`onAdShowFailed(...)`)도 함께 구현하세요.
+> `onReceivedAd`/`onAdShowFailed`는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. `String` 문자열이 필요하면 `networkType.getAdapterName()`으로 얻을 수 있습니다.
+
+> ⚠️ `AdMixer.registerAdapter(String)`로 등록한 **커스텀 어댑터**(enum 미등재)는 로드 **성공**이 `String adapterName` 오버로드로만 통지됩니다 — 커스텀 어댑터 사용 시 `onReceivedAd(String, ...)`도 함께 구현하세요. (로드 실패는 표준 2-인자 콜백이 모두 커버합니다.)
 
 > ⚠️ 배너(`AMMBannerView`)는 `AdListener`를 내부적으로 `WeakReference`로 보유합니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
 >

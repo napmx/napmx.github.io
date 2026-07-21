@@ -267,9 +267,8 @@ public class NapMxAdBridgeHandler {
             sendCallback("onBannerLoaded", "", networkType.getAdapterName(), 0, "");
         }
         @Override
-        public void onFailedToReceiveAd(Object adView, AdNetworkType networkType,
-                                        int errorCode, String errorMsg) {
-            sendCallback("onBannerFailed", "", networkType.getAdapterName(), errorCode, errorMsg);
+        public void onFailedToReceiveAd(int errorCode, String errorMsg) {
+            sendCallback("onBannerFailed", "", "", errorCode, errorMsg);
         }
         @Override
         public void onAdDisplayed() {
@@ -361,9 +360,9 @@ public class NapMxAdBridgeHandler {
             });
         }
         @Override
-        public void onFailedToReceiveAd(Object adView, AdNetworkType networkType, int errorCode, String errorMsg) {
+        public void onFailedToReceiveAd(int errorCode, String errorMsg) {
             String adUnitId = nativeAdView != null ? nativeAdView.getAdInfo().getAdUnitId() : "";
-            sendCallback("onNativeFailed", adUnitId, networkType.getAdapterName(), errorCode, errorMsg);
+            sendCallback("onNativeFailed", adUnitId, "", errorCode, errorMsg);
         }
         @Override
         public void onAdDisplayed() {
@@ -478,17 +477,6 @@ public class NapMxAdBridgeHandler {
 
                 AdInfo.Builder builder = new AdInfo.Builder(adUnitId).setMute(mute);
 
-                if (params.has("customParams")) {
-                    JSONObject customObj = params.getJSONObject("customParams");
-                    Map<String, String> customParams = new HashMap<>();
-                    Iterator<String> keys = customObj.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        customParams.put(key, customObj.getString(key));
-                    }
-                    builder.setCustomParams(customParams);
-                }
-
                 AMMRewardVideo.loadAd(activity, builder.build(), new AMMRewardVideoLoadCallback() {
                     @Override
                     public void onSuccessLoadReward(@NonNull AdNetworkType networkType,
@@ -560,9 +548,9 @@ public class NapMxAdBridgeHandler {
             });
         }
         @Override
-        public void onFailedToReceiveAd(Object adView, AdNetworkType networkType, int errorCode, String errorMsg) {
+        public void onFailedToReceiveAd(int errorCode, String errorMsg) {
             String adUnitId = videoView != null ? videoView.getAdInfo().getAdUnitId() : "";
-            sendCallback("onVideoFailed", adUnitId, networkType.getAdapterName(), errorCode, errorMsg);
+            sendCallback("onVideoFailed", adUnitId, "", errorCode, errorMsg);
         }
         @Override
         public void onAdDisplayed() {

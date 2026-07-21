@@ -46,13 +46,7 @@ public class RewardVideoActivity extends AppCompatActivity {
     }
 
     private void loadAndShowReward() {
-        // S2S Reward Callback용 커스텀 파라미터 (선택사항)
-        Map<String, String> customParams = new HashMap<>();
-        customParams.put("user_id", "user123");     // 리워드 지급 대상 사용자 ID
-        customParams.put("reward_type", "coin");     // 리워드 종류
-
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_REWARD_VIDEO)
-            .setCustomParams(customParams)  // S2S Callback 시 파라미터로 전달됨
             .setMute(false)                 // 동영상 음소거 여부 (false: 소리 켬)
             .build();
 
@@ -122,13 +116,7 @@ class RewardVideoActivity : AppCompatActivity() {
     }
 
     private fun loadAndShowReward() {
-        val customParams = mapOf(
-            "user_id" to "user123",
-            "reward_type" to "coin"
-        )
-
         val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_REWARD_VIDEO)
-            .setCustomParams(customParams)
             .setMute(false)
             .build()
 
@@ -192,51 +180,29 @@ class RewardVideoActivity : AppCompatActivity() {
 > ```
 > `setFullScreenContentCallback`과 `setAdListener`는 **동일 슬롯을 공유하므로 둘 중 하나만** 등록하세요. 보상 적립(`onUserEarnedReward`)은 어느 경로를 쓰든 `show(activity, OnUserEarnedRewardListener)`로 별도 수신합니다.
 
+> ℹ️ **지급 채널 상호배타** — `show(activity, OnUserEarnedRewardListener)`로 전용 보상 리스너를 등록하면 `AdListener.onAdRewarded()`는 호출되지 않습니다(전용 리스너 우선). 지급 통지는 어느 경로로든 **정확히 1회**입니다.
+
+> ℹ️ **이벤트 순서 보장** — 네트워크마다 달랐던 보상/닫힘 순서를 SDK가 정규화하여, 앱은 항상 **`onUserEarnedReward` → `onAdDismissedFullScreenContent`(닫힘)** 순서로 수신합니다. 닫힘 콜백에서 보상 수신 여부를 안전하게 판정할 수 있습니다.
+
 ---
 
-## S2S Reward Callback (서버 간 리워드 검증)
+## 리워드 지급 식별자 RewardInfo (transaction_id)
 
-사용자가 리워드를 획득했을 때, 매체사 서버로 직접 콜백을 전송하는 기능입니다. 클라이언트 조작을 방지하고 리워드를 안전하게 지급할 때 사용합니다.
+보상 지급 1건마다 고유 `transaction_id`(UUID)가 발급되어 앱 콜백으로 전달됩니다. 지급 이력 기록·중복 지급 방지의 기준 키로 사용하세요.
 
-### 설정 방법
-
-#### Step 1: 파트너 사이트에서 콜백 URL 등록
-
-`파트너 사이트 → 미디어 관리 → 애드유닛 광고 설정`에서 콜백 서버 URL을 입력합니다.
-
-**기본 파라미터 (자동 포함):**
-
-| 파라미터 | 설명 | 예시 값 |
-|---------|------|---------|
-| `media_key` | 미디어 키 | `12345678` |
-| `adunit_id` | 애드유닛 ID | `87654321` |
-| `adid` | 광고 ID (Android: GAID) | `860635ea-...` |
-| `earnedreward` | 리워드 획득 이벤트 식별 | - |
-| `timestamp` | 이벤트 발생 Unix 타임스탬프 | `1704067200` |
-
-**콜백 URL 형식 예시:**
-```
-https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={adid}&complete={complete}&timestamp={timestamp}
-```
-
-#### Step 2: 커스텀 파라미터 추가 (선택사항)
+앱에서 받으려면 `RewardInfo`를 인자로 받는 오버로드를 구현합니다. **오버로드는 선택 사항**이며, 구현하지 않으면 기존 무인자 `onUserEarnedReward()`가 그대로 호출됩니다(기존 코드 수정 불필요).
 
 ```java
-Map<String, String> params = new HashMap<>();
-params.put("user_id", "user123");       // 리워드 지급 대상 사용자 식별자
-params.put("session_token", "abc123");  // 세션 검증 토큰
-
-AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_REWARD_VIDEO)
-    .setCustomParams(params)
-    .build();
+ad.show(this, new OnUserEarnedRewardListener() {
+    @Override
+    public void onUserEarnedReward(@NonNull RewardInfo rewardInfo) {
+        // 🎁 지급 처리 — transaction_id를 지급 이력 키로 기록
+        giveRewardToUser(rewardInfo.getTransactionId());
+    }
+});
 ```
 
-**커스텀 파라미터 포함 콜백 URL:**
-```
-https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={adid}&complete={complete}&timestamp={timestamp}&user_id=user123&session_token=abc123
-```
-
-> ℹ️ 광고 네트워크별로 리워드 획득(`onUserEarnedReward`) 이벤트 발생 시점이 다를 수 있습니다. 서버 콜백이 클라이언트 콜백보다 먼저 또는 나중에 도달할 수 있으니, 서버에서 양쪽을 모두 처리하는 방식을 권장합니다.
+> ℹ️ 오버로드를 구현하면 무인자 `onUserEarnedReward()`는 호출되지 않습니다(지급 통지는 정확히 1회). `RewardInfo`는 보상 금액/타입을 담지 않습니다 — 네트워크별로 단위·의미가 달라 미디에이션에서 신뢰할 수 없기 때문입니다. 보상 내용은 애드유닛 정책으로 관리하세요.
 
 ---
 
@@ -245,7 +211,6 @@ https://your-server.com/reward?media_key={mediakey}&adunit_id={adunitid}&adid={a
 | 메서드 | 기본값 | 설명 |
 |--------|--------|------|
 | `setMute(boolean)` | `false` | 동영상 음소거 여부 |
-| `setCustomParams(Map)` | `{}` | S2S Reward Callback 커스텀 파라미터 |
 | `interstitialTimeout(int)` | `0` (서버 지정) | 로딩 타임아웃 (초) |
 
 ---

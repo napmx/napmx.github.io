@@ -56,7 +56,7 @@ AdInfo adInfo = new AdInfo.Builder(adUnitId)
 이미 같은 네트워크 SDK를 직접(또는 타 솔루션으로) 사용 중인 경우입니다. 어댑터 의존성에서 중복 모듈을 `exclude` 하세요.
 
 ```gradle
-implementation("io.github.nasmedia-tech:admixer-admanager:2.0.1") {
+implementation("io.github.nasmedia-tech:admixer-admanager:2.0.2") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```

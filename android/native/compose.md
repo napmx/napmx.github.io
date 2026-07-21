@@ -12,7 +12,7 @@ Compose 앱에서 nap mx 광고를 연동하는 방법입니다. 코어 SDK는 V
 
 ```gradle
 dependencies {
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.02')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.03')
     implementation 'io.github.nasmedia-tech:admixer-ssp'        // 코어(필수)
     implementation 'io.github.nasmedia-tech:admixer-compose'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
@@ -23,8 +23,8 @@ dependencies {
 
 ```gradle
 dependencies {
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.0'        // 코어(필수)
-    implementation 'io.github.nasmedia-tech:admixer-compose:2.0.1'    // Compose 헬퍼
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.1'        // 코어(필수)
+    implementation 'io.github.nasmedia-tech:admixer-compose:2.0.2'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
 }
 ```
@@ -60,7 +60,7 @@ val listener = remember {
         override fun onReceivedAd(networkType: AdNetworkType, ad: Any) {
             // networkType로 switch: switch(networkType){ case PANGLE: ... }
         }
-        override fun onFailedToReceiveAd(ad: Any?, networkType: AdNetworkType, code: Int, msg: String?) {}
+        override fun onFailedToReceiveAd(code: Int, msg: String?) {}
         override fun onAdDisplayed() {}
         override fun onAdClicked() {}
     }
@@ -146,7 +146,7 @@ fun RewardScreen() {
     val rewardListener = remember {
         object : AdListener() {
             override fun onReceivedAd(networkType: AdNetworkType, ad: Any) {}
-            override fun onFailedToReceiveAd(ad: Any?, networkType: AdNetworkType, code: Int, msg: String?) {}
+            override fun onFailedToReceiveAd(code: Int, msg: String?) {}
             override fun onAdRewarded() { /* 보상 지급 */ }
         }
     }
@@ -207,17 +207,12 @@ fun VideoScreen() {
 | `onAdSkipped` | – | – | – | ✅ | ✅ |
 | `onAdRewarded` | – | – | – | – | ✅ |
 
-> 🚨 **`onFailedToReceiveAd`는 String 오버로드도 함께 구현해야 합니다.** 위 표의 ✅는 "이벤트가 발생한다"는 뜻이고, **어느 오버로드로 오는지는 구분하지 않습니다.** 개별 네트워크 실패는 `AdNetworkType` 버전으로 오지만, **전 네트워크 No-Ad(`"Mediation"`)·SDK 미초기화(`"SDK"`)는 String 버전으로만** 옵니다(`AdNetworkType`에 해당 값이 없음). enum만 override하면 최종 실패를 못 받아 로딩 상태가 무한 대기합니다.
+> ℹ️ 로드 실패는 `onFailedToReceiveAd(code, msg)` 하나로 통지됩니다 — 전 네트워크 No-Fill·SDK 미초기화 포함 모든 수신 실패가 이 콜백으로 옵니다.
 >
 > ```kotlin
 > val listener = remember {
 >     object : AdListener() {
->         override fun onFailedToReceiveAd(ad: Any?, networkType: AdNetworkType, code: Int, msg: String?) {
->             // 개별 네트워크 실패
->         }
->         // ⚠️ 필수 — 최종 No-Ad는 이쪽으로만 옵니다
->         @Suppress("DEPRECATION")
->         override fun onFailedToReceiveAd(ad: Any?, adapterName: String, code: Int, msg: String?) {
+>         override fun onFailedToReceiveAd(code: Int, msg: String?) {
 >             isLoading = false // 로딩 해제 등 최종 처리
 >         }
 >     }

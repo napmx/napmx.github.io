@@ -81,7 +81,7 @@ Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral(
 해당 어댑터 의존성에서 중복 모듈을 `exclude` 하세요.
 
 ```gradle
-implementation("io.github.nasmedia-tech:admixer-admanager:2.0.1") {
+implementation("io.github.nasmedia-tech:admixer-admanager:2.0.2") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```
@@ -196,12 +196,6 @@ Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플
 - `onAdRewarded()`(EARNEDREWARD): 리워드 지급 조건 충족(시청 완료). **리워드 지급은 이 시점**에서 처리하세요. (정적 `loadAd` 방식은 `OnUserEarnedRewardListener.onUserEarnedReward()`)
 - `onAdCompleted()`(COMPLETE): 동영상 재생이 끝까지 완료. 네트워크에 따라 EARNEDREWARD와 동시 또는 별도로 발생
 - `onAdSkipped()`(SKIPPED): **리워드 미지급** 상황. 리워드는 반드시 EARNEDREWARD에서만 지급하세요.
-
----
-
-**Q. 리워드를 서버에서 안전하게 검증하고 싶습니다.**
-
-S2S Reward Callback을 사용하세요. 파트너 사이트에 콜백 URL을 등록하고, 필요 시 `AdInfo.Builder.setCustomParams(...)`로 사용자 식별자 등을 전달합니다. 자세한 내용은 [리워드 동영상 — S2S Reward Callback](rewarded-video.md#s2s-reward-callback-서버-간-리워드-검증)을 참고하세요.
 
 ---
 
