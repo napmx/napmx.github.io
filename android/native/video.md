@@ -185,12 +185,6 @@ class VideoAdActivity : AppCompatActivity() {
 
 ---
 
-## 수신 실패 콜백
-
-로드 실패는 **`onFailedToReceiveAd(int errorCode, String errorMsg)`** 하나로 통지됩니다. 전 네트워크 No-Fill·SDK 미초기화·AdUnit 누락을 포함한 **모든 수신 실패**가 이 콜백으로 옵니다. 에러 코드 목록은 [에러 코드](error-codes.md)를 참고하세요.
-
----
-
 ## 전면 동영상 광고 (AMMVideoInterstitial)
 
 화면 전체를 덮는 전면 동영상 광고를 표시합니다. 전면 광고와 동일한 정적 `loadAd()` + `FullScreenContentCallback` 구조입니다.

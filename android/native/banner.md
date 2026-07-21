@@ -269,12 +269,6 @@ showAdButton.setOnClickListener {
 
 ---
 
-## 수신 실패 콜백
-
-로드 실패는 **`onFailedToReceiveAd(int errorCode, String errorMsg)`** 하나로 통지됩니다. 전 네트워크 No-Fill·SDK 미초기화·AdUnit 누락을 포함한 **모든 수신 실패**가 이 콜백으로 옵니다. 에러 코드 목록은 [에러 코드](error-codes.md)를 참고하세요.
-
----
-
 ## 라이프사이클 관리
 
 > 🚨 `AMMBannerView`의 라이프사이클 메서드를 반드시 연결하세요. 누락 시 메모리 누수가 발생하거나 광고가 정상 동작하지 않습니다.

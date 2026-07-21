@@ -291,12 +291,6 @@ class NativeAdActivity : AppCompatActivity() {
 
 ---
 
-## 수신 실패 콜백
-
-로드 실패는 **`onFailedToReceiveAd(int errorCode, String errorMsg)`** 하나로 통지됩니다. 전 네트워크 No-Fill·SDK 미초기화·AdUnit 누락을 포함한 **모든 수신 실패**가 이 콜백으로 옵니다. 에러 코드 목록은 [에러 코드](error-codes.md)를 참고하세요.
-
----
-
 ## 광고 정보 고지(AdChoices) 위치 지정
 
 광고 정보 고지 아이콘은 **SDK가 자동으로 오버레이**합니다. 레이아웃에 슬롯을 만들 필요가 없습니다.
