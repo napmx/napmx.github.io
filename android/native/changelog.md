@@ -2,6 +2,21 @@
 
 ---
 
+## admixer-admanager 2.0.3 (2026-07-23)
+
+> GAM(AdMob/Ad Manager) 어댑터 단독 hotfix입니다(타 모듈 변경 없음). BOM(`admixer-bom:2026.07.04`)으로 버전을 묶어 연동하는 것을 권장합니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-admanager` | **2.0.3** |
+> | `admixer-bom` | **2026.07.04** |
+
+### 수정
+
+- **GAM 미디에이션 메모리 누수 수정** — 광고 로드 시 전달된 Activity Context가 GMA SDK 내부(binder stub)에 잔류해 Activity 종료 후 LeakCanary가 누수로 보고하던 문제를 수정했습니다. 전면/리워드/네이티브 로드 경로가 Application Context를 사용합니다. 공개 API 변경 없음 — 버전 교체만으로 적용됩니다.
+
+---
+
 ## v2.1.1 (2026-07-21)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). BOM(`admixer-bom:2026.07.03`)으로 버전을 묶어 연동하는 것을 권장합니다.
