@@ -96,11 +96,20 @@ const NapMxBridge = (() => {
         showVideoInterstitial:     () => callNoArgs("showVideoInterstitial"),
         hideBanner:                () => callNoArgs("hideBanner"),
         showBanner:                () => callNoArgs("showBanner"),
+
+        // 광고 해제 — 뷰를 쓰는 포맷은 각각 해제 함수를 제공합니다
         destroyBanner:             () => callNoArgs("destroyBanner"),
+        destroyNative:             () => callNoArgs("destroyNative"),
+        destroyVideo:              () => callNoArgs("destroyVideo"),
         destroyAll:                () => callNoArgs("destroyAll")
     };
 })();
 ```
+
+> ⚠️ **해제 함수를 반드시 호출하세요.** `requestBanner` / `requestNative` / `requestVideo`는 뷰 인스턴스를 생성합니다.
+> 같은 포맷을 다시 요청하기 전에 이전 인스턴스를 해제하지 않으면 뷰가 화면에 중첩되고 메모리가 누수됩니다.
+> 아래 네이티브 구현에서는 각 `request*` 진입 시 해당 `destroy*()`를 자동으로 선행 호출하지만,
+> 웹 페이지에서도 SPA 라우팅 전환 등 광고가 더 이상 필요 없는 시점에는 명시적으로 호출하는 것을 권장합니다.
 
 ---
 
@@ -268,6 +277,7 @@ public class NapMxAdBridgeHandler {
         }
         @Override
         public void onFailedToReceiveAd(int errorCode, String errorMsg) {
+            // 실패 시 네트워크 식별자는 내부 합성값뿐이라 전달되지 않습니다 — 빈 값으로 전송
             sendCallback("onBannerFailed", "", "", errorCode, errorMsg);
         }
         @Override
@@ -288,7 +298,12 @@ public class NapMxAdBridgeHandler {
                 String adUnitId = params.getString("adUnitId");
                 String position = params.optString("position", "bottom");
 
-                AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
+                // ✅ 필수: 이전 인스턴스 해제 (중첩·누수 방지)
+                destroyBanner();
+
+                AdInfo.Builder builder = new AdInfo.Builder(adUnitId);
+                parseCustomParams(params, builder);
+                AdInfo adInfo = builder.build();
 
                 // Adfit 사용 시 Activity Context 필수
                 banner = new AMMBannerView(activity);
@@ -307,6 +322,7 @@ public class NapMxAdBridgeHandler {
                     } else {
                         lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                     }
+                    detachFromParent(banner);   // ✅ 뷰 부착 안전 규칙 (4-7)
                     parent.addView(banner, lp);
                 }
                 banner.loadAd();
@@ -330,9 +346,8 @@ public class NapMxAdBridgeHandler {
     public void destroyBanner() {
         activity.runOnUiThread(() -> {
             if (banner != null) {
-                ViewGroup parent = (ViewGroup) banner.getParent();
-                if (parent != null) parent.removeView(banner);
-                banner.stop();
+                detachFromParent(banner);  // ✅ 뷰 부착 안전 규칙 (4-7)
+                banner.stop();             // stop() 이 리소스 해제 API입니다 (destroy() 는 @Deprecated)
                 banner = null;
             }
         });
@@ -347,7 +362,9 @@ public class NapMxAdBridgeHandler {
                 if (nativeAdView != null && nativeAdView.hasAd) {
                     ViewGroup parent = (ViewGroup) webView.getParent();
                     if (parent != null) {
-                        parent.removeView(nativeAdView);
+                        // ✅ 뷰 부착 안전 규칙 (4-7): 대상 컨테이너가 아니라
+                        //    "추가하려는 자식 자신"의 기존 부모에서 분리해야 합니다.
+                        detachFromParent(nativeAdView);
                         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -382,7 +399,10 @@ public class NapMxAdBridgeHandler {
             try {
                 JSONObject params = new JSONObject(jsonParams);
                 String adUnitId = params.getString("adUnitId");
-                
+
+                // ✅ 필수: 이전 인스턴스 해제 (중첩·누수 방지)
+                destroyNative();
+
                 NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(
                     activity.getResources().getIdentifier("item_native_ad", "layout", activity.getPackageName())
                 )
@@ -395,7 +415,9 @@ public class NapMxAdBridgeHandler {
                 .setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP) // ✅ 선택 — AdChoices 모서리, 기본 RIGHT_TOP
                 .build();
 
-                AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
+                AdInfo.Builder builder = new AdInfo.Builder(adUnitId);
+                parseCustomParams(params, builder);
+                AdInfo adInfo = builder.build();
 
                 nativeAdView = new AMMNativeAdView(activity);
                 nativeAdView.setAdInfo(adInfo);
@@ -417,8 +439,9 @@ public class NapMxAdBridgeHandler {
                 JSONObject params = new JSONObject(jsonParams);
                 String adUnitId = params.getString("adUnitId");
 
-                AdInfo adInfo = new AdInfo.Builder(adUnitId)
-                    .build();
+                AdInfo.Builder builder = new AdInfo.Builder(adUnitId);
+                parseCustomParams(params, builder);
+                AdInfo adInfo = builder.build();
 
                 AMMInterstitial.loadAd(activity, adInfo, new AMMInterstitialLoadCallback() {
                     @Override
@@ -461,7 +484,7 @@ public class NapMxAdBridgeHandler {
     @JavascriptInterface
     public void showInterstitial() {
         activity.runOnUiThread(() -> {
-            if (loadedInterstitial != null) loadedInterstitial.show(activity);
+            if (loadedInterstitial != null) loadedInterstitial.showAd();
         });
     }
 
@@ -476,6 +499,7 @@ public class NapMxAdBridgeHandler {
                 boolean mute = params.optBoolean("mute", true);
 
                 AdInfo.Builder builder = new AdInfo.Builder(adUnitId).setMute(mute);
+                parseCustomParams(params, builder);
 
                 AMMRewardVideo.loadAd(activity, builder.build(), new AMMRewardVideoLoadCallback() {
                     @Override
@@ -535,7 +559,8 @@ public class NapMxAdBridgeHandler {
                 if (videoView != null) {
                     ViewGroup parent = (ViewGroup) webView.getParent();
                     if (parent != null) {
-                        parent.removeView(videoView);
+                        // ✅ 뷰 부착 안전 규칙 (4-7)
+                        detachFromParent(videoView);
                         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -581,7 +606,12 @@ public class NapMxAdBridgeHandler {
                 JSONObject params = new JSONObject(jsonParams);
                 String adUnitId = params.getString("adUnitId");
 
-                AdInfo adInfo = new AdInfo.Builder(adUnitId).build();
+                // ✅ 필수: 이전 인스턴스 해제 (중첩·누수 방지)
+                destroyVideo();
+
+                AdInfo.Builder builder = new AdInfo.Builder(adUnitId);
+                parseCustomParams(params, builder);
+                AdInfo adInfo = builder.build();
 
                 videoView = new AMMVideoView(activity);
                 videoView.setAdInfo(adInfo);
@@ -602,8 +632,9 @@ public class NapMxAdBridgeHandler {
                 JSONObject params = new JSONObject(jsonParams);
                 String adUnitId = params.getString("adUnitId");
 
-                AdInfo adInfo = new AdInfo.Builder(adUnitId)
-                    .build();
+                AdInfo.Builder builder = new AdInfo.Builder(adUnitId);
+                parseCustomParams(params, builder);
+                AdInfo adInfo = builder.build();
 
                 AMMVideoInterstitial.loadAd(activity, adInfo, new AMMVideoInterstitialLoadCallback() {
                     @Override
@@ -649,7 +680,7 @@ public class NapMxAdBridgeHandler {
     @JavascriptInterface
     public void showVideoInterstitial() {
         activity.runOnUiThread(() -> {
-            if (loadedVideoInterstitial != null) loadedVideoInterstitial.show(activity);
+            if (loadedVideoInterstitial != null) loadedVideoInterstitial.showAd(activity);
         });
     }
 
@@ -659,10 +690,20 @@ public class NapMxAdBridgeHandler {
     public void destroyNative() {
         activity.runOnUiThread(() -> {
             if (nativeAdView != null) {
-                ViewGroup parent = (ViewGroup) nativeAdView.getParent();
-                if (parent != null) parent.removeView(nativeAdView);
+                detachFromParent(nativeAdView);  // ✅ 뷰 부착 안전 규칙 (4-7)
                 nativeAdView.stop();
                 nativeAdView = null;
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void destroyVideo() {
+        activity.runOnUiThread(() -> {
+            if (videoView != null) {
+                detachFromParent(videoView);     // ✅ 뷰 부착 안전 규칙 (4-7)
+                videoView.stop();
+                videoView = null;
             }
         });
     }
@@ -672,10 +713,10 @@ public class NapMxAdBridgeHandler {
         activity.runOnUiThread(() -> {
             destroyBanner();
             destroyNative();
+            destroyVideo();
             if (loadedInterstitial != null)      { loadedInterstitial.stop(); loadedInterstitial = null; }
-            if (loadedRewardVideo != null)        { loadedRewardVideo.stop(); loadedRewardVideo = null; }
-            if (videoView != null)                { videoView.stop(); videoView = null; }
-            if (loadedVideoInterstitial != null)  { loadedVideoInterstitial.stop(); loadedVideoInterstitial = null; }
+            if (loadedRewardVideo != null)       { loadedRewardVideo.stop(); loadedRewardVideo = null; }
+            if (loadedVideoInterstitial != null) { loadedVideoInterstitial.stop(); loadedVideoInterstitial = null; }
         });
     }
 
@@ -689,6 +730,37 @@ public class NapMxAdBridgeHandler {
         if (banner != null) banner.onPause();
         if (nativeAdView != null) nativeAdView.onPause();
         if (videoView != null) videoView.onPause();
+    }
+
+    // ── 공통 헬퍼 ────────────────────────────────
+
+    /**
+     * 뷰 부착 안전 규칙(4-7) — 자식 뷰를 "자신의 기존 부모"에서 분리합니다.
+     * 대상 컨테이너에 removeView/removeAllViews 를 호출하는 것은 가드가 아닙니다.
+     * 이 가드 없이 addView 하면 IllegalStateException:
+     * "The specified child already has a parent" 로 크래시합니다.
+     */
+    private void detachFromParent(@Nullable View child) {
+        if (child != null && child.getParent() instanceof ViewGroup) {
+            ((ViewGroup) child.getParent()).removeView(child);
+        }
+    }
+
+    /**
+     * customParams 공통 파싱 — 모든 광고 포맷이 AdInfo.Builder 를 쓰므로 동일하게 적용합니다.
+     * JSON 예: { "adUnitId": "...", "customParams": { "age": "20", "gender": "M" } }
+     */
+    private void parseCustomParams(@NonNull JSONObject params, @NonNull AdInfo.Builder builder) {
+        JSONObject customObj = params.optJSONObject("customParams");
+        if (customObj == null) return;
+
+        Map<String, String> customParams = new HashMap<>();
+        Iterator<String> keys = customObj.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            customParams.put(key, customObj.optString(key, ""));
+        }
+        if (!customParams.isEmpty()) builder.setCustomParams(customParams);
     }
 
     private void sendCallback(String callbackName, String adUnitId,
@@ -785,6 +857,9 @@ window.NapMxBridgeCallback = {
 NapMxBridge.requestNative({
     adUnitId: "YOUR_NATIVE_ADUNIT_ID"
 });
+
+// 광고가 더 이상 필요 없을 때 (SPA 라우팅 전환 등) 반드시 해제
+document.getElementById('btn-close').onclick = () => NapMxBridge.destroyNative();
 </script>
 ```
 
@@ -803,6 +878,9 @@ window.NapMxBridgeCallback = {
 NapMxBridge.requestVideo({
     adUnitId: "YOUR_VIDEO_ADUNIT_ID"
 });
+
+// 광고가 더 이상 필요 없을 때 (SPA 라우팅 전환 등) 반드시 해제
+document.getElementById('btn-close').onclick = () => NapMxBridge.destroyVideo();
 </script>
 ```
 
@@ -901,8 +979,44 @@ NapMxBridge.requestVideoInterstitial({
 |--------|---------|
 | 화면 전환 | `onPause()` / `onResume()` 에서 Bridge 핸들러 호출 |
 | 화면 종료 | `onDestroy()`에서 `destroyAll()` |
+| 재요청 | `request*()` 진입 시 해당 `destroy*()` 선행 호출 |
 
 > ⚠️ 네이티브 광고 객체는 반드시 화면 종료 시 해제해야 합니다.
+
+### 인스턴스 중첩 · 메모리 누수 방지 — **[필수]**
+
+뷰를 생성하는 3개 포맷(`requestBanner` / `requestNative` / `requestVideo`)은 **연속 호출 시 이전 인스턴스를 해제하지 않으면
+뷰가 화면에 중첩되고 그대로 누수**됩니다. 위 구현처럼 각 `request*()` 첫 줄에서 해당 `destroy*()` 를 호출하세요.
+
+| 포맷 | 요청 | 해제 (JS/네이티브 공통) |
+|------|------|------|
+| 배너 | `requestBanner()` | `destroyBanner()` |
+| 네이티브 | `requestNative()` | `destroyNative()` |
+| 인라인 동영상 | `requestVideo()` | `destroyVideo()` |
+| 전체 | — | `destroyAll()` |
+
+> ℹ️ 리소스 해제 API는 **`stop()`** 입니다. `destroy()` 는 `@Deprecated` 이며 `stop()` 이 내부적으로 호출합니다.
+> 전면·리워드·전면동영상은 뷰를 직접 보유하지 않으므로 `stop()` 만 호출하면 됩니다.
+
+### 뷰 부착 안전 규칙 — **[필수]**
+
+광고 뷰를 컨테이너에 `addView()` 하기 전에는 **추가하려는 자식 자신의 기존 부모**를 분리해야 합니다.
+대상 컨테이너에 `removeView()` / `removeAllViews()` 를 호출하는 것은 가드가 되지 않습니다.
+
+```java
+// ❌ 잘못된 방식 — 컨테이너에서 지우려 함
+parent.removeView(nativeAdView);
+parent.addView(nativeAdView, lp);
+
+// ✅ 올바른 방식 — 자식이 붙어 있던 부모에서 분리
+if (nativeAdView.getParent() instanceof ViewGroup) {
+    ((ViewGroup) nativeAdView.getParent()).removeView(nativeAdView);
+}
+parent.addView(nativeAdView, lp);
+```
+
+이 가드가 없으면 재로드·화면 회전 시 `IllegalStateException: The specified child already has a parent` 로 크래시합니다.
+위 구현의 `detachFromParent()` 헬퍼가 이 규칙을 캡슐화합니다.
 
 ### Context (Android)
 
@@ -924,6 +1038,22 @@ const AD_CONFIG = {
 ```
 
 > ⚠️ 하나의 AdUnit ID는 하나의 광고 객체에서만 사용하세요. Media Key는 네이티브 코드(Application/AppDelegate)에서 설정합니다.
+
+### customParams 전달
+
+모든 광고 포맷이 `AdInfo.Builder` 를 사용하므로 **6개 요청 전부** 동일하게 `customParams` 를 받습니다.
+JS 에서는 요청 파라미터에 객체로 실어 보내면 됩니다.
+
+```javascript
+NapMxBridge.requestBanner({
+    adUnitId: AD_CONFIG.BANNER,
+    position: "bottom",
+    customParams: { age: "20", gender: "M" }   // 값은 문자열로 전달
+});
+```
+
+네이티브 쪽은 위 구현의 `parseCustomParams(params, builder)` 헬퍼가 `AdInfo.Builder.setCustomParams(Map<String, String>)`
+로 일괄 변환합니다. `customParams` 키가 없으면 아무 것도 하지 않으므로 모든 요청에 안전하게 적용할 수 있습니다.
 
 ### ProGuard 설정 (Android)
 
