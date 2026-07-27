@@ -10,7 +10,7 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 
 | 연동 방식 | 지원 네트워크 |
 |-----------|--------------|
-| **SDK** | NAP, Google AdManager, KakaoAdfit, Pangle, AppLovin, Unity Ads |
+| **SDK** | NAP, Google AdManager, Naver Ad Manager, KakaoAdfit, Pangle, AppLovin, Unity Ads, Teads |
 | **Script** | NAP, Google ADfit, MobWith |
 | **API** | NAP, Criteo, MobWith |
 
@@ -30,6 +30,10 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 | 동영상 (아웃스트림) | NAP, Pangle, AppLovin |
 | 동영상 (인스트림) | NAP |
 | 리워드 동영상 | NAP, Google, Pangle, AppLovin, Unity Ads |
+
+> ⚠️ 위 표는 **어떤 네트워크를 연동할 수 있는지**를 안내하는 참고 자료입니다. 실제로 어떤 네트워크가 광고를 채우는지는 애드유닛별 서버 설정과 각 네트워크의 재고·정책에 따라 달라집니다.
+> 포맷 지원 여부와 세부 동작은 **네트워크 SDK 버전에 따라 변경될 수 있으므로**, 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 지면 구성을 문의하시길 권장합니다.
+> Android SDK가 제공하는 어댑터 목록은 [Android SDK 시작하기](/android/native/getting-started)에서 확인할 수 있습니다.
 
 ### M.Web
 
