@@ -133,7 +133,7 @@ public class InterstitialAd : MonoBehaviour
 ### 2-4. 전면 배너 커스텀
 
 전면 배너 형식으로 `basic`, `popup`, `countDown` 세 가지 형태를 제공합니다.  
-일부 네트워크(AdMixer, AdFit, MobWith)에만 적용됩니다.
+일부 네트워크(AdMixer, AdFit)에만 적용됩니다.
 
 ```csharp
 // type: 0 = basic, 1 = popup, 2 = countDown

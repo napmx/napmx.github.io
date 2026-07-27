@@ -11,8 +11,8 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 | 연동 방식 | 지원 네트워크 |
 |-----------|--------------|
 | **SDK** | NAP, Google AdManager, Naver Ad Manager, KakaoAdfit, Pangle, AppLovin, Unity Ads, Teads |
-| **Script** | NAP, Google ADfit, MobWith |
-| **API** | NAP, Criteo, MobWith |
+| **Script** | NAP, Google ADfit |
+| **API** | NAP, Criteo |
 
 > NAP 네트워크는 nap mx에 연동된 디맨드(Adpacker, Criteo, Appier 등) 물량을 제공합니다.
 
@@ -27,7 +27,7 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 | 배너 (일반) | NAP, Google, Naver, KakaoAdfit, Pangle, AppLovin, Unity Ads |
 | 배너 (전면) | NAP, Google, Naver, KakaoAdfit, Pangle, AppLovin, Unity Ads |
 | 네이티브 | NAP, Google, Naver, KakaoAdfit, Pangle, AppLovin |
-| 동영상 (아웃스트림) | NAP, KakaoAdfit, Teads |
+| 동영상 (아웃스트림) | NAP, Teads |
 | 동영상 (인스트림) | NAP |
 | 리워드 동영상 | NAP, Google, Naver, Pangle, AppLovin, Unity Ads |
 
@@ -43,8 +43,8 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 
 | 광고 포맷 | 지원 네트워크 |
 |-----------|--------------|
-| 배너 (일반/전면) | NAP, Google, ADfit, MobWith |
-| 네이티브 (일반/전면) | NAP, MobWith |
+| 배너 (일반/전면) | NAP, Google, ADfit |
+| 네이티브 (일반/전면) | NAP |
 | 리워드 | NAP |
 
 ### PC.Web
