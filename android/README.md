@@ -1,8 +1,10 @@
 # nap mx Android SDK 연동 가이드
 
-> **버전**: 2.0.0  
-> **최소 지원 OS**: Android 5.0 (API 21, Lollipop) 이상  
+> **코어 SDK 버전**: 2.1.2 (BOM `2026.07.05`)  
+> **최소 지원 OS**: 코어 SDK 기준 Android 5.0 (API 21) 이상  
 > **문의**: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
+
+> ⚠️ **추가하는 미디에이션 어댑터에 따라 앱의 `minSdkVersion` 요구치가 올라갑니다.** 네트워크 SDK마다 요구 API 레벨이 달라, 코어 SDK의 API 21이 그대로 적용되지 않을 수 있습니다. 어댑터별 최소 요구 버전은 [SDK 시작하기](/android/native/getting-started)에서 확인하세요.
 
 ---
 
@@ -20,23 +22,28 @@
 
 ### 지원하는 미디에이션 네트워크
 
-| 네트워크 |
-|---------|
-| Google AdManager |
-| Kakao Adfit |
-| Pangle (TikTok) |
-| AppLovin |
-| Unity Ads |
-| Naver Ad Manager |
-| Teads |
+| 네트워크 | 비고 |
+|---------|------|
+| Google AdManager | |
+| Google Mobile Ads NextGen | 🧪 beta — AdManager와 택1 |
+| Naver Ad Manager | |
+| Kakao Adfit | |
+| Pangle (TikTok) | |
+| AppLovin | |
+| Unity Ads | |
+| Teads | |
+
+> ℹ️ 포맷별로 어떤 네트워크가 채워지는지는 애드유닛 설정과 각 네트워크의 재고·정책에 따라 달라집니다. 네트워크마다 지원 포맷과 동작이 다를 수 있으므로, 특정 네트워크의 동작을 전제로 화면을 설계하지 마세요.
 
 ---
 
 ## 빠른 시작
 
-1. [SDK 시작하기](android/native/getting-started.md) — Gradle 설정, 초기화, ProGuard
-2. [배너 광고](android/native/banner.md) — 첫 번째 광고 노출
+1. [SDK 시작하기](/android/native/getting-started) — Gradle 설정, 초기화, ProGuard
+2. [배너 광고](/android/native/banner) — 첫 번째 광고 노출
 3. [샘플 프로젝트](#샘플-프로젝트) — 완성된 예제 코드 확인
+
+> 💡 **Jetpack Compose 앱**이라면 [Compose 연동 가이드](/android/native/compose)를 참고하세요. 생명주기 연결과 해제를 자동 처리하는 헬퍼 모듈(`admixer-compose`)을 제공합니다.
 
 ---
 
