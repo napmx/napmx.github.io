@@ -48,14 +48,16 @@ Android 5.0(API 21, Lollipop) 이상입니다. 단, 일부 네트워크 SDK(GMS 
 
 **Q. 상세 로그를 확인하려면?**
 
-초기화 전에 로그 레벨을 `VERBOSE`로 설정하고 LogCat에서 `AdMixer` 태그로 필터링하세요.
+초기화 전에 로그 레벨을 `VERBOSE`로 설정하고 LogCat에서 `AdMixerSDK` 접두사로 필터링하세요.
 
 ```java
 AdMixerLog.setLogLevel(AdMixerLog.LogLevel.VERBOSE);
 ```
 ```
-adb logcat -s AdMixer
+adb logcat | grep AdMixerSDK
 ```
+> ⚠️ LogCat 태그는 `AdMixerSDK::<버전>` 형태(하위 태그가 붙으면 `AdMixerSDK::<버전>::<컴포넌트>`)로 **버전이 함께 붙습니다.** `adb logcat -s`는 태그 **완전 일치** 필터라 이 태그에는 사용할 수 없으니 위처럼 접두사로 필터링하세요.
+
 운영 빌드에서는 `ERROR` 또는 `NONE`을 권장합니다.
 
 ---
@@ -81,7 +83,7 @@ Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral(
 해당 어댑터 의존성에서 중복 모듈을 `exclude` 하세요.
 
 ```gradle
-implementation("io.github.nasmedia-tech:admixer-admanager:2.0.2") {
+implementation("io.github.nasmedia-tech:admixer-admanager:2.0.4") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```
@@ -95,7 +97,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 
 아래 순서로 점검하세요.
 
-1. `AdMixerLog.setLogLevel(AdMixerLog.LogLevel.VERBOSE)` 설정 후 LogCat(`-s AdMixer`)에서 워터폴 로그 확인
+1. `AdMixerLog.setLogLevel(AdMixerLog.LogLevel.VERBOSE)` 설정 후 LogCat(`adb logcat | grep AdMixerSDK`)에서 워터폴 로그 확인
 2. `AdMixer.getInstance().initialize(...)`가 광고 로드 **전에** 호출되었는지, Media Key가 올바른지 확인
 3. AdUnit ID가 파트너 사이트에 등록된 값과 일치하는지 확인
 4. 파트너 사이트에서 해당 AdUnit의 광고 설정이 **활성화**되어 있는지 확인
@@ -106,9 +108,11 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 
 ---
 
-**Q. `onFailedToReceiveAd`로 `NO_FILL`/`NO_ADS`가 옵니다. 연동 문제인가요?**
+**Q. `onFailedToReceiveAd`로 재고 없음(no-fill)이 옵니다. 연동 문제인가요?**
 
-`AX_ERR_NO_FILL`(노출 가능한 광고 없음)·`AX_ERR_NO_ADS`(재고 부족)는 대개 **연동 오류가 아니라 광고 재고/설정** 이슈입니다. 일정 시간 후 재요청하고, 지속되면 해당 AdUnit·네트워크 설정(운영 Ad Unit 프로비저닝 포함)을 운영팀에 확인하세요. **테스트 Ad Unit**은 `NO_FILL`/서버 에러가 정상일 수 있어 **운영 Ad Unit으로 전환**이 필요합니다.
+`AX_ERR_NO_ADS`(재고 부족)는 대개 **연동 오류가 아니라 광고 재고/설정** 이슈입니다. 워터폴의 모든 네트워크가 광고를 채우지 못하면 이 코드 하나로 통지됩니다.
+
+> 🚫 **`AX_ERR_NO_FILL`로 분기하지 마세요.** 상수는 존재하지만 SDK가 전달하지 않습니다 — no-fill은 **전부 `AX_ERR_NO_ADS`** 로 옵니다([에러 코드](error-codes.md)). 일정 시간 후 재요청하고, 지속되면 해당 AdUnit·네트워크 설정(운영 Ad Unit 프로비저닝 포함)을 운영팀에 확인하세요. **테스트 Ad Unit**은 노필/서버 에러가 정상일 수 있어 **운영 Ad Unit으로 전환**이 필요합니다.
 
 ---
 
@@ -199,6 +203,12 @@ Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플
 
 ---
 
+**Q. 리워드를 서버에서 안전하게 검증하고 싶습니다.**
+
+S2S Reward Callback을 사용하세요. 파트너 사이트에 콜백 URL을 등록하고, 필요 시 `AdInfo.Builder.setCustomParams(...)`로 사용자 식별자 등을 전달합니다. 자세한 내용은 [리워드 동영상 — S2S Reward Callback](rewarded-video.md#s2s-reward-callback-서버-간-리워드-검증)을 참고하세요.
+
+---
+
 **Q. 배너·네이티브 광고는 자동으로 갱신되나요?**
 
 서버 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고, 실패 시 재요청합니다(최소 5초 간격). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 무한 실패-재로드는 SDK 내부 가드가 차단합니다. *(v2.0.0: 기존 `isRetry`/`maxRetryCountInSlot` 옵션은 제거되고 서버 `interval`로 일원화)*
@@ -265,20 +275,16 @@ Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`�
 
 **Q. 디버그에서는 정상인데 릴리즈(난독화) 빌드에서 광고가 안 나오거나 크래시 납니다.**
 
-ProGuard/R8 규칙 누락이 원인일 수 있습니다. AdMixer Core와 사용하는 어댑터 모듈에 대한 keep 규칙을 추가하세요.
+**앱에 별도 keep 규칙을 추가할 필요는 없습니다.** Core SDK와 각 어댑터 AAR이 `consumer-rules.pro`를 내장하고 있어, Gradle이 의존성을 해석할 때 호스트 앱의 릴리즈 빌드(R8/ProGuard)에 **자동으로 병합**됩니다.
 
-```proguard
--keep class com.nasmedia.admixerssp.** { *; }
-# 사용하는 어댑터만
--keep class com.nasmedia.admanager.** { *; }
--keep class com.nasmedia.adfit.** { *; }
--keep class com.nasmedia.pangle.** { *; }
--keep class com.nasmedia.applovin.** { *; }
--keep class com.nasmedia.unity.** { *; }
--keep class com.nasmedia.naveradmanager.** { *; }
--keep class com.nasmedia.teads.** { *; }
-```
-각 어댑터 AAR에 `consumer-rules.pro`가 포함되어 대부분 자동 적용되지만, 위 규칙은 추가 안전망입니다. 자세한 내용은 [ProGuard 설정](proguard.md)을 참고하세요.
+그래도 릴리즈 빌드에서만 문제가 생긴다면 아래를 확인하세요.
+
+1. 사용 중인 SDK·어댑터 버전이 최신인지 확인
+2. `build/outputs/mapping/release/seeds.txt`에 `nasmedia` 클래스가 보호 목록으로 남아 있는지 확인 — 없으면 consumer-rules가 병합되지 않은 것입니다
+3. 앱이 SDK 클래스를 **리플렉션으로 직접 참조**한다면 해당 클래스만 개별 keep
+4. 해당 네트워크의 공식 ProGuard 가이드 확인
+
+자세한 내용과 확인 방법은 [ProGuard 설정](proguard.md)을 참고하세요.
 
 ---
 
@@ -306,10 +312,10 @@ ProGuard/R8 규칙 누락이 원인일 수 있습니다. AdMixer Core와 사용�
 
 **Q. 카카오 비즈보드를 연동하려면?**
 
-비즈보드는 별도 코드 발급이 필요합니다. 발급 및 심사는 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의하고, 연동 방법은 [비즈보드 가이드](bizboard.md)를 참고하세요.
+비즈보드는 별도 코드 발급이 필요합니다. 발급·심사 및 연동 방법 안내는 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요.
 
 ---
 
 ## 문의
 
-해결되지 않는 문의는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)** 로 연락해 주세요. LogCat의 `AdMixer` VERBOSE 로그를 함께 전달하면 진단이 빠릅니다.
+해결되지 않는 문의는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)** 로 연락해 주세요. `AdMixerLog.setLogLevel(AdMixerLog.LogLevel.VERBOSE)` 설정 후 `adb logcat | grep AdMixerSDK`로 수집한 로그를 함께 전달하면 진단이 빠릅니다.

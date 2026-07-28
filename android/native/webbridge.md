@@ -16,7 +16,7 @@ WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap mx 네이티�
                                                         │
                                                         ▼
                                                   [nap mx SDK]
-                                                   loadAd() / load()
+                                                       loadAd()
                                                         │
 [Web JS] ←── NapMxBridgeCallback.onBannerLoaded() ────  │
                                                         │
@@ -142,7 +142,7 @@ window.NapMxBridgeCallback = {
     onRewardVideoLoaded:    function(data) { /* 로드 성공 → showRewardVideo() 호출 가능 */ },
     onRewardVideoFailed:    function(data) { /* 로드 실패 */ },
     onRewardVideoShowed:    function(data) { /* 표시됨 */ },
-    onRewardVideoCompleted: function(data) { /* 재생 완료 */ },
+    onRewardVideoCompleted: function(data) { /* 재생 완료 — 네트워크에 따라 미발화, 지급 판정에 쓰지 말 것 */ },
     onRewardEarned:         function(data) { /* ✅ 리워드 지급 시점 */ },
     onRewardVideoDismissed: function(data) { /* 닫힘 */ },
 
@@ -150,7 +150,7 @@ window.NapMxBridgeCallback = {
     onVideoLoaded:    function(data) { /* 로드 성공 */ },
     onVideoFailed:    function(data) { /* 로드 실패 */ },
     onVideoDisplayed: function(data) { /* 표시됨 */ },
-    onVideoCompleted: function(data) { /* 재생 완료 */ },
+    onVideoCompleted: function(data) { /* 재생 완료 — 네트워크에 따라 미발화, 종료 처리에 쓰지 말 것 */ },
     onVideoClicked:   function(data) { /* 더보기 클릭 */ },
     onVideoSkipped:   function(data) { /* 스킵 */ },
 
@@ -158,7 +158,7 @@ window.NapMxBridgeCallback = {
     onVideoInterstitialLoaded:    function(data) { /* 로드 성공 */ },
     onVideoInterstitialFailed:    function(data) { /* 로드 실패 */ },
     onVideoInterstitialShowed:    function(data) { /* 표시됨 */ },
-    onVideoInterstitialCompleted: function(data) { /* 재생 완료 */ },
+    onVideoInterstitialCompleted: function(data) { /* 재생 완료 — 네트워크에 따라 미발화, 종료 처리에 쓰지 말 것 */ },
     onVideoInterstitialClicked:   function(data) { /* 더보기 클릭 */ },
     onVideoInterstitialDismissed: function(data) { /* 닫힘 */ }
 };
@@ -249,7 +249,7 @@ public class WebBridgeActivity extends AppCompatActivity {
 ### 3-3. Bridge 핸들러
 
 > ⚠️ `@JavascriptInterface` 메서드는 WebView의 JS 스레드에서 호출됩니다. 모든 UI 조작은 반드시 `runOnUiThread()`로 래핑하세요.  
-> ⚠️ `AdListener`는 내부적으로 `WeakReference`로 보유됩니다. 반드시 **멤버 변수**로 선언하세요.
+> ⚠️ 배너(`AMMBannerView`)는 `AdListener`를 내부적으로 `WeakReference`로 보유합니다. 익명 클래스로 바로 넘기면 GC에 수집되어 콜백이 끊길 수 있으므로 반드시 **멤버 변수**로 선언하세요(다른 포맷도 동일하게 멤버로 유지하는 것을 권장합니다).
 
 ```java
 public class NapMxAdBridgeHandler {
@@ -484,7 +484,7 @@ public class NapMxAdBridgeHandler {
     @JavascriptInterface
     public void showInterstitial() {
         activity.runOnUiThread(() -> {
-            if (loadedInterstitial != null) loadedInterstitial.showAd();
+            if (loadedInterstitial != null) loadedInterstitial.show(activity);
         });
     }
 
@@ -680,7 +680,7 @@ public class NapMxAdBridgeHandler {
     @JavascriptInterface
     public void showVideoInterstitial() {
         activity.runOnUiThread(() -> {
-            if (loadedVideoInterstitial != null) loadedVideoInterstitial.showAd(activity);
+            if (loadedVideoInterstitial != null) loadedVideoInterstitial.show(activity);
         });
     }
 
@@ -817,8 +817,7 @@ window.NapMxBridgeCallback = {
 };
 
 NapMxBridge.requestInterstitial({
-    adUnitId: "YOUR_INTERSTITIAL_ADUNIT_ID",
-    viewType: "basic"
+    adUnitId: "YOUR_INTERSTITIAL_ADUNIT_ID"
 });
 </script>
 ```
@@ -938,6 +937,8 @@ NapMxBridge.requestVideoInterstitial({
 | `onVideoSkipped` | `onAdSkipped` |
 | `onVideoClicked` | `onAdClicked` |
 
+> ⚠️ **`onVideoCompleted` 는 네트워크에 따라 발화하지 않을 수 있습니다.** 재생 완료를 별도 이벤트로 통지할지 여부는 각 네트워크 SDK가 결정하며, SDK는 이를 합성하지 않습니다. 완료 여부로 화면 전환 등 비즈니스 로직을 분기하지 마세요. 자세한 내용은 [동영상 광고 가이드](video.md)를 참고하세요.
+
 ### 전면 — `AMMInterstitialLoadCallback` + `FullScreenContentCallback`
 | JS 콜백 | 네이티브 소스 |
 |---|---|
@@ -957,6 +958,8 @@ NapMxBridge.requestVideoInterstitial({
 | `onRewardVideoDismissed` | `onAdDismissedFullScreenContent` |
 | `onRewardEarned` | `OnUserEarnedRewardListener.onUserEarnedReward` (`show(activity, …)`) |
 
+> ⚠️ **`onRewardVideoCompleted` 는 네트워크에 따라 발화하지 않을 수 있습니다.** 재생 완료를 별도 신호로 통지할지 여부는 각 네트워크 SDK가 결정하며, SDK는 이를 합성하지 않습니다. 리워드 지급 판정은 반드시 **`onRewardEarned`** 로만 하세요. 자세한 내용은 [리워드 동영상 가이드](rewarded-video.md)를 참고하세요.
+
 ### 전면 동영상 — `AMMVideoInterstitialLoadCallback` + `FullScreenContentCallback`
 | JS 콜백 | 네이티브 소스 |
 |---|---|
@@ -966,6 +969,10 @@ NapMxBridge.requestVideoInterstitial({
 | `onVideoInterstitialClicked` | `onAdClicked` |
 | `onVideoInterstitialCompleted` | `onAdCompleted` |
 | `onVideoInterstitialDismissed` | `onAdDismissedFullScreenContent` |
+
+> ⚠️ **`onVideoInterstitialCompleted` 역시 네트워크에 따라 발화하지 않을 수 있습니다.** 종료 처리는 닫힘 콜백(`onVideoInterstitialDismissed`)을 단일 복귀 지점으로 삼으세요.
+>
+> ℹ️ 위 구현이 사용하는 `FullScreenContentCallback` 은 GAM 표준 서브셋이라 **스킵 콜백이 없습니다.** 전면 동영상에서도 스킵을 받아야 한다면 `setFullScreenContentCallback` 대신 `setAdListener(AdListener)` 를 등록하고 `onAdSkipped()` 를 구현하세요 — **두 등록 API는 동일한 슬롯을 사용하므로 둘 중 하나만** 등록됩니다(나중에 호출한 쪽이 앞의 등록을 대체합니다).
 
 > ℹ️ 전면류의 `*Failed` JS 콜백은 **로드 실패**(load 콜백)와 **표시 실패**(`onAdFailedToShowFullScreenContent`) 양쪽에서 발사됩니다. 필요 시 `errorCode`로 구분하세요.
 
@@ -1057,11 +1064,10 @@ NapMxBridge.requestBanner({
 
 ### ProGuard 설정 (Android)
 
-```proguard
-# nap mx Core (필수)
--keep class com.nasmedia.admixerssp.** { *; }
+SDK 쪽 규칙은 AAR의 `consumer-rules.pro`가 자동 병합되므로 **추가할 필요가 없습니다**([ProGuard 설정](proguard.md) 참고). 앱이 직접 정의한 **Bridge 핸들러**만 보호하면 됩니다. `@JavascriptInterface` 메서드는 JS 이름으로만 호출되므로 난독화되면 웹에서 찾지 못합니다.
 
-# WebBridge Handler
+```proguard
+# WebBridge Handler — 앱이 직접 정의한 클래스 (패키지명은 실제 값으로 교체)
 -keep class com.your.package.NapMxAdBridgeHandler { *; }
 -keepclassmembers class com.your.package.NapMxAdBridgeHandler {
     @android.webkit.JavascriptInterface <methods>;

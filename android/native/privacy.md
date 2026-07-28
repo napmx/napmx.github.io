@@ -25,13 +25,23 @@ AdMixer.setTagForChildDirectedTreatment(AdMixer.AX_TAG_FOR_CHILD_DIRECTED_TREATM
 
 ### 네트워크별 전파
 
-| 네트워크 | 전파 방식 |
-|---|---|
-| **Google AdManager** · **GMA NextGen** | `RequestConfiguration.setTagForChildDirectedTreatment` |
-| **Unity Ads** | MetaData `user.nonbehavioral` |
-| 그 외 | 해당 네트워크 SDK가 관련 API를 제공하지 않아 전파되지 않습니다 |
+SDK에 설정한 값은 각 네트워크 SDK가 제공하는 API로 전달됩니다. **네트워크마다 받아들이는 항목이 다릅니다.**
 
-> ⚠️ 미설정 시 어떤 네트워크에도 적용하지 않습니다(미설정 유지).
+| 네트워크 | 아동 대상(COPPA) | GDPR 동의 | CCPA(판매 거부) |
+|---|---|---|---|
+| **Google AdManager** · **GMA NextGen** | ✅ | — | — |
+| **AppLovin** | — | ✅ | ✅ |
+| **Unity Ads** | ✅ | ✅ | ✅ |
+| **Pangle** | — | — | ✅ |
+| **Teads** | — | — | ✅ (US Privacy 문자열) |
+| **Naver Ad Manager** · **Kakao Adfit** | — | — | — |
+
+- **—** 는 해당 네트워크 SDK에 대응 설정 API가 없거나 SDK가 전달하지 않는 항목입니다. 값을 설정해도 그 네트워크에는 반영되지 않습니다.
+- 설정하지 않은 항목은 **어떤 네트워크에도 적용하지 않습니다**(미설정 상태 유지).
+
+> ⚠️ 위 매핑은 **각 네트워크 SDK 버전에 따라 변경될 수 있습니다.** 규제 준수가 필요한 서비스라면 각 네트워크 공식 문서에서 최신 요구사항을 확인하고, 아래 안내대로 문의해 주세요.
+
+> ℹ️ **IAB TCF 규격 CMP를 연동한 경우** — 일부 네트워크 SDK는 CMP가 저장한 동의 문자열을 직접 읽어갑니다. 이 경로는 nap mx 설정과 무관하게 동작하며, 지원 여부는 네트워크마다 다를 수 있습니다.
 
 ---
 
@@ -68,10 +78,13 @@ AdMixer.setTestDeviceIds(listOf("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"))
 
 | 네트워크 | 테스트 적용 |
 |---|---|
+| **Google AdManager** · **GMA NextGen** | `RequestConfiguration.setTestDeviceIds(testDeviceIds)` |
 | **AppLovin** | 초기화 시 `setTestDeviceAdvertisingIds(testDeviceIds)` |
 | **Unity Ads** | `UnityAds.initialize(..., testMode)` 인자에 반영 |
 | **Pangle** | `PAGConfig.debugLog(testMode)` (테스트 디바이스는 Pangle 대시보드에서 GAID 등록) |
-| **Google AdManager** | `RequestConfiguration.setTestDeviceIds(testDeviceIds)` |
+| **Naver Ad Manager** · **Kakao Adfit** · **Teads** | SDK 차원의 테스트 모드 연동이 없습니다. 각 네트워크 대시보드에서 테스트 지면을 설정하세요 |
+
+> ⚠️ 테스트 모드 지원 방식은 네트워크 SDK 버전에 따라 변경될 수 있습니다. 테스트 디바이스 등록 절차는 각 네트워크 공식 문서를 참고하세요.
 
 > ℹ️ 테스트 디바이스 광고 ID(GAID)는 LogCat에서 각 네트워크 SDK가 출력하는 안내 메시지로 확인하거나, 기기 설정 > Google > 광고에서 확인할 수 있습니다.
 

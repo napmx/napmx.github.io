@@ -26,9 +26,10 @@
 > - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
 > - Google AdManager 사용 시: Google이 요구하는 최소 View를 반드시 설정해야 합니다.
 
-> ℹ️ **선택 asset 미수신 시 자동 숨김 — [현재 버전]**
-> 서버가 내려준 광고 소재에 선택(optional) 텍스트 asset(제목·광고주·설명 등)이 포함되지 않은 경우, SDK/어댑터(Naver·Pangle·AdManager 등)는 해당 View를 **빈칸이나 placeholder 텍스트로 노출하지 않고 자동으로 `GONE` 처리**합니다. 따라서 레이아웃에 모든 asset View를 선언해 두어도 실제 소재에 없는 항목은 표시되지 않습니다.
-> - 일부 소재는 제목/설명 등이 없을 수 있으므로, **asset이 누락된 경우에도 레이아웃이 자연스럽게 보이도록** 상대 위치 제약(`layout_below` 등)을 사용해 배치하고, 누락 케이스로 한 번 테스트하는 것을 권장합니다.
+> ℹ️ **선택 asset 미수신 시 동작 — [현재 버전]**
+> 미디에이션 네트워크(Naver·Pangle·AdManager 등) 소재에 선택(optional) asset(제목·본문·광고주·CTA·아이콘 등)이 포함되지 않은 경우, 해당 어댑터가 그 View를 **빈칸이나 placeholder 텍스트로 노출하지 않고 자동으로 `GONE` 처리**합니다.
+> - **AdMixer 자체 소재는 자동 `GONE` 처리를 하지 않습니다.** 빈 값이 그대로 설정되고(CTA는 문구가 없으면 기본 문구 "더보기"로 대체), 아이콘 이미지가 없으면 `ImageView`가 비어 있는 채로 자리를 차지합니다.
+> - 따라서 **asset이 누락된 경우에도 레이아웃이 자연스럽게 보이도록** 상대 위치 제약(`layout_below` 등)을 사용해 배치하고, 누락 케이스로 한 번 테스트하는 것을 권장합니다.
 
 ---
 
@@ -123,7 +124,7 @@
 
 ### 슬롯 크기는 매체 레이아웃이 결정합니다 — [현재 버전]
 
-**선언한 크기가 그대로 렌더링됩니다.** 슬롯에 고정 크기(`250dp`, `match_parent` 등)를 지정하면 SDK는 그 크기를 그대로 채웁니다. 어떤 네트워크가 채우든(AdMixer 자체 / AdManager / Pangle / NaverAd / Adfit) 동일합니다.
+**선언한 크기가 그대로 렌더링됩니다.** 슬롯에 고정 크기(`250dp`, `match_parent` 등)를 지정하면 SDK는 그 크기를 그대로 채웁니다. 슬롯 크기 자체는 어떤 네트워크가 채우든 선언한 값이 유지됩니다. 다만 슬롯 안에서 소재가 어떻게 배치·재생되는지는 네트워크 정책에 따라 달라질 수 있습니다.
 
 > ⚠️ **동작 변경** — 이전 버전에서는 AdMixer 자체 광고에 한해 SDK가 소재 비율에 맞춰 **슬롯보다 작게** 렌더링했고, 그래서 같은 레이아웃이라도 워터폴 승자에 따라 높이가 달라졌습니다(예: 144×96 카드에 1200×628 소재 → 144×75로 축소되어 카드 하단에 배경 노출). 이제 선언한 크기를 그대로 지킵니다.
 >
@@ -164,7 +165,7 @@ public class NativeAdActivity extends AppCompatActivity {
 
         @Override
         public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) {
-            // 광고 수신 실패
+            // 수신 실패(최종) — 내부 No-Ad 포함 모든 실패가 이 콜백 하나로 옵니다
         }
 
         @Override
@@ -231,7 +232,7 @@ class NativeAdActivity : AppCompatActivity() {
             }
         }
         override fun onFailedToReceiveAd(errorCode: Int, errorMsg: String?) {
-            // 광고 수신 실패
+            // 수신 실패(최종) — 내부 No-Ad 포함 모든 실패가 이 콜백 하나로 옵니다
         }
         override fun onAdDisplayed() { /* 광고 표시됨 */ }
         override fun onAdClicked() { /* 클릭 처리 */ }
@@ -278,16 +279,48 @@ class NativeAdActivity : AppCompatActivity() {
 
 `NativeAdViewBinder.Builder`에서 설정 가능한 메서드입니다.
 
-| 메서드 | 설명 |
-|--------|------|
-| `new Builder(int layoutResId)` | 네이티브 광고 레이아웃 리소스 ID (필수) |
-| `setIconImageId(int viewId)` | 아이콘 이미지 View ID |
-| `setTitleId(int viewId)` | 제목 TextView ID |
-| `setAdvertiserId(int viewId)` | 광고주명 TextView ID |
-| `setDescriptionId(int viewId)` | 설명 TextView ID |
-| `setMainViewId(int viewId)` | 메인 이미지/동영상 슬롯(컨테이너 ViewGroup) View ID |
-| `setCtaId(int viewId)` | CTA 버튼 View ID |
-| `setAdChoicesPosition(AdChoicesPosition p)` | 광고 정보 고지(AdChoices) 아이콘의 **모서리** 위치. 미지정 시 `RIGHT_TOP` |
+### 자산 매핑
+
+| 메서드 | 기본값 | 설명 |
+|--------|--------|------|
+| `new Builder(int layoutResId)` | — | 네이티브 광고 레이아웃 리소스 ID (**필수**) |
+| `setIconImageId(int viewId)` | 미지정 | 아이콘 이미지 View ID |
+| `setTitleId(int viewId)` | 미지정 | 제목 TextView ID |
+| `setAdvertiserId(int viewId)` | 미지정 | 광고주명 TextView ID |
+| `setDescriptionId(int viewId)` | 미지정 | 설명 TextView ID |
+| `setMainViewId(int viewId)` | 미지정 | 메인 이미지/동영상 슬롯(**빈 ViewGroup 컨테이너**) View ID |
+| `setCtaId(int viewId)` | 미지정 | CTA 버튼 View ID |
+
+> ℹ️ 매핑하지 않은 자산은 렌더링되지 않습니다. 반대로 매핑했더라도 소재에 해당 자산이 없으면 **미디에이션 어댑터(Naver·Pangle·AdManager 등)는 해당 View를 자동으로 `GONE` 처리**합니다. AdMixer 자체 소재는 자동 숨김 대상이 아니므로(위 [구성 Asset] 참고) 누락 케이스 레이아웃을 함께 확인하세요.
+
+### `setAdChoicesPosition(AdChoicesPosition position)`
+
+| 항목 | 내용 |
+|------|------|
+| **의미** | 광고 정보 고지(AdChoices) 아이콘을 광고 뷰의 **어느 모서리**에 놓을지 지정합니다. |
+| **기본값** | `AdChoicesPosition.DEFAULT` = **`RIGHT_TOP`**(우측 상단) |
+| **허용 값** | `LEFT_TOP` · `RIGHT_TOP` · `LEFT_BOTTOM` · `RIGHT_BOTTOM` |
+| **권장값** | 기본값 `RIGHT_TOP`. 해당 모서리에 앱 UI(닫기 버튼 등)가 겹칠 때만 다른 모서리로 옮기세요. |
+| **언제 사용** | 광고 카드 우측 상단에 이미 앱 요소가 있는 레이아웃. |
+| **주의사항** | **요청이며 보장이 아닙니다.** 일부 네트워크는 지정 위치를 무시하고 자체 규칙으로 배치합니다. 어느 모서리에 와도 다른 UI를 가리지 않도록 네 모서리 모두에 여백을 확보하세요. `null` 을 넘기면 기본값으로 대체됩니다. |
+
+### `setAddGAMAdAttribute(boolean show)`
+
+| 항목 | 내용 |
+|------|------|
+| **의미** | 광고임을 알리는 **"Ad" 표시(Ad attribution) 배지**를 SDK가 광고 위에 오버레이할지 여부. |
+| **기본값** | `false` (SDK가 배지를 그리지 않음) |
+| **권장값** | **레이아웃에 자체 "광고" 라벨이 없다면 `true`** 로 설정하세요. |
+| **언제 사용** | 광고 카드에 "AD"·"광고" 같은 표기를 직접 넣지 않은 경우. |
+| **주의사항** | 광고 표시는 **네트워크 정책상 요구되는 사항**입니다. 기본값(`false`) 상태에서는 그 의무를 **앱 레이아웃이 부담**합니다. 자체 라벨도 없고 이 옵션도 끄면 정책 위반이 될 수 있습니다. 반대로 자체 라벨이 있는데 `true` 로 켜면 표기가 중복됩니다. 적용 대상 네트워크는 SDK 버전에 따라 달라질 수 있습니다. |
+
+---
+
+## 수신 실패 콜백은 **표준 하나만** 구현하면 됩니다
+
+로드 실패의 표준 콜백은 **`onFailedToReceiveAd(int errorCode, String errorMsg)`** 입니다. 이것 하나만 구현하면 전 네트워크 No-Ad("All adapters failed."), SDK 미초기화·AdUnit 누락 등 **내부 실패를 포함한 모든 수신 실패**를 받습니다. 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 유의미하지 않아 전달하지 않습니다.
+
+> ℹ️ **구버전 호환** — 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 둘 다 `@Deprecated`(3.0 제거 예정)이며, 기본 구현이 표준 콜백으로 위임하므로 이미 구현해 둔 코드도 동작은 그대로입니다. 신규 코드는 표준 콜백만 구현하세요.
 
 ---
 
@@ -310,11 +343,42 @@ NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_nat
 | `AdChoicesPosition.LEFT_BOTTOM` | 왼쪽 하단 |
 | `AdChoicesPosition.RIGHT_BOTTOM` | 오른쪽 하단 |
 
-모든 네이티브 네트워크(AdMixer 자체 / AdManager / GMA NextGen / NaverAd / Pangle / Adfit)에 동일하게
-적용됩니다.
+SDK는 네이티브를 지원하는 네트워크(AdMixer 자체 / Google AdManager / GMA NextGen / Naver Ad Manager / Pangle / Adfit)
+모두에 이 설정을 전달합니다. 다만 **반영되는 방식이 두 가지로 나뉩니다.**
+
+| 반영 방식 | 네트워크 | 설명 |
+|---|---|---|
+| SDK가 아이콘을 직접 배치 | AdMixer 자체 · Pangle · Naver Ad Manager | 지정한 모서리에 SDK가 오버레이합니다. |
+| 네트워크 SDK에 위치 옵션 전달 | Google AdManager · GMA NextGen · Adfit | 광고 요청 시 위치 옵션으로 전달하며, 최종 배치는 각 네트워크 SDK가 결정합니다. |
+
+> ⚠️ **위치 지정은 요청이며 보장이 아닙니다.**
+> 위 표에서 **위치 옵션을 네트워크 SDK에 전달하는 그룹**은 최종 배치를 각 네트워크가 결정하므로, 매체사 SDK
+> 정책 및 템플릿 규격에 따라 지정한 위치와 다르게 노출될 수 있습니다. 어느 모서리에 아이콘이 놓여도 다른
+> UI를 가리지 않도록 네 모서리 모두에 여백을 확보하세요.
+>
+> 특히 **템플릿형으로 내려오는 소재**(예: Naver Ad Manager의 Native Simple)는 네트워크 SDK가 소재 전체를
+> 렌더링하므로 `NativeAdViewBinder` 설정 자체가 적용되지 않습니다.
 
 > ℹ️ **임의 위치는 지원하지 않습니다.** 4개 모서리만 지정할 수 있습니다. 네트워크 SDK마다 아이콘 소유권이
 > 달라(일부는 SDK가 자기 뷰 계층에 직접 그림) 모서리 밖 위치는 네트워크 간 동작을 보장할 수 없기 때문입니다.
+
+---
+
+## 네트워크에 따라 달라질 수 있는 항목
+
+네이티브 광고는 **자산(asset)을 조합해 매체가 직접 그리는 포맷**이라, 포맷 중에서 네트워크별 편차가 가장 큽니다. 어떤 자산이 오는지, 무엇을 클릭 가능하게 해야 하는지는 낙찰 네트워크의 정책을 따릅니다. **모든 자산이 항상 온다고 가정하지 마세요.**
+
+| 항목 | 설명 | 앱에서 권장하는 대응 |
+|------|------|---------------------|
+| **자산 제공 범위** | 제목·본문(body)·아이콘·메인 이미지·CTA·광고주명 중 **일부가 비어 올 수 있습니다.** 어떤 자산이 필수인지는 네트워크마다 다릅니다. | 자산이 비었을 때 해당 뷰를 `GONE` 처리하도록 레이아웃을 설계하세요. 빈 값을 그대로 그리면 빈 칸이 노출됩니다. |
+| **아이콘 / 메인 이미지** | 아이콘만 오거나 메인 이미지만 오는 경우가 있습니다. 이미지 비율도 소재마다 다릅니다. | 고정 비율을 강제하지 말고, 없을 때의 대체 레이아웃을 준비하세요. |
+| **MediaView(동영상 자산)** | 동영상 자산 지원 여부와 재생 정책(자동재생·음소거·사용자 조작)이 네트워크마다 다를 수 있습니다. | 메인 뷰 영역은 이미지와 동영상 **양쪽이 들어올 수 있는 크기**로 잡으세요. |
+| **CTA 문구** | 제공 여부와 문구("자세히 보기", "설치" 등)가 다릅니다. | 앱에서 CTA 문구를 임의로 바꾸지 마세요. 네트워크 정책 위반이 될 수 있습니다. |
+| **AdChoices / 광고 정보 고지** | 아이콘 모양·위치·클릭 동작이 네트워크마다 다르며, 일부는 **위치 지정을 무시**하고 자체 규칙으로 배치합니다. | `setAdChoicesPosition()` 은 **요청**이며 보장이 아닙니다. 네 모서리 어디에 와도 다른 UI를 가리지 않도록 여백을 두세요. |
+| **클릭 처리 영역** | 어떤 뷰를 클릭 가능하게 등록해야 하는지가 다릅니다. 전체 영역 클릭을 요구하는 네트워크도, CTA만 허용하는 네트워크도 있습니다. | `NativeAdViewBinder` 에 자산을 정확히 매핑하고, 광고 뷰 위에 **자체 클릭 리스너를 덧씌우지 마세요.** 클릭이 집계되지 않거나 정책 위반이 될 수 있습니다. |
+| **템플릿형 렌더링** | 일부 네트워크는 자산을 개별 제공하지 않고 **완성된 뷰를 통째로** 내려줍니다. 이 경우 뷰 바인딩이 적용되지 않습니다. | 광고 높이가 소재에 따라 달라질 수 있으므로 컨테이너 높이를 고정하지 마세요. |
+
+> ℹ️ 위 항목은 네트워크 SDK 버전에 따라 변경될 수 있습니다. 지원 여부와 정책은 해당 네트워크 공식 문서를 참고하세요.
 
 ---
 

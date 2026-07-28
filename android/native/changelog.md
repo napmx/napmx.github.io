@@ -2,40 +2,64 @@
 
 ---
 
-## admixer-admanager 2.0.3 (2026-07-23)
+## v2.1.2 (2026-07-24)
 
-> GAM(AdMob/Ad Manager) 어댑터 단독 hotfix입니다(타 모듈 변경 없음). BOM(`admixer-bom:2026.07.04`)으로 버전을 묶어 연동하는 것을 권장합니다.
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.07.05`입니다.
 >
 > | 아티팩트 | 버전 |
 > |---|---|
-> | `admixer-admanager` | **2.0.3** |
-> | `admixer-bom` | **2026.07.04** |
+> | `admixer-ssp` (코어) | **2.1.2** |
+> | `admixer-admanager` | **2.0.4** |
+> | `admixer-gma-nextgen` | **2.0.3** |
+> | `admixer-bom` | **2026.07.05** |
+> | `admixer-adfit` | 2.0.3 (변경 없음) |
+> | `admixer-teads` | 2.1.0 (변경 없음) |
+> | `admixer-applovin` · `admixer-compose` · `admixer-naveradmanager` · `admixer-pangle` · `admixer-unity` | 2.0.2 (변경 없음) |
+> | `admixer-unity-nativeadlayout` | 2.0.0 (변경 없음) |
 
-### 수정
+### 안정성 개선 (코드 변경 불요)
 
-- **GAM 미디에이션 메모리 누수 수정** — 광고 로드 시 전달된 Activity Context가 GMA SDK 내부(binder stub)에 잔류해 Activity 종료 후 LeakCanary가 누수로 보고하던 문제를 수정했습니다. 전면/리워드/네이티브 로드 경로가 Application Context를 사용합니다. 공개 API 변경 없음 — 버전 교체만으로 적용됩니다.
+- **AdManager · GMA NextGen 어댑터의 Activity Context 보유 완화** — 배너·네이티브 로드 경로에서 Activity Context를 필요 이상으로 붙들지 않도록 정리했습니다. 화면 회전·백그라운드 전환이 잦은 지면에서의 누수 위험이 줄어듭니다. (앞선 2026-07-23 배포 `admixer-admanager:2.0.3`의 후속으로, `2.0.4`에서 배너 로드 경로까지 확대 적용 — BOM `2026.07.04` → `2026.07.05`)
+- **SDK 매니페스트의 미사용 컴포넌트 선언 제거** — 실제로 사용되지 않는 `ContentProvider` 선언이 앱 기동 최우선 경로에 등록되어 있어, 설치본이 손상된 일부 단말에서 기동 크래시 리포트에 SDK 컴포넌트명이 나타나는 사례가 있었습니다. 선언을 제거해 기동 경로를 축소했습니다. **공개 API 변경 없음** — 호스트 앱 조치는 필요 없습니다.
 
 ---
 
 ## v2.1.1 (2026-07-21)
 
-> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). BOM(`admixer-bom:2026.07.03`)으로 버전을 묶어 연동하는 것을 권장합니다.
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.07.03`입니다. (현재 최신 BOM은 [시작하기 가이드](getting-started.md) 참고)
 >
 > | 아티팩트 | 버전 |
 > |---|---|
 > | `admixer-ssp` (코어) | **2.1.1** |
 > | `admixer-teads` | **2.1.0** |
 > | `admixer-adfit` | **2.0.3** |
-> | `admixer-admanager` · `admixer-gma-nextgen` · `admixer-applovin` · `admixer-unity` · `admixer-naveradmanager` · `admixer-pangle` · `admixer-compose` | **2.0.2** |
+> | `admixer-admanager` · `admixer-applovin` · `admixer-compose` · `admixer-gma-nextgen` · `admixer-naveradmanager` · `admixer-pangle` · `admixer-unity` | **2.0.2** |
 > | `admixer-unity-nativeadlayout` | 2.0.0 (변경 없음) |
 > | `admixer-bom` | **2026.07.03** |
 
+### ⚠️ Breaking — 조치 필요
+
+- **로드 실패 표준 콜백을 `onFailedToReceiveAd(int errorCode, String errorMsg)`로 단순화** — 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 전달하지 않습니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며, 기본 구현이 표준 콜백으로 위임하므로 **기존 구현의 동작은 변하지 않습니다.** 표준 콜백 하나만 구현하면 내부 No-Ad를 포함한 모든 수신 실패를 받습니다. ([API 레퍼런스](api-reference.md#adlistener-이벤트-콜백))
+
+### 동작 변경 (코드 변경 불요)
+
+- **리워드 지급 채널 상호배타** — `show(activity, onUserEarnedRewardListener)`로 **전용 보상 리스너를 등록하면 `AdListener.onAdRewarded()`는 호출되지 않습니다**(전용 리스너 우선, 지급 통지는 정확히 1회). 두 채널로 각각 지급 처리하던 앱의 중복 지급이 구조적으로 차단됩니다. 전용 리스너를 등록하지 않은 경우에는 종전대로 `onAdRewarded()`로 통지됩니다.
+- **show 무응답 가드(5s) 실패의 네트워크 귀속 정확화** — `show()` 후 5초 내 성공/실패 통지가 없어 SDK가 발사하는 `onAdShowFailed` 백스톱이, 합성값 `"Mediation"` 대신 **실제 무응답 네트워크명으로 통지**됩니다(`AdNetworkType` enum 오버로드 우선 전달).
+- **하우스(자체) 전면 광고 노출 집계 시작** — 하우스 전면 광고 표시 시 노출 콜백/집계가 누락되던 갭을 수정했습니다. **AdMixer 리포트의 하우스 전면 노출 수치가 증가**할 수 있습니다(실제 노출은 종전과 동일 — 집계만 정상화).
+- **하우스 광고의 리워드 지면 채움 중단** — 하우스 엔진은 보상 적립 신호가 없어, 리워드 지면에서는 하우스를 채우지 않고 다음 네트워크로 넘어갑니다(지급 불가 노출 차단). 현재 서버가 리워드 지면에 하우스를 내려주지 않아 실동작 변화는 없습니다.
+- **리워드 SSV 포스트백에 `transaction_id` 추가 + COPPA 시 `ifa` 미전송** — `callback_url` 포스트백에 지급 1건당 고유 `transaction_id`(UUID)와 `ifa_use`(LAT 신호)가 추가됩니다. 아동 대상(`setTagForChildDirectedTreatment(TRUE)`) 설정 시 `ifa`는 전송되지 않습니다. ([리워드 가이드](rewarded-video.md#s2s-reward-callback-서버-간-리워드-검증))
+
+### 안정성 개선
+
+- **광고 로드 실패가 조용히 사라지던 경로 수정** — 서버 설정(config)을 받지 못했거나 미등록 광고 유닛 ID로 로드한 경우, 기존엔 성공/실패 어느 콜백도 오지 않았습니다. 이제 `onFailedToReceiveAd`로 **결정적 실패가 통지**됩니다(오프라인 첫 실행, 유닛 ID 오타 등).
+- **반복 실패 후 재로드가 영구 차단되던 고착 수정** — 연속 실패 상한 도달 후 앱이 재로드하면 광고 요청 없이 즉시 실패하고 이후 로드가 무음 차단되던 문제를 수정했습니다.
+- **닫힘 직후 보상 유실 방지** — `onAdDismissedFullScreenContent()` 안에서 `stop()`을 호출해도, 닫힘 직후 도착하는 보상 콜백(일부 네트워크의 순서 특성)이 유실되지 않도록 해제가 안전하게 지연됩니다. 권장 패턴은 [보상 지급 안전 수칙](rewarded-video.md#보상-지급-안전-수칙) 참조.
 
 ---
 
 ## v2.1.0 (2026-07-16)
 
-> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). BOM(`admixer-bom:2026.07.02`)으로 버전을 묶어 연동하는 것을 권장합니다.
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.07.02`입니다. (현재 최신 BOM은 [시작하기 가이드](getting-started.md) 참고)
 >
 > | 아티팩트 | 버전 |
 > |---|---|
@@ -53,13 +77,13 @@
 ### ⚠️ 화면 변경 주의 (코드 변경 불요)
 
 - **네이티브 메인 미디어 슬롯이 선언한 크기를 그대로 준수** — 자체 광고도 슬롯을 채웁니다(이전엔 소재 비율로 축소). 슬롯 비율 ≠ 소재 비율이면 여백 위치만 달라짐(총량 동일). 여백을 없애려면 슬롯 비율을 소재(대개 1.91:1)에 맞추세요.
-- **Pangle 광고 로고 좌측 상단 → 우측 상단** — 전 네트워크 기본값 통일. 좌측 상단 유지는 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`.
+- **Pangle 광고 로고 좌측 상단 → 우측 상단** — SDK 기본값을 우측 상단으로 통일. 좌측 상단 유지는 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`.
 
 ---
 
 ## v2.0.1 (2026-07-02)
 
-> 변경된 모듈만 개별 배포: `admixer-ssp`·`admixer-adfit` **2.0.1**, `admixer-gma-nextgen` **2.0.0**(첫 출시), `admixer-bom` **2026.07.01**(첫 출시). 나머지 어댑터는 2.0.0을 유지하며 코어 2.0.1과 호환됩니다. 상세: [Release Notes 2.0.1](../../RELEASE_NOTES_2.0.1.md)
+> 변경된 모듈만 개별 배포: `admixer-ssp`·`admixer-adfit` **2.0.1**, `admixer-gma-nextgen` **2.0.0**(첫 출시), `admixer-bom` **2026.07.01**(첫 출시). 나머지 어댑터는 2.0.0을 유지하며 코어 2.0.1과 호환됩니다.
 
 ### ⚠️ Breaking
 
@@ -93,7 +117,7 @@
 
 - **공개 광고 클래스 6종 → `AMM*` 네이밍 통일** (메서드 시그니처 동일, 클래스명만 변경):
   `AdView`→`AMMBannerView`, `NativeAdView`→`AMMNativeAdView`, `VideoAdView`→`AMMVideoView`, `InterstitialAd`→`AMMInterstitial`, `RewardInterstitialVideoAd`→`AMMRewardVideo`, `InterstitialVideoAd`→`AMMVideoInterstitial`. 레이아웃 XML의 클래스 경로도 변경해야 합니다.
-- **`AdListener` 이벤트 콜백 분리** — 단일 `onEventAd(adView, AdEvent)` → 이름 있는 메서드(`onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted`/`onAdSkipped`/`onAdRewarded` 등). `AdListener`는 `abstract class`로 전환되어 필요한 메서드만 override(필수 구현 없음). `onReceivedAd`/`onFailedToReceiveAd` 시그니처는 동일. ([Step 5-B](migration.md))
+- **`AdListener` 이벤트 콜백 분리** — 단일 `onEventAd(adView, AdEvent)` → 이름 있는 메서드(`onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted`/`onAdSkipped`/`onAdRewarded` 등). `AdListener`는 `abstract class`로 전환되어 필요한 메서드만 override(필수 구현 없음). `onReceivedAd`/`onFailedToReceiveAd` 시그니처는 동일 — 단, `onFailedToReceiveAd`는 이후 `(errorCode, errorMsg)` 표준 콜백으로 단순화되었습니다(위 [v2.1.1](#v211-2026-07-21) 참고). ([Step 5-B](migration.md))
 - **전면 광고 Basic 전용** — 전면은 Basic 타입만 제공합니다. 전면 타입/팝업/카운트다운 관련 `AdInfo.Builder` 옵션(`interstitialAdType`/`setInterstitialAdType`/`popupAdOption`/`setPopupAdOption`)과 관련 상수(`AdMixer.GAUGE`/`TEXT` 등)가 제거되었습니다. ([전면 가이드](interstitial.md))
 - **네이티브 View ID prefix** — `tv_title` 등 6개 → `nap_mx_tv_title` 등으로 변경(타 라이브러리 리소스 충돌 방지). 레이아웃 및 `NativeAdViewBinder` 수정 필요. ([v2 마이그레이션 가이드](migration.md))
 - **deprecated 별칭 API 제거** — `onDestroy()`/`closeInterstitial()`→`stopInterstitial()` 등 동일 동작의 정식 메서드로 교체. 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`)은 무효화(전면 배경 디밍은 고정값 자동 적용). ([v2 마이그레이션 가이드](migration.md))

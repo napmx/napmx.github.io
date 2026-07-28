@@ -53,7 +53,7 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.03')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.05')
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
@@ -82,12 +82,12 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.1'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.2'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.2'       // Google AdManager (play-services-ads:25.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.4'       // Google AdManager (play-services-ads:25.2.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.3'           // Kakao Adfit (ads-base:3.21.17 포함)
     implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.2'          // Pangle (pag-sdk:8.0.0.5 포함)
     implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.2'        // AppLovin (applovin-sdk:13.6.3 포함)
@@ -97,7 +97,7 @@ dependencies {
     implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (선택 — admixer-unity와 함께, 직접 NativeAdViewBinder 레이아웃 구성 시 불필요)
 
     // 🧪 (beta) — Google Mobile Ads NextGen SDK (ads-mobile-sdk:1.2.1 포함). admixer-admanager와 택1
-    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.0.2'
+    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.0.3'
 }
 ```
 
@@ -146,8 +146,7 @@ dependencyResolutionManagement {
         // Teads 사용 시 필수
         maven { url "https://sdk.teads.tv/android/repo" }
         maven { url "https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod" }
-        // Teads 사용 시 권장(Teads 공식 가이드) — 현재 HMS 전이 의존성은 없어 미추가여도 빌드 가능
-        maven { url "https://developer.huawei.com/repo/" }
+        maven { url "https://developer.huawei.com/repo/" }  // Teads 공식: Huawei 단말 호환용(필수)
     }
 }
 ```
@@ -157,7 +156,7 @@ dependencyResolutionManagement {
 | Google AdManager, AppLovin, Unity, NaverAdManager | `google()` / `mavenCentral()` 만으로 해결 |
 | Kakao Adfit | `devrepo.kakao.com` 추가 필요 |
 | Pangle | `artifact.bytedance.com` 추가 필요 |
-| Teads | `sdk.teads.tv`, `teads.jfrog.io` 추가 필요 (+ Huawei repo 권장) |
+| Teads | `sdk.teads.tv`, `teads.jfrog.io`, `developer.huawei.com` 추가 필요<br>(Huawei 저장소는 Teads 공식 설치 가이드가 Huawei 단말 호환을 위해 필수로 안내) |
 
 ### 1-4. 네트워크 SDK 지원 버전 범위
 
@@ -167,14 +166,14 @@ dependencyResolutionManagement {
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
-| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.1.1** | 2.1.1 | 자체 SDK |
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.1.2** | 2.1.2 | 자체 SDK |
 | Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
 | Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
 | Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
 | AppLovin | `com.applovin:applovin-sdk` | 13.2.0 (권장 13.4.0+) | **13.6.3** | 13.6.3 | 12.x 이하 미지원 |
 | Unity Ads | `com.unity3d.ads:unity-ads` | 4.16.x (권장 4.18.0) | **4.18.1** | 4.18.1 | 4.x 라인 |
 | Naver Ad Manager | `com.naver.gfpsdk:nam-bom` | 8.14.0 | **8.16.0** | 8.17.0 | 8.x(BOM이 모듈 버전 고정) |
-| Teads | `tv.teads.sdk.android:sdk` | 6.2.0 | **6.2.0** | 6.2.0 | Unified Media Placement API — 6.1.x 이하 미지원 |
+| Teads | `tv.teads.sdk.android:sdk` | 6.0.4 (권장 6.2.0) | **6.2.0** | 6.2.0 | 6.x 통합 SDK(5.x는 레거시) |
 | 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | AdManager·NaverAd와 공존 불가 |
 
 > ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어, 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
@@ -355,23 +354,11 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 
 ## Step 4. ProGuard 설정
 
-릴리즈 빌드에서 ProGuard/R8 난독화를 사용하는 경우 아래 규칙을 `proguard-rules.pro`에 추가하세요.
+**별도 작업이 필요하지 않습니다.** Core SDK(`admixer-ssp`)와 각 어댑터 모듈은 AAR에 `consumer-rules.pro`를 내장하고 있어, Gradle이 의존성을 해석할 때 해당 규칙이 호스트 앱의 릴리즈 빌드(R8/ProGuard)에 자동으로 병합됩니다. 앱의 `proguard-rules.pro`에 규칙을 직접 추가하지 않아도 됩니다.
 
-```proguard
-# ✅ 필수 — AdMixer Core
--keep class com.nasmedia.admixerssp.** { *; }
+각 네트워크 SDK도 자체 규칙을 `consumerProguardFiles`로 제공하므로 동일하게 자동 적용됩니다.
 
-# 사용하는 어댑터 모듈만 추가하세요
--keep class com.nasmedia.admanager.** { *; }       # Google AdManager
--keep class com.nasmedia.adfit.** { *; }            # Kakao Adfit
--keep class com.nasmedia.pangle.** { *; }           # Pangle
--keep class com.nasmedia.applovin.** { *; }         # AppLovin
--keep class com.nasmedia.unity.** { *; }            # Unity Ads
--keep class com.nasmedia.naveradmanager.** { *; }   # Naver Ad Manager
--keep class com.nasmedia.teads.** { *; }            # Teads
-```
-
-> ℹ️ 각 네트워크 SDK가 자체 ProGuard 규칙을 `consumerProguardFiles`로 제공하는 경우, 해당 규칙이 자동으로 적용됩니다. 빌드 경고가 발생하면 해당 네트워크의 ProGuard 가이드를 참고하세요.
+> ℹ️ 자세한 내용(자동 적용 대상 모듈, 직접 keep이 필요한 예외 상황, 확인 방법)은 [ProGuard 설정](proguard.md)을 참고하세요.
 
 ---
 
@@ -382,7 +369,7 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```gradle
 dependencies {
     // 이미 Google AdManager SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.2") {
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.4") {
         exclude group: "com.google.android.gms", module: "play-services-ads"
     }
 

@@ -12,22 +12,25 @@ Compose 앱에서 nap mx 광고를 연동하는 방법입니다. 코어 SDK는 V
 
 ```gradle
 dependencies {
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.03')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.05')
     implementation 'io.github.nasmedia-tech:admixer-ssp'        // 코어(필수)
     implementation 'io.github.nasmedia-tech:admixer-compose'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
 }
 ```
 
-**방법 B — 개별 버전 지정** (현재 배포 버전 기준):
+**방법 B — 개별 버전 지정** (작성 시점 최신 배포 버전 기준):
 
 ```gradle
 dependencies {
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.1'        // 코어(필수)
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.2'        // 코어(필수)
     implementation 'io.github.nasmedia-tech:admixer-compose:2.0.2'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
 }
 ```
+
+> ℹ️ **`admixer-compose`의 버전 번호는 코어(`admixer-ssp`)와 다릅니다.** 모듈별로 변경이 있을 때만 개별 배포되므로 두 버전은 일치하지 않는 것이 정상입니다(예: 코어 `2.1.2` + Compose 헬퍼 `2.0.2`).
+> 이 때문에 **방법 A(BOM)를 권장**합니다 — 버전을 생략하면 BOM이 해당 릴리스에서 검증된 멤버 버전으로 자동 고정하므로, 모듈별로 버전을 직접 맞추다 생기는 불일치·구버전 혼용을 예방할 수 있습니다. 개별 지정 방식을 쓴다면 [Maven Central](https://central.sonatype.com/namespace/io.github.nasmedia-tech)에서 각 모듈의 최신 버전을 확인해 갱신하세요.
 
 ---
 
@@ -101,13 +104,13 @@ fun NativeSlot() {
 
 > ℹ️ View ID는 v2.0.0에서 `nap_mx_` prefix가 붙습니다. 자세한 내용은 [마이그레이션 Step 7](migration.md)을 참고하세요.
 
-> ℹ️ **AdChoices(광고 정보 고지)** — SDK가 자동 오버레이하므로 레이아웃 슬롯이 필요 없습니다. 위치는 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`으로 4개 모서리 중 하나를 지정하며(기본 `RIGHT_TOP`), 전 네트워크에 동일 적용됩니다. 자세한 내용은 [네이티브 가이드](native-ad.md#광고-정보-고지adchoices-위치-지정)를 참고하세요.
+> ℹ️ **AdChoices(광고 정보 고지)** — SDK가 자동 오버레이하므로 레이아웃 슬롯이 필요 없습니다. 위치는 `setAdChoicesPosition(AdChoicesPosition.LEFT_TOP)`으로 4개 모서리 중 하나를 **요청**할 수 있습니다(기본 `RIGHT_TOP`). 다만 일부 네트워크는 지정 위치를 무시하고 자체 규칙으로 배치할 수 있습니다. 자세한 내용은 [네이티브 가이드](native-ad.md#광고-정보-고지adchoices-위치-지정)를 참고하세요.
 
 ---
 
 ## 전면 — `rememberInterstitialAd`
 
-전면·리워드는 **Activity 노출형**이라 화면에 배치하는 컴포저블이 아니라, `remember*`가 반환하는 **state-holder 핸들**로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고(중복 콜백 방지, #58), 이탈 시 `stopInterstitial()`로 정식 해제합니다.
+전면·리워드는 **Activity 노출형**이라 화면에 배치하는 컴포저블이 아니라, `remember*`가 반환하는 **state-holder 핸들**로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고(중복 콜백 방지), 이탈 시 `stop()`으로 정식 해제합니다.
 
 ```kotlin
 import com.nasmedia.admixerssp.compose.rememberInterstitialAd
@@ -131,7 +134,7 @@ fun MyScreen() {
 - `load()` 비동기 로드 / `show()` 노출 / `cancelLoad()` 진행 중 로드만 취소 / `isLoaded` 수신 여부.
 - 로드 즉시 노출하려면 `rememberInterstitialAd(adUnitId, autoShow = true)`. 내부적으로 수신 시 `show()`만 호출하며 `start*`를 재호출하지 않습니다.
 
-> 🚨 **수신 콜백에서 `start*`(로드+자동노출)를 직접 호출하지 마세요.** 매 수신마다 재로드되어 무한 루프가 발생합니다(#59). 노출은 항상 `show()`(=`showInterstitial()`)로 하며, 헬퍼는 이 규약을 강제합니다.
+> 🚨 **수신 콜백에서 `start*`(로드+자동노출)를 직접 호출하지 마세요.** 매 수신마다 재로드되어 무한 루프가 발생합니다. 노출은 항상 `show()`(=`showAd()`)로 하며, 헬퍼는 이 규약을 강제합니다.
 
 ---
 
@@ -161,6 +164,19 @@ fun RewardScreen() {
 ```
 
 - API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onAdRewarded()`로 통지됩니다.
+  Compose 헬퍼는 전용 보상 리스너 없이 노출하므로, 보상은 `AdListener` 경로로 옵니다.
+- **지급 이력 키가 필요하면 `RewardInfo` 오버로드를 구현하세요.** 지급 1건당 고유 `transaction_id`가 전달되며, 서버 포스트백과 대조할 수 있습니다.
+
+  ```kotlin
+  object : AdListener() {
+      override fun onAdRewarded(info: RewardInfo) {
+          giveReward(info.transactionId)   // 이 오버로드를 구현하면 무인자 버전은 호출되지 않습니다
+      }
+  }
+  ```
+
+- **지급 중복 방지(dedup)는 앱 책임입니다.** 노출 1회당 지급 1회를 앱에서 보장하세요(one-shot 가드 등).
+- ⚠️ **보상과 닫힘 콜백의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다.** 순서를 전제로 지급·알림 로직을 작성하지 말고 플래그로 판정하세요. 자세한 패턴은 [리워드 동영상 가이드의 보상 지급 안전 수칙](rewarded-video.md#보상-지급-안전-수칙)을 참고하세요.
 
 ---
 
@@ -207,13 +223,17 @@ fun VideoScreen() {
 | `onAdSkipped` | – | – | – | ✅ | ✅ |
 | `onAdRewarded` | – | – | – | – | ✅ |
 
-> ℹ️ 로드 실패는 `onFailedToReceiveAd(code, msg)` 하나로 통지됩니다 — 전 네트워크 No-Fill·SDK 미초기화 포함 모든 수신 실패가 이 콜백으로 옵니다.
+> ⚠️ **`onAdCompleted`·`onAdSkipped` 는 네트워크에 따라 발화하지 않을 수 있습니다.** 재생 완료·스킵을 별도 신호로 통지할지는 각 네트워크 SDK가 결정하며, SDK는 이를 합성하지 않습니다. **보상 지급 판정은 반드시 `onAdRewarded` 로만** 하세요.
+>
+> 위 표는 해당 포맷에서 그 콜백이 **전달될 수 있는지**를 나타냅니다. 매번 발화한다는 뜻이 아닙니다.
+
+> ✅ **`onFailedToReceiveAd`는 표준 콜백 `(errorCode, errorMsg)` 하나만 구현하면 됩니다.** 전 네트워크 No-Ad(`"Mediation"`)·SDK 미초기화(`"SDK"`) 등 내부 실패를 포함한 모든 수신 실패가 이 콜백 하나로 옵니다. 기존 4-인자 오버로드(String/enum)는 둘 다 `@Deprecated`(3.0 제거 예정)이며, 기본 구현이 표준 콜백으로 위임하므로 기존 코드도 동작은 그대로입니다.
 >
 > ```kotlin
 > val listener = remember {
 >     object : AdListener() {
 >         override fun onFailedToReceiveAd(code: Int, msg: String?) {
->             isLoading = false // 로딩 해제 등 최종 처리
+>             isLoading = false // 수신 실패(최종) — 로딩 해제 등 최종 처리
 >         }
 >     }
 > }
