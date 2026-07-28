@@ -67,10 +67,14 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 표시 |
+| `isReady()` | 로드 완료·노출 가능 상태 조회 (SDK 2.1.3+) |
+| `isLoading()` | 로드 진행 중 여부 조회 (SDK 2.1.3+) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
+
+> ℹ️ **`isReady()` / `isLoading()` (SDK 2.1.3+)** — 모든 광고 클래스 6종(인라인 3종·풀스크린 3종)에서 동일하게 제공됩니다. `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 콜백만으로 로드 결과를 판정하는 호출자(하이브리드 웹뷰 브릿지 등)는 이 무시를 무응답과 구분할 수 없으므로, **로드 요청 전에 두 메서드로 상태를 사전 판별**하세요 — `isReady()`가 `true`면 재로드 대신 노출을, `isLoading()`이 `true`면 진행 중인 로드의 콜백 대기를 하면 됩니다. `stop()`/`destroy` 이후에는 둘 다 `false`입니다. 하이브리드 연동 예제는 [WebBridge 가이드](webbridge.md)를 참고하세요.
 
 ---
 
@@ -83,6 +87,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `static loadAd(Context, AdInfo, AMMInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/닫힘/표시실패 콜백 등록 (Kotlin: `fullScreenContentCallback` 프로퍼티) |
 | `show(Activity)` | 전면 광고 표시 (Activity Context 필요) |
+| `isReady()` / `isLoading()` | 로드 상태 조회 (SDK 2.1.3+ — 위 [AMMBannerView 안내](#ammbannerview-배너) 참고) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존). 로딩 중이 아니면 no-op |
 | `stop()` | 광고 정지 및 리소스 해제 — onDestroy에서 호출 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
@@ -100,6 +105,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `static loadAd(Context, AdInfo, AMMVideoInterstitialLoadCallback)` | 정적 로드. 완료 시 콜백으로 로드된 광고 객체 반환 |
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
 | `show(Activity)` | 전면 동영상 표시 (Activity Context 필요) |
+| `isReady()` / `isLoading()` | 로드 상태 조회 (SDK 2.1.3+ — [AMMBannerView 안내](#ammbannerview-배너) 참고) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
 | `stop()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
@@ -114,6 +120,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setViewBinder(NativeAdViewBinder)` | 레이아웃 바인더 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 렌더링 |
+| `isReady()` / `isLoading()` | 로드 상태 조회 (SDK 2.1.3+ — [AMMBannerView 안내](#ammbannerview-배너) 참고) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
@@ -131,6 +138,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setFullScreenContentCallback(FullScreenContentCallback)` | 노출/클릭/재생완료/닫힘/표시실패 콜백 등록 |
 | `show(Activity, OnUserEarnedRewardListener)` | 광고 표시 + 보상 적립 리스너 등록 |
 | `show(Activity)` | 광고 표시 (보상 리스너 없이) |
+| `isReady()` / `isLoading()` | 로드 상태 조회 (SDK 2.1.3+ — [AMMBannerView 안내](#ammbannerview-배너) 참고) |
 | `cancelLoad()` | 진행 중인 **로드만 취소** (표시 중 광고는 보존) |
 | `stop()` | 광고 정지 및 리소스 해제 (필수) |
 | `hasInterstitial` | 광고 수신 여부 (boolean 필드) |
@@ -146,6 +154,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `setAdInfo(AdInfo)` | 광고 정보 설정 (필수) |
 | `setAdViewListener(AdListener)` | 이벤트 리스너 등록 |
 | `loadAd()` | 광고 로드 시작. 뷰가 화면에 부착(addView)되는 시점에 자동 노출 |
+| `isReady()` / `isLoading()` | 로드 상태 조회 (SDK 2.1.3+ — [AMMBannerView 안내](#ammbannerview-배너) 참고) |
 | `onResume()` | Activity onResume에서 호출 (필수) |
 | `onPause()` | Activity onPause에서 호출 (필수) |
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
