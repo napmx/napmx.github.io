@@ -25,7 +25,7 @@
 | 네트워크 | 비고 |
 |---------|------|
 | Google AdManager | |
-| Google Mobile Ads NextGen | 🧪 beta — AdManager와 택1 |
+| Google Mobile Ads NextGen | 🧪 beta — AdManager · NaverAd와 택1 |
 | Naver Ad Manager | |
 | Kakao Adfit | |
 | Pangle (TikTok) | |
