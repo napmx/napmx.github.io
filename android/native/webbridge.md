@@ -980,6 +980,42 @@ NapMxBridge.requestVideoInterstitial({
 
 ## 주의사항
 
+### 로드 상태 사전 조회 — 재시도 타임아웃 방지 (SDK 2.1.3+) **[권장]**
+
+SDK의 `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 웹은 콜백만으로 로드 결과를 판정하므로 이 무시를 무응답과 구분하지 못하고, 워터폴 소요가 웹 타임아웃을 초과한 뒤 SDK가 뒤늦게 READY가 되면 **이후 재시도가 전부 무시되어 영구 타임아웃**이 될 수 있습니다.
+
+SDK 2.1.3+의 **`isReady()` / `isLoading()`** 을 브릿지에 노출해 요청 전에 판별하세요. 두 메서드는 광고 클래스 6종 모두에서 제공됩니다([API 레퍼런스](api-reference.md)).
+
+```java
+// Bridge 핸들러에 추가 — JS가 요청 전에 상태를 동기 조회
+@JavascriptInterface
+public boolean isRewardReady() {
+    return loadedRewardVideo != null && loadedRewardVideo.isReady();
+}
+
+@JavascriptInterface
+public boolean isRewardLoading() {
+    return loadedRewardVideo != null && loadedRewardVideo.isLoading();
+}
+```
+
+```javascript
+// JS 래퍼에 노출 (callNoArgs와 달리 동기 반환 — Android 전용, iOS는 콜백 방식 별도)
+isRewardReady:   () => !!(window.NapMxBridge && window.NapMxBridge.isRewardReady()),
+isRewardLoading: () => !!(window.NapMxBridge && window.NapMxBridge.isRewardLoading()),
+
+// 사용 — 재시도 진입점에서 상태 분기
+if (NapMxBridge.isRewardReady()) {
+    NapMxBridge.showRewardVideo();          // ✅ 이미 준비됨 — 재로드 대신 노출
+} else if (NapMxBridge.isRewardLoading()) {
+    /* 진행 중인 로드의 onRewardVideoLoaded/Failed 콜백을 기다림 — 재요청 불필요 */
+} else {
+    NapMxBridge.requestRewardVideo({ adUnitId: AD_CONFIG.REWARD_VIDEO });
+}
+```
+
+> ℹ️ `@JavascriptInterface`의 boolean 반환은 JS에서 **동기 호출**로 바로 받을 수 있습니다. 배너·네이티브·인라인 동영상·전면·전면 동영상도 같은 방식으로 각 인스턴스(`banner`·`nativeAdView`·`videoView`·`loadedInterstitial`·`loadedVideoInterstitial`)에 노출하면 됩니다.
+
 ### Lifecycle 관리
 
 | 이벤트 | Android |
