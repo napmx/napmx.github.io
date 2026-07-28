@@ -82,6 +82,7 @@ maven { url "https://devrepo.kakao.com/nexus/content/groups/public/" }  // Kakao
 maven { url "https://artifact.bytedance.com/repository/pangle/" }       // Pangle
 maven { url "https://sdk.teads.tv/android/repo" }                       // Teads
 maven { url "https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod" } // Teads
+maven { url "https://developer.huawei.com/repo/" }                      // Teads (Huawei 호환 — 공식 설치 가이드 필수)
 ```
 
 > ℹ️ 개별 버전 지정, ProGuard, 네트워크 SDK 중복 예외 처리 등 상세 설정은 [네이티브 시작하기](/android/native/getting-started)와 동일합니다.

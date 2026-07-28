@@ -1,6 +1,6 @@
 # nap mx Android SDK 연동 가이드
 
-> **코어 SDK 버전**: 2.1.2 (BOM `2026.07.05`)  
+> **코어 SDK 버전**: 2.1.3 (BOM `2026.07.06`)  
 > **최소 지원 OS**: 코어 SDK 기준 Android 5.0 (API 21) 이상  
 > **문의**: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 

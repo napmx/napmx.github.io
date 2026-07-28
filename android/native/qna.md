@@ -73,7 +73,7 @@ exclude 후 의존성 트리에서 해당 SDK가 1개만 남는지 확인하세�
 
 **Q. Teads/Adfit/Pangle를 추가했더니 의존성을 못 찾습니다(`Failed to resolve`).**
 
-해당 네트워크 전용 Maven 저장소를 `settings.gradle`에 추가해야 합니다(Adfit=`devrepo.kakao.com`, Pangle=`artifact.bytedance.com`, Teads=`sdk.teads.tv`+`teads.jfrog.io`). 필요한 저장소는 네트워크·SDK 버전에 따라 달라질 수 있으므로, 전체 목록은 [SDK 시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#1-3-네트워크별-추가-maven-저장소)를 기준으로 확인하세요. [FAQ — 빌드/Gradle](faq.md#빌드--gradle)도 참고할 수 있습니다.
+해당 네트워크 전용 Maven 저장소를 `settings.gradle`에 추가해야 합니다(Adfit=`devrepo.kakao.com`, Pangle=`artifact.bytedance.com`, Teads=`sdk.teads.tv`+`teads.jfrog.io`+`developer.huawei.com`). 필요한 저장소는 네트워크·SDK 버전에 따라 달라질 수 있으므로, 전체 목록은 [SDK 시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#1-3-네트워크별-추가-maven-저장소)를 기준으로 확인하세요. [FAQ — 빌드/Gradle](faq.md#빌드--gradle)도 참고할 수 있습니다.
 
 ---
 

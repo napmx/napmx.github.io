@@ -72,7 +72,7 @@ adb logcat | grep AdMixerSDK
 |---------|------------|
 | Kakao Adfit | `https://devrepo.kakao.com/nexus/content/groups/public/` |
 | Pangle | `https://artifact.bytedance.com/repository/pangle/` |
-| Teads | `https://sdk.teads.tv/android/repo`, `https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod` |
+| Teads | `https://sdk.teads.tv/android/repo`, `https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod`, `https://developer.huawei.com/repo/` |
 
 Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral()` 만으로 해결됩니다. 자세한 설정은 [SDK 시작하기](getting-started.md#1-3-네트워크별-추가-maven-저장소)를 참고하세요.
 
@@ -118,7 +118,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 
 **Q. 특정 네트워크 광고만 나오지 않습니다.**
 
-1. `build.gradle`에 해당 어댑터 모듈(`admixer-xxx`) 의존성이 있는지 확인(없으면 `AX_ERR_NO_ADAPTER`)
+1. `build.gradle`에 해당 어댑터 모듈(`admixer-xxx`) 의존성이 있는지 확인 — 모듈이 없으면 SDK가 해당 네트워크를 **조용히 건너뛰고** 워터폴을 계속 진행합니다. 별도 에러 코드가 오지 않고, 모든 네트워크가 실패하면 `AX_ERR_NO_ADS`로 통지됩니다. LogCat에 `[SKIP] Adapter instantiation failed for: <네트워크>`가 있으면 모듈 누락입니다
 2. 워터폴 로그에 `[SKIP] ... (Missing Keys)`가 있으면 서버에 네트워크 필수 키(예: Pangle `placement_id`, AppLovin `zone_id`)가 없는 경우입니다 → 운영팀에 키 프로비저닝 요청 또는 `setAdapterConfig`로 주입([Q&A](qna.md) 참고)
 3. Google AdManager: 매니페스트 `APPLICATION_ID` 확인
 4. NaverAdManager: 운영 Ad Unit ID 발급 여부 확인(`PUBLISHER_CD`는 SDK 제공)

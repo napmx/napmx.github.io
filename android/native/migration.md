@@ -229,7 +229,9 @@ interstitialVideoAd.stop();
 |------------|------------|------|
 | `onDestroy()` | `stop()` | `destroy()` 별칭이었음. `destroy()` 자체도 `@Deprecated` — `stop()`을 사용하세요 |
 
-> ℹ️ 인라인 뷰(배너·네이티브·동영상)는 호스트의 `LifecycleOwner`(Activity/Fragment)를 자동으로 탐색해 관찰하며, `ON_DESTROY` 시점에 SDK가 스스로 해제합니다. `LifecycleOwner`를 찾을 수 없는 Context에서 사용한다면 화면 종료 시 직접 `stop()`을 호출하세요.
+> ℹ️ 인라인 뷰(배너·네이티브·동영상)는 호스트의 `LifecycleOwner`(Activity/Fragment)를 자동으로 탐색해 관찰하며, `ON_DESTROY` 시점에 SDK가 스스로 해제합니다.
+>
+> 다만 **자동 해제는 안전망이지, 명시적 호출을 대체하지 않습니다.** `LifecycleOwner`를 찾을 수 없는 Context(커스텀 뷰 계층, `Application` Context 등)에서는 동작하지 않으므로, 가이드 전반의 권장대로 **`onResume`/`onPause`/`stop`을 직접 연결**하는 것을 기준으로 삼으세요.
 
 ```java
 // Before (v1.x) — 제거됨
@@ -431,7 +433,7 @@ AdInfo adInfo = new AdInfo.Builder(ADUNIT_ID)
     .build();
 ```
 
-> ℹ️ SDK 제공 샘플 레이아웃(`admixer-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
+> ℹ️ SDK 제공 샘플 레이아웃(`admixer-unity-nativeadlayout` 모듈)을 사용하는 경우 레이아웃 XML은 자동 적용됩니다. `NativeAdViewBinder` 코드만 업데이트하면 됩니다.
 
 ---
 

@@ -191,8 +191,8 @@ dependencyResolutionManagement {
 
 | 네트워크 | 최소 Android API |
 |---|---|
-| AdMixer (Core), Kakao Adfit, Teads | API 21 (Android 5.0) |
-| Google AdManager, Pangle, Unity Ads, Naver Ad Manager | API 23 (Android 6.0) |
+| AdMixer (Core), Kakao Adfit, Pangle, Unity Ads, Teads | API 21 (Android 5.0) |
+| Google AdManager, Naver Ad Manager | API 23 (Android 6.0) |
 | AppLovin | API 24 (Android 7.0) — `applovin-sdk:13.6.3` 기준 |
 | 🧪 GMA NextGen **(beta)** | API 24 (Android 7.0) — NextGen SDK 요구 |
 

@@ -264,7 +264,7 @@ class RewardVideoActivity : AppCompatActivity() {
 
 > ℹ️ **표시 결과는 광고당 정확히 1회만 전달됩니다.** `show()` 이후 `onAdShowedFullScreenContent()`(표시됨) 또는 `onAdFailedToShowFullScreenContent()`(표시 실패) 중 하나만 최종 결과로 수신하며, 네트워크가 표시 결과를 통지하지 않으면 SDK가 표시 실패를 백스톱으로 전달합니다. 표시 실패가 전달된 뒤의 상반된 콜백(닫힘/스킵/표시됨/중복 실패)은 억제되어 이중·모순 콜백을 방어할 필요가 없습니다. **단, 보상 적립(`onUserEarnedReward`)은 유실 방지를 위해 예외적으로 항상 전달됩니다.**
 
-> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdClosed`)은 `FullScreenContentCallback`으로도 받을 수 있으며, `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
+> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘은 `FullScreenContentCallback`으로도 받을 수 있으며(메서드명이 다릅니다 — `onAdShowedFullScreenContent`/`onAdClicked`/`onAdCompleted`/`onAdDismissedFullScreenContent`), `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
 > ```java
 > ad.setAdListener(new AdListener() {
 >     @Override public void onAdCompleted() { /* 재생 완료 — 보상과 별개, 네트워크에 따라 미발화 */ }
@@ -554,11 +554,15 @@ https://your-server.com/reward?media_key=12345678&adunit_id=87654321&ifa=860635e
 
 ## 지연 노출 (Load-Only)
 
-미리 로드해 두었다가 원하는 시점에 노출하려면, `onSuccessLoadReward`에서 `show()`를 호출하지 말고 광고 객체만 보관한 뒤 나중에 `show(activity, listener)`를 호출하세요. `hasInterstitial` 필드로 노출 가능 여부를 확인할 수 있습니다.
+미리 로드해 두었다가 원하는 시점에 노출하려면, `onSuccessLoadReward`에서 `show()`를 호출하지 말고 광고 객체만 보관한 뒤 나중에 `show(activity, listener)`를 호출하세요. `isReady()`로 노출 가능 여부를 확인할 수 있습니다(**v2.1.3+**).
+
+> ℹ️ **`isReady()` / `isLoading()`** — `loadAd()`는 이미 준비된 광고를 보호하고 중복 요청을 막기 위해 재요청을 **콜백 없이 무시**할 수 있습니다. 요청 전에 상태를 확인하세요 — `isReady()`가 `true`면 재로드 대신 `show()`, `isLoading()`이 `true`면 진행 중인 로드의 콜백을 기다리면 됩니다. `stop()` 이후에는 둘 다 `false`입니다.
+>
+> 구버전 호환 필드 `hasInterstitial`도 남아 있으나 신규 코드는 `isReady()`를 사용하세요.
 
 ```java
 // 원하는 시점에 노출
-if (loadedAd != null && loadedAd.hasInterstitial) {
+if (loadedAd != null && loadedAd.isReady()) {
     loadedAd.show(this, () -> giveRewardToUser());
 }
 ```

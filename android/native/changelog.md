@@ -140,7 +140,7 @@
 - **`AdListener` 이벤트 콜백 분리** — 단일 `onEventAd(adView, AdEvent)` → 이름 있는 메서드(`onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted`/`onAdSkipped`/`onAdRewarded` 등). `AdListener`는 `abstract class`로 전환되어 필요한 메서드만 override(필수 구현 없음). `onReceivedAd`/`onFailedToReceiveAd` 시그니처는 동일 — 단, `onFailedToReceiveAd`는 이후 `(errorCode, errorMsg)` 표준 콜백으로 단순화되었습니다(위 [v2.1.1](#v211-2026-07-21) 참고). ([Step 5-B](migration.md))
 - **전면 광고 Basic 전용** — 전면은 Basic 타입만 제공합니다. 전면 타입/팝업/카운트다운 관련 `AdInfo.Builder` 옵션(`interstitialAdType`/`setInterstitialAdType`/`popupAdOption`/`setPopupAdOption`)과 관련 상수(`AdMixer.GAUGE`/`TEXT` 등)가 제거되었습니다. ([전면 가이드](interstitial.md))
 - **네이티브 View ID prefix** — `tv_title` 등 6개 → `nap_mx_tv_title` 등으로 변경(타 라이브러리 리소스 충돌 방지). 레이아웃 및 `NativeAdViewBinder` 수정 필요. ([v2 마이그레이션 가이드](migration.md))
-- **deprecated 별칭 API 제거** — `onDestroy()`/`closeInterstitial()`→`stopInterstitial()` 등 동일 동작의 정식 메서드로 교체. 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`)은 무효화(전면 배경 디밍은 고정값 자동 적용). ([v2 마이그레이션 가이드](migration.md))
+- **deprecated 별칭 API 제거** — `onDestroy()`/`closeInterstitial()` 등을 동일 동작의 정식 메서드로 교체. **현행 정식 해제 메서드는 `stop()`** 입니다(당시 안내하던 `stopInterstitial()`도 이후 deprecated 되었습니다 — [마이그레이션 가이드](migration.md) 참고). 배경 알파 옵션(`isUseBackgroundAlpha`/`setUseBackgroundAlpha`)은 무효화(전면 배경 디밍은 고정값 자동 적용). ([v2 마이그레이션 가이드](migration.md))
 - **배너·네이티브 자동 갱신 옵션 정리** — 클라이언트 `isRetry`/`maxRetryCountInSlot` 제거. 자동 갱신/재로드는 서버 광고단위 `interval`(초) > 0일 때만 동작(무한 루프는 내부 가드 차단).
 - **즉시 노출(start*) API 제거** — `startInterstitial()`/`startInterstitialVideoAd()`/`startRewardVideoAd()` 및 `loadAd(Activity, AdInfo)` 제거. 모든 광고는 로드(수신)와 노출(인라인=`addView`, 풀스크린=`show()`)이 분리됩니다.
 

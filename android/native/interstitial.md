@@ -162,7 +162,11 @@ class InterstitialActivity : AppCompatActivity() {
 
 ## 지연 노출 (Load-Only)
 
-광고를 미리 로드해 두었다가 원하는 시점에 노출하려면, `onSuccessLoadInterstitial`에서 `show()`를 호출하지 말고 **광고 객체만 보관**한 뒤 나중에 `show(activity)`를 호출하세요. `hasInterstitial` 필드로 노출 가능 여부를 확인할 수 있습니다.
+광고를 미리 로드해 두었다가 원하는 시점에 노출하려면, `onSuccessLoadInterstitial`에서 `show()`를 호출하지 말고 **광고 객체만 보관**한 뒤 나중에 `show(activity)`를 호출하세요. `isReady()`로 노출 가능 여부를 확인할 수 있습니다(**v2.1.3+**).
+
+> ℹ️ **`isReady()` / `isLoading()`** — `loadAd()`는 이미 준비된 광고를 보호하고 중복 요청을 막기 위해 재요청을 **콜백 없이 무시**할 수 있습니다. 콜백만으로 결과를 판정하는 호출자는 이를 무응답과 구분하지 못하므로, 요청 전에 상태를 확인하세요. `isReady()`가 `true`면 재로드 대신 `show()`, `isLoading()`이 `true`면 진행 중인 로드의 콜백을 기다리면 됩니다. `destroy()`(=`stop()`) 이후에는 둘 다 `false`입니다.
+>
+> 구버전 호환 필드 `hasInterstitial`도 남아 있으나 신규 코드는 `isReady()`를 사용하세요.
 
 ```java
 // 1) 미리 로드: 콜백에서 show() 하지 않고 보관만
@@ -176,7 +180,7 @@ AMMInterstitial.loadAd(this, adInfo, new AMMInterstitialLoadCallback() {
 });
 
 // 2) 원하는 시점에 노출
-if (loadedAd != null && loadedAd.hasInterstitial) {
+if (loadedAd != null && loadedAd.isReady()) {
     loadedAd.show(this);
 }
 ```

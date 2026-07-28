@@ -176,6 +176,15 @@ public class BannerXmlActivity extends AppCompatActivity {
 
     private AMMBannerView adView;
 
+    // ⚠️ 리스너는 반드시 멤버 변수로 — 익명 클래스로 넘기면 GC에 수집될 수 있습니다.
+    private final AdListener adListener = new AdListener() {
+        @Override
+        public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) { }
+
+        @Override
+        public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) { }
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,6 +207,12 @@ public class BannerXmlActivity extends AppCompatActivity {
 class BannerXmlActivity : AppCompatActivity() {
 
     private lateinit var adView: AMMBannerView
+
+    // ⚠️ 리스너는 반드시 프로퍼티로 — 익명 객체를 그대로 넘기면 GC에 수집될 수 있습니다.
+    private val adListener = object : AdListener() {
+        override fun onReceivedAd(networkType: AdNetworkType, adView: Any) { }
+        override fun onFailedToReceiveAd(errorCode: Int, errorMsg: String?) { }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,14 +244,9 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
 
 adView = new AMMBannerView(this);
 adView.setAdInfo(adInfo);
-adView.setAdViewListener(new AdListener() {
-    @Override
-    public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
-        // 광고 수신 완료 — hasAd 플래그가 true로 설정됨
-        // 아직 레이아웃에 추가하지 않았으므로 화면에 표시되지 않음
-    }
-    // ...
-});
+// ⚠️ adListener 는 멤버 변수여야 합니다(익명 클래스를 인라인으로 넘기면 GC 대상).
+//    선언 예시는 위 "방법 1" 참고.
+adView.setAdViewListener(adListener);
 adView.loadAd(); // 백그라운드 로드 시작
 
 // 2. 원하는 시점에 화면에 추가 → 부착되는 즉시 자동 표시 (showAd 호출 불필요)
@@ -257,12 +267,9 @@ val adInfo = AdInfo.Builder(MyApplication.ADUNIT_ID_BANNER)
 
 adView = AMMBannerView(this).apply {
     setAdInfo(adInfo)
-    setAdViewListener(object : AdListener() {
-        override fun onReceivedAd(networkType: AdNetworkType, adView: Any) {
-            // 수신 완료 — 아직 레이아웃에 추가하지 않았으므로 화면에 표시되지 않음
-        }
-        // ...
-    })
+    // ⚠️ adListener 는 프로퍼티여야 합니다(익명 객체를 인라인으로 넘기면 GC 대상).
+    //    선언 예시는 위 "방법 1" 참고.
+    setAdViewListener(adListener)
     loadAd() // 백그라운드 로드 시작
 }
 

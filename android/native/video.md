@@ -364,7 +364,7 @@ class InterstitialVideoActivity : AppCompatActivity() {
 
 > ⚠️ **재생 완료(`onAdCompleted`)에 의존하는 로직은 구성하지 마세요.** 재생 완료를 별도 이벤트로 통지하는 네트워크가 있는 반면, 적립·종료 신호만 전달하고 완료 콜백을 독립적으로 발화하지 않는 네트워크도 있습니다. 완료 여부로 화면 전환·보상 처리 등 비즈니스 로직을 분기하지 마시고, **종료 처리는 닫힘 콜백**(인라인 `onAdClosed()` / 전면 `onAdDismissedFullScreenContent()`)을 단일 복귀 지점으로 삼으세요.
 
-> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘(`onAdDisplayed`/`onAdClicked`/`onAdCompleted`/`onAdClosed`)은 `FullScreenContentCallback`으로도 받을 수 있으며, `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
+> ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘은 `FullScreenContentCallback`으로도 받을 수 있으며(메서드명이 다릅니다 — `onAdShowedFullScreenContent`/`onAdClicked`/`onAdCompleted`/`onAdDismissedFullScreenContent`), `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
 > ```java
 > ad.setAdListener(new AdListener() {
 >     @Override public void onAdDisplayed() { /* 노출됨 */ }
