@@ -223,7 +223,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | 화면 완전 종료 (`Activity#onDestroy`) | `stopXxx()` (필수) | 전체 리소스 해제 |
 
 > `cancelLoad()`는 "로드만 취소", `stop()`은 "전체 정리(리스너 해제 포함)"로 구분됩니다.
-> `media-conf` 재동기화 시 SHOWING/이미-로드 유닛은 SDK가 자동으로 재로드하지 않습니다(REQ-LIFECYCLE-RESYNC-56).
+> `media-conf` 재동기화 시 SHOWING/이미-로드 유닛은 SDK가 자동으로 재로드하지 않습니다.
 
 ---
 

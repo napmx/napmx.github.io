@@ -107,7 +107,7 @@ public class AdManager : MonoBehaviour
 
 > 🧪 **클래스·메서드명은 제공되는 플러그인 기준을 따릅니다.** 위 예제는 초기화 시점(앱 시작 시 1회)을 보여주기 위한 흐름 참고용입니다.
 >
-> 네이티브 SDK의 초기화는 **Media Key와 함께 사용할 Adunit ID 목록**을 받습니다(`AdMixer.initialize(context, mediaKey, adUnits)`). 플러그인도 동일하게 Adunit 목록 전달이 필요하므로, 실제 시그니처는 배포본 문서를 확인하세요.
+> 네이티브 SDK의 초기화는 **Media Key와 함께 사용할 Adunit ID 목록**을 받습니다(`AdMixer.getInstance().initialize(context, mediaKey, adUnits)`). 플러그인도 동일하게 Adunit 목록 전달이 필요하므로, 실제 시그니처는 배포본 문서를 확인하세요.
 
 ---
 

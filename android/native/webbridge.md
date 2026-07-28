@@ -982,39 +982,92 @@ NapMxBridge.requestVideoInterstitial({
 
 ### 로드 상태 사전 조회 — 재시도 타임아웃 방지 (SDK 2.1.3+) **[권장]**
 
-SDK의 `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 웹은 콜백만으로 로드 결과를 판정하므로 이 무시를 무응답과 구분하지 못하고, 워터폴 소요가 웹 타임아웃을 초과한 뒤 SDK가 뒤늦게 READY가 되면 **이후 재시도가 전부 무시되어 영구 타임아웃**이 될 수 있습니다.
+웹은 콜백만으로 로드 결과를 판정하는데, SDK의 로드 요청이 **콜백 없이 무시**되는 경우가 있습니다. 이때 웹은 무응답과 구분하지 못해 재시도를 반복하게 됩니다.
 
-SDK 2.1.3+의 **`isReady()` / `isLoading()`** 을 브릿지에 노출해 요청 전에 판별하세요. 두 메서드는 광고 클래스 6종 모두에서 제공됩니다([API 레퍼런스](api-reference.md)).
+**포맷에 따라 대응이 다릅니다.** 인라인과 풀스크린의 로드 구조가 달라서입니다.
+
+#### 인라인 (배너 · 네이티브 · 인라인 동영상) — `isReady()`/`isLoading()` 사용
+
+브릿지가 **요청 시점에 뷰 인스턴스를 생성해 보관**하므로, 로드 진행 중에도 그 인스턴스에 상태를 물어볼 수 있습니다. 뷰를 재사용하면 SDK가 LOADING/READY 재진입을 콜백 없이 무시하므로 사전 판별이 유효합니다.
 
 ```java
 // Bridge 핸들러에 추가 — JS가 요청 전에 상태를 동기 조회
 @JavascriptInterface
-public boolean isRewardReady() {
-    return loadedRewardVideo != null && loadedRewardVideo.isReady();
+public boolean isBannerReady() {
+    return banner != null && banner.isReady();
 }
 
 @JavascriptInterface
-public boolean isRewardLoading() {
-    return loadedRewardVideo != null && loadedRewardVideo.isLoading();
+public boolean isBannerLoading() {
+    return banner != null && banner.isLoading();
 }
 ```
 
 ```javascript
 // JS 래퍼에 노출 (callNoArgs와 달리 동기 반환 — Android 전용, iOS는 콜백 방식 별도)
-isRewardReady:   () => !!(window.NapMxBridge && window.NapMxBridge.isRewardReady()),
-isRewardLoading: () => !!(window.NapMxBridge && window.NapMxBridge.isRewardLoading()),
+isBannerReady:   () => !!(window.NapMxBridge && window.NapMxBridge.isBannerReady()),
+isBannerLoading: () => !!(window.NapMxBridge && window.NapMxBridge.isBannerLoading()),
 
 // 사용 — 재시도 진입점에서 상태 분기
-if (NapMxBridge.isRewardReady()) {
-    NapMxBridge.showRewardVideo();          // ✅ 이미 준비됨 — 재로드 대신 노출
-} else if (NapMxBridge.isRewardLoading()) {
-    /* 진행 중인 로드의 onRewardVideoLoaded/Failed 콜백을 기다림 — 재요청 불필요 */
+if (NapMxBridge.isBannerReady()) {
+    NapMxBridge.showBanner();               // ✅ 이미 준비됨 — 재로드 대신 노출
+} else if (NapMxBridge.isBannerLoading()) {
+    /* 진행 중인 로드의 콜백을 기다림 — 재요청 불필요 */
 } else {
-    NapMxBridge.requestRewardVideo({ adUnitId: AD_CONFIG.REWARD_VIDEO });
+    NapMxBridge.requestBanner({ adUnitId: AD_CONFIG.BANNER });
 }
 ```
 
-> ℹ️ `@JavascriptInterface`의 boolean 반환은 JS에서 **동기 호출**로 바로 받을 수 있습니다. 배너·네이티브·인라인 동영상·전면·전면 동영상도 같은 방식으로 각 인스턴스(`banner`·`nativeAdView`·`videoView`·`loadedInterstitial`·`loadedVideoInterstitial`)에 노출하면 됩니다.
+`nativeAdView`·`videoView`도 같은 방식으로 노출하면 됩니다.
+
+#### 풀스크린 (전면 · 리워드 · 전면 동영상) — 브릿지가 직접 in-flight 플래그 관리
+
+⚠️ **풀스크린에는 위 패턴을 그대로 쓸 수 없습니다.** 정적 `loadAd(context, adInfo, callback)`은 **호출할 때마다 새 인스턴스를 만들고, 로드 성공 시점에야 콜백으로 넘겨줍니다.** 즉 로드가 진행되는 동안 브릿지의 `loadedRewardVideo`는 아직 `null`이라 `isLoading()`을 호출할 대상 자체가 없습니다.
+
+또한 인스턴스가 매번 새로 생기므로 **재요청이 무시되지 않고 워터폴이 중복 실행**됩니다. 실제 위험은 영구 타임아웃이 아니라 중복 로드와 이전 인스턴스 누수입니다.
+
+```java
+private AMMRewardVideo loadedRewardVideo;
+private boolean rewardLoadInFlight = false;   // 브릿지가 직접 관리
+
+@JavascriptInterface
+public void requestRewardVideo(String jsonParams) {
+    runOnUiThread(() -> {
+        if (rewardLoadInFlight) return;       // 중복 워터폴 방지
+
+        // 이전에 로드해 둔 광고가 있으면 반드시 해제 — 안 하면 어댑터·네트워크 광고 객체가 남는다
+        if (loadedRewardVideo != null) {
+            loadedRewardVideo.stop();
+            loadedRewardVideo = null;
+        }
+
+        rewardLoadInFlight = true;
+        AMMRewardVideo.loadAd(activity, adInfo, new AMMRewardVideoLoadCallback() {
+            @Override
+            public void onSuccessLoadReward(@NonNull AdNetworkType networkType, @NonNull AMMRewardVideo ad) {
+                rewardLoadInFlight = false;
+                loadedRewardVideo = ad;
+                sendCallback("onRewardVideoLoaded");
+            }
+
+            @Override
+            public void onFailLoadReward(int errorCode, @Nullable String errorMsg) {
+                rewardLoadInFlight = false;
+                sendCallback("onRewardVideoFailed", errorCode, errorMsg);
+            }
+        });
+    });
+}
+
+@JavascriptInterface
+public boolean isRewardReady() {
+    return loadedRewardVideo != null && loadedRewardVideo.isReady();
+}
+```
+
+`isRewardReady()`는 **로드 완료 후 노출 가능 여부 확인용**으로는 유효합니다. 진행 중 판별만 브릿지 플래그가 담당합니다. 전면·전면 동영상도 동일합니다.
+
+> ℹ️ `@JavascriptInterface`의 boolean 반환은 JS에서 **동기 호출**로 바로 받을 수 있습니다.
 
 ### Lifecycle 관리
 

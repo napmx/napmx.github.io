@@ -262,7 +262,7 @@ class RewardVideoActivity : AppCompatActivity() {
 
 > 보상 적립은 `FullScreenContentCallback`이 아니라 **`show(activity, OnUserEarnedRewardListener)`** 의 `onUserEarnedReward()`로 수신합니다.
 
-> ℹ️ **표시 결과는 광고당 정확히 1회만 전달됩니다.** `show()` 이후 `onAdShowedFullScreenContent()`(표시됨) 또는 `onAdFailedToShowFullScreenContent()`(표시 실패) 중 하나만 최종 결과로 수신하며, 네트워크가 표시 결과를 통지하지 않으면 SDK가 표시 실패를 백스톱으로 전달합니다. 표시 실패가 전달된 뒤의 상반된 콜백(닫힘/스킵/표시됨/중복 실패)은 억제되어 이중·모순 콜백을 방어할 필요가 없습니다. **단, 보상 적립(`onUserEarnedReward`)은 유실 방지를 위해 예외적으로 항상 전달됩니다.**
+> ℹ️ **표시 결과는 광고당 정확히 1회만 전달됩니다.** `show()` 이후 `onAdShowedFullScreenContent()`(표시됨) 또는 `onAdFailedToShowFullScreenContent()`(표시 실패) 중 하나만 최종 결과로 수신하며, 네트워크가 표시 결과를 통지하지 않으면 SDK가 표시 실패를 백스톱으로 전달합니다. **SDK가 백스톱으로 합성한 표시 실패** 이후에는 뒤늦게 도착하는 상반된 콜백(닫힘/스킵/표시됨/중복 실패)이 억제되므로 이중·모순 콜백을 방어할 필요가 없습니다. **단, 보상 적립(`onUserEarnedReward`)은 유실 방지를 위해 예외적으로 항상 전달됩니다.**
 
 > ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘은 `FullScreenContentCallback`으로도 받을 수 있으며(메서드명이 다릅니다 — `onAdShowedFullScreenContent`/`onAdClicked`/`onAdCompleted`/`onAdDismissedFullScreenContent`), `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.
 > ```java
@@ -389,7 +389,8 @@ private void showRewardAd(@NonNull AMMRewardVideo ad) {
 | 상황 | 앱이 받는 콜백 |
 |---|---|
 | 보상 조건을 충족한 경우 | 보상·닫힘 모두 도착 (도착 순서는 네트워크에 따라 다름) |
-| 보상 조건을 충족하지 못한 경우 (미완주·스킵·표시 실패) | 닫힘만 도착 — 보상 콜백 없음 |
+| 보상 조건을 충족하지 못한 경우 (미완주·스킵) | 닫힘만 도착 — 보상 콜백 없음 |
+| 표시에 실패한 경우 | `onAdFailedToShowFullScreenContent()` — 보상·닫힘 콜백 없음 |
 
 **SDK가 보장하는 것**
 
@@ -563,7 +564,7 @@ https://your-server.com/reward?media_key=12345678&adunit_id=87654321&ifa=860635e
 ```java
 // 원하는 시점에 노출
 if (loadedAd != null && loadedAd.isReady()) {
-    loadedAd.show(this, () -> giveRewardToUser());
+    loadedAd.show(this, info -> giveRewardToUser(info.getTransactionId()));
 }
 ```
 

@@ -252,6 +252,7 @@ fun VideoScreen() {
 ### 1) 해제: `DisposableEffect.onDispose`에서 `stop()`
 
 ```kotlin
+val context = LocalContext.current   // androidx.compose.ui.platform.LocalContext
 val view = remember { AMMBannerView(context).apply { setAdInfo(AdInfo.Builder(adUnitId).build()); loadAd() } }
 AndroidView(factory = { view })
 DisposableEffect(adUnitId) { onDispose { view.stop() } }

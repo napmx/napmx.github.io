@@ -59,6 +59,7 @@
 
 ### ⚠️ Breaking — 조치 필요
 
+- **Teads 어댑터 — Maven 저장소 추가 필요** (`admixer-teads 2.1.0`): Teads SDK를 6.2.0으로 올리면서 공식 설치 가이드가 요구하는 **Huawei 저장소**가 추가로 필요합니다. `settings.gradle`에 `https://developer.huawei.com/repo/`를 추가하세요. 누락 시 향후 의존성 해결에 실패할 수 있습니다. ([시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#1-3-네트워크별-추가-maven-저장소))
 - **로드 실패 표준 콜백을 `onFailedToReceiveAd(int errorCode, String errorMsg)`로 단순화** — 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 전달하지 않습니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며, 기본 구현이 표준 콜백으로 위임하므로 **기존 구현의 동작은 변하지 않습니다.** 표준 콜백 하나만 구현하면 내부 No-Ad를 포함한 모든 수신 실패를 받습니다. ([API 레퍼런스](api-reference.md#adlistener-이벤트-콜백))
 
 ### 동작 변경 (코드 변경 불요)
@@ -73,6 +74,7 @@
 
 - **광고 로드 실패가 조용히 사라지던 경로 수정** — 서버 설정(config)을 받지 못했거나 미등록 광고 유닛 ID로 로드한 경우, 기존엔 성공/실패 어느 콜백도 오지 않았습니다. 이제 `onFailedToReceiveAd`로 **결정적 실패가 통지**됩니다(오프라인 첫 실행, 유닛 ID 오타 등).
 - **반복 실패 후 재로드가 영구 차단되던 고착 수정** — 연속 실패 상한 도달 후 앱이 재로드하면 광고 요청 없이 즉시 실패하고 이후 로드가 무음 차단되던 문제를 수정했습니다.
+- **Teads 어댑터 SDK 6.2.0 전환** (`admixer-teads 2.1.0`) — Teads SDK를 최신 라인으로 올리고 연동 방식을 정비했습니다. 호스트 앱의 코드 변경은 없으나 **Maven 저장소 추가가 필요합니다**(위 Breaking 항목 참고).
 - **닫힘 직후 보상 유실 방지** — `onAdDismissedFullScreenContent()` 안에서 `stop()`을 호출해도, 닫힘 직후 도착하는 보상 콜백(일부 네트워크의 순서 특성)이 유실되지 않도록 해제가 안전하게 지연됩니다. 권장 패턴은 [보상 지급 안전 수칙](rewarded-video.md#보상-지급-안전-수칙) 참조.
 
 ---
@@ -124,7 +126,7 @@
 - **Teads 어댑터 추가** — Teads 미디에이션 지원 (`admixer-teads`)
 - **Jetpack Compose 지원** — `@Composable AdMixerBanner(...)` 등 제공. 코어에 Compose 의존성을 강제하지 않는 선택 모듈 (`admixer-compose`). [Compose 가이드](compose.md)
 - **풀스크린 광고 API (전면/리워드/전면 동영상)** — 정적 `AMMInterstitial.loadAd(...)` / `AMMRewardVideo.loadAd(...)` / `AMMVideoInterstitial.loadAd(...)`가 로드 완료 시 콜백으로 광고 객체를 반환(인스턴스 생성 불필요). 노출 이벤트는 `FullScreenContentCallback`(`onAdShowedFullScreenContent`/`onAdClicked`/`onAdDismissedFullScreenContent`/`onAdFailedToShowFullScreenContent`)로 수신. ([전면](interstitial.md)·[동영상](video.md)·[리워드](rewarded-video.md))
-- **통합 개인정보 동의/테스트 API** — `AdMixer.setGdprConsent`/`setCcpaDoNotSell`/`setUsPrivacy`/`setTestMode`/`setTestDeviceIds`. 워터폴에서 각 네트워크로 자동 전파. [개인정보/테스트 설정](privacy.md)
+- **통합 개인정보 동의/테스트 API 추가** — 설정값을 워터폴에서 각 네트워크로 전파합니다. 전파 범위는 네트워크 SDK의 지원 여부에 따라 다릅니다. [개인정보/테스트 설정](privacy.md)
 - **어댑터 자동 등록** — Gradle 의존성에 포함된 어댑터를 자동 탐지·등록. `registerAdapter()` 수동 호출 불필요
 - **`cancelLoad()`** — 표시 중인 광고를 끊지 않고 진행 중 로드만 취소 (전면·리워드·전면 동영상)
 - **클라이언트 키 주입 `setAdapterConfig(adapterName, Map)`** — 서버 미제공 시 네트워크 키(예: AppLovin `sdkKey`)를 매체가 주입
