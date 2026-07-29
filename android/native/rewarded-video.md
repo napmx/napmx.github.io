@@ -308,7 +308,7 @@ ad.show(this, new OnUserEarnedRewardListener() {
 <a id="reward-flag-pattern"></a>
 ### 2-1. 지급 시점과 사용자 알림(UI) 시점을 분리하세요 — 순서 대신 **플래그로 판정**
 
-> **핵심**: 보상 **지급**은 `onUserEarnedReward()`에서 즉시 하고, 사용자에게 보여주는 **알림(Toast/다이얼로그)** 은 광고가 닫혀 앱으로 돌아온 뒤에 표시합니다.
+> **핵심**: 보상 **지급**은 `onUserEarnedReward()`에서 즉시 하고, 사용자에게 보여주는 **알림(Toast/다이얼로그)** 은 광고가 닫혀(`onAdDismissedFullScreenContent()`) 앱으로 돌아온 뒤에 표시합니다.
 > 이때 두 콜백의 **도착 순서를 가정하지 말고, 공유 플래그로 판정**하세요.
 
 **이유** — 보상 콜백은 **영상이 끝나기 전에**(또는 광고가 여러 개 이어지는 경우 중간에) 도착할 수 있습니다. 네트워크가 "보상 조건 충족"으로 판단한 시점에 `onUserEarnedReward()`가 오기 때문입니다. 이때는 아직 **네트워크의 전체 화면 광고가 떠 있어**, `onUserEarnedReward()`에서 곧바로 Toast를 띄우면 **광고 화면에 가려져 사용자가 보지 못합니다.**
