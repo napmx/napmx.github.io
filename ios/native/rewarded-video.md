@@ -135,7 +135,6 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
 ### 1. 지급 판단은 `onRewardVideoEarned(rewardInfo:)` 하나만 사용
 
 - `rewardInfo.transactionId`(노출당 고유 UUID)를 자체 서버 지급의 멱등 키로 사용하면 중복 적립을 방지할 수 있습니다. 같은 값이 S2S Reward Callback 의 `transaction_id` 파라미터로도 전달됩니다.
-- 인자 없는 `onRewardVideoEarned()` 는 deprecated 입니다. 두 메서드를 모두 구현해도 SDK 는 **payload 버전만 호출**합니다 (지급 콜백은 정확히 1회).
 - `onRewardVideoComplete()` 는 일부 네트워크에서 발화하지 않는 재생 완료 통지입니다 — **지급 판단에 사용하지 마세요.**
 
 ### 2. 지급 시점과 사용자 알림(UI) 시점을 분리 — 순서 대신 플래그로 판정
