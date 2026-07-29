@@ -117,7 +117,7 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
     }
 
     func onRewardVideoComplete() {
-        // 재생 완료 (일부 네트워크 미발화 — 지급 판단에 사용 금지)
+        // 재생 완료 (일부 네트워크 미발화)
     }
 
     func onRewardVideoEarned(rewardInfo: RewardInfo) {
