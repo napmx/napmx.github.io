@@ -96,7 +96,6 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onClickRewardVideo()` | 리워드 동영상 광고 클릭 |
 | `onRewardVideoComplete()` | 재생 완료 — 일부 네트워크는 미발화, **지급 판단에 사용 금지** |
 | `onRewardVideoEarned(rewardInfo:)` | **리워드 지급 완료 (권장)** — `rewardInfo.transactionId` 로 지급 건별 고유 ID 수신 (v2.4.3+) |
-| `onRewardVideoEarned()` | 리워드 지급 완료 — *deprecated*. payload 버전 구현 시 호출되지 않음 |
 
 ```swift
 extension RewardedAdViewController: AMMRewardVideoDelegate {
