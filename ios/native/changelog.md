@@ -1,6 +1,23 @@
 # 릴리즈 노트
 
 
+## v2.4.3 (2026-07-29)
+
+- 리워드 지급 트랜잭션 ID 추가 — 신규 콜백 `onRewardVideoEarned(rewardInfo:)` 로 지급 건별 고유 ID 수신, 지급 서버 로그·매체 콜백 URL 에 `transaction_id` 부착
+   - 기존 `onRewardVideoEarned()` 는 deprecated (하위 호환 유지, 신규 콜백 구현 시 기존 콜백 미호출)
+- 리워드 매체 콜백 재시도 추가 (전송 실패 시 최대 3회)
+- 리워드 안정성 개선 (닫힘 직후 보상 이벤트 유실 방어 · 노출 실패 통지 보강)
+- 네이티브 자동갱신 안정성 개선
+- 어댑터 버전 업데이트
+   - AdMixerMediationGAM v1.2.2
+   - AdMixerMediationAdFit v1.1.2
+   - AdMixerMediationAppLovin v1.1.2
+   - AdMixerMediationPangle v1.2.2
+   - AdMixerMediationUnityAds v1.1.2
+   - AdMixerMediationNAM v1.3.2
+
+---
+
 ## v2.4.2 (2026-07-20)
 
 - 안정성 개선 (메모리 누수 · 스레드 안전성 · 콜백 정합성)
