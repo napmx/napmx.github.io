@@ -3,7 +3,7 @@
 iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지원합니다.
 
 > 최신 버전의 Admixer SDK와 최신 버전의 Xcode 사용을 권장합니다.  
-> Admixer iOS SDK는 **iOS 13.0 이상**, **Xcode 15.3 이상** 에서 사용하실 수 있으며, CocoaPods와 SPM을 이용한 설치를 지원합니다.  
+> Admixer iOS SDK는 **iOS 13.0 이상**, **Xcode 16 이상**(Teads 어댑터 사용 시 Xcode 26 이상) 에서 사용하실 수 있으며, CocoaPods와 SPM을 이용한 설치를 지원합니다.  
 > 연동 및 이용 방법 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
