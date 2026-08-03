@@ -1,6 +1,6 @@
 # nap mx iOS SDK 연동 가이드
 
-> **최소 지원 OS**: iOS 13.0 이상, Xcode 15.3 이상  
+> **최소 지원 OS**: iOS 13.0 이상, Xcode 16 이상 (Teads 어댑터 사용 시 Xcode 26 이상)  
 > **설치 방식**: CocoaPods, Swift Package Manager(SPM) 지원  
 > **문의**: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
