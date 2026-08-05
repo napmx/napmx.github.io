@@ -39,6 +39,7 @@
     - [Q&A](/android/native/qna)
     - [v2 마이그레이션](/android/native/migration)
     - [릴리즈 노트](/android/native/changelog)
+    - [Interactive 미니게임 (실험실)](/android/native/interactive-sdk-guide)
   - Unity
     - [시작하기 - Unity](/android/unity/getting-started)
     - [배너 - Unity](/android/unity/banner)
