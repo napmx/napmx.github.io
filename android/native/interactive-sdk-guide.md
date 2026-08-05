@@ -7,8 +7,9 @@ AdMixer Interactive SDK는 AdMixer 미디에이션과 함께 사용할 수 있�
 > 🧪 **실험실(Labs) · 테스트 제공**
 >
 > 이 모듈은 정식 GA(General Availability)가 아닌 제한된 매체 테스트용 실험실 기능입니다.
-> 현재 Maven Central과 `admixer-bom`에는 포함되지 않으며, Nasmedia가 제공한 Maven
-> Local 아티팩트로만 연동합니다. 실험실 운영 기간에는 Interactive 전용 API·설정 스키마와
+> `admixer-bom`의 모듈 목록에는 등재되어 있지만 Maven Central에는 아직 배포되지 않았으며,
+> Nasmedia가 제공한 Maven Local 아티팩트로 연동합니다. 실험실 운영 기간에는
+> Interactive 전용 API·설정 스키마와
 > 게임별 동작이 변경될 수 있으므로 전체 사용자 대상 상용 배포 전 담당자와 버전 및
 > 지원 범위를 확인하세요. 기존 AdMixer 광고 API와 광고 이벤트 계약은 변경하지 않습니다.
 
@@ -60,7 +61,7 @@ dependencyResolutionManagement {
 
 ```groovy
 dependencies {
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.03')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.06')
     implementation 'io.github.nasmedia-tech:admixer-ssp'
     implementation 'io.github.nasmedia-tech:admixer-interactive:1.0.0-SNAPSHOT'
 }
@@ -271,4 +272,4 @@ MiniGameSdk.start(
 - 성공·실패·timeout·중복 confirm·Reward/Close 역순 테스트
 - userId, Claim token, 광고 응답을 로그에 남기지 않음
 - 앱 삭제 시 사라지는 로컬 포인트라면 사용자에게 명확히 고지
-- GA 전 Maven Central/BOM 좌표와 최종 API로 재검증
+- GA 전 Maven Central 정식 좌표·BOM 버전·최종 API로 재검증
