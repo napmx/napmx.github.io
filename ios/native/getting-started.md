@@ -115,7 +115,7 @@ Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 �
 
 | Adapter SDK | 이름 | 버전 | 비고 |
 |-------------|------|------|------|
-| `AdMixerMediationGAM` | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.3.1` 미만 | |
+| `AdMixerMediationGAM` | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.8` 미만 | |
 | `AdMixerMediationAdFit` | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 최소 지원 OS 14 |
 | `AdMixerMediationPangle` | Ads-Global | `7.4.0.8` 이상 &#126; `8.1.1` 미만 | |
 | `AdMixerMediationUnityAds` | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | |

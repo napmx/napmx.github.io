@@ -15,6 +15,8 @@
    - AdMixerMediationPangle v1.2.2
    - AdMixerMediationUnityAds v1.1.2
    - AdMixerMediationNAM v1.3.2
+   - AdMixerMediationGAM v1.2.3 (2026-08-07) — Google-Mobile-Ads-SDK 허용 범위 확대 (`12.7.0` 이상 ~ `13.8` 미만)
+   - AdMixerMediationGAM v1.2.4 (2026-08-07) — 네이티브 미디어 뷰 이미지 비율 개선(매체 레이아웃 제약 충돌 해소), 전면 노출 실패 통지 보강, 개인정보 동의값 네트워크 전파
 
 ---
 
