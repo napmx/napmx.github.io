@@ -1,6 +1,23 @@
 # 릴리즈 노트
 
 
+## v2.4.4 (2026-08-12)
+
+- 네이티브 광고 클릭 동작 개선
+- 전면 광고 노출 실패 통지 보강
+- 개인정보 동의값 네트워크 전파
+- 미디에이션 네트워크 선택 안정성 개선
+- 라이센스 Apache-2.0 전환
+- 어댑터 버전 업데이트
+   - AdMixerMediationGAM v1.2.5
+   - AdMixerMediationNAM v1.3.3
+   - AdMixerMediationAdFit v1.1.3
+   - AdMixerMediationAppLovin v1.1.3
+   - AdMixerMediationPangle v1.2.3
+   - AdMixerMediationUnityAds v1.1.3
+
+---
+
 ## v2.4.3 (2026-07-29)
 
 - 리워드 지급 트랜잭션 ID 추가 — 신규 콜백 `onRewardVideoEarned(rewardInfo:)` 로 지급 건별 고유 ID 수신, 지급 서버 로그·매체 콜백 URL 에 `transaction_id` 부착
