@@ -62,43 +62,6 @@ dependencies {
 }
 ```
 
-### 3.1.1 Maven Local 방식 (내부 개발용)
-
-배포 전 스냅샷을 검증할 때만 사용합니다. SDK 저장소에서 실험실 아티팩트를 발행합니다.
-
-```powershell
-.\gradlew.bat :admixer-interactive:publishToMavenLocal `
-  -PInteractiveSDKVersion=1.0.0-beta01-SNAPSHOT
-```
-
-매체 앱 `settings.gradle`에서 Interactive와 코어 모듈만 Maven Local을 허용합니다.
-
-```groovy
-dependencyResolutionManagement {
-    repositories {
-        mavenLocal {
-            content {
-                includeModule 'io.github.nasmedia-tech', 'admixer-interactive'
-                includeModule 'io.github.nasmedia-tech', 'admixer-ssp'
-            }
-        }
-        google()
-        mavenCentral()
-    }
-}
-```
-
-```groovy
-dependencies {
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
-    implementation 'io.github.nasmedia-tech:admixer-ssp'
-    implementation 'io.github.nasmedia-tech:admixer-interactive:1.0.0-beta01-SNAPSHOT'
-}
-```
-
-Maven Local 아티팩트가 없는 개발 PC와 CI에서는 빌드할 수 없습니다. 팀과 CI가 동일한
-실험실 버전을 사용하도록 아티팩트 전달·발행 절차를 고정하세요.
-
 ### 3.2 AAR 직접 연동
 
 Nasmedia가 전달한 `admixer-interactive-release.aar`을 앱의 `libs`에 복사한 뒤 추가합니다.
@@ -780,23 +743,6 @@ listener 타입을 공개하지 마세요.
 실패: REWARDED_AD_REQUESTED → REWARDED_AD_FAILED
 ```
 
-### 13.3 Fake Gateway로 매체 앱 테스트
-
-```java
-RewardedAdGatewayFactory success = new FakeRewardedAdGateway.Factory(
-        FakeRewardedAdGateway.Outcome.SUCCESS
-);
-RewardedAdGatewayFactory cancelled = new FakeRewardedAdGateway.Factory(
-        FakeRewardedAdGateway.Outcome.CANCELLED
-);
-RewardedAdGatewayFactory failed = new FakeRewardedAdGateway.Factory(
-        FakeRewardedAdGateway.Outcome.FAILED
-);
-```
-
-운영 빌드에 Fake Gateway가 남지 않도록 앱의 debug 소스셋이나 개발자 설정 화면에서만
-선택하세요.
-
 ## 14. 선택적 RewardClaim 승인 연동
 
 이미 `RewardSettlementHandler` 기반 구조를 사용하는 매체만 이 절을 적용하세요.
@@ -898,8 +844,8 @@ MiniGameSdkConfig config = new MiniGameSdkConfig.Builder()
 - 라이브러리 consumer ProGuard 규칙은 enum 이름 계약만 제한적으로 보존하며, 공개 이름 계약은
   source `@Keep`를 정본으로 사용합니다. Interactive 전체 패키지 keep은 제공하지 않습니다.
 - 매체 release 빌드에서 R8를 반드시 실제 실행하세요.
-- SDK의 결정적 `FakeRewardedAdGateway`는 test fixture이며 production AAR에 포함되지 않습니다.
-  앱 테스트는 `RewardedAdGateway`를 자체 test source에서 구현하거나 샘플 구현을 참고하세요.
+- 앱 테스트용 광고 Gateway 대역(Fake)은 매체 앱의 자체 test source에서 `RewardedAdGateway`를
+  구현해 사용하고, 운영 빌드에 남지 않도록 debug 소스셋에만 두세요.
 - 병합 Manifest에 불필요한 권한이나 exported 컴포넌트가 없는지 확인하세요.
 - Sample 광고 그래프의 Google Mobile Ads 25.2.0은 Kotlin metadata 2.2.0 경고가 발생할 수
   있습니다. 매체의 Kotlin compiler, GMA, 어댑터 버전을 검증된 조합으로 정렬하세요.
@@ -915,7 +861,7 @@ MiniGameSdkConfig config = new MiniGameSdkConfig.Builder()
 - 결과 확정 전후 회전 시 중복 지급 없음 확인
 - 다시 하기마다 새 `sessionId` 확인
 - 동시 게임 실행이 `ALREADY_RUNNING`으로 거부되는지 확인
-- 샘플/앱 테스트 Fake 광고 성공·취소·실패와 티켓 충전 확인
+- 테스트용 Gateway 대역으로 광고 성공·취소·실패와 티켓 충전 확인
 - 실제 테스트 광고의 Reward/Close 역순·no-fill·네트워크 단절 확인
 - Reward 뒤 Close가 누락되면 10초 fallback으로 게임이 복귀하는지 확인
 - 작은 화면, 가로, 큰 글자, 다크 모드, TalkBack 확인
