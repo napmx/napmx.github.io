@@ -13,7 +13,7 @@ Unity 프로젝트에서 nap mx Android SDK를 연동하는 방법입니다.
 
 | 항목 | 버전 |
 |---|---|
-| nap mx Android SDK | `admixer-ssp` **2.1.3** (BOM `2026.07.06`) |
+| nap mx Android SDK | `admixer-ssp` **2.2.0** (BOM `2026.08.01`) |
 | 최소 Android API | **21** (코어 기준) |
 | 어댑터별 최소 API 상향 | Google AdManager · Naver Ad Manager **23**, GMA NextGen · AppLovin **24** |
 
@@ -57,7 +57,7 @@ Google AdManager 사용 시 추가:
 ```groovy
 dependencies {
     // BOM 으로 버전을 묶어 관리 (권장) — 멤버는 버전 생략
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.06')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
 
     // nap mx 코어 (필수)
     implementation 'io.github.nasmedia-tech:admixer-ssp'

@@ -564,9 +564,19 @@ https://your-server.com/reward?media_key=12345678&adunit_id=87654321&ifa=860635e
 ```java
 // 원하는 시점에 노출
 if (loadedAd != null && loadedAd.isReady()) {
-    loadedAd.show(this, info -> giveRewardToUser(info.getTransactionId()));
+    loadedAd.show(this, new OnUserEarnedRewardListener() {
+        @Override public void onUserEarnedReward() {
+            // RewardInfo 오버로드를 구현했으므로 이 경로는 호출되지 않습니다.
+        }
+
+        @Override public void onUserEarnedReward(@NonNull RewardInfo info) {
+            giveRewardToUser(info.getTransactionId());
+        }
+    });
 }
 ```
+
+> ⚠️ 람다(`info -> ...`)로는 등록할 수 없습니다. `OnUserEarnedRewardListener`의 추상 메서드는 무인자 `onUserEarnedReward()`이고 `RewardInfo` 오버로드는 default 메서드라서, 람다는 무인자 쪽에만 바인딩됩니다. `transactionId`가 필요하면 위처럼 익명 클래스로 오버로드를 재정의하세요([코드 구현](#코드-구현) 예제와 동일한 패턴).
 
 ---
 

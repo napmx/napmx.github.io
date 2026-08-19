@@ -72,7 +72,7 @@ implementation 'io.github.nasmedia-tech:admixer-admanager:1.0.21'
 // ...
 
 // After (권장 — BOM으로 버전 관리, 멤버는 버전 생략)
-implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.06')
+implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
 implementation 'io.github.nasmedia-tech:admixer-ssp'
 implementation 'io.github.nasmedia-tech:admixer-admanager'
 implementation 'io.github.nasmedia-tech:admixer-adfit'

@@ -362,6 +362,15 @@ class InterstitialVideoActivity : AppCompatActivity() {
 | `onAdDismissedFullScreenContent()` | 광고 창 닫힘 |
 | `onAdFailedToShowFullScreenContent(AdError)` | 노출 실패 |
 
+> ⚠️ **재생 불가 자동 종료 시에는 노출 콜백 없이 닫힘 콜백이 올 수 있습니다.** 전면·리워드
+> 각 비디오 소재가 서버 `timeout_ms`(미설정 시 12초, 5~30초 제한) 안에 시작되지 않거나,
+> 재생 중 같은 시간 동안 위치가 전진하지 않거나 MediaPlayer 오류가 발생하면 SDK가 검은 화면에
+> 사용자를 가두지 않도록 화면을 닫습니다.
+> 이 경로에서는 `onAdDisplayed()` / `onAdShowedFullScreenContent()`가 먼저 오지 않았더라도
+> `onAdClosed()` / `onAdDismissedFullScreenContent()`가 호출될 수 있습니다. 닫힘 처리는 멱등하게
+> 구현하고, 노출 콜백 수신 여부를 전제로 복귀 로직을 구성하지 마세요. 재생되지 않은 광고의
+> 임프레션·리워드는 발생하지 않습니다.
+
 > ⚠️ **재생 완료(`onAdCompleted`)에 의존하는 로직은 구성하지 마세요.** 재생 완료를 별도 이벤트로 통지하는 네트워크가 있는 반면, 적립·종료 신호만 전달하고 완료 콜백을 독립적으로 발화하지 않는 네트워크도 있습니다. 완료 여부로 화면 전환·보상 처리 등 비즈니스 로직을 분기하지 마시고, **종료 처리는 닫힘 콜백**(인라인 `onAdClosed()` / 전면 `onAdDismissedFullScreenContent()`)을 단일 복귀 지점으로 삼으세요.
 
 > ℹ️ **스킵(`onAdSkipped`)이 필요하면 `setAdListener`를 쓰세요.** `FullScreenContentCallback`은 GAM 표준 서브셋이라 스킵 콜백이 없습니다. 표시·클릭·완료·닫힘은 `FullScreenContentCallback`으로도 받을 수 있으며(메서드명이 다릅니다 — `onAdShowedFullScreenContent`/`onAdClicked`/`onAdCompleted`/`onAdDismissedFullScreenContent`), `setAdListener(AdListener)`로 등록하면 여기에 더해 **`onAdSkipped`(스킵)까지** 받습니다.

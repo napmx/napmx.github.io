@@ -53,7 +53,7 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.06')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
@@ -82,22 +82,22 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.3'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.2.0'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.0.4'       // Google AdManager (play-services-ads:25.2.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.3'           // Kakao Adfit (ads-base:3.21.17 포함)
-    implementation 'io.github.nasmedia-tech:admixer-pangle:2.0.2'          // Pangle (pag-sdk:8.0.0.5 포함)
-    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.2'        // AppLovin (applovin-sdk:13.6.3 포함)
-    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.2'           // Unity Ads (unity-ads:4.18.1 포함)
-    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.0.2'  // Naver Ad Manager (nam-bom:8.16.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.1.0'       // Google AdManager (play-services-ads:25.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.4'           // Kakao Adfit (ads-base:3.21.17 포함)
+    implementation 'io.github.nasmedia-tech:admixer-pangle:2.1.0'          // Pangle (pag-sdk:8.0.0.5 포함)
+    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.3'        // AppLovin (applovin-sdk:13.6.3 포함)
+    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.3'           // Unity Ads (unity-ads:4.18.1 포함)
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.1.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-teads:2.1.0'           // Teads (teads-sdk:6.2.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (선택 — admixer-unity와 함께, 직접 NativeAdViewBinder 레이아웃 구성 시 불필요)
 
     // 🧪 (beta) — Google Mobile Ads NextGen SDK (ads-mobile-sdk:1.2.1 포함). admixer-admanager와 택1
-    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.0.3'
+    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.0'
 }
 ```
 
@@ -166,7 +166,7 @@ dependencyResolutionManagement {
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
-| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.1.3** | 2.1.3 | 자체 SDK |
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.2.0** | 2.2.0 | 자체 SDK |
 | Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
 | Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
 | Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
@@ -369,17 +369,17 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```gradle
 dependencies {
     // 이미 Google AdManager SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.4") {
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.1.0") {
         exclude group: "com.google.android.gms", module: "play-services-ads"
     }
 
     // 이미 Kakao Adfit SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.3") {
+    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.4") {
         exclude group: "com.kakao.adfit", module: "ads-base"
     }
 
     // 이미 Pangle SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-pangle:2.0.2") {
+    implementation("io.github.nasmedia-tech:admixer-pangle:2.1.0") {
         exclude group: "com.pangle.global", module: "pag-sdk"
     }
 }

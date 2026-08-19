@@ -2,6 +2,38 @@
 
 ---
 
+## v2.2.0 (2026-08-19)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.08.01`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.2.0** |
+> | `admixer-admanager` · `admixer-gma-nextgen` · `admixer-naveradmanager` · `admixer-pangle` | **2.1.0** |
+> | `admixer-adfit` | **2.0.4** |
+> | `admixer-applovin` · `admixer-unity` | **2.0.3** |
+> | 🧪 `admixer-interactive` | **1.0.0-beta01** (Maven Central 최초 배포) |
+> | `admixer-bom` | **2026.08.01** |
+> | `admixer-teads` 2.1.0 · `admixer-compose` 2.0.2 · `admixer-unity-nativeadlayout` 2.0.0 | 변경 없음 |
+
+### 새로운 기능
+
+- **아동 대상(COPPA) 3-상태 지원** — `setTagForChildDirectedTreatment()`에 **미설정**(-1) 추가. ⚠️ Unity Ads는 `TRUE` → 일반 대상 전환 시 `FALSE` 명시 필요. ([개인정보 가이드](privacy.md))
+- 🧪 **`admixer-interactive` 1.0.0-beta01 Maven Central 최초 배포** — BOM 멤버 편입. 제한된 매체 테스트 전용. ([연동 가이드](interactive-sdk-guide.md))
+
+### 동작 변경 (확인 권장)
+
+- **전면·리워드 동영상 재생 실패 시 자동 복귀** — 재생 시작 실패·정지 시 화면을 닫고 종료 콜백을 한 번 전달합니다. 노출 콜백 없이 닫힘 콜백이 올 수 있으니 보상 지급은 리워드 콜백 기준인지 확인하세요.
+- **Pangle 네이티브 표기 정비** — 광고 로고 탭이 프라이버시 안내를 열고, 광고주 뷰는 `"Pangle"` 고정 문구 대신 숨김(GONE) 처리됩니다.
+- **네이티브 빈 에셋 뷰 숨김 통일** — admanager·gma-nextgen·Pangle에서 에셋 값이 없으면 해당 뷰를 `GONE` 처리합니다.
+
+### 안정성 개선 (코드 변경 불요)
+
+- **Pangle 네이티브 클릭·아이콘 수정** — CTA 클릭 무반응, 아이콘 로드 실패 시 광고 미노출 문제 수정.
+- **GMA NextGen 광고 객체 파기 누락 수정**, **release 로그 식별자 마스킹**.
+
+---
+
 ## v2.1.3 (2026-07-28)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.07.06`입니다.

@@ -12,7 +12,7 @@ Compose 앱에서 nap mx 광고를 연동하는 방법입니다. 코어 SDK는 V
 
 ```gradle
 dependencies {
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.07.06')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
     implementation 'io.github.nasmedia-tech:admixer-ssp'        // 코어(필수)
     implementation 'io.github.nasmedia-tech:admixer-compose'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
@@ -23,13 +23,13 @@ dependencies {
 
 ```gradle
 dependencies {
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.1.3'        // 코어(필수)
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.2.0'        // 코어(필수)
     implementation 'io.github.nasmedia-tech:admixer-compose:2.0.2'    // Compose 헬퍼
     // 사용하는 어댑터 모듈 + play-services-ads-identifier 등은 시작하기 가이드 참고
 }
 ```
 
-> ℹ️ **`admixer-compose`의 버전 번호는 코어(`admixer-ssp`)와 다릅니다.** 모듈별로 변경이 있을 때만 개별 배포되므로 두 버전은 일치하지 않는 것이 정상입니다(예: 코어 `2.1.3` + Compose 헬퍼 `2.0.2`).
+> ℹ️ **`admixer-compose`의 버전 번호는 코어(`admixer-ssp`)와 다릅니다.** 모듈별로 변경이 있을 때만 개별 배포되므로 두 버전은 일치하지 않는 것이 정상입니다(예: 코어 `2.2.0` + Compose 헬퍼 `2.0.2`).
 > 이 때문에 **방법 A(BOM)를 권장**합니다 — 버전을 생략하면 BOM이 해당 릴리스에서 검증된 멤버 버전으로 자동 고정하므로, 모듈별로 버전을 직접 맞추다 생기는 불일치·구버전 혼용을 예방할 수 있습니다. 개별 지정 방식을 쓴다면 [Maven Central](https://central.sonatype.com/namespace/io.github.nasmedia-tech)에서 각 모듈의 최신 버전을 확인해 갱신하세요.
 
 ---
