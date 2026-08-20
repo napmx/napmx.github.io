@@ -119,36 +119,8 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 광고 소스 라이브러리 적용 후, Google Mobile Ads SDK의 Debug Options Menu를 통해 **입찰 어댑터의 정상 작동 여부를 확인**할 수 있습니다.
 테스트 앱에서 `DebugOptionsViewController`를 호출할 수 있도록 적용합니다.
 
-#### Swift
-
-```swift
-@IBAction func openDebugOptions(sender: AnyObject) {
-    // AD_UNIT_ID는 운영팀에 문의하여 전달받은 광고 단위 ID를 적용합니다.
-    let debugOptionsViewController = DebugOptionsViewController(
-        adUnitID: "AD_UNIT_ID"
-    )
-    self.present(
-        debugOptionsViewController,
-        animated: true,
-        completion: nil
-    )
-}
-```
-
-#### Objective-C
-
-```objective-c
-- (IBAction)openDebugOptions:(id)sender {
-    // AD_UNIT_ID는 운영팀에 문의하여 전달받은 광고 단위 ID를 적용합니다.
-    GADDebugOptionsViewController *debugOptionsViewController =
-        [GADDebugOptionsViewController
-            debugOptionsViewControllerWithAdUnitID:@"AD_UNIT_ID"];
-
-    [self presentViewController:debugOptionsViewController
-                       animated:YES
-                     completion:nil];
-}
-```
+하기 가이드 참고 부탁드립니다.
+[Google 공식 가이드 — iOS 광고 소재 미리보기 및 게재 도구](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/debug?hl=ko)
 
 > `AD_UNIT_ID`는 **운영팀에 문의하여 전달받은 광고 단위 ID를 적용해 주세요.**
 
@@ -158,8 +130,6 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 2. 적용 완료 후 **디버그 옵션이 적용된 테스트 앱을 운영팀에 전달해 주세요.**
 3. 운영팀에서 테스트 앱을 실행하고 Debug Options Menu를 호출합니다.
 4. 테스트 기기를 연결한 후 광고를 요청하여 입찰 광고 소스 및 어댑터의 동작 상태를 확인합니다.
-
-* [Google 공식 가이드 — iOS 광고 소재 미리보기 및 게재 도구](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/debug?hl=ko)
 
 ---
 
