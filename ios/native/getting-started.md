@@ -74,7 +74,10 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 
 ### 1-3. Google 네트워크 - SDK 입찰 광고 소스 설정
 
-Google 네트워크를 사용하는 경우, SDK 입찰 광고 소스 사용을 위해 아래 라이브러리를 추가해주세요.
+Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소스 라이브러리를 모두 추가해야 최적 수익화가 가능합니다.
+
+* [Google 공식 가이드 — 네트워크 선택](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/choose-networks?hl=ko&_gl=1*1mk7mlq*_up*MQ..*_ga*NDk3NjA1MDI0LjE3ODcxODk2MzQ.*_ga_SM8HXJ53K2*czE3ODcxODk2MzMkbzEkZzAkdDE3ODcxODk2MzMkajYwJGwwJGgw)
+**추가해야 할 광고 소스 (모두 추가 권장):**
 
 **CocoaPods** — Podfile에 추가
 
