@@ -117,8 +117,7 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 ### Google SDK 입찰 어댑터 작동 여부 확인
 
 광고 소스 라이브러리 적용 후, Google Mobile Ads SDK의 Debug Options Menu를 통해 **입찰 어댑터의 정상 작동 여부를 확인**할 수 있습니다.
-
-네이티브 광고의 경우 광고 소재에서 스와이프하여 Debug Options Menu를 실행하는 방식이 정상적으로 동작하지 않을 수 있으므로, 테스트 앱에서 `DebugOptionsViewController`를 호출할 수 있도록 적용합니다.
+테스트 앱에서 `DebugOptionsViewController`를 호출할 수 있도록 적용합니다.
 
 #### Swift
 
