@@ -417,15 +417,12 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 ### Google SDK 입찰 어댑터 작동 여부 확인
 
 광고 소스 라이브러리 적용 후, Google Mobile Ads SDK의 Debug Menu를 통해 **입찰 어댑터의 정상 작동 여부를 확인**할 수 있습니다.
+테스트 앱에서 `MobileAds.openDebugMenu()`를 호출할 수 있도록 적용합니다.
 
-네이티브 광고의 경우 두 손가락 길게 누르기로 Debug Menu가 실행되지 않을 수 있으므로, 테스트 앱에서 `MobileAds.openDebugMenu()`를 호출할 수 있도록 적용합니다.
-
-```java id="pdn3af"
-MobileAds.openDebugMenu(this, "AD_UNIT_ID");
-```
+하기 가이드 참고 부탁드립니다.
+[Google 공식 가이드 — 광고 소재 미리보기 및 게재 도구](https://developers.google.com/ad-manager/mobile-ads-sdk/android/debug?hl=ko)
 
 > `AD_UNIT_ID`는 **운영팀에 문의하여 전달받은 광고 단위 ID를 적용해 주세요.**
-> `MobileAds.initialize()`가 완료된 이후 호출해야 합니다.
 
 #### 확인 방법
 
@@ -433,5 +430,3 @@ MobileAds.openDebugMenu(this, "AD_UNIT_ID");
 2. 적용 완료 후 **디버그 모드가 적용된 테스트 앱(APK)을 운영팀에 전달해 주세요.**
 3. 운영팀에서 테스트 앱을 설치하고 Debug Menu를 실행합니다.
 4. 테스트 기기를 연결한 후 광고를 요청하여 입찰 광고 소스 및 어댑터의 동작 상태를 확인합니다.
-
-* [Google 공식 가이드 — 광고 소재 미리보기 및 게재 도구](https://developers.google.com/ad-manager/mobile-ads-sdk/android/debug?hl=ko)
