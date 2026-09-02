@@ -1,6 +1,19 @@
 # 릴리즈 노트
 
 
+## v2.4.5 (2026-09-02)
+
+- 하이브리드 앱(WebView) 연동 WebBridge 추가 — JavaScript 에서 전면·리워드·전면 동영상 광고 호출 (WebBridge 가이드 참고)
+- 앱 추적 투명성(ATT) 상태 처리 정합성 개선
+- 어댑터 버전 업데이트
+   - AdMixerMediationGAM v1.2.6
+   - AdMixerMediationAdFit v1.1.4
+   - AdMixerMediationAppLovin v1.1.4
+   - AdMixerMediationPangle v1.2.4
+   - AdMixerMediationNAM v1.3.4
+
+---
+
 ## v2.4.4 (2026-08-12)
 
 - 네이티브 광고 클릭 동작 개선
