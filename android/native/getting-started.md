@@ -113,10 +113,10 @@ Google이 차세대로 발표한 **Mobile Ads NextGen SDK** 연동 어댑터입�
 > | 어댑터 | NextGen과 공존 |
 > |---|---|
 > | `admixer-admanager` (classic) | ❌ **불가** — 택1 |
-> | `admixer-naveradmanager` | ❌ **불가** — 내부적으로 GAM 미디에이션(nam-dfp) 사용 |
+> | `admixer-naveradmanager` | ⚠️ **조건부 가능** — `nam-dfp`(GAM 미디에이션) 제외 시. [아래 참고](#naveradmanager와-nextgen을-함께-사용하고자-하는-경우) |
 > | `admixer-adfit` · `admixer-pangle` · `admixer-applovin` · `admixer-unity` · `admixer-teads` | ✅ 가능 |
 >
-> **국내 지면은 대부분 AdManager·NaverAd를 함께 사용하므로, NextGen 도입 시 두 네트워크를 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
+> **국내 지면은 대부분 AdManager·NaverAd를 함께 사용하므로, NextGen 도입 시 classic AdManager는 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
 
 사용 시 `build.gradle`에 exclude를 추가하세요.
 
@@ -128,6 +128,28 @@ configurations.all {
 
 - **minSdk 24** 이상 필요 (classic AdManager는 23)
 - 미디에이션은 Ad Manager 또는 no-mediation만 호환
+
+#### NaverAdManager와 NextGen을 함께 사용하고자 하는 경우
+
+아래와 같이 `nam-dfp`를 제외해주세요.
+
+```gradle
+dependencies {
+    implementation('io.github.nasmedia-tech:admixer-naveradmanager:2.1.0') {
+        // GAM 미디에이션 어댑터만 제외 (NDA·FAN 등 나머지 ad source는 그대로 동작)
+        exclude group: 'com.naver.gfpsdk.mediation', module: 'nam-dfp'
+    }
+    implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.0'
+}
+
+configurations.all {
+    exclude group: 'com.google.android.gms', module: 'play-services-ads'
+}
+```
+
+> 🚨 **`play-services-ads`만 전역 exclude하고 `nam-dfp`를 남기지 마세요.**
+> `nam-dfp` 클래스가 참조할 GMA 클래스가 사라져 런타임에 `NoClassDefFoundError`로 크래시합니다.
+> 반드시 **두 exclude를 함께** 적용하세요.
 
 ### 1-3. 네트워크별 추가 Maven 저장소
 
@@ -174,7 +196,7 @@ dependencyResolutionManagement {
 | Unity Ads | `com.unity3d.ads:unity-ads` | 4.16.x (권장 4.18.0) | **4.18.1** | 4.18.1 | 4.x 라인 |
 | Naver Ad Manager | `com.naver.gfpsdk:nam-bom` | 8.14.0 | **8.16.0** | 8.17.0 | 8.x(BOM이 모듈 버전 고정) |
 | Teads | `tv.teads.sdk.android:sdk` | 6.0.4 (권장 6.2.0) | **6.2.0** | 6.2.0 | 6.x 통합 SDK(5.x는 레거시) |
-| 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | AdManager·NaverAd와 공존 불가 |
+| 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | classic AdManager와 공존 불가 / NaverAd는 `nam-dfp` 제외 시 가능 |
 
 > ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어, 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
 > ```gradle
