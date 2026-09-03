@@ -8,6 +8,29 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 
 ---
 
+## 📱 실제 연동 서비스 앱 참고 (바이오리듬)
+
+SDK를 연동하기 전, 앱 스토어에 출시된 **바이오리듬(Biorhythm) 앱**을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
+*(본 앱은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
+
+<table style="border: none; background: transparent;">
+  <tr style="border: none; background: transparent;">
+    <td style="border: none; padding-right: 15px; vertical-align: middle;">
+      <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/67/e1/0e/67e10ee0-ab99-7141-6439-33d257acd62b/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/120x120bb.jpg" alt="Biorhythm Icon" width="64" height="64" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"/>
+    </td>
+    <td style="border: none; vertical-align: middle;">
+      <strong>함께하는 바이오리듬 (Biorhythm)</strong><br/>
+      <a href="https://apps.apple.com/kr/app/%ED%95%A8%EA%BB%98%ED%95%98%EB%8A%94-%EB%B0%94%EC%9D%B4%EC%98%A4%EB%A6%AC%EB%93%AC-biorhythm/id6781490818" target="_blank" style="text-decoration: none;">
+        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr" alt="App Store에서 다운로드" width="120" style="margin-top: 4px;"/>
+      </a>
+    </td>
+  </tr>
+</table>
+
+* 이 앱에서는 SDK가 제공하는 실제 광고 포맷(Basic 전면, 배너 및 네이티브 등)이 실제 사용자 화면에서 어떻게 송출되는지 레퍼런스로 참고하실 수 있습니다.
+
+---
+
 ## 사전 준비
 
 [파트너 사이트](https://publisher.admixer.co.kr/)에 가입 후 미디어 등록 및 애드유닛 생성을 완료하면 연동에 필요한 **Media Key**와 **Adunit ID**를 확인할 수 있습니다.
