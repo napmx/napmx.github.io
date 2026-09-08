@@ -229,6 +229,44 @@ Google AdManager 사용 시:
 
 반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 호출해주세요.
 
+### 개인정보/규제 신호 설정 (GDPR · CCPA · COPPA)
+
+규제 대상 사용자라면 **네트워크 SDK 를 초기화하기 전에** 동의 상태를 전달합니다. 각 값은 3-상태이며 `.unspecified`(기본)는 해당 벤더 호출을 건너뛰고 벤더 기본값 또는 CMP 자동판독에 위임합니다. IAB TCF/USP/GPP 문자열은 이 API 가 아니라 퍼블리셔 CMP 의 책임 영역입니다.
+
+```swift
+let consent = AMMConsent()
+consent.gdprConsent = .granted       // GDPR: 개인화 광고 동의 여부 (denied = 거부)
+consent.usSaleConsent = .denied      // CCPA/US: denied = 판매·공유 옵트아웃(do-not-sell)
+consent.childDirected = .denied      // COPPA: granted = 아동 대상 서비스
+consent.underAgeOfConsent = .denied  // GDPR 동의연령 미만 여부 (granted = 미만)
+AMMediation.shared.setConsent(consent)
+```
+
+**호출 순서 (중요)**
+
+1. **네트워크 SDK 초기화보다 먼저** 호출합니다. AppLovin·UnityAds·Pangle 은 SDK 초기화 시점에 동의 값을 읽으므로, 아래 초기화 코드의 `MobileAds.shared.start()`·`ALSdk.shared().initialize`·`PAGSdk.start`·`UnityAds.initialize` 보다 앞에 두세요. GAM 의 아동 대상 설정도 `MobileAds.shared.start()` 이전이 권장됩니다.
+2. **Naver AdManager 예외**: `GFPAdManager.setup` 이 설정 객체를 교체할 수 있어 **setup 완료 후 `setConsent` 를 한 번 더 호출**해야 값이 유지됩니다. 같은 값으로 재호출해도 무해합니다.
+3. 초기화 시점에만 값을 읽는 벤더(AppLovin 등)는 초기화 이후의 재호출이 다음 앱 실행부터 반영될 수 있습니다.
+
+**COPPA(`childDirected = .granted`) 시 동작**
+
+- nap mx 서버 요청에서 광고 식별자(IDFA)를 보내지 않고 `coppa=1` 을 전송합니다.
+- AppLovin 은 아동 대상 앱에서 SDK 사용 자체를 허용하지 않아(13.0.0+ API 제거) 해당 네트워크 요청을 건너뜁니다.
+
+**신호별 벤더 반영 범위** — 벤더가 코드 설정 API 를 제공하는 조합에만 실제 호출이 발생합니다. "자동판독"은 CMP 가 UserDefaults 에 기록한 IAB 문자열을 벤더 SDK 가 직접 읽는 경로로, 이 API 와 무관하게 동작합니다.
+
+| 네트워크 | gdprConsent | usSaleConsent | childDirected | underAgeOfConsent |
+|---|---|---|---|---|
+| AppLovin | ✅ | ✅ | 요청 차단 | — |
+| UnityAds | ✅ | ✅ | ✅ | — |
+| Pangle | ✅ | ✅ | — | — |
+| Google AdManager | 자동판독 | 자동판독 | ✅ | — |
+| Naver AdManager | 자동판독 | 자동판독 | ✅ | ✅ |
+| Teads | 자동판독 | 자동판독 | — | — |
+| AdFit | — | — | — | — |
+
+### 초기화 코드
+
 ```swift
 import UIKit
 import AdMixerMediation
@@ -242,6 +280,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+
+        // 규제 대상 사용자라면 네트워크 SDK 초기화 전에 동의 상태를 먼저 전달 (위 '개인정보/규제 신호 설정' 참조)
+        // AMMediation.shared.setConsent(consent)
 
         // AdMixer 초기화 (필수)
         AMMediation.shared.initialize(
@@ -272,6 +313,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 print("NAM init Error: \(error.description)")
             } else {
                 print("NAM init success, isSdkInitialized: \(GFPAdManager.isSdkInitialized())")
+                // NAM 은 setup 이후 setConsent 재호출 필요 (동의 설정을 사용하는 경우)
+                // AMMediation.shared.setConsent(consent)
             }
         }
 
@@ -287,15 +330,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 광고 수신에 실패한 경우, delegate 메서드를 통해 nap mx Error 객체를 전달받을 수 있습니다.
 각각의 에러에 대한 설명은 아래 표를 참고해 주세요.
 
-| no | 에러 코드 | 설명 |
-|----|----------|------|
-| 0 | `missingBaseURL` | api 요청에 필요한 base URL이 누락된 경우 |
-| 1 | `invalidURLString` | 유효하지 않은 URL로 요청하는 경우 |
-| 2 | `invalidServerResponse` | 서버로부터 유효하지 않은 응답을 받은 경우. 네트워크 상태를 확인하거나 관리자에게 문의하세요. |
-| 3 | `decodeError` | 데이터 처리에 오류가 있는 경우 |
-| 4 | `apiResponseFail` | 서버 통신에 실패한 경우. 서버 상태를 확인하거나 잠시 후 다시 시도해 주세요. |
-| 5 | `vastParsingError` | 비디오 광고 데이터 처리에 오류가 있는 경우 |
-| 6 | `emptyAd` | 노출 가능한 광고가 없는 경우. 잠시 후 다시 광고 요청을 시도해 주세요. |
+에러는 `NSError` 로 전달되며 `domain` 은 에러가 발생한 광고 뷰 클래스명(예: `AMMBannerView`), `code` 는 아래 표의 값입니다.
+네트워크 SDK 가 넘긴 원인 에러가 있으면 `userInfo[NSUnderlyingErrorKey]` 에 담깁니다.
+
+| code | 메시지(`localizedDescription`) | 설명 |
+|------|-------------------------------|------|
+| -1 | `Ad load failed` / `House Ad load failed` | 광고 로드 실패. 워터폴의 모든 네트워크가 실패했거나 하우스 광고 로드에 실패한 경우 |
+| -2 | `Invalid Ad Unit or required info missing` | adUnitId 또는 필수 정보가 누락된 경우 |
+| -3 | `Adapter not found` | 서버 설정에 배정된 네트워크의 어댑터가 앱에 설치되어 있지 않은 경우 |
+| -4 | `Invalid network` | 요청 가능한 네트워크가 없는 경우. 서버 설정(adunit)을 확인하세요 |
+| -5 | `Ad show failed` | 광고 표시(show) 시점에 실패한 경우 |
+| -6 | `Invalid Ad Unit Size` | 배너 사이즈가 유효하지 않은 경우 |
+| -7 | `Ad load cancelled` | 로드 중 `stop()` 호출로 취소된 경우 |
+| -8 | `Ad load timed out` | 로드 전체 제한 시간을 초과한 경우. 잠시 후 다시 요청해 주세요 |
 
 ---
 
