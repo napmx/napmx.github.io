@@ -224,13 +224,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 ```
 
-Scene 을 쓰지 않는 앱(`Info.plist` 에 `UIApplicationSceneManifest` 없음)은 같은 코드를 `AppDelegate` 의 `applicationDidBecomeActive(_:)` 에 둡니다.
-
-- `ifa_use` 는 ATT 상태가 **승인(authorized)일 때만 1** 이고, 미결정·거부·제한은 모두 0 으로 전송되며 이때 IDFA 는 all-zero 값으로 대체됩니다. SDK 는 요청 시점의 ATT 상태를 한 번만 읽어 두 값을 함께 만들므로 서로 어긋나지 않습니다.
-- 트레이드오프: 초기화를 ATT 응답 뒤로 미루면 사용자가 프롬프트에 응답할 때까지 첫 광고 요청이 지연됩니다. 즉시성이 더 중요하면 `didFinishLaunching` 에서 먼저 초기화해도 되며, 이 경우 ATT 승인 전 요청은 `ifa_use=0` 으로 나가고 이후 요청부터 승인 상태가 반영됩니다.
-- ATT 프롬프트를 사용하지 않는 앱은 `didFinishLaunching` 에서 바로 초기화하면 됩니다(항상 `ifa_use=0`).
-- 아동 대상 서비스(COPPA)로 설정하면 ATT 승인 여부와 무관하게 IDFA 를 전송하지 않습니다 — Step 3 의 "개인정보/규제 신호 설정" 참고.
-
 ### Info.plist 추가 설정
 
 파트너 네트워크의 가이드를 참고하여 SKAdNetwork ID와 연동 전 체크사항들을 확인해주세요.
