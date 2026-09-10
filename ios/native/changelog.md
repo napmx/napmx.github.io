@@ -1,6 +1,19 @@
 # 릴리즈 노트
 
 
+## v2.4.6 (2026-09-10)
+
+- 개인정보 매니페스트(`PrivacyInfo.xcprivacy`) 복구 — v2.4.5 배포본에 누락됐던 매니페스트를 다시 포함합니다. **v2.4.5 를 사용 중이면 업데이트를 권장합니다** (Xcode 프라이버시 리포트·심사 대응)
+- 아동 대상 서비스(COPPA, `setConsent` 의 `childDirected = .granted`) 설정 시 nap mx 서버 요청·매체 콜백에 광고 식별자(IDFA)를 전송하지 않습니다 (getting-started 의 "개인정보/규제 신호 설정" 참고)
+- 가중치 라운드로빈 네트워크 선택 안정성 개선 — 네트워크 비율 합이 100 이 아닌 설정에서 일정 횟수 후 광고 요청이 중단되던 문제 수정
+- 광고 뷰 안정성 개선 — `stop()` 직후 로드 재개 방지, 자동갱신 중 진행 중 로드와의 충돌 방지, 클릭 집계를 표시 중인 광고 네트워크에 귀속
+- 어댑터 버전 업데이트
+   - AdMixerMediationAppLovin v1.1.5 — 배너 광고 메모리 누수 수정
+   - AdMixerMediationPangle v1.2.5 — Ads-Global 허용 범위 확대 (`7.4.0.8` 이상 ~ `8.2.2` 미만, 8.2.1.0 검증)
+   - AdMixerMediationGAM v1.2.7 — Google-Mobile-Ads-SDK 허용 범위 확대 (`12.7.0` 이상 ~ `13.10` 미만, 13.9.0 검증)
+
+---
+
 ## v2.4.5 (2026-09-02)
 
 - 하이브리드 앱(WebView) 연동 WebBridge 추가 — JavaScript 에서 전면·리워드·전면 동영상 광고 호출 (WebBridge 가이드 참고)
