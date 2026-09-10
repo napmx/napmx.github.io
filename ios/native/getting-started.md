@@ -193,6 +193,8 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
 ```
 
+ATT 요청과 nap mx 초기화는 아래와 같이 구성합니다. ATT 응답을 받은 뒤 `initialize` 를 호출해야 첫 광고 요청부터 추적 동의 여부가 반영됩니다.
+
 ```swift
 // SceneDelegate.swift
 import AppTrackingTransparency
