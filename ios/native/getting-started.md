@@ -193,10 +193,6 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
 ```
 
-**ATT 응답을 받은 뒤 `AMMediation.shared.initialize(...)` 를 호출하는 것을 권장합니다.** `initialize` 는 호출 즉시 광고 설정(mediaConf) 요청을 서버로 보내며, 이 요청에 IDFA 사용 여부(`ifa_use`)가 포함됩니다. ATT 프롬프트 응답 전에 호출하면 첫 요청이 `ifa_use=0`(미승인)으로 나갑니다.
-
-ATT 프롬프트는 앱이 active 상태일 때만 표시됩니다. UIScene 수명주기를 쓰는 앱(Xcode 기본 템플릿, `SceneDelegate` 존재)은 `sceneDidBecomeActive(_:)` 에서 요청하고, 응답 후 최초 1회만 초기화합니다. 이 경우 `AppDelegate` 의 `applicationDidBecomeActive` 는 호출되지 않으므로 거기에 두면 동작하지 않습니다.
-
 ```swift
 // SceneDelegate.swift
 import AppTrackingTransparency
