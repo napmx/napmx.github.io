@@ -8,10 +8,10 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 
 ---
 
-## 📱 실제 연동 서비스 앱 참고 (바이오리듬)
+## 📱 실제 연동 서비스 앱 참고
 
-SDK를 연동하기 전, 앱 스토어에 출시된 **바이오리듬(Biorhythm) 앱**을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
-*(본 앱은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
+SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
+*(본 앱들은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
 
 <table style="border: none; background: transparent;">
   <tr style="border: none; background: transparent;">
@@ -25,9 +25,20 @@ SDK를 연동하기 전, 앱 스토어에 출시된 **바이오리듬(Biorhythm)
       </a>
     </td>
   </tr>
+  <tr style="border: none; background: transparent;">
+    <td style="border: none; padding-right: 15px; vertical-align: middle;">
+      <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/94/ce/3a/94ce3a40-9b4d-c70f-8e23-7b2667b5ce51/AppIcon-0-0-1x_U007epad-0-1-85-220.png/100x100bb.jpg" alt="AdRevenue Lab Icon" width="64" height="64" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"/>
+    </td>
+    <td style="border: none; vertical-align: middle;">
+      <strong>AdRevenue Lab: 광고수익 계산기</strong><br/>
+      <a href="https://apps.apple.com/app/adrevenue-lab-%EA%B4%91%EA%B3%A0%EC%88%98%EC%9D%B5-%EA%B3%84%EC%82%B0%EA%B8%B0/id6808604544" target="_blank" style="text-decoration: none;">
+        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr" alt="App Store에서 다운로드" width="120" style="margin-top: 4px;"/>
+      </a>
+    </td>
+  </tr>
 </table>
 
-* 이 앱에서는 SDK가 제공하는 실제 광고 포맷(Basic 전면, 배너 및 네이티브 등)이 실제 사용자 화면에서 어떻게 송출되는지 레퍼런스로 참고하실 수 있습니다.
+* 이 앱들에서는 SDK가 제공하는 실제 광고 포맷(Basic 전면, 배너 및 네이티브 등)이 실제 사용자 화면에서 어떻게 송출되는지 레퍼런스로 참고하실 수 있습니다.
 
 ---
 
