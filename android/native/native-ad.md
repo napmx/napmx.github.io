@@ -157,7 +157,7 @@ public class NativeAdActivity extends AppCompatActivity {
         public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
             // 광고 수신 성공 — 레이아웃에 추가하면 부착 시점에 자동 렌더링 (showAd 호출 불필요)
             // networkType로 switch: switch(networkType){ case PANGLE: ... }
-            if (nativeAdView != null && nativeAdView.hasAd) {
+            if (nativeAdView != null && nativeAdView.isReady()) {
                 container.removeAllViews();
                 container.addView(nativeAdView); // addView 시점에 자동 렌더링
             }
@@ -226,7 +226,7 @@ class NativeAdActivity : AppCompatActivity() {
 
     private val adListener = object : AdListener() {
         override fun onReceivedAd(networkType: AdNetworkType, adView: Any) {
-            if (nativeAdView?.hasAd == true) {
+            if (nativeAdView?.isReady() == true) {
                 container.removeAllViews()
                 container.addView(nativeAdView) // addView 시점에 자동 렌더링 (showAd 호출 불필요)
             }
@@ -272,6 +272,77 @@ class NativeAdActivity : AppCompatActivity() {
     }
 }
 ```
+
+---
+
+## 종료 Dialog/BottomSheet에 사전 로드
+
+네이티브 광고도 홈 Activity에서 부모에 붙이지 않은 채 미리 로드한 뒤, 같은
+Activity의 Dialog 또는 BottomSheet에 붙일 수 있습니다. 생성 시 **Activity Context**를
+사용하고 `setViewBinder()`와 리스너를 `loadAd()`보다 먼저 설정해야 합니다.
+
+```java
+private AMMNativeAdView exitNativeAd;
+private long exitNativeLoadedAtMs;
+
+private final AdListener exitNativeListener = new AdListener() {
+    @Override
+    public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
+        exitNativeLoadedAtMs = SystemClock.elapsedRealtime();
+    }
+
+    @Override
+    public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) { }
+};
+
+private void preloadExitNative(@NonNull NativeAdViewBinder exitBinder) {
+    releaseExitNative();
+    exitNativeAd = new AMMNativeAdView(this); // 홈 Activity Context
+    exitNativeAd.setAdInfo(new AdInfo.Builder(MyApplication.ADUNIT_ID_EXIT_NATIVE).build());
+    exitNativeAd.setViewBinder(exitBinder);
+    exitNativeAd.setAdViewListener(exitNativeListener);
+    exitNativeAd.loadAd();
+}
+
+private boolean attachFreshExitNative(@NonNull ViewGroup dialogAdContainer,
+                                      @NonNull NativeAdViewBinder exitBinder) {
+    long ageMs = SystemClock.elapsedRealtime() - exitNativeLoadedAtMs;
+    // hasAd(public 필드) 대신 isReady(): 표시(SHOWING 전이) 후에는 false가 되어
+    // "한 번 표시한 뷰는 재사용하지 않는다" 규칙이 코드로 강제된다.
+    if (exitNativeAd == null || !exitNativeAd.isReady()
+            || exitNativeLoadedAtMs == 0L || ageMs > 30 * 60 * 1000L) {
+        preloadExitNative(exitBinder); // 다음 표시를 위해 새 인스턴스를 준비
+        return false;
+    }
+
+    ViewParent oldParent = exitNativeAd.getParent();
+    if (oldParent instanceof ViewGroup) {
+        ((ViewGroup) oldParent).removeView(exitNativeAd);
+    }
+    dialogAdContainer.addView(exitNativeAd); // 부착 시 자동 렌더링
+    return true;
+}
+
+private void releaseExitNative() {
+    if (exitNativeAd == null) return;
+    ViewParent oldParent = exitNativeAd.getParent();
+    if (oldParent instanceof ViewGroup) {
+        ((ViewGroup) oldParent).removeView(exitNativeAd);
+    }
+    exitNativeAd.stop();
+    exitNativeAd = null;
+    exitNativeLoadedAtMs = 0L;
+}
+```
+
+- `dialogAdContainer`는 광고 전용의 빈 `ViewGroup`으로 준비하세요.
+- 직접 보관 방식에는 SDK 강제 만료 시간이 없으므로 앱에서 신선도를 관리하세요.
+  위 예제의 30분은 권장 기준이며, 만료 시 `stop()` 후 새 인스턴스를 생성합니다.
+- 한 번 표시한 뷰는 팝업 종료 후 해제하고, 필요하면 다음 표시용 광고를 다시
+  준비하세요.
+- Activity의 `onResume()`/`onPause()`를 전달하고 `onDestroy()`에서 반드시
+  `releaseExitNative()`를 호출하세요.
+- Activity 간 뷰 이동이나 네이티브 광고 풀링은 공식 지원 범위가 아닙니다.
 
 ---
 

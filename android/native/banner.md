@@ -251,7 +251,7 @@ adView.loadAd(); // 백그라운드 로드 시작
 
 // 2. 원하는 시점에 화면에 추가 → 부착되는 즉시 자동 표시 (showAd 호출 불필요)
 showAdButton.setOnClickListener(v -> {
-    if (adView.hasAd) {
+    if (adView.isReady()) { // 로드 완료 + 아직 미표시
         container.removeAllViews();
         container.addView(adView); // addView 시점에 자동 노출
     }
@@ -275,7 +275,7 @@ adView = AMMBannerView(this).apply {
 
 // 2. 원하는 시점에 화면에 추가 → 부착되는 즉시 자동 표시 (showAd 호출 불필요)
 showAdButton.setOnClickListener {
-    if (adView?.hasAd == true) {
+    if (adView?.isReady() == true) { // 로드 완료 + 아직 미표시
         container.removeAllViews()
         container.addView(adView) // addView 시점에 자동 노출
     }
@@ -288,6 +288,81 @@ showAdButton.setOnClickListener {
 > - `adView.loadAd()`만 호출하고 레이아웃에 `addView()`를 하지 않으면 광고가
 >   화면에 표시되지 않습니다.
 > - `addView()`로 화면에 부착하면 자동으로 표시됩니다(`showAd()` 호출 불필요).
+
+### 종료 Dialog/BottomSheet에 사전 로드
+
+홈 Activity 위에 표시하는 종료 Dialog 또는 BottomSheet라면, 같은 Activity에서
+`AMMBannerView`를 미리 생성·로드하고 팝업을 열 때 전용 광고 컨테이너에 붙일 수
+있습니다. 뷰는 반드시 **표시할 홈 Activity Context**로 생성하세요.
+
+```java
+private static final long EXIT_AD_MAX_AGE_MS = 30 * 60 * 1000L;
+
+private AMMBannerView exitBanner;
+private long exitBannerLoadedAtMs;
+
+private final AdListener exitBannerListener = new AdListener() {
+    @Override
+    public void onReceivedAd(@NonNull AdNetworkType networkType, @NonNull Object adView) {
+        exitBannerLoadedAtMs = SystemClock.elapsedRealtime();
+    }
+
+    @Override
+    public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) { }
+};
+
+private void preloadExitBanner() {
+    releaseExitBanner();
+    exitBanner = new AMMBannerView(this); // 홈 Activity Context
+    exitBanner.setAdInfo(new AdInfo.Builder(MyApplication.ADUNIT_ID_EXIT_BANNER).build());
+    exitBanner.setAdViewListener(exitBannerListener); // loadAd() 전에 등록
+    exitBanner.loadAd();
+}
+
+/** true면 팝업의 빈 광고 컨테이너에 부착 완료, false면 이번 팝업은 광고 없이 표시 */
+private boolean attachFreshExitBanner(@NonNull ViewGroup dialogAdContainer) {
+    long ageMs = SystemClock.elapsedRealtime() - exitBannerLoadedAtMs;
+    // hasAd(public 필드) 대신 isReady(): "로드 완료 + 아직 미표시"를 상태머신으로 판정한다.
+    if (exitBanner == null || !exitBanner.isReady()
+            || exitBannerLoadedAtMs == 0L || ageMs > EXIT_AD_MAX_AGE_MS) {
+        preloadExitBanner(); // 다음 표시를 위해 새 인스턴스를 준비
+        return false;
+    }
+
+    ViewParent oldParent = exitBanner.getParent();
+    if (oldParent instanceof ViewGroup) {
+        ((ViewGroup) oldParent).removeView(exitBanner);
+    }
+    dialogAdContainer.addView(exitBanner); // Dialog가 보이면 자동 노출
+    return true;
+}
+
+private void releaseExitBanner() {
+    if (exitBanner == null) return;
+    ViewParent oldParent = exitBanner.getParent();
+    if (oldParent instanceof ViewGroup) {
+        ((ViewGroup) oldParent).removeView(exitBanner);
+    }
+    exitBanner.stop();
+    exitBanner = null;
+    exitBannerLoadedAtMs = 0L;
+}
+```
+
+`30분`은 직접 보관한 뷰에 SDK가 강제하는 만료 시간이 아니라 **앱에서 관리하는
+권장 신선도 기준**입니다. 오래된 광고는 같은 인스턴스를 다시 로드하지 말고
+`stop()` 후 새 뷰로 교체하세요. 한 번 표시한 뷰도 소비된 것으로 보고, Activity가
+계속 유지된다면 팝업 종료 후 해제하고 다음 표시용 광고를 새로 준비하세요.
+
+> ⚠️ **Unity 배너 예외** — Unity 배너는 뷰포트 가시성 훅이 없어 로드 완료가
+> 네트워크 임프레션으로 집계될 수 있습니다. "팝업을 실제로 열 때만 임프레션"이
+> 엄격한 요구사항이면 해당 광고 단위에서 Unity를 제외하세요. 이 성질은 현재
+> Unity에서 확인된 것이며, 다른 네트워크의 사전 로드 임프레션 정책은 별도로
+> 확인되지 않았습니다.
+>
+> Activity의 `onResume()`/`onPause()`를 광고 뷰에 전달하고 `onDestroy()`에서는
+> `releaseExitBanner()`를 호출해야 합니다. 다른 Activity에서 생성한 뷰를 팝업으로
+> 옮기는 패턴은 지원 범위에 포함되지 않습니다.
 
 ---
 

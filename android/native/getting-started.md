@@ -53,7 +53,7 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.02')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.09.01')
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
@@ -82,22 +82,22 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.2.1'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.2.2'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.1.0'       // Google AdManager (play-services-ads:25.2.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.4'           // Kakao Adfit (ads-base:3.21.17 포함)
-    implementation 'io.github.nasmedia-tech:admixer-pangle:2.1.0'          // Pangle (pag-sdk:8.0.0.5 포함)
-    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.3'        // AppLovin (applovin-sdk:13.6.3 포함)
-    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.3'           // Unity Ads (unity-ads:4.18.1 포함)
-    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.1.0'  // Naver Ad Manager (nam-bom:8.16.0 포함)
-    implementation 'io.github.nasmedia-tech:admixer-teads:2.1.0'           // Teads (teads-sdk:6.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.1.1'       // Google AdManager (play-services-ads:25.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.5'           // Kakao Adfit (ads-base:3.21.17 포함)
+    implementation 'io.github.nasmedia-tech:admixer-pangle:2.1.1'          // Pangle (pag-sdk:8.0.0.5 포함)
+    implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.4'        // AppLovin (applovin-sdk:13.6.3 포함)
+    implementation 'io.github.nasmedia-tech:admixer-unity:2.0.5'           // Unity Ads (unity-ads:4.18.1 포함)
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.1.1'  // Naver Ad Manager (nam-bom:8.16.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-teads:2.1.1'           // Teads (teads-sdk:6.2.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (선택 — admixer-unity와 함께, 직접 NativeAdViewBinder 레이아웃 구성 시 불필요)
 
     // 🧪 (beta) — Google Mobile Ads NextGen SDK (ads-mobile-sdk:1.2.1 포함). admixer-admanager와 택1
-    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.0'
+    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.1'
 }
 ```
 
@@ -113,10 +113,10 @@ Google이 차세대로 발표한 **Mobile Ads NextGen SDK** 연동 어댑터입�
 > | 어댑터 | NextGen과 공존 |
 > |---|---|
 > | `admixer-admanager` (classic) | ❌ **불가** — 택1 |
-> | `admixer-naveradmanager` | ❌ **불가** — 내부적으로 GAM 미디에이션(nam-dfp) 사용 |
+> | `admixer-naveradmanager` | ⚠️ **조건부 가능** — `nam-dfp`(GAM 미디에이션) 제외 시. [아래 참고](#naveradmanager와-nextgen을-함께-사용하고자-하는-경우) |
 > | `admixer-adfit` · `admixer-pangle` · `admixer-applovin` · `admixer-unity` · `admixer-teads` | ✅ 가능 |
 >
-> **국내 지면은 대부분 AdManager·NaverAd를 함께 사용하므로, NextGen 도입 시 두 네트워크를 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
+> **국내 지면은 대부분 AdManager·NaverAd를 함께 사용하므로, NextGen 도입 시 classic AdManager는 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
 
 사용 시 `build.gradle`에 exclude를 추가하세요.
 
@@ -128,6 +128,28 @@ configurations.all {
 
 - **minSdk 24** 이상 필요 (classic AdManager는 23)
 - 미디에이션은 Ad Manager 또는 no-mediation만 호환
+
+#### NaverAdManager와 NextGen을 함께 사용하고자 하는 경우
+
+아래와 같이 `nam-dfp`를 제외해주세요.
+
+```gradle
+dependencies {
+    implementation('io.github.nasmedia-tech:admixer-naveradmanager:2.1.1') {
+        // GAM 미디에이션 어댑터만 제외 (NDA·FAN 등 나머지 ad source는 그대로 동작)
+        exclude group: 'com.naver.gfpsdk.mediation', module: 'nam-dfp'
+    }
+    implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.1'
+}
+
+configurations.all {
+    exclude group: 'com.google.android.gms', module: 'play-services-ads'
+}
+```
+
+> 🚨 **`play-services-ads`만 전역 exclude하고 `nam-dfp`를 남기지 마세요.**
+> `nam-dfp` 클래스가 참조할 GMA 클래스가 사라져 런타임에 `NoClassDefFoundError`로 크래시합니다.
+> 반드시 **두 exclude를 함께** 적용하세요.
 
 ### 1-3. 네트워크별 추가 Maven 저장소
 
@@ -166,7 +188,7 @@ dependencyResolutionManagement {
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
-| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.2.1** | 2.2.1 | 자체 SDK |
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.2.2** | 2.2.2 | 자체 SDK |
 | Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
 | Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
 | Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
@@ -174,7 +196,7 @@ dependencyResolutionManagement {
 | Unity Ads | `com.unity3d.ads:unity-ads` | 4.16.x (권장 4.18.0) | **4.18.1** | 4.18.1 | 4.x 라인 |
 | Naver Ad Manager | `com.naver.gfpsdk:nam-bom` | 8.14.0 | **8.16.0** | 8.17.0 | 8.x(BOM이 모듈 버전 고정) |
 | Teads | `tv.teads.sdk.android:sdk` | 6.0.4 (권장 6.2.0) | **6.2.0** | 6.2.0 | 6.x 통합 SDK(5.x는 레거시) |
-| 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | AdManager·NaverAd와 공존 불가 |
+| 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | classic AdManager와 공존 불가 / NaverAd는 `nam-dfp` 제외 시 가능 |
 
 > ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어, 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
 > ```gradle
@@ -220,6 +242,21 @@ Google Play는 Android 15 이상 타깃 앱에 대해 64비트 네이티브 라�
 ## Step 2. AndroidManifest.xml 설정
 
 특정 네트워크를 사용할 경우 `AndroidManifest.xml`에 추가 설정이 필요합니다.
+
+### 이동통신 세대 판별 권한 (선택)
+
+코어 SDK는 Android 13(API 33) 이상에서 전화번호·기기 식별 정보에 접근하지 않는 일반 권한
+`android.permission.READ_BASIC_PHONE_STATE`를 자동 병합합니다. 별도 런타임 요청은 필요하지 않습니다.
+
+Android 12(API 32) 이하에서 2G/3G/4G/5G를 정확히 구분해야 하는 매체만 아래 위험 권한을
+앱 매니페스트에 직접 선언하고 Android 6 이상에서 런타임 동의를 받으세요. 선언하지 않아도 광고
+요청·노출에는 영향이 없으며 셀룰러 세대 값만 보수적으로 `3G`가 사용됩니다.
+
+```xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
+전화번호 접근용 `android.permission.READ_PHONE_NUMBERS`는 SDK가 사용하지 않습니다.
 
 ### Google AdManager 사용 시 (필수)
 
@@ -369,17 +406,17 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```gradle
 dependencies {
     // 이미 Google AdManager SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-admanager:2.1.0") {
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.1.1") {
         exclude group: "com.google.android.gms", module: "play-services-ads"
     }
 
     // 이미 Kakao Adfit SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.4") {
+    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.5") {
         exclude group: "com.kakao.adfit", module: "ads-base"
     }
 
     // 이미 Pangle SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-pangle:2.1.0") {
+    implementation("io.github.nasmedia-tech:admixer-pangle:2.1.1") {
         exclude group: "com.pangle.global", module: "pag-sdk"
     }
 }
@@ -413,20 +450,3 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 | Mintegral |
 
 > ⚠️ 프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
-
-### Google SDK 입찰 어댑터 작동 여부 확인
-
-광고 소스 라이브러리 적용 후, Google Mobile Ads SDK의 Debug Menu를 통해 **입찰 어댑터의 정상 작동 여부를 확인**할 수 있습니다.
-테스트 앱에서 `MobileAds.openDebugMenu()`를 호출할 수 있도록 적용합니다.
-
-하기 가이드 참고 부탁드립니다.
-[Google 공식 가이드 — 광고 소재 미리보기 및 게재 도구](https://developers.google.com/ad-manager/mobile-ads-sdk/android/debug?hl=ko)
-
-> `AD_UNIT_ID`는 **운영팀에 문의하여 전달받은 광고 단위 ID를 적용해 주세요.**
-
-#### 확인 방법
-
-1. 테스트 앱에서 `MobileAds.openDebugMenu()`를 호출할 수 있도록 적용합니다.
-2. 적용 완료 후 **디버그 모드가 적용된 테스트 앱(APK)을 운영팀에 전달해 주세요.**
-3. 운영팀에서 테스트 앱을 설치하고 Debug Menu를 실행합니다.
-4. 테스트 기기를 연결한 후 광고를 요청하여 입찰 광고 소스 및 어댑터의 동작 상태를 확인합니다.
