@@ -8,6 +8,29 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 
 ---
 
+## 📱 실제 연동 서비스 앱 참고 (바이오리듬)
+
+SDK를 연동하기 전, 앱 스토어에 출시된 **바이오리듬(Biorhythm) 앱**을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
+*(본 앱은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
+
+<table style="border: none; background: transparent;">
+  <tr style="border: none; background: transparent;">
+    <td style="border: none; padding-right: 15px; vertical-align: middle;">
+      <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/67/e1/0e/67e10ee0-ab99-7141-6439-33d257acd62b/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/120x120bb.jpg" alt="Biorhythm Icon" width="64" height="64" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"/>
+    </td>
+    <td style="border: none; vertical-align: middle;">
+      <strong>함께하는 바이오리듬 (Biorhythm)</strong><br/>
+      <a href="https://apps.apple.com/kr/app/%ED%95%A8%EA%BB%98%ED%95%98%EB%8A%94-%EB%B0%94%EC%9D%B4%EC%98%A4%EB%A6%AC%EB%93%AC-biorhythm/id6781490818" target="_blank" style="text-decoration: none;">
+        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr" alt="App Store에서 다운로드" width="120" style="margin-top: 4px;"/>
+      </a>
+    </td>
+  </tr>
+</table>
+
+* 이 앱에서는 SDK가 제공하는 실제 광고 포맷(Basic 전면, 배너 및 네이티브 등)이 실제 사용자 화면에서 어떻게 송출되는지 레퍼런스로 참고하실 수 있습니다.
+
+---
+
 ## 사전 준비
 
 [파트너 사이트](https://publisher.admixer.co.kr/)에 가입 후 미디어 등록 및 애드유닛 생성을 완료하면 연동에 필요한 **Media Key**와 **Adunit ID**를 확인할 수 있습니다.
@@ -137,9 +160,9 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 | Adapter SDK | 이름 | 버전 | 비고 |
 |-------------|------|------|------|
-| `AdMixerMediationGAM` | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.8` 미만 | |
+| `AdMixerMediationGAM` | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | |
 | `AdMixerMediationAdFit` | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 최소 지원 OS 14 |
-| `AdMixerMediationPangle` | Ads-Global | `7.4.0.8` 이상 &#126; `8.1.1` 미만 | |
+| `AdMixerMediationPangle` | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | |
 | `AdMixerMediationUnityAds` | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | |
 | `AdMixerMediationAppLovin` | AppLovinSDK | `13.3.1` 이상 &#126; `13.5.2` 미만 | |
 | `AdMixerMediationNAM` | NAMSDK | `8.0` 이상 &#126; `8.23` 미만 | |
@@ -170,18 +193,20 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
 ```
 
-ATT 팝업 실행 코드는 AppDelegate에 아래와 같이 추가합니다.
+ATT 요청은 SDK 가 아니라 앱이 직접 수행하며, 응답을 받은 뒤 광고를 요청합니다. 요청 시점은 앱이 활성 상태가 된 직후로 구성합니다.
 
 ```swift
+// SceneDelegate.swift
 import AppTrackingTransparency
 
-func applicationDidBecomeActive(_ application: UIApplication) {
-    requestTrackingAuthorization()
-}
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
-private func requestTrackingAuthorization() {
-    Task {
-        _ = await ATTrackingManager.requestTrackingAuthorization()
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        Task { @MainActor in
+            // ATT 프롬프트로 추적 동의 확보 (이미 결정된 상태면 즉시 반환)
+            _ = await ATTrackingManager.requestTrackingAuthorization()
+            // 이 시점 이후에 광고를 요청합니다.
+        }
     }
 }
 ```
@@ -206,6 +231,44 @@ Google AdManager 사용 시:
 
 반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 호출해주세요.
 
+### 개인정보/규제 신호 설정 (GDPR · CCPA · COPPA)
+
+규제 대상 사용자라면 **네트워크 SDK 를 초기화하기 전에** 동의 상태를 전달합니다. 각 값은 3-상태이며 `.unspecified`(기본)는 해당 벤더 호출을 건너뛰고 벤더 기본값 또는 CMP 자동판독에 위임합니다. IAB TCF/USP/GPP 문자열은 이 API 가 아니라 퍼블리셔 CMP 의 책임 영역입니다.
+
+```swift
+let consent = AMMConsent()
+consent.gdprConsent = .granted       // GDPR: 개인화 광고 동의 여부 (denied = 거부)
+consent.usSaleConsent = .denied      // CCPA/US: denied = 판매·공유 옵트아웃(do-not-sell)
+consent.childDirected = .denied      // COPPA: granted = 아동 대상 서비스
+consent.underAgeOfConsent = .denied  // GDPR 동의연령 미만 여부 (granted = 미만)
+AMMediation.shared.setConsent(consent)
+```
+
+**호출 순서 (중요)**
+
+1. **네트워크 SDK 초기화보다 먼저** 호출합니다. AppLovin·UnityAds·Pangle 은 SDK 초기화 시점에 동의 값을 읽으므로, 아래 초기화 코드의 `MobileAds.shared.start()`·`ALSdk.shared().initialize`·`PAGSdk.start`·`UnityAds.initialize` 보다 앞에 두세요. GAM 의 아동 대상 설정도 `MobileAds.shared.start()` 이전이 권장됩니다.
+2. **Naver AdManager 예외**: `GFPAdManager.setup` 이 설정 객체를 교체할 수 있어 **setup 완료 후 `setConsent` 를 한 번 더 호출**해야 값이 유지됩니다. 같은 값으로 재호출해도 무해합니다.
+3. 초기화 시점에만 값을 읽는 벤더(AppLovin 등)는 초기화 이후의 재호출이 다음 앱 실행부터 반영될 수 있습니다.
+
+**COPPA(`childDirected = .granted`) 시 동작**
+
+- nap mx 서버 요청에서 광고 식별자(IDFA)를 보내지 않고 `coppa=1` 을 전송합니다.
+- AppLovin 은 아동 대상 앱에서 SDK 사용 자체를 허용하지 않아(13.0.0+ API 제거) 해당 네트워크 요청을 건너뜁니다.
+
+**신호별 벤더 반영 범위** — 벤더가 코드 설정 API 를 제공하는 조합에만 실제 호출이 발생합니다. "자동판독"은 CMP 가 UserDefaults 에 기록한 IAB 문자열을 벤더 SDK 가 직접 읽는 경로로, 이 API 와 무관하게 동작합니다.
+
+| 네트워크 | gdprConsent | usSaleConsent | childDirected | underAgeOfConsent |
+|---|---|---|---|---|
+| AppLovin | ✅ | ✅ | 요청 차단 | — |
+| UnityAds | ✅ | ✅ | ✅ | — |
+| Pangle | ✅ | ✅ | — | — |
+| Google AdManager | 자동판독 | 자동판독 | ✅ | — |
+| Naver AdManager | 자동판독 | 자동판독 | ✅ | ✅ |
+| Teads | 자동판독 | 자동판독 | — | — |
+| AdFit | — | — | — | — |
+
+### 초기화 코드
+
 ```swift
 import UIKit
 import AdMixerMediation
@@ -219,6 +282,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+
+        // 규제 대상 사용자라면 네트워크 SDK 초기화 전에 동의 상태를 먼저 전달 (위 '개인정보/규제 신호 설정' 참조)
+        // AMMediation.shared.setConsent(consent)
 
         // AdMixer 초기화 (필수)
         AMMediation.shared.initialize(
@@ -249,6 +315,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 print("NAM init Error: \(error.description)")
             } else {
                 print("NAM init success, isSdkInitialized: \(GFPAdManager.isSdkInitialized())")
+                // NAM 은 setup 이후 setConsent 재호출 필요 (동의 설정을 사용하는 경우)
+                // AMMediation.shared.setConsent(consent)
             }
         }
 
@@ -264,15 +332,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 광고 수신에 실패한 경우, delegate 메서드를 통해 nap mx Error 객체를 전달받을 수 있습니다.
 각각의 에러에 대한 설명은 아래 표를 참고해 주세요.
 
-| no | 에러 코드 | 설명 |
-|----|----------|------|
-| 0 | `missingBaseURL` | api 요청에 필요한 base URL이 누락된 경우 |
-| 1 | `invalidURLString` | 유효하지 않은 URL로 요청하는 경우 |
-| 2 | `invalidServerResponse` | 서버로부터 유효하지 않은 응답을 받은 경우. 네트워크 상태를 확인하거나 관리자에게 문의하세요. |
-| 3 | `decodeError` | 데이터 처리에 오류가 있는 경우 |
-| 4 | `apiResponseFail` | 서버 통신에 실패한 경우. 서버 상태를 확인하거나 잠시 후 다시 시도해 주세요. |
-| 5 | `vastParsingError` | 비디오 광고 데이터 처리에 오류가 있는 경우 |
-| 6 | `emptyAd` | 노출 가능한 광고가 없는 경우. 잠시 후 다시 광고 요청을 시도해 주세요. |
+에러는 `NSError` 로 전달되며 `domain` 은 에러가 발생한 광고 뷰 클래스명(예: `AMMBannerView`), `code` 는 아래 표의 값입니다.
+네트워크 SDK 가 넘긴 원인 에러가 있으면 `userInfo[NSUnderlyingErrorKey]` 에 담깁니다.
+
+| code | 메시지(`localizedDescription`) | 설명 |
+|------|-------------------------------|------|
+| -1 | `Ad load failed` / `House Ad load failed` | 광고 로드 실패. 워터폴의 모든 네트워크가 실패했거나 하우스 광고 로드에 실패한 경우 |
+| -2 | `Invalid Ad Unit or required info missing` | adUnitId 또는 필수 정보가 누락된 경우 |
+| -3 | `Adapter not found` | 서버 설정에 배정된 네트워크의 어댑터가 앱에 설치되어 있지 않은 경우 |
+| -4 | `Invalid network` | 요청 가능한 네트워크가 없는 경우. 서버 설정(adunit)을 확인하세요 |
+| -5 | `Ad show failed` | 광고 표시(show) 시점에 실패한 경우 |
+| -6 | `Invalid Ad Unit Size` | 배너 사이즈가 유효하지 않은 경우 |
+| -7 | `Ad load cancelled` | 로드 중 `stop()` 호출로 취소된 경우 |
+| -8 | `Ad load timed out` | 로드 전체 제한 시간을 초과한 경우. 잠시 후 다시 요청해 주세요 |
 
 ---
 
