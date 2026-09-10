@@ -193,7 +193,7 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
 ```
 
-ATT 요청은 아래와 같이 구성합니다.
+ATT 요청은 SDK 가 아니라 앱이 직접 수행하며, 응답을 받은 뒤 광고를 요청합니다. 요청 시점은 앱이 활성 상태가 된 직후로 구성합니다.
 
 ```swift
 // SceneDelegate.swift
@@ -205,6 +205,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Task { @MainActor in
             // ATT 프롬프트로 추적 동의 확보 (이미 결정된 상태면 즉시 반환)
             _ = await ATTrackingManager.requestTrackingAuthorization()
+            // 이 시점 이후에 광고를 요청합니다.
         }
     }
 }
