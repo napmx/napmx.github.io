@@ -193,7 +193,7 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
 ```
 
-ATT 요청은 아래와 같이 구성합니다. nap mx 초기화는 ATT 응답을 받은 뒤 호출합니다(Step 3 참고).
+ATT 요청은 아래와 같이 구성합니다.
 
 ```swift
 // SceneDelegate.swift
@@ -268,10 +268,7 @@ AMMediation.shared.setConsent(consent)
 
 ### 초기화 코드
 
-nap mx 초기화(`AMMediation.shared.initialize`)는 Step 2 의 ATT 절대로 **ATT 응답 후 `sceneDidBecomeActive`(Scene 미사용 앱은 `applicationDidBecomeActive`)에서** 호출하고, 네트워크 SDK 초기화는 `AppDelegate` 의 `didFinishLaunching` 에서 수행합니다. 두 초기화는 순서에 의존하지 않습니다(nap mx 코어는 네트워크 SDK 를 초기화하지 않으며, 광고 요청 시점에 어댑터가 초기화된 네트워크 SDK 를 사용합니다).
-
 ```swift
-// AppDelegate.swift — 네트워크 SDK 초기화
 import UIKit
 import AdMixerMediation
 import GoogleMobileAds
@@ -287,6 +284,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         // 규제 대상 사용자라면 네트워크 SDK 초기화 전에 동의 상태를 먼저 전달 (위 '개인정보/규제 신호 설정' 참조)
         // AMMediation.shared.setConsent(consent)
+
+        // AdMixer 초기화 (필수)
+        AMMediation.shared.initialize(
+            mediaKey: MEDIA_KEY,
+            adunitID: [ADUNIT_ID_BANNER, ADUNIT_ID_INTERSTITIAL_BANNER, ADUNIT_ID_NATIVE]
+        )
 
         // Google AdManager 초기화 (해당 네트워크 사용 시)
         MobileAds.shared.start()
@@ -320,31 +323,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 ```
-
-```swift
-// SceneDelegate.swift — nap mx 초기화 (필수). ATT 응답 후 최초 1회, 상세는 Step 2 'ATT' 절 참조
-import AppTrackingTransparency
-import AdMixerMediation
-
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
-    private static var didInitialize = false
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        Task { @MainActor in
-            _ = await ATTrackingManager.requestTrackingAuthorization()
-            guard !Self.didInitialize else { return }
-            Self.didInitialize = true
-            AMMediation.shared.initialize(
-                mediaKey: MEDIA_KEY,
-                adunitID: [ADUNIT_ID_BANNER, ADUNIT_ID_INTERSTITIAL_BANNER, ADUNIT_ID_NATIVE]
-            )
-        }
-    }
-}
-```
-
-Scene 을 쓰지 않는 앱은 위 `sceneDidBecomeActive` 본문을 `AppDelegate.applicationDidBecomeActive(_:)` 로 옮기면 됩니다.
 
 ---
 
