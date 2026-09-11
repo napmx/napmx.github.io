@@ -36,6 +36,8 @@
 
 - Android 8.0/8.1 일부 기기에서 전면 광고 세로 고정으로 발생하던 크래시 수정
 - 스크롤 중 광고 뷰가 잠시 분리되어도 로드 콜백이 유실되지 않도록 수정
+- WebBridge 리워드 동영상 클릭 시 `onRewardVideoClicked` JS 콜백 추가 (#157)
+  ([WebBridge 가이드](webbridge.md))
 - 미준비 전면 광고 `show()` 실패가 특정 광고 네트워크 실패로 잘못 보고되던 문제 수정
 - 그 외 내부 안정화 (워터폴 reflection 캐시, VAST Wrapper 요청 취소 보강)
 
