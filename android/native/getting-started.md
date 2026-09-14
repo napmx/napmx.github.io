@@ -124,10 +124,9 @@ Google이 차세대로 발표한 **Mobile Ads NextGen SDK** 연동 어댑터입�
 > | 어댑터 | NextGen과 공존 |
 > |---|---|
 > | `admixer-admanager` (classic) | ❌ **불가** — 택1 |
-> | `admixer-naveradmanager` | ✅ 가능 — `nam-dfp` 미포함(NDA 직접 광고만 사용). [아래 참고](#naveradmanager와-nextgen을-함께-사용하고자-하는-경우) |
-> | `admixer-adfit` · `admixer-pangle` · `admixer-applovin` · `admixer-unity` · `admixer-teads` | ✅ 가능 |
+> | `admixer-naveradmanager` · `admixer-adfit` · `admixer-pangle` · `admixer-applovin` · `admixer-unity` · `admixer-teads` | ✅ 가능 |
 >
-> **국내 지면은 대부분 AdManager·NaverAd를 함께 사용하므로, NextGen 도입 시 classic AdManager는 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
+> **NextGen 도입 시 classic AdManager는 포기해야 합니다.** 도입 전 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 지면 구성을 검토받으시길 권장합니다.
 
 사용 시 `build.gradle`에 exclude를 추가하세요.
 
@@ -139,10 +138,6 @@ configurations.all {
 
 - **minSdk 24** 이상 필요 (classic AdManager는 23)
 - 미디에이션은 Ad Manager 또는 no-mediation만 호환
-
-#### NaverAdManager와 NextGen을 함께 사용하고자 하는 경우
-
-`admixer-naveradmanager`는 **NAM 직접 광고(NDA)만 사용**하며, `nam-dfp`(GAM 미디에이션)·`nam-fan` 모듈을 포함하지 않습니다. 따라서 별도 exclude 없이 NextGen과 함께 사용할 수 있습니다.
 
 ### 1-3. 네트워크별 추가 Maven 저장소
 

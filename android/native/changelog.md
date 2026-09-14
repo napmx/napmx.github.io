@@ -19,7 +19,6 @@
   이전에는 320×50 anchored adaptive로 바뀌어 요청되던 문제가 있었습니다.
 - **NaverAdManager 의존성 정리** — 미사용 `nam-dfp`·`nam-fan`·`appcompat` 등을 제거했습니다.
   GMA NextGen과 함께 사용할 때 별도 exclude가 필요 없습니다.
-  ([시작하기](getting-started.md#naveradmanager와-nextgen을-함께-사용하고자-하는-경우))
 
 ---
 
