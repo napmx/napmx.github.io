@@ -68,24 +68,6 @@ pod install --repo-update
 >
 > ⚠️ `AdMixerMediation` 버전을 플러그인이 대응하는 버전(현재 **2.4.6**)과 다르게 바꾸면 빌드가 실패할 수 있습니다.
 
-### 2-2. SPM을 통한 설치
-
-CocoaPods 대신 SPM을 사용하려면 자동 생성된 `Podfile`을 삭제하고, Xcode에서 `.xcodeproj`를 연 뒤 **UnityFramework 타겟**에 아래 패키지를 추가합니다.
-
-**Project > Package Dependencies 탭** 이동 후 패키지를 추가하고, 각 라이브러리의 Target을 `UnityFramework`로 지정합니다.
-
-| 패키지 | 설명 | Repository URL |
-|--------|------|----------------|
-| nap mx Mediation (Mediation) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
-| nap mx Mediation (Core) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
-| Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
-| Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
-| Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
-| Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
-| AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
-
-> `iOS-SSP-Mediation-SPM`은 플러그인이 대응하는 버전(**2.4.6**)으로 고정하는 것을 권장합니다.
-
 ### Google 네트워크 - SDK 입찰 광고 소스 설정
 
 Google 네트워크를 사용하시는 경우, SDK 입찰 광고 소스 사용을 위해 아래 광고 소스 라이브러리를 모두 추가해주세요.
