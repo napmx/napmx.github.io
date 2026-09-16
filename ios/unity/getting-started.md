@@ -115,17 +115,31 @@ Google AdManager 네트워크를 사용하는 경우, `AdMixer` Inspector의 `iO
 
 ### 3-3. Delegate 설정
 
-광고 이벤트를 수신하려면 다음 두 가지가 필요합니다.
+각 광고 타입별 델리게이트가 정상적으로 동작하기 위해서는 아래의 두 가지가 필수로 설정되어 있어야 합니다.
 
-**① 이벤트 수신 GameObject 이름 전달**
+**① GameObject의 이름 설정 및 전달**
 
-네이티브 브릿지는 `UnitySendMessage`로 이벤트를 전달하므로, 수신할 GameObject의 이름을 SDK에 알려야 합니다. `AdMixer` 컴포넌트를 사용하면 `Awake()`에서 자기 GameObject 이름을 자동으로 전달합니다. 직접 호출하는 경우 초기화 전에 `NAPSSPPluginIOS.SetUnityCallbackHandler(gameObject.name)`을 호출하세요.
+네이티브 브릿지는 `UnitySendMessage`로 이벤트를 전달하므로, 수신할 GameObject의 이름을 SDK에 전달해야 합니다.
+
+- `AdMixer` 컴포넌트를 사용하는 경우 — `Awake()`에서 자기 GameObject 이름을 **자동으로** 전달합니다. 별도 코드가 필요 없습니다.
+- `NAPSSPPluginIOS`를 직접 호출하는 경우 — 초기화 전에 `SetUnityCallbackHandler`로 이름을 전달합니다.
+
+```csharp
+void Awake()
+{
+    gameObject.name = "NAPSSPPluginIOS";
+    NAPSSPPluginIOS.SetUnityCallbackHandler("NAPSSPPluginIOS");
+}
+```
 
 > ⚠️ 이름을 전달한 뒤 **Inspector에서 해당 GameObject의 이름을 변경하면 이벤트가 수신되지 않습니다.**
 
-**② `NAPSSPPluginIOS` 컴포넌트**
+**② GameObject에 ssp plugin 파일 추가**
 
-이벤트를 수신하는 GameObject에 `NAPSSPPluginIOS.cs` 컴포넌트가 있어야 합니다. `AdMixer`를 사용하면 자동으로 추가되며, 직접 호출하는 경우 `AddComponent<NAPSSPPluginIOS>()`로 추가하세요.
+nap mx의 delegate를 이용하려면 `Assets/Scripts` 폴더 밑에 있는 `NAPSSPPluginIOS.cs` 파일을 ①에서 이름을 전달한 GameObject에 추가해주세요.
+
+- `AdMixer` 컴포넌트를 사용하는 경우 — `Awake()`에서 **자동으로** 추가됩니다.
+- 직접 호출하는 경우 — Inspector에서 컴포넌트를 추가하거나 `AddComponent<NAPSSPPluginIOS>()`를 호출합니다.
 
 **③ 이벤트 구독**
 
@@ -188,8 +202,9 @@ public class AdManager : MonoBehaviour
     void Awake()
     {
         // 이벤트 수신 설정 (3-3 참고)
+        gameObject.name = "NAPSSPPluginIOS";
         gameObject.AddComponent<NAPSSPPluginIOS>();
-        NAPSSPPluginIOS.SetUnityCallbackHandler(gameObject.name);
+        NAPSSPPluginIOS.SetUnityCallbackHandler("NAPSSPPluginIOS");
 
         int[] adUnitIds = { ADUNIT_ID_BANNER, ADUNIT_ID_INTERSTITIAL, ADUNIT_ID_NATIVE };
         NAPSSPPluginIOS.Initialize(MEDIA_KEY, adUnitIds);
