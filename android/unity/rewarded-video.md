@@ -43,21 +43,22 @@ public class RewardedAd : MonoBehaviour
 | `OnEventAd("DISPLAYED")` | 노출 |
 | `OnEventAd("CLICK")` | 클릭 |
 | `OnEventAd("COMPLETION")` | 재생 완료 — **보상과 별개**이며 네트워크에 따라 발화하지 않을 수 있음 |
-| `OnEventAd("EARNEDREWARD")` | **보상 적립 — 이 이벤트에서 보상을 지급** |
+| `OnEventAd("EARNEDREWARD\|<transactionId>")` | **보상 적립 — 이 이벤트에서 보상을 지급.** `transactionId`는 서버 포스트백 대조용 |
 | `OnEventAd("CLOSE")` | 광고 닫힘 |
 
 ```csharp
 [Preserve]
 public void OnEventAd(string param)
 {
-    switch (param)
+    if (param.StartsWith("EARNEDREWARD"))
     {
-        case "EARNEDREWARD":
-            GrantReward();                       // ✅ 보상 지급은 여기서
-            break;
-        case "CLOSE":
-            AdMixer.Instance.LoadRewardVideo();  // 다음 광고 미리 로드
-            break;
+        // 형식: "EARNEDREWARD|<transactionId>"
+        string transactionId = param.Length > "EARNEDREWARD|".Length ? param.Substring("EARNEDREWARD|".Length) : "";
+        GrantReward(transactionId);              // ✅ 보상 지급은 여기서
+    }
+    else if (param == "CLOSE")
+    {
+        AdMixer.Instance.LoadRewardVideo();      // 다음 광고 미리 로드
     }
 }
 ```
