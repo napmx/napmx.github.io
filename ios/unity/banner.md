@@ -8,66 +8,78 @@
 
 ### 1-1. 배너 인스턴스 생성
 
-배너 광고 노출을 위해 `BannerViewInit` API를 호출하여 인스턴스를 생성합니다.
+`AdMixer` Inspector에 `iOS Banner AdUnitId`를 입력하면 `Awake()` 시 320×50 배너 인스턴스가 자동 생성됩니다. 위치는 `iOS Banner Top Position`으로 선택합니다 (`true`: 상단, `false`: 하단, Safe Area 기준).
+
+직접 인스턴스를 만들려면 `NAPSSPPluginIOS`의 정적 메서드를 호출합니다.
 
 ```csharp
-// 위치 기반 생성
-BannerViewInit("발급받은_ADUNIT_ID", SSPPosition.SSPPositionBottom, 320, 50);
+// 위치 기반 생성 — adUnitId 는 int
+NAPSSPPluginIOS.BannerViewInit(adUnitId, NAPSSPPluginIOS.SSPPositionBottom, 320, 50);
+
+// 좌표 기반 생성 — 원점은 화면 왼쪽 상단
+NAPSSPPluginIOS.BannerViewInit(adUnitId, x, y, 320, 50);
 ```
 
-| 매개변수 | 설명 |
-|---------|------|
-| `adUnitId` | 로드할 배너 광고의 광고 단위 ID |
-| `position` | 배너 뷰 위치 (`SSPPositionTop`: 상단, `SSPPositionBottom`: 하단) |
-| `width` | 배너 뷰의 가로 길이 |
-| `height` | 배너 뷰의 세로 길이 |
-
-**맞춤 위치로 배너 뷰 만들기**
-
-`position` 대신 x, y 좌표로 세부 위치를 지정할 수 있습니다. 원점은 화면의 왼쪽 상단입니다.
-
-```csharp
-BannerViewInit("발급받은_ADUNIT_ID", x, y, 320, 50);
-```
+| 매개변수 | 타입 | 설명 |
+|---------|------|------|
+| `adUnitId` | int | 배너 Adunit ID |
+| `position` | int | `NAPSSPPluginIOS.SSPPositionTop`(0) 또는 `SSPPositionBottom`(1) |
+| `x`, `y` | float | 좌표 기반 생성 시 왼쪽 상단 위치 |
+| `width`, `height` | float | 배너 뷰 크기 |
 
 ### 1-2. 배너 광고 요청
 
+로드 성공 시 화면에 자동으로 부착·노출됩니다.
+
 ```csharp
-LoadBanner();
+AdMixer.Instance.LoadBanner();
 ```
 
-### 1-3. Delegate
-
-배너 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.
-
-| 델리게이트 | 설명 |
-|-----------|------|
-| `OnSuccessBanner` | 배너 광고 로드 성공 |
-| `OnFailBanner` | 배너 광고 로드 실패 |
-| `OnTapBanner` | 배너 광고 클릭 |
+### 1-3. 배너 제거
 
 ```csharp
+AdMixer.Instance.DestroyBanner();
+```
+
+### 1-4. 이벤트
+
+| 이벤트 | 시그니처 | 설명 |
+|-----------|------|------|
+| `OnSuccessBanner` | `Action` | 배너 광고 로드 성공 (자동 표시) |
+| `OnFailBanner` | `Action` | 배너 광고 로드 실패 |
+| `OnTapBanner` | `Action` | 배너 광고 클릭 |
+
+```csharp
+using UnityEngine;
+
 public class BannerAd : MonoBehaviour
 {
+    void OnEnable()
+    {
+        NAPSSPPluginIOS.OnSuccessBanner += OnSuccessBanner;
+        NAPSSPPluginIOS.OnFailBanner   += OnFailBanner;
+        NAPSSPPluginIOS.OnTapBanner    += OnTapBanner;
+    }
+
+    void OnDisable()
+    {
+        NAPSSPPluginIOS.OnSuccessBanner -= OnSuccessBanner;
+        NAPSSPPluginIOS.OnFailBanner   -= OnFailBanner;
+        NAPSSPPluginIOS.OnTapBanner    -= OnTapBanner;
+    }
+
     void Start()
     {
-        BannerViewInit("발급받은_ADUNIT_ID", SSPPosition.SSPPositionBottom, 320, 50);
-        LoadBanner();
+        AdMixer.Instance.LoadBanner();
     }
 
-    void OnSuccessBanner()
-    {
-        Debug.Log("배너 광고 로드 성공");
-    }
+    void OnSuccessBanner() { Debug.Log("배너 광고 로드 성공"); }
+    void OnFailBanner()    { Debug.Log("배너 광고 로드 실패"); }
+    void OnTapBanner()     { Debug.Log("배너 광고 클릭"); }
 
-    void OnFailBanner(string errorMsg)
+    void OnDestroy()
     {
-        Debug.Log($"배너 광고 로드 실패: {errorMsg}");
-    }
-
-    void OnTapBanner()
-    {
-        Debug.Log("배너 광고 클릭");
+        AdMixer.Instance.DestroyBanner();
     }
 }
 ```
@@ -76,90 +88,64 @@ public class BannerAd : MonoBehaviour
 
 ## 2. 전면 배너(Interstitial) 광고
 
-### 2-1. 전면 배너 인스턴스 생성 및 설정
+### 2-1. 전면 배너 광고 요청
 
-전면 배너 광고 노출을 위해 `InterstitialInit` API를 호출하여 인스턴스를 생성합니다.
+전면 광고는 별도 인스턴스 생성 없이 `LoadInterstitial()`로 바로 요청합니다. Adunit ID는 `AdMixer` Inspector의 `iOS Interstitial AdUnitId`를 사용합니다.
 
 ```csharp
-InterstitialInit("발급받은_ADUNIT_ID");
+AdMixer.Instance.LoadInterstitial();
 ```
 
-### 2-2. 전면 배너 광고 요청
+### 2-2. 전면 배너 광고 노출
+
+`OnSuccessLoadInterstitial` 수신 후 원하는 시점에 호출합니다.
 
 ```csharp
-LoadInterstitial();
+AdMixer.Instance.ShowInterstitial();
 ```
 
-### 2-3. Delegate
+### 2-3. 이벤트
 
-| 델리게이트 | 설명 |
-|-----------|------|
-| `OnSuccessInterstitial` | 전면 광고 로드 성공 |
-| `OnFailInterstitial` | 전면 광고 로드 실패 |
-| `OnCloseInterstitial` | 전면 광고 닫기 |
-| `OnTapInterstitial` | 전면 광고 클릭 |
+| 이벤트 | 시그니처 | 설명 |
+|-----------|------|------|
+| `OnSuccessLoadInterstitial` | `Action` | 전면 광고 로드 성공 |
+| `OnFailLoadInterstitial` | `Action<string>` | 전면 광고 로드 실패 (에러 메시지) |
+| `OnSuccessShowInterstitial` | `Action` | 전면 광고 노출 성공 |
+| `OnFailShowInterstitial` | `Action<string>` | 전면 광고 노출 실패 (에러 메시지) |
+| `OnCloseInterstitial` | `Action` | 전면 광고 닫기 |
+| `OnTapInterstitial` | `Action` | 전면 광고 클릭 |
 
 ```csharp
+using UnityEngine;
+
 public class InterstitialAd : MonoBehaviour
 {
+    void OnEnable()
+    {
+        NAPSSPPluginIOS.OnSuccessLoadInterstitial += OnSuccessLoad;
+        NAPSSPPluginIOS.OnFailLoadInterstitial    += OnFailLoad;
+        NAPSSPPluginIOS.OnFailShowInterstitial    += OnFailShow;
+        NAPSSPPluginIOS.OnCloseInterstitial       += OnClose;
+    }
+
+    void OnDisable()
+    {
+        NAPSSPPluginIOS.OnSuccessLoadInterstitial -= OnSuccessLoad;
+        NAPSSPPluginIOS.OnFailLoadInterstitial    -= OnFailLoad;
+        NAPSSPPluginIOS.OnFailShowInterstitial    -= OnFailShow;
+        NAPSSPPluginIOS.OnCloseInterstitial       -= OnClose;
+    }
+
     void Start()
     {
-        InterstitialInit("발급받은_ADUNIT_ID");
-        LoadInterstitial();
+        AdMixer.Instance.LoadInterstitial();
     }
 
-    void OnSuccessInterstitial()
-    {
-        ShowInterstitial();
-    }
-
-    void OnFailInterstitial(string errorMsg)
-    {
-        Debug.Log($"전면 광고 로드 실패: {errorMsg}");
-    }
-
-    void OnCloseInterstitial()
-    {
-        Debug.Log("전면 광고 닫힘");
-    }
-
-    void OnTapInterstitial()
-    {
-        Debug.Log("전면 광고 클릭");
-    }
+    void OnSuccessLoad()            { AdMixer.Instance.ShowInterstitial(); }
+    void OnFailLoad(string error)   { Debug.Log($"전면 광고 로드 실패: {error}"); }
+    void OnFailShow(string error)   { Debug.Log($"전면 광고 노출 실패: {error}"); }
+    void OnClose()                  { Debug.Log("전면 광고 닫힘"); }
 }
 ```
 
-### 2-4. 전면 배너 커스텀
-
-전면 배너 형식으로 `basic`, `popup`, `countDown` 세 가지 형태를 제공합니다.  
-일부 네트워크(AdMixer, AdFit)에만 적용됩니다.
-
-```csharp
-// type: 0 = basic, 1 = popup, 2 = countDown
-InterstitialSetType(1);
-```
-
-| 형식 | 설명 |
-|------|------|
-| `basic` (0) | 우측 상단에 "X" 이미지 형태의 닫기 버튼 노출 |
-| `popup` (1) | 광고 소재 하단에 텍스트 형태의 닫기 버튼 노출 |
-| `countDown` (2) | 설정된 시간이 지난 후 닫기 버튼 노출 |
-
-**popup 커스텀**
-
-`InterstitialSetPopupOption`을 통해 닫기 버튼의 텍스트, 타이틀 색상, 버튼 배경색을 설정할 수 있습니다.
-
-```csharp
-InterstitialSetPopupOption("닫기", "#000000", "#FFFFFF");
-```
-
-**countDown 커스텀**
-
-`InterstitialSetCountDownOption`을 통해 카운트다운 시간 및 UI 타입을 설정할 수 있습니다.
-
-```csharp
-// time: 카운트다운 시간 (최소 2초 ~ 최대 5초)
-// countDownType: 0 = 게이지 형태, 1 = 텍스트 형태
-InterstitialSetCountDownOption(3, 0);
-```
+> ⚠️ **노출 실패(`OnFailShowInterstitial`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.

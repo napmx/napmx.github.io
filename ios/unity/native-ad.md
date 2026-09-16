@@ -6,7 +6,7 @@
 
 ## 1. 구성
 
-`Plugin/iOS/NativeTemplates` 내부의 `NapSSPNativeTemplateView.xib` 파일을 열어 네이티브 뷰를 커스텀해주세요.
+`Assets/Plugins/iOS/NativeTemplates/NapSSPNativeTemplateView.xib` 파일을 열어 네이티브 뷰를 커스텀해주세요.
 
 네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
 
@@ -23,77 +23,86 @@
 
 ---
 
-## 2. 네이티브 인스턴스 생성 및 설정
+## 2. 네이티브 인스턴스 생성
 
-네이티브 광고 노출을 위해 `NativeViewInit` API를 호출하여 인스턴스를 생성합니다.
+`AdMixer` Inspector에 `iOS Native AdUnitId`를 입력하면 `Awake()` 시 400×200 네이티브 인스턴스가 자동 생성됩니다. 위치는 `iOS Native Top Position`으로 선택합니다 (`true`: 상단, `false`: 하단).
 
-```csharp
-// 위치 기반 생성
-NativeViewInit("발급받은_ADUNIT_ID", 0, 300, 250);
-```
-
-| 매개변수 | 설명 |
-|---------|------|
-| `adUnitId` | 로드할 네이티브 광고의 광고 단위 ID |
-| `position` | 네이티브 뷰 위치 (`0`: 화면 상단, `1`: 화면 하단) |
-| `width` | 네이티브 뷰의 가로 길이 |
-| `height` | 네이티브 뷰의 세로 길이 |
-
-**맞춤 위치로 네이티브 뷰 만들기**
-
-`position` 대신 x, y 좌표로 세부 위치를 지정할 수 있습니다. 원점은 화면의 왼쪽 상단입니다.
+직접 인스턴스를 만들려면 `NAPSSPPluginIOS`의 정적 메서드를 호출합니다.
 
 ```csharp
-NativeViewInit("발급받은_ADUNIT_ID", x, y, 300, 250);
+// 위치 기반 생성 — adUnitId 는 int
+NAPSSPPluginIOS.NativeViewInit(adUnitId, NAPSSPPluginIOS.SSPPositionTop, 300, 250);
+
+// 좌표 기반 생성 — 원점은 화면 왼쪽 상단
+NAPSSPPluginIOS.NativeViewInit(adUnitId, x, y, 300, 250);
 ```
+
+| 매개변수 | 타입 | 설명 |
+|---------|------|------|
+| `adUnitId` | int | 네이티브 Adunit ID |
+| `position` | int | `NAPSSPPluginIOS.SSPPositionTop`(0) 또는 `SSPPositionBottom`(1) |
+| `x`, `y` | float | 좌표 기반 생성 시 왼쪽 상단 위치 |
+| `width`, `height` | float | 네이티브 뷰 크기 |
 
 ---
 
 ## 3. 네이티브 광고 요청
 
+로드 성공 시 화면에 자동으로 부착·노출됩니다.
+
 ```csharp
-LoadNativeAd();
+AdMixer.Instance.LoadNativeAd();
 ```
 
 ---
 
-## 4. Delegate
-
-네이티브 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.
-
-| 델리게이트 | 설명 |
-|-----------|------|
-| `OnSuccessNative` | 네이티브 광고 로드 성공 |
-| `OnFailNative` | 네이티브 광고 로드 실패 |
-| `OnTapNative` | 네이티브 광고 클릭 |
+## 4. 네이티브 제거
 
 ```csharp
+AdMixer.Instance.DestroyNativeAd();
+```
+
+---
+
+## 5. 이벤트
+
+| 이벤트 | 시그니처 | 설명 |
+|-----------|------|------|
+| `OnSuccessNative` | `Action` | 네이티브 광고 로드 성공 (자동 표시) |
+| `OnFailNative` | `Action` | 네이티브 광고 로드 실패 |
+| `OnTapNative` | `Action` | 네이티브 광고 클릭 |
+
+```csharp
+using UnityEngine;
+
 public class NativeAd : MonoBehaviour
 {
+    void OnEnable()
+    {
+        NAPSSPPluginIOS.OnSuccessNative += OnSuccessNative;
+        NAPSSPPluginIOS.OnFailNative    += OnFailNative;
+        NAPSSPPluginIOS.OnTapNative     += OnTapNative;
+    }
+
+    void OnDisable()
+    {
+        NAPSSPPluginIOS.OnSuccessNative -= OnSuccessNative;
+        NAPSSPPluginIOS.OnFailNative    -= OnFailNative;
+        NAPSSPPluginIOS.OnTapNative     -= OnTapNative;
+    }
+
     void Start()
     {
-        NativeViewInit("발급받은_ADUNIT_ID", 0, 300, 250);
-        LoadNativeAd();
+        AdMixer.Instance.LoadNativeAd();
     }
 
-    void OnSuccessNative()
-    {
-        Debug.Log("네이티브 광고 로드 성공");
-    }
-
-    void OnFailNative(string errorMsg)
-    {
-        Debug.Log($"네이티브 광고 로드 실패: {errorMsg}");
-    }
-
-    void OnTapNative()
-    {
-        Debug.Log("네이티브 광고 클릭");
-    }
+    void OnSuccessNative() { Debug.Log("네이티브 광고 로드 성공"); }
+    void OnFailNative()    { Debug.Log("네이티브 광고 로드 실패"); }
+    void OnTapNative()     { Debug.Log("네이티브 광고 클릭"); }
 
     void OnDestroy()
     {
-        DestroyNativeAd();
+        AdMixer.Instance.DestroyNativeAd();
     }
 }
 ```

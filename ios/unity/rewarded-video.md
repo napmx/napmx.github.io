@@ -4,80 +4,83 @@
 
 ---
 
-## 1. 리워드 인스턴스 생성
+## 1. 리워드 광고 요청
 
-리워드 광고 노출을 위해 `RewardAdInit` API를 호출하여 인스턴스를 생성합니다.
+리워드 광고는 별도 인스턴스 생성 없이 `LoadRewardVideo()`로 바로 요청합니다. Adunit ID는 `AdMixer` Inspector의 `iOS Reward AdUnitId`를 사용합니다.
 
 ```csharp
-RewardAdInit("발급받은_ADUNIT_ID");
+AdMixer.Instance.LoadRewardVideo();
 ```
 
 ---
 
-## 2. 리워드 광고 요청
+## 2. 리워드 광고 노출
+
+`OnSuccessLoadRewardAd` 수신 후 원하는 시점에 호출합니다.
 
 ```csharp
-LoadRewardVideo();
+AdMixer.Instance.ShowRewardVideo();
 ```
 
 ---
 
-## 3. Delegate
+## 3. 이벤트 및 보상 지급
 
-리워드 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.
-
-| 델리게이트 | 설명 |
-|-----------|------|
-| `OnSuccessRewardVideo` | 리워드 광고 로드 성공 |
-| `OnFailRewardVideo` | 리워드 광고 로드 실패 |
-| `OnCloseRewardVideo` | 리워드 광고 닫기 |
-| `OnTapRewardVideo` | 리워드 광고 내 더보기 버튼 클릭 |
-| `OnRewardVideoComplete` | 리워드 광고 재생 완료 |
-| `OnRewardVideoEarned` | 리워드 광고 리워드 지급 완료 |
+| 이벤트 | 시그니처 | 설명 |
+|-----------|------|------|
+| `OnSuccessLoadRewardAd` | `Action` | 리워드 광고 로드 성공 |
+| `OnFailLoadRewardAd` | `Action<string>` | 리워드 광고 로드 실패 (에러 메시지) |
+| `OnSuccessShowRewardAd` | `Action` | 리워드 광고 노출 성공 |
+| `OnFailShowRewardAd` | `Action<string>` | 리워드 광고 노출 실패 (에러 메시지) |
+| `OnCloseRewardVideo` | `Action` | 리워드 광고 닫기 |
+| `OnTapRewardVideo` | `Action` | 리워드 광고 클릭 |
+| `OnRewardVideoComplete` | `Action` | 재생 완료 — **보상과 별개**이며 네트워크에 따라 발화하지 않을 수 있음 |
+| `OnRewardVideoEarned` | `Action<string>` | **보상 지급 — 이 이벤트에서 보상을 지급.** 인자는 `transactionId` (서버 포스트백 대조용) |
 
 ```csharp
+using UnityEngine;
+
 public class RewardedAd : MonoBehaviour
 {
+    void OnEnable()
+    {
+        NAPSSPPluginIOS.OnSuccessLoadRewardAd += OnSuccessLoad;
+        NAPSSPPluginIOS.OnFailLoadRewardAd    += OnFailLoad;
+        NAPSSPPluginIOS.OnFailShowRewardAd    += OnFailShow;
+        NAPSSPPluginIOS.OnRewardVideoEarned   += OnRewardEarned;
+        NAPSSPPluginIOS.OnCloseRewardVideo    += OnClose;
+    }
+
+    void OnDisable()
+    {
+        NAPSSPPluginIOS.OnSuccessLoadRewardAd -= OnSuccessLoad;
+        NAPSSPPluginIOS.OnFailLoadRewardAd    -= OnFailLoad;
+        NAPSSPPluginIOS.OnFailShowRewardAd    -= OnFailShow;
+        NAPSSPPluginIOS.OnRewardVideoEarned   -= OnRewardEarned;
+        NAPSSPPluginIOS.OnCloseRewardVideo    -= OnClose;
+    }
+
     void Start()
     {
-        RewardAdInit("발급받은_ADUNIT_ID");
-        LoadRewardVideo();
+        AdMixer.Instance.LoadRewardVideo();
     }
 
-    void OnSuccessRewardVideo()
+    void OnSuccessLoad()                    { AdMixer.Instance.ShowRewardVideo(); }
+    void OnFailLoad(string error)           { Debug.Log($"리워드 광고 로드 실패: {error}"); }
+    void OnFailShow(string error)           { Debug.Log($"리워드 광고 노출 실패: {error}"); }
+    void OnRewardEarned(string transactionId) { GrantReward(transactionId); }   // ✅ 보상 지급은 여기서
+    void OnClose()                          { AdMixer.Instance.LoadRewardVideo(); } // 다음 광고 미리 로드
+
+    void GrantReward(string transactionId)
     {
-        ShowRewardVideo();
+        // 앱 내 보상 지급 로직. transactionId 를 지급 이력 키로 기록해 두면 서버 포스트백과 대조할 수 있습니다.
     }
-
-    void OnFailRewardVideo(string errorMsg)
-    {
-        Debug.Log($"리워드 광고 로드 실패: {errorMsg}");
-    }
-
-    void OnRewardVideoComplete()
-    {
-        Debug.Log("리워드 광고 재생 완료");
-    }
-
-    void OnRewardVideoEarned()
-    {
-        // 리워드 지급 처리
-        GrantReward();
-    }
-
-    void OnCloseRewardVideo()
-    {
-        LoadRewardVideo();
-    }
-
-    void OnTapRewardVideo()
-    {
-        Debug.Log("더보기 버튼 클릭");
-    }
-
-    void GrantReward() { }
 }
 ```
+
+> ⚠️ **`OnRewardVideoComplete`나 `OnCloseRewardVideo`로 보상을 지급하지 마세요.** `OnRewardVideoEarned`와 `OnCloseRewardVideo`의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다. 보상 지급은 `OnRewardVideoEarned`에서 즉시 처리하고, 사용자 알림(Toast 등)은 닫힘 이후로 미루는 것을 권장합니다.
+>
+> ⚠️ **노출 실패(`OnFailShowRewardAd`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
 
 ---
 
@@ -101,18 +104,17 @@ public class RewardedAd : MonoBehaviour
 | `ifa` | iOS 기기 고유 식별자 (자동 포함) | `860635ea-65bc-eaed-d355-1b5283b30b94` |
 | `timestamp` | 리워드 지급 이벤트 발생 시간 (자동 포함) | `1546300800` |
 
-### 설정 2: CustomParm 추가
+### 설정 2: CustomParam 추가
 
-CustomParm을 통해 콜백에서 추가 데이터를 수집할 수 있습니다. Dictionary 형태로 추가해야 합니다.
-
-SDK 내 CustomData 추가에서 세팅한 Custom 파라미터가 콜백 URL에 포함되어 전송됩니다.
+CustomParam을 통해 콜백에서 추가 데이터를 수집할 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
 
 ```csharp
-Dictionary<string, string> customParm = new Dictionary<string, string>
+var customParam = new Dictionary<string, string>
 {
     { "userid", "nas" },
     { "name", "hdragon" },
     { "phone", "010-1111-1111" }
 };
-SetRewardCustomParm(customParm);
+AdMixer.Instance.RewardAdSetCustomParam(customParam);
+AdMixer.Instance.LoadRewardVideo();
 ```

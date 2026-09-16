@@ -10,64 +10,80 @@
 
 ### 1-1. 비디오 인스턴스 생성
 
-비디오 광고 노출을 위해 `VideoViewInit` API를 호출하여 인스턴스를 생성합니다.
-
-비디오 뷰의 왼쪽 상단 모서리는 생성자에 전달된 x, y값에 배치됩니다. 원점은 화면의 왼쪽 상단입니다.
+`AdMixer` Inspector에 `iOS Video View AdUnitId`를 입력하면 `Awake()` 시 좌표 (0, 400), 크기 400×200 비디오 인스턴스가 자동 생성됩니다. 위치·크기를 바꾸려면 `AdMixer.cs`의 `VideoViewInit` 호출을 수정하거나 직접 호출합니다.
 
 ```csharp
-VideoViewInit("발급받은_ADUNIT_ID", x, y);
+// 좌표 기반 생성 — adUnitId 는 int, 원점은 화면 왼쪽 상단
+NAPSSPPluginIOS.VideoViewInit(adUnitId, x, y, width, height);
 ```
+
+| 매개변수 | 타입 | 설명 |
+|---------|------|------|
+| `adUnitId` | int | 동영상 Adunit ID |
+| `x`, `y` | float | 왼쪽 상단 위치 |
+| `width`, `height` | float | 비디오 뷰 크기 |
 
 ### 1-2. 비디오 광고 요청
 
+로드 성공 시 화면에 자동으로 부착·노출됩니다.
+
 ```csharp
-LoadVideoAd();
+AdMixer.Instance.LoadVideoAd();
 ```
 
-### 1-3. Delegate
-
-비디오 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.
-
-| 델리게이트 | 설명 |
-|-----------|------|
-| `OnSuccessVideo` | 비디오 광고 로드 성공 |
-| `OnFailVideo` | 비디오 광고 로드 실패 |
-| `OnSkipVideo` | 비디오 광고 내 skip 버튼 클릭 |
-| `OnTapVideoViewMore` | 비디오 광고 내 더보기 버튼 클릭 |
-| `OnCompleteVideo` | 비디오 광고 재생 완료 |
+### 1-3. 비디오 제거
 
 ```csharp
+AdMixer.Instance.DestroyVideoAd();
+```
+
+### 1-4. 이벤트
+
+| 이벤트 | 시그니처 | 설명 |
+|-----------|------|------|
+| `OnSuccessVideo` | `Action` | 비디오 광고 로드 성공 (자동 표시) |
+| `OnFailVideo` | `Action` | 비디오 광고 로드 실패 |
+| `OnSkipVideo` | `Action` | 비디오 광고 내 skip 버튼 클릭 |
+| `OnTapVideoViewMore` | `Action` | 비디오 광고 내 더보기 버튼 클릭 |
+| `OnCompleteVideo` | `Action` | 비디오 광고 재생 완료 |
+
+```csharp
+using UnityEngine;
+
 public class VideoAd : MonoBehaviour
 {
+    void OnEnable()
+    {
+        NAPSSPPluginIOS.OnSuccessVideo     += OnSuccessVideo;
+        NAPSSPPluginIOS.OnFailVideo        += OnFailVideo;
+        NAPSSPPluginIOS.OnSkipVideo        += OnSkipVideo;
+        NAPSSPPluginIOS.OnTapVideoViewMore += OnTapVideoViewMore;
+        NAPSSPPluginIOS.OnCompleteVideo    += OnCompleteVideo;
+    }
+
+    void OnDisable()
+    {
+        NAPSSPPluginIOS.OnSuccessVideo     -= OnSuccessVideo;
+        NAPSSPPluginIOS.OnFailVideo        -= OnFailVideo;
+        NAPSSPPluginIOS.OnSkipVideo        -= OnSkipVideo;
+        NAPSSPPluginIOS.OnTapVideoViewMore -= OnTapVideoViewMore;
+        NAPSSPPluginIOS.OnCompleteVideo    -= OnCompleteVideo;
+    }
+
     void Start()
     {
-        VideoViewInit("발급받은_ADUNIT_ID", 0, 0);
-        LoadVideoAd();
+        AdMixer.Instance.LoadVideoAd();
     }
 
-    void OnSuccessVideo()
-    {
-        Debug.Log("비디오 광고 로드 성공");
-    }
+    void OnSuccessVideo()     { Debug.Log("비디오 광고 로드 성공"); }
+    void OnFailVideo()        { Debug.Log("비디오 광고 로드 실패"); }
+    void OnSkipVideo()        { Debug.Log("비디오 광고 skip"); }
+    void OnTapVideoViewMore() { Debug.Log("더보기 버튼 클릭"); }
+    void OnCompleteVideo()    { Debug.Log("비디오 광고 재생 완료"); }
 
-    void OnFailVideo(string errorMsg)
+    void OnDestroy()
     {
-        Debug.Log($"비디오 광고 로드 실패: {errorMsg}");
-    }
-
-    void OnSkipVideo()
-    {
-        Debug.Log("비디오 광고 skip");
-    }
-
-    void OnTapVideoViewMore()
-    {
-        Debug.Log("더보기 버튼 클릭");
-    }
-
-    void OnCompleteVideo()
-    {
-        Debug.Log("비디오 광고 재생 완료");
+        AdMixer.Instance.DestroyVideoAd();
     }
 }
 ```
@@ -76,64 +92,67 @@ public class VideoAd : MonoBehaviour
 
 ## 2. 전면 비디오(Interstitial Video) 광고
 
-### 2-1. 전면 비디오 인스턴스 생성
+전면 비디오는 `AdMixer`에 래퍼가 없으며 `NAPSSPPluginIOS`의 정적 메서드를 직접 호출합니다. Adunit ID는 별도 인스턴스 생성 없이 요청 시 인자로 전달합니다.
 
-전면 비디오 광고 노출을 위해 `VideoInterstitialInit` API를 호출하여 인스턴스를 생성합니다.
+### 2-1. 전면 비디오 광고 요청
 
 ```csharp
-VideoInterstitialInit("발급받은_ADUNIT_ID");
+NAPSSPPluginIOS.VideoInterstitialLoadAd(adUnitId);   // adUnitId 는 int
 ```
 
-### 2-2. 전면 비디오 광고 요청
+### 2-2. 전면 비디오 광고 노출
+
+`OnSuccessLoadVideoInterstitial` 수신 후 원하는 시점에 호출합니다.
 
 ```csharp
-LoadVideoInterstitial();
+NAPSSPPluginIOS.VideoInterstitialShow();
 ```
 
-### 2-3. Delegate
+### 2-3. 이벤트
 
-전면 비디오 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.
-
-| 델리게이트 | 설명 |
-|-----------|------|
-| `OnSuccessVideoInterstitial` | 전면 비디오 광고 로드 성공 |
-| `OnFailVideoInterstitial` | 전면 비디오 광고 로드 실패 |
-| `OnCloseVideoInterstitial` | 전면 비디오 광고 닫기 |
-| `OnTapVideoInterstitialViewMore` | 전면 비디오 광고 내 더보기 버튼 클릭 |
-| `OnCompleteVideoInterstitial` | 전면 비디오 광고 재생 완료 |
+| 이벤트 | 시그니처 | 설명 |
+|-----------|------|------|
+| `OnSuccessLoadVideoInterstitial` | `Action` | 전면 비디오 광고 로드 성공 |
+| `OnFailLoadVideoInterstitial` | `Action<string>` | 전면 비디오 광고 로드 실패 (에러 메시지) |
+| `OnSuccessShowVideoInterstitial` | `Action` | 전면 비디오 광고 노출 성공 |
+| `OnFailShowVideoInterstitial` | `Action<string>` | 전면 비디오 광고 노출 실패 (에러 메시지) |
+| `OnCloseVideoInterstitial` | `Action` | 전면 비디오 광고 닫기 |
+| `OnTapVideoInterstitialViewMore` | `Action` | 전면 비디오 광고 내 더보기 버튼 클릭 |
+| `OnCompleteVideoInterstitial` | `Action` | 전면 비디오 광고 재생 완료 |
 
 ```csharp
+using UnityEngine;
+
 public class VideoInterstitialAd : MonoBehaviour
 {
+    [SerializeField] private int adUnitId;
+
+    void OnEnable()
+    {
+        NAPSSPPluginIOS.OnSuccessLoadVideoInterstitial += OnSuccessLoad;
+        NAPSSPPluginIOS.OnFailLoadVideoInterstitial    += OnFailLoad;
+        NAPSSPPluginIOS.OnFailShowVideoInterstitial    += OnFailShow;
+        NAPSSPPluginIOS.OnCloseVideoInterstitial       += OnClose;
+    }
+
+    void OnDisable()
+    {
+        NAPSSPPluginIOS.OnSuccessLoadVideoInterstitial -= OnSuccessLoad;
+        NAPSSPPluginIOS.OnFailLoadVideoInterstitial    -= OnFailLoad;
+        NAPSSPPluginIOS.OnFailShowVideoInterstitial    -= OnFailShow;
+        NAPSSPPluginIOS.OnCloseVideoInterstitial       -= OnClose;
+    }
+
     void Start()
     {
-        VideoInterstitialInit("발급받은_ADUNIT_ID");
-        LoadVideoInterstitial();
+        NAPSSPPluginIOS.VideoInterstitialLoadAd(adUnitId);
     }
 
-    void OnSuccessVideoInterstitial()
-    {
-        ShowVideoInterstitial();
-    }
-
-    void OnFailVideoInterstitial(string errorMsg)
-    {
-        Debug.Log($"전면 비디오 광고 로드 실패: {errorMsg}");
-    }
-
-    void OnCloseVideoInterstitial()
-    {
-        Debug.Log("전면 비디오 광고 닫힘");
-    }
-
-    void OnTapVideoInterstitialViewMore()
-    {
-        Debug.Log("더보기 버튼 클릭");
-    }
-
-    void OnCompleteVideoInterstitial()
-    {
-        Debug.Log("전면 비디오 광고 재생 완료");
-    }
+    void OnSuccessLoad()          { NAPSSPPluginIOS.VideoInterstitialShow(); }
+    void OnFailLoad(string error) { Debug.Log($"전면 비디오 광고 로드 실패: {error}"); }
+    void OnFailShow(string error) { Debug.Log($"전면 비디오 광고 노출 실패: {error}"); }
+    void OnClose()                { Debug.Log("전면 비디오 광고 닫힘"); }
 }
 ```
+
+> ⚠️ 전면 비디오 Adunit ID는 `AdMixer` Inspector에 없으므로 SDK 초기화 시 Adunit 목록에 포함되지 않습니다. 사용하려면 `AdMixer.cs`의 초기화 Adunit 목록에 추가하거나 운영팀에 문의하세요.
