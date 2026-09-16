@@ -31,10 +31,12 @@ nap mx SDK는 **Xcode 16 이상**, **iOS deployment target 13.0 이상** 환경�
 
 ### 2-1. CocoaPods를 통한 설치
 
-Unity에서 iOS 빌드를 생성한 뒤, 생성된 Xcode 프로젝트 디렉토리에 `Podfile`을 만들고 nap mx Mediation과 사용할 네트워크 어댑터를 추가합니다.
+Unity에서 iOS 빌드를 생성하면 플러그인의 빌드 후처리(`iOSPostProcess.cs`)가 Xcode 프로젝트 디렉토리에 **`Podfile`을 자동 생성**합니다. (이미 `Podfile`이 있으면 건드리지 않습니다)
+
+생성되는 `Podfile`은 다음과 같습니다. 사용하지 않는 어댑터는 지우세요.
 
 ```ruby
-platform :ios, '14.0'
+platform :ios, '13.0'
 
 target 'Unity-iPhone' do
   use_frameworks!
@@ -45,7 +47,7 @@ target 'UnityFramework' do
 
   pod 'AdMixerMediation', '2.4.6'
 
-  # 미디에이션 네트워크 (선택)
+  # 미디에이션 네트워크 (사용하는 것만 남기세요)
   pod 'AdMixerMediationGAM'       # Google AdManager
   pod 'AdMixerMediationAdFit'     # Kakao AdFit
   pod 'AdMixerMediationPangle'    # Pangle
@@ -54,7 +56,7 @@ target 'UnityFramework' do
 end
 ```
 
-> SDK는 `UnityFramework` 타겟에 추가합니다. 플러그인의 Swift 브릿지가 `UnityFramework`에서 컴파일되기 때문입니다.
+Xcode 프로젝트 디렉토리에서 pod를 설치합니다.
 
 ```bash
 pod install --repo-update
@@ -62,7 +64,27 @@ pod install --repo-update
 
 이후 `.xcworkspace`를 열어 남은 설정을 진행해주세요.
 
-> ⚠️ `AdMixerMediation` 버전을 명시하지 않으면 최신 버전이 설치되며, 플러그인이 대응하지 않는 버전에서는 빌드가 실패할 수 있습니다. 플러그인 배포본이 명시한 버전을 사용하세요.
+> SDK는 `UnityFramework` 타겟에 추가합니다. 플러그인의 Swift 브릿지가 `UnityFramework`에서 컴파일되기 때문입니다.
+>
+> ⚠️ `AdMixerMediation` 버전을 플러그인이 대응하는 버전(현재 **2.4.6**)과 다르게 바꾸면 빌드가 실패할 수 있습니다.
+
+### 2-2. SPM을 통한 설치
+
+CocoaPods 대신 SPM을 사용하려면 자동 생성된 `Podfile`을 삭제하고, Xcode에서 `.xcodeproj`를 연 뒤 **UnityFramework 타겟**에 아래 패키지를 추가합니다.
+
+**Project > Package Dependencies 탭** 이동 후 패키지를 추가하고, 각 라이브러리의 Target을 `UnityFramework`로 지정합니다.
+
+| 패키지 | 설명 | Repository URL |
+|--------|------|----------------|
+| nap mx Mediation (Mediation) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
+| nap mx Mediation (Core) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
+| Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
+| Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
+| Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
+| AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
+
+> `iOS-SSP-Mediation-SPM`은 플러그인이 대응하는 버전(**2.4.6**)으로 고정하는 것을 권장합니다.
 
 ### Google 네트워크 - SDK 입찰 광고 소스 설정
 
