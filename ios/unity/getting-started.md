@@ -84,11 +84,7 @@ ATT(App Tracking Transparency) 권한 요청은 플러그인의 `iOSATTRequest.m
 plist.root.SetString("NSUserTrackingUsageDescription", "맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.");
 ```
 
-Google AdManager 사용 시, 같은 파일에서 `GADApplicationIdentifier`를 **발급받은 App ID로 교체**합니다.
-
-```csharp
-plist.root.SetString("GADApplicationIdentifier", "발급받은_GAD_APP_ID");
-```
+Google AdManager 사용 시, `AdMixer` Inspector의 `iOS GAD Application Id`에 **발급받은 App ID**(`ca-app-pub-xxx~yyy`)를 입력합니다. 빌드 시 `iOSPostProcess.cs`가 이 값을 `Info.plist`의 `GADApplicationIdentifier`로 기록합니다. 비워 두면 기록하지 않습니다.
 
 ### 3-2. 미디에이션 네트워크 초기화 (선택)
 
@@ -128,6 +124,7 @@ NAPSSPPluginIOS.initUnityAds("발급받은_UNITYADS_GAME_ID");
 | `iOS Native AdUnitId` | int | 네이티브 Adunit ID |
 | `iOS Banner Top Position` | bool | 배너 위치 (`true`: 상단, `false`: 하단) |
 | `iOS Native Top Position` | bool | 네이티브 위치 (`true`: 상단, `false`: 하단) |
+| `iOS GAD Application Id` | string | Google AdManager App ID (GAM 사용 시) |
 
 > ⚠️ 이벤트는 `AdMixer` GameObject 이름으로 전달되므로, **Inspector에서 `AdMixer` GameObject의 이름을 변경하면 이벤트가 수신되지 않습니다.**
 
