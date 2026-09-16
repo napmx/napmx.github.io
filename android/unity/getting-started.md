@@ -27,7 +27,7 @@ Unity 프로젝트에서 nap mx Android SDK를 연동하는 방법입니다.
 
 ## Unity용 SSP SDK 패키지 다운로드
 
-GitHub에서 최신 `NAPSSPSDK-x.y.z.unitypackage`를 다운로드합니다.
+[GitHub — Unity-SSP-Download](https://github.com/Nasmedia-Tech/Unity-SSP-Download)에서 최신 `NAPSSPSDK-x.y.z.unitypackage`를 다운로드합니다.
 
 Unity 메뉴 **Assets > Import Package > Custom Package**를 선택하고, 다운받은 `.unitypackage` 파일의 **모든 항목을 Import** 합니다.
 

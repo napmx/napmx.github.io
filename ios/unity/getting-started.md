@@ -12,7 +12,7 @@ Unity 프로젝트에서 nap mx iOS SDK를 연동하기 위한 가이드 문서�
 
 ## 1. SDK 다운로드 및 설치
 
-GitHub에서 최신 `NAPSSPSDK-x.y.z.unitypackage`를 다운로드합니다.
+[GitHub — Unity-SSP-Download](https://github.com/Nasmedia-Tech/Unity-SSP-Download)에서 최신 `NAPSSPSDK-x.y.z.unitypackage`를 다운로드합니다.
 
 다운로드한 `.unitypackage`를 Unity 프로젝트 내에 추가합니다.
 
