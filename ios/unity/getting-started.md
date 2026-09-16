@@ -84,7 +84,7 @@ pod install --repo-update
 >
 > ⚠️ 플러그인의 Swift 브릿지는 `AdMixerMediation`의 API에 직접 의존하므로, 자동 생성된 `Podfile`의 버전을 임의로 올리면 빌드가 실패할 수 있습니다. SDK 업데이트는 플러그인 업데이트와 함께 진행하세요.
 
-### Google 네트워크 - SDK 입찰 광고 소스 설정
+### 2-2. Google 네트워크 - SDK 입찰 광고 소스 설정
 
 Google 네트워크를 사용하시는 경우, SDK 입찰 광고 소스 사용을 위해 아래 광고 소스 라이브러리를 모두 추가해주세요.
 
@@ -168,7 +168,7 @@ void OnDisable()
 - **MEDIA_KEY**: nap mx 파트너 사이트에서 발급받은 미디어 키 (**int**)
 - **ADUNIT**: nap mx 파트너 사이트에서 발급받은 애드유닛 ID 리스트 (**int[]**)
 
-### 방법 A — `AdMixer` 컴포넌트 (권장)
+### 4-1. 방법 A — `AdMixer` 컴포넌트 (권장)
 
 씬에 GameObject를 만들고 `AdMixer.cs` 컴포넌트를 추가한 뒤, Inspector에 `iOS MediaKey`와 사용할 광고 타입의 `iOS ... AdUnitId`를 입력합니다. `Awake()`에서 자동으로 초기화되며, 씬에 **하나만** 존재해야 합니다 (`DontDestroyOnLoad` 처리).
 
@@ -190,7 +190,7 @@ void OnDisable()
 - Inspector의 Adunit ID 전체로 SDK 초기화
 - 배너 · 동영상 · 네이티브 뷰 인스턴스 생성 (`*ViewInit`) 및 델리게이트 등록
 
-### 방법 B — `NAPSSPPluginIOS` 직접 호출
+### 4-2. 방법 B — `NAPSSPPluginIOS` 직접 호출
 
 `AdMixer` 없이 직접 제어하려면 `NAPSSPPluginIOS`의 정적 메서드를 호출합니다.
 
@@ -212,7 +212,7 @@ public class AdManager : MonoBehaviour
 }
 ```
 
-### 미디에이션 네트워크 초기화 (선택)
+### 4-3. 미디에이션 네트워크 초기화 (선택)
 
 일부 네트워크는 앱 시작 시 초기화 함수를 호출해야 합니다. SDK 초기화 이후에 호출하세요.
 
