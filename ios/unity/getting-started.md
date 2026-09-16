@@ -239,7 +239,7 @@ NAPSSPPluginIOS.initUnityAds("게임 ID");
 
 | 광고 타입 | 로드 | 표시 | 제거 |
 |-----------|------|------|------|
-| 배너 | `LoadBanner()` | (로드 시 자동 표시) | `DestroyBanner()` |
+| 배너 | `LoadBanner()` | `ShowBanner()` | `DestroyBanner()` |
 | 전면 | `LoadInterstitial()` | `ShowInterstitial()` | — |
 | 네이티브 | `LoadNativeAd()` | (로드 시 자동 표시) | `DestroyNativeAd()` |
 | 리워드 동영상 | `LoadRewardVideo()` | `ShowRewardVideo()` | — |

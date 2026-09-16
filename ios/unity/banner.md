@@ -29,23 +29,31 @@ NAPSSPPluginIOS.BannerViewInit(adUnitId, x, y, 320, 50);
 
 ### 1-2. 배너 광고 요청
 
-로드 성공 시 화면에 자동으로 부착·노출됩니다.
+`LoadBanner()`는 로드만 수행합니다.
 
 ```csharp
 AdMixer.Instance.LoadBanner();
 ```
 
-### 1-3. 배너 제거
+### 1-3. 배너 광고 노출
+
+`OnSuccessBanner` 수신 후 호출하면 화면에 부착되어 노출됩니다. 로드가 끝나기 전에 호출하면 무시됩니다.
+
+```csharp
+AdMixer.Instance.ShowBanner();
+```
+
+### 1-4. 배너 제거
 
 ```csharp
 AdMixer.Instance.DestroyBanner();
 ```
 
-### 1-4. 이벤트
+### 1-5. 이벤트
 
 | 이벤트 | 시그니처 | 설명 |
 |-----------|------|------|
-| `OnSuccessBanner` | `Action` | 배너 광고 로드 성공 (자동 표시) |
+| `OnSuccessBanner` | `Action` | 배너 광고 로드 성공 |
 | `OnFailBanner` | `Action` | 배너 광고 로드 실패 |
 | `OnTapBanner` | `Action` | 배너 광고 클릭 |
 
@@ -73,7 +81,7 @@ public class BannerAd : MonoBehaviour
         AdMixer.Instance.LoadBanner();
     }
 
-    void OnSuccessBanner() { Debug.Log("배너 광고 로드 성공"); }
+    void OnSuccessBanner() { AdMixer.Instance.ShowBanner(); }   // 로드 성공 후 노출
     void OnFailBanner()    { Debug.Log("배너 광고 로드 실패"); }
     void OnTapBanner()     { Debug.Log("배너 광고 클릭"); }
 
