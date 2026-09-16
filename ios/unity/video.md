@@ -92,12 +92,12 @@ public class VideoAd : MonoBehaviour
 
 ## 2. 전면 비디오(Interstitial Video) 광고
 
-전면 비디오는 `AdMixer`에 래퍼가 없으며 `NAPSSPPluginIOS`의 정적 메서드를 직접 호출합니다. Adunit ID는 별도 인스턴스 생성 없이 요청 시 인자로 전달합니다.
-
 ### 2-1. 전면 비디오 광고 요청
 
+전면 비디오는 별도 인스턴스 생성 없이 `LoadVideoInterstitial()`로 바로 요청합니다. Adunit ID는 `AdMixer` Inspector의 `iOS Video Interstitial AdUnitId`를 사용합니다.
+
 ```csharp
-NAPSSPPluginIOS.VideoInterstitialLoadAd(adUnitId);   // adUnitId 는 int
+AdMixer.Instance.LoadVideoInterstitial();
 ```
 
 ### 2-2. 전면 비디오 광고 노출
@@ -105,10 +105,16 @@ NAPSSPPluginIOS.VideoInterstitialLoadAd(adUnitId);   // adUnitId 는 int
 `OnSuccessLoadVideoInterstitial` 수신 후 원하는 시점에 호출합니다.
 
 ```csharp
-NAPSSPPluginIOS.VideoInterstitialShow();
+AdMixer.Instance.ShowVideoInterstitial();
 ```
 
-### 2-3. 이벤트
+### 2-3. 전면 비디오 제거
+
+```csharp
+AdMixer.Instance.DestroyVideoInterstitial();
+```
+
+### 2-4. 이벤트
 
 | 이벤트 | 시그니처 | 설명 |
 |-----------|------|------|
@@ -125,8 +131,6 @@ using UnityEngine;
 
 public class VideoInterstitialAd : MonoBehaviour
 {
-    [SerializeField] private int adUnitId;
-
     void OnEnable()
     {
         NAPSSPPluginIOS.OnSuccessLoadVideoInterstitial += OnSuccessLoad;
@@ -145,14 +149,19 @@ public class VideoInterstitialAd : MonoBehaviour
 
     void Start()
     {
-        NAPSSPPluginIOS.VideoInterstitialLoadAd(adUnitId);
+        AdMixer.Instance.LoadVideoInterstitial();
     }
 
-    void OnSuccessLoad()          { NAPSSPPluginIOS.VideoInterstitialShow(); }
+    void OnSuccessLoad()          { AdMixer.Instance.ShowVideoInterstitial(); }
     void OnFailLoad(string error) { Debug.Log($"전면 비디오 광고 로드 실패: {error}"); }
     void OnFailShow(string error) { Debug.Log($"전면 비디오 광고 노출 실패: {error}"); }
     void OnClose()                { Debug.Log("전면 비디오 광고 닫힘"); }
+
+    void OnDestroy()
+    {
+        AdMixer.Instance.DestroyVideoInterstitial();
+    }
 }
 ```
 
-> ⚠️ 전면 비디오 Adunit ID는 `AdMixer` Inspector에 없으므로 SDK 초기화 시 Adunit 목록에 포함되지 않습니다. 사용하려면 `AdMixer.cs`의 초기화 Adunit 목록에 추가하거나 운영팀에 문의하세요.
+> ⚠️ **노출 실패(`OnFailShowVideoInterstitial`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.

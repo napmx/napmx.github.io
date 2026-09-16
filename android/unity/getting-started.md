@@ -155,6 +155,7 @@ dependencyResolutionManagement {
 | `Android Interstitial AdUnitId` | 전면 Adunit ID |
 | `Android Reward AdUnitId` | 리워드 동영상 Adunit ID |
 | `Android Video AdUnitId` | 동영상 Adunit ID |
+| `Android Video Interstitial AdUnitId` | 전면 동영상 Adunit ID |
 | `Android Native AdUnitId` | 네이티브 Adunit ID |
 | `Android Native Use Large Layout` | 네이티브 레이아웃 (`true`: `item_320x480`, `false`: `item_320x100`) |
 
@@ -178,11 +179,11 @@ dependencyResolutionManagement {
 |---|---|---|
 | `DISPLAYED` | 전체 | 광고 노출 |
 | `CLICK` | 전체 | 광고 클릭 |
-| `CLOSE` | 전면 · 리워드 | 광고 닫힘 (종료) |
-| `COMPLETION` | 전면 · 리워드 · 동영상 | 동영상 재생 완료 (네트워크에 따라 미발화) |
+| `CLOSE` | 전면 · 리워드 · 전면 동영상 | 광고 닫힘 (종료) |
+| `COMPLETION` | 전면 · 리워드 · 동영상 · 전면 동영상 | 동영상 재생 완료 (네트워크에 따라 미발화) |
 | `SKIPPED` | 동영상 | 사용자가 Skip 클릭 |
 | `EARNEDREWARD\|<transactionId>` | 리워드 | **보상 적립 (보상 완료) — 보상 지급 기준.** `transactionId`는 서버 포스트백 대조용 |
-| `BANNER_DESTROYED` · `INTERSTITIAL_DESTROYED` · `REWARD_DESTROYED` · `VIDEO_DESTROYED` · `NATIVE_DESTROYED` | 해당 광고 | 제거 완료 |
+| `BANNER_DESTROYED` · `INTERSTITIAL_DESTROYED` · `REWARD_DESTROYED` · `VIDEO_DESTROYED` · `VIDEO_INTERSTITIAL_DESTROYED` · `NATIVE_DESTROYED` | 해당 광고 | 제거 완료 |
 
 ```csharp
 using UnityEngine;
@@ -255,6 +256,7 @@ AdMixer.Awake() → AdMixerUnityBridge.initSdk(activity, mediaKey, adUnitIds)
 | 네이티브 | `LoadNativeAd()` | (로드 시 자동 표시) | `DestroyNativeAd()` |
 | 리워드 동영상 | `LoadRewardVideo()` | `ShowRewardVideo()` | `DestroyRewardVideo()` |
 | 동영상 | `LoadVideoAd()` | (로드 시 자동 표시) | `DestroyVideoAd()` |
+| 전면 동영상 | `LoadVideoInterstitial()` | `ShowVideoInterstitial()` | `DestroyVideoInterstitial()` |
 
 배너는 `BannerOnPause()` / `BannerOnResume()`으로 갱신 타이머를 수동 제어할 수 있습니다.
 
