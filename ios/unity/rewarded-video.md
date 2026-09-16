@@ -24,7 +24,15 @@ AdMixer.Instance.ShowRewardVideo();
 
 ---
 
-## 3. 이벤트 및 보상 지급
+## 3. 리워드 광고 제거
+
+```csharp
+AdMixer.Instance.DestroyRewardVideo();
+```
+
+---
+
+## 4. 이벤트 및 보상 지급
 
 | 이벤트 | 시그니처 | 설명 |
 |-----------|------|------|
@@ -84,7 +92,7 @@ public class RewardedAd : MonoBehaviour
 
 ---
 
-## 4. Reward Callback (선택사항)
+## 5. Reward Callback (선택사항)
 
 매체사가 정의한 외부 서버로 해당 유저에게 리워드 지급이 완료되었음을 전달하는 기능입니다.  
 콜백 수신까지 몇 분 정도 지연될 수 있습니다.
@@ -115,6 +123,6 @@ var customParam = new Dictionary<string, string>
     { "name", "hdragon" },
     { "phone", "010-1111-1111" }
 };
-AdMixer.Instance.RewardAdSetCustomParam(customParam);
+AdMixer.Instance.SetRewardVideoCustomParam(customParam);
 AdMixer.Instance.LoadRewardVideo();
 ```

@@ -10,7 +10,7 @@
 
 ### 1-1. 비디오 인스턴스 생성
 
-`AdMixer` Inspector에 `iOS Video View AdUnitId`를 입력하면 `Awake()` 시 좌표 (0, 400), 크기 400×200 비디오 인스턴스가 자동 생성됩니다. 위치·크기를 바꾸려면 `AdMixer.cs`의 `VideoViewInit` 호출을 수정하거나 직접 호출합니다.
+`AdMixer` Inspector에 `iOS Video AdUnitId`를 입력하면 `Awake()` 시 좌표 (0, 400), 크기 400×200 비디오 인스턴스가 자동 생성됩니다. 위치·크기를 바꾸려면 `AdMixer.cs`의 `VideoViewInit` 호출을 수정하거나 직접 호출합니다.
 
 ```csharp
 // 좌표 기반 생성 — adUnitId 는 int, 원점은 화면 왼쪽 상단

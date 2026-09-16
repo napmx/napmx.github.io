@@ -112,7 +112,13 @@ AdMixer.Instance.LoadInterstitial();
 AdMixer.Instance.ShowInterstitial();
 ```
 
-### 2-3. 이벤트
+### 2-3. 전면 배너 제거
+
+```csharp
+AdMixer.Instance.DestroyInterstitial();
+```
+
+### 2-4. 이벤트
 
 | 이벤트 | 시그니처 | 설명 |
 |-----------|------|------|

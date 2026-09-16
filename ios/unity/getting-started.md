@@ -178,7 +178,7 @@ void OnDisable()
 | `iOS Banner AdUnitId` | int | 배너 Adunit ID |
 | `iOS Interstitial AdUnitId` | int | 전면 Adunit ID |
 | `iOS Reward AdUnitId` | int | 리워드 동영상 Adunit ID |
-| `iOS Video View AdUnitId` | int | 동영상 Adunit ID |
+| `iOS Video AdUnitId` | int | 동영상 Adunit ID |
 | `iOS Native AdUnitId` | int | 네이티브 Adunit ID |
 | `iOS Banner Top Position` | bool | 배너 위치 (`true`: 상단, `false`: 하단) |
 | `iOS Native Top Position` | bool | 네이티브 위치 (`true`: 상단, `false`: 하단) |
@@ -240,9 +240,9 @@ NAPSSPPluginIOS.initUnityAds("게임 ID");
 | 광고 타입 | 로드 | 표시 | 제거 |
 |-----------|------|------|------|
 | 배너 | `LoadBanner()` | `ShowBanner()` | `DestroyBanner()` |
-| 전면 | `LoadInterstitial()` | `ShowInterstitial()` | — |
+| 전면 | `LoadInterstitial()` | `ShowInterstitial()` | `DestroyInterstitial()` |
 | 네이티브 | `LoadNativeAd()` | (로드 시 자동 표시) | `DestroyNativeAd()` |
-| 리워드 동영상 | `LoadRewardVideo()` | `ShowRewardVideo()` | — |
+| 리워드 동영상 | `LoadRewardVideo()` | `ShowRewardVideo()` | `DestroyRewardVideo()` |
 | 동영상 | `LoadVideoAd()` | (로드 시 자동 표시) | `DestroyVideoAd()` |
 
 전면 동영상은 `AdMixer`에 래퍼가 없으며 `NAPSSPPluginIOS`의 정적 메서드를 직접 호출합니다. ([동영상 - Unity](/ios/unity/video) 참고)
