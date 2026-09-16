@@ -37,7 +37,7 @@ Assets > Import Package > Custom Package > NAPSSPSDK-x.y.z.unitypackage
 
 nap mx SDK는 **Xcode 16 이상**, **iOS deployment target 13.0 이상** 환경에서 동작합니다.
 
-nap mx SDK는 CocoaPods를 지원합니다.
+nap mx SDK는 CocoaPods를 지원합니다. 플러그인이 대응하는 `AdMixerMediation` 버전은 빌드 시 자동 생성되는 `Podfile`에 명시되어 있으며, 그 버전을 그대로 사용하세요.
 
 ### 2-1. CocoaPods를 통한 설치
 
@@ -61,7 +61,7 @@ end
 target 'UnityFramework' do
   use_frameworks!
 
-  pod 'AdMixerMediation', '2.4.6'
+  pod 'AdMixerMediation', '<플러그인 대응 버전>'   # 자동 생성된 Podfile 의 값을 그대로 사용
 
   # 미디에이션 네트워크 (사용하는 것만 남기세요)
   pod 'AdMixerMediationGAM'       # Google AdManager
@@ -82,7 +82,7 @@ pod install --repo-update
 
 > SDK는 `UnityFramework` 타겟에 추가합니다. 플러그인의 Swift 브릿지가 `UnityFramework`에서 컴파일되기 때문입니다.
 >
-> ⚠️ `AdMixerMediation` 버전을 플러그인이 대응하는 버전(현재 **2.4.6**)과 다르게 바꾸면 빌드가 실패할 수 있습니다.
+> ⚠️ 플러그인의 Swift 브릿지는 `AdMixerMediation`의 API에 직접 의존하므로, 자동 생성된 `Podfile`의 버전을 임의로 올리면 빌드가 실패할 수 있습니다. SDK 업데이트는 플러그인 업데이트와 함께 진행하세요.
 
 ### Google 네트워크 - SDK 입찰 광고 소스 설정
 
