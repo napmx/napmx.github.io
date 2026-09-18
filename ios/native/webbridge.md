@@ -252,14 +252,45 @@ window.NapMxBridgeCallback = {
 }
 ```
 
-#### 주요 errorCode
+#### errorCode
 
-| errorCode | 발생 상황 |
-|-----------|-----------|
-| `-1` | `adUnitId`가 없거나 숫자로 변환할 수 없음 / 로드되지 않은 상태에서 `show*()` 호출 |
-| `-10` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 |
+`errorCode`는 iOS·Android 공통 값입니다. SDK 원본 오류는 `nativeErrorCode` / `nativeErrorMsg` 필드에 함께 전달되므로 로그·문의용으로만 사용하고, 분기는 `errorCode`로 하세요.
 
-그 외 값은 광고 네트워크가 반환한 오류 코드입니다.
+| errorCode | errorMsg | 발생 상황 |
+|-----------|----------|-----------|
+| `-1` | `invalid adUnitId` | `adUnitId`가 없거나 숫자로 변환할 수 없음 |
+| `-1` | `ad is not ready. request first` | 로드되지 않은 상태에서 `show*()` 호출 |
+| `-10` | `unsupported format` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 |
+| `-20` | `no fill` | 모든 광고 네트워크에서 광고 없음 |
+| `-21` | `ad unit not found` | 광고 유닛이 서버 설정에 없음 |
+| `-22` | `load timed out` | 로드 전체 시간 초과 |
+| `-23` | `show failed` | 로드된 광고의 표시 실패 |
+| `-30` | `sdk error` | 그 외 SDK 오류 |
+
+```json
+{
+    "adUnitId": "ADUNIT_ID",
+    "adapterName": "",
+    "errorCode": -20,
+    "errorMsg": "no fill",
+    "timestamp": 1718089200000,
+    "nativeErrorCode": -4,
+    "nativeErrorMsg": "Invalid network"
+}
+```
+
+> ⚠️ 통일 errorCode는 **iOS 코어 SDK v2.5.0 이상**에서 전달됩니다. v2.4.5·v2.4.6의 브릿지는 SDK 원본 코드를 `errorCode`에 그대로 전달하므로, 앱의 SDK 버전을 v2.5.0 이상으로 맞추세요.
+
+-----------|----------|-----------|
+| `-1` | `invalid adUnitId` | `adUnitId`가 없거나 숫자로 변환할 수 없음 |
+| `-1` | `ad is not ready. request first` | 로드되지 않은 상태에서 `show*()` 호출 |
+| `-1` | `House Ad load failed` | 전면 배너 no fill — 모든 네트워크 소진 후 하우스 광고까지 실패 |
+| `-2` | `Invalid Ad Unit or required info missing` | 광고 유닛이 서버 설정에 없음 |
+| `-4` | `Invalid network` | 리워드 동영상·전면 동영상 no fill — 모든 네트워크 소진 |
+| `-8` | `Ad load timed out` | 로드 전체 시간 초과 |
+| `-10` | `unsupported format` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 |
+
+`-1`은 원인이 여러 개이므로 구분이 필요하면 `errorMsg`를 함께 확인하세요. 그 외 값은 광고 네트워크가 반환한 오류 코드입니다.
 
 ---
 
