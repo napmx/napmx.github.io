@@ -361,6 +361,10 @@ NapMxBridge.requestVideoInterstitial({
 
 > ⚠️ 화면 종료 시 `detach()`를 호출하지 않으면 광고 객체가 해제되지 않습니다.
 
+### WKWebViewConfiguration 공유 금지
+
+`WKWebViewConfiguration`을 여러 웹뷰에 재사용하면 `userContentController`가 공유되어 두 번째 웹뷰의 `attach()`가 `false`를 반환합니다. 브릿지를 연결할 웹뷰마다 별도 `WKWebViewConfiguration`을 생성하세요.
+
 ### AdUnit ID 관리
 
 ```javascript
