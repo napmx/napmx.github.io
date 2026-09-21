@@ -1,6 +1,17 @@
 # 릴리즈 노트
 
 
+## v2.5.0 (2026-09-21)
+
+- 노출(imp) 집계 시점을 Android 와 동일하게 정렬
+- WebBridge 실패 콜백 `errorCode` 를 iOS/Android 공통 코드로 통일
+- 어댑터 버전 업데이트 — **아래 3종은 코어 v2.5.0 이상이 필요합니다** (이전 코어와 조합 시 링크 실패)
+   - AdMixerMediationGAM v1.2.8
+   - AdMixerMediationPangle v1.2.6
+   - AdMixerMediationNAM v1.3.5
+
+---
+
 ## v2.4.6 (2026-09-10)
 
 - 개인정보 매니페스트(`PrivacyInfo.xcprivacy`) 복구 — v2.4.5 배포본에 누락됐던 매니페스트를 다시 포함합니다. **v2.4.5 를 사용 중이면 업데이트를 권장합니다** (Xcode 프라이버시 리포트·심사 대응)
