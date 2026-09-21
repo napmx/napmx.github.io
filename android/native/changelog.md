@@ -16,31 +16,23 @@
 > | `admixer-bom` | **2026.09.03** |
 > | `admixer-compose` 2.0.2 · `admixer-unity-nativeadlayout` 2.0.0 · 🧪 `admixer-interactive` 1.0.0-beta01 | 변경 없음 |
 >
-> 위 어댑터는 코어 **2.3.0 이상**과 함께 사용하세요. BOM을 쓰면 자동으로 맞춰집니다.
+> 어댑터는 코어 **2.3.0 이상**과 함께 사용하세요.
 
 ### 동작 변경 (확인 권장)
 
-- **WebBridge 실패 콜백 `errorCode` 통일 (#196)** — `*Failed` 콜백의 `errorCode`가 iOS/Android
-  공통 코드(`-20` no fill, `-21` ad unit unavailable, `-22` load timed out, `-23` show failed,
-  `-30` sdk error)로 전달됩니다. 기존 `-1`·`-10`은 유지되고, 네트워크 원본 코드는
-  `nativeErrorCode`·`nativeErrorMsg`로 함께 전달됩니다. 웹에서 Android 원본 코드로 분기하고
-  있었다면 확인하세요. ([WebBridge 가이드](webbridge.md#주요-errorcode))
-- **NaverAdManager 네이티브 노출 시점 정합 (#193)** — `onAdDisplayed()`와 노출 집계가 View 부착
-  시점이 아니라 NAM 노출 콜백 시점에 발생합니다(GMA·Pangle과 동일). 화면 밖 지면은 노출로
-  집계되지 않습니다.
+- **WebBridge 실패 콜백 `errorCode` 통일** ([WebBridge 가이드](webbridge.md#주요-errorcode))
+- **NaverAdManager 네이티브 노출 시점 정합**
 
 ### 개인정보 보호 개선 (코드 변경 불요)
 
-- **동의 차단 시 설치 앱 목록 즉시 삭제 (#205)** — COPPA·GDPR 거부·CCPA do-not-sell·US Privacy
-  opt-out(`1YYN` 등)으로 수집이 차단되면 이미 저장된 목록을 즉시 삭제합니다. US Privacy 문자열
-  opt-out도 차단 신호로 인식합니다. ([개인정보 가이드](privacy.md#설치-앱-목록-수집-정책))
+- **동의 차단 시 저장된 설치 앱 목록 즉시 삭제** ([개인정보 가이드](privacy.md#설치-앱-목록-수집-정책))
 
 ### 안정성 개선 (코드 변경 불요)
 
-- 디버그 빌드에서 SDK가 사용자 CA를 신뢰하게 만들던 network security config 설정 제거 (#186)
-- 디스크 캐시에 광고 단위 설정이 있으면 서버 설정 응답을 기다리지 않고 즉시 로드 시작 (#191)
-- 광고 로딩 구간 진단 로그(`[AD-PERF]`, DEBUG 로그 활성 시에만) 추가 — 운영 동작 변경 없음
-- Pangle을 직접 사용하는 경우 `pag-sdk` 최소 버전(7.2.0.2 이상) 안내 추가 ([시작하기](getting-started.md#1-4-네트워크-sdk-지원-버전-범위))
+- 디버그 빌드 network security config 설정 제거
+- 캐시된 광고 단위 설정 즉시 로드
+- 광고 로딩 진단 로그 추가
+- Pangle 직접 사용 시 `pag-sdk` 최소 버전 안내 추가 ([시작하기](getting-started.md#네트워크-sdk-중복-예외-처리))
 
 ---
 
