@@ -1,6 +1,7 @@
 - 연동 가이드
   - [<i class="fa-brands fa-android"></i> Android SDK](#/android/)
   - [<i class="fa-brands fa-apple"></i> iOS SDK](#/ios/)
+  - [<i class="fa-solid fa-layer-group"></i> Flutter SDK (Beta)](#/flutter/)
   - [<i class="fa-solid fa-globe"></i> WEB](#/web/)
   - [<i class="fa-brands fa-google"></i> Google 수익화](#/google/)
 - [<i class="fa-solid fa-plug"></i> API 연동](#/api/ad-api)
