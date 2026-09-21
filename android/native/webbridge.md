@@ -276,12 +276,19 @@ window.NapMxBridgeCallback = {
 
 #### 주요 errorCode
 
-| errorCode | 발생 상황 |
-|-----------|-----------|
-| `-1` | `adUnitId`가 없거나 정수 형태가 아님 / 로드되지 않은 상태에서 `show*()` 호출 |
-| `-10` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 |
+| errorCode | errorMsg | 발생 상황 |
+|-----------|----------|-----------|
+| `-1` | `invalid adUnitId` / `ad is not ready. request first` | `adUnitId`가 없거나 정수 형태가 아님 / 로드되지 않은 상태에서 `show*()` 호출 |
+| `-10` | `unsupported format` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 |
+| `-20` | `no fill` | 송출할 광고가 없음 |
+| `-21` | `ad unit unavailable` | 광고 단위를 확정할 수 없음(설정에 없거나 설정 수신 타임아웃). 설정 확인 후 1회 재시도 권장 |
+| `-22` | `load timed out` | 로드 타임아웃 |
+| `-23` | `show failed` | 표시 실패 |
+| `-30` | `sdk error` | 그 외 SDK 오류 |
 
-그 외 값은 광고 네트워크가 반환한 오류 코드입니다.
+> **v2.3.0 이상**에서는 위 코드가 iOS와 동일합니다. 광고 네트워크가 반환한 원본 코드·메시지는
+> 같은 콜백 데이터의 `nativeErrorCode`·`nativeErrorMsg` 필드로 함께 전달됩니다.
+> v2.2.2 이하에서는 `-1`·`-10` 외의 값이 네트워크 원본 코드 그대로 전달됩니다.
 
 ---
 

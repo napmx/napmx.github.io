@@ -83,7 +83,7 @@ Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral(
 해당 어댑터 의존성에서 중복 모듈을 `exclude` 하세요.
 
 ```gradle
-implementation("io.github.nasmedia-tech:admixer-admanager:2.0.4") {
+implementation("io.github.nasmedia-tech:admixer-admanager:2.1.3") {
     exclude group: "com.google.android.gms", module: "play-services-ads"
 }
 ```

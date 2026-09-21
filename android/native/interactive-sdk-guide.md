@@ -56,7 +56,7 @@ AdMixer Interactive SDK는 30종 미니게임을 매체 Android 앱 안에서 �
 
 ```groovy
 dependencies {
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.09.03')
     implementation 'io.github.nasmedia-tech:admixer-ssp'
     implementation 'io.github.nasmedia-tech:admixer-interactive'   // 버전 생략 = BOM이 1.0.0-beta01 고정
 }
@@ -69,7 +69,7 @@ Nasmedia가 전달한 `admixer-interactive-release.aar`을 앱의 `libs`에 복�
 ```groovy
 dependencies {
     implementation files('libs/admixer-interactive-release.aar')
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.08.01')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.09.03')
     implementation 'io.github.nasmedia-tech:admixer-ssp'
 }
 ```
