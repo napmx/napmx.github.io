@@ -252,14 +252,36 @@ window.NapMxBridgeCallback = {
 }
 ```
 
-#### 주요 errorCode
+#### errorCode
 
-| errorCode | 발생 상황 |
-|-----------|-----------|
-| `-1` | `adUnitId`가 없거나 숫자로 변환할 수 없음 / 로드되지 않은 상태에서 `show*()` 호출 |
-| `-10` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 |
+`errorCode`는 iOS·Android 공통 값입니다. SDK 원본 오류는 `nativeErrorCode` / `nativeErrorMsg` 필드에 함께 전달되므로 로그·문의용으로만 사용하고, 분기는 `errorCode`로 하세요.
 
-그 외 값은 광고 네트워크가 반환한 오류 코드입니다.
+> ⚠️ `nativeErrorCode`는 플랫폼마다 출처가 다릅니다. iOS는 광고 네트워크 원본 코드(없으면 SDK 코드), Android는 항상 SDK 코드(`AX_ERR_*`)이며 네트워크 원본은 `nativeErrorMsg` 문자열 안에 있습니다. 이 값으로 분기하지 마세요.
+
+| errorCode | errorMsg | 발생 상황 | 권장 처리 |
+|-----------|----------|-----------|-----------|
+| `-1` | `invalid adUnitId` | `adUnitId`가 없거나 숫자로 변환할 수 없음 | 요청 파라미터 확인 |
+| `-1` | `ad is not ready. request first` | 로드되지 않은 상태에서 `show*()` 호출 | `*Loaded` 수신 후 `show*()` |
+| `-10` | `unsupported format` | 미지원 포맷(배너·네이티브·인라인 동영상) 요청 | 전체 화면 3종만 사용 |
+| `-20` | `no fill` | 모든 광고 네트워크에서 광고 없음 | 잠시 후 재요청 |
+| `-21` | `ad unit unavailable` | 광고 유닛을 확정할 수 없음 (서버 설정에 유닛 없음. Android는 설정 수신 실패 포함) | 유닛 설정 확인 후 1회 재시도 |
+| `-22` | `load timed out` | 로드 전체 시간 초과 | 재요청 |
+| `-23` | `show failed` | 로드된 광고의 표시 실패 | 재요청 |
+| `-30` | `sdk error` | 그 외 SDK 오류 | 로그 후 재요청 |
+
+```json
+{
+    "adUnitId": "ADUNIT_ID",
+    "adapterName": "",
+    "errorCode": -20,
+    "errorMsg": "no fill",
+    "timestamp": 1718089200000,
+    "nativeErrorCode": -4,
+    "nativeErrorMsg": "Invalid network"
+}
+```
+
+> ⚠️ 통일 errorCode는 **iOS 코어 SDK v2.5.0 이상**에서 전달됩니다. v2.4.5·v2.4.6의 브릿지는 SDK 원본 코드를 `errorCode`에 그대로 전달하므로, 앱의 SDK 버전을 v2.5.0 이상으로 맞추세요.
 
 ---
 
