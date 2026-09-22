@@ -95,6 +95,25 @@ dependencies {
 
 GMA NextGen은 Android API 24 이상이 필요하며 classic Google Mobile Ads와 함께 사용할 수 없습니다. 선택했다면 [Android 시작 가이드](/android/native/getting-started)의 exclude 설정도 적용하세요.
 
+`admixer-admanager`를 사용한다면 `play-services-ads`를 25.2.0으로 고정하세요. 25.3.0 이상은 호환되지 않습니다. Flutter 앱은 다른 광고·분석 플러그인이 같은 아티팩트를 전이 의존으로 함께 끌어오는 경우가 많고, Gradle은 그중 가장 높은 버전을 선택하므로 고정하지 않으면 상한을 넘긴 버전으로 해석될 수 있습니다.
+
+```kotlin
+// android/app/build.gradle.kts — admixer-admanager를 사용할 때만 적용합니다.
+configurations.configureEach {
+    resolutionStrategy {
+        force("com.google.android.gms:play-services-ads:25.2.0")
+    }
+}
+```
+
+실제로 어떤 버전이 선택됐는지는 아래로 확인합니다.
+
+```bash
+cd android
+# 뒤에 콜론을 붙여야 play-services-ads-identifier 가 함께 걸리지 않습니다.
+./gradlew :app:dependencies --configuration releaseRuntimeClasspath | grep "play-services-ads:"
+```
+
 AdFit, Pangle, Teads를 사용할 때만 해당 Maven 저장소를 추가합니다.
 
 ```kotlin
