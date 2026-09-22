@@ -172,8 +172,10 @@ Future<void> showRewarded(String adUnitId) async {
     adUnitId: adUnitId,
   );
 
-  // show()는 표시 성공 시 완료되므로 closed까지 구독을 유지합니다.
-  final closed = Completer<void>();
+  // show()는 표시 성공 시 완료되므로 구독을 계속 유지합니다.
+  // 보상과 닫힘의 도착 순서는 네이티브 SDK가 보장하지 않으므로, closed를 받자마자
+  // dispose하면 뒤늦게 도착하는 보상을 놓칠 수 있습니다.
+  final finished = Completer<void>();
   final subscription = rewarded.events.listen((event) {
     if (event.type == NapMxEventType.rewarded && event.reward != null) {
       final transactionId = event.reward!.transactionId;
@@ -182,25 +184,35 @@ Future<void> showRewarded(String adUnitId) async {
         // 앱 메모리 Set만으로는 재실행·다중 기기의 중복 지급을 막지 못합니다.
         unawaited(rewardRepository.grantOnce(transactionId));
       }
+      // 보상을 받았으면 더 기다릴 이유가 없습니다.
+      if (!finished.isCompleted) finished.complete();
     }
 
-    if ((event.type == NapMxEventType.closed ||
-            event.type == NapMxEventType.showFailed) &&
-        !closed.isCompleted) {
-      closed.complete();
+    // 표시 자체가 실패하면 보상도 닫힘도 오지 않습니다.
+    if (event.type == NapMxEventType.showFailed && !finished.isCompleted) {
+      finished.complete();
+    }
+
+    // 닫힘이 먼저 왔다면 보상이 뒤따를 수 있으므로 짧게 기다렸다가 정리합니다.
+    if (event.type == NapMxEventType.closed && !finished.isCompleted) {
+      Future<void>.delayed(const Duration(seconds: 2), () {
+        if (!finished.isCompleted) finished.complete();
+      });
     }
   });
 
   try {
     await rewarded.load();
     await rewarded.show();
-    await closed.future;
+    await finished.future;
   } finally {
     await subscription.cancel();
     await rewarded.dispose();
   }
 }
 ```
+
+보상 조건을 채우지 못한 사용자는 닫힘만 받습니다. 이때는 위 유예 시간이 지난 뒤 정리되며 지급은 일어나지 않습니다. 플러그인도 닫힘 이후 잠시 네이티브 광고를 유지하지만, 앱이 먼저 `dispose()`하면 그 유예가 끊기므로 위 순서를 지켜야 합니다. 지급 누락을 완전히 막아야 한다면 S2S Reward Callback을 함께 사용하고 `transaction_id`를 최종 기준으로 삼으세요. (플러그인 `v0.1.2` 이상)
 
 ### S2S 리워드 검증
 
@@ -209,7 +221,7 @@ S2S Reward Callback을 사용하면 nap mx 서버가 매체 서버의 등록된 
 - Android 등록·파라미터·재시도 정책: [Android 리워드 S2S 가이드](/android/native/rewarded-video?id=s2s-reward-callback-서버-간-리워드-검증)
 - iOS 등록·파라미터: [iOS 리워드 S2S 가이드](/ios/native/rewarded-video?id=s2s-reward-callback-선택사항)
 
-Android에서는 필요한 경우 요청별 값을 `customParams`로 전달할 수 있습니다. `transaction_id`는 SDK 예약 키이므로 직접 덮어쓰지 마세요. iOS 플러그인은 현재 이 맵을 사용하지 않으므로 공통 로직이 이 값에 의존해서는 안 됩니다.
+필요한 경우 요청별 값을 `customParams`로 전달할 수 있습니다. `transaction_id`는 SDK 예약 키이므로 직접 덮어쓰지 마세요. Android는 전면·아웃스트림·리워드 모두에 전달하고, iOS는 네이티브 SDK가 리워드에만 이 값을 받으므로 전면과 아웃스트림에서는 전달되지 않습니다. 따라서 리워드 이외의 포맷에서는 이 값에 의존하지 마세요.
 
 ```dart
 await rewarded.load(

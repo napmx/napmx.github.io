@@ -32,7 +32,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.1 # 검증된 태그를 고정합니다.
+      ref: v0.1.2 # 검증된 태그를 고정합니다.
 ```
 
 ```bash

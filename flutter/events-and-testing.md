@@ -95,7 +95,7 @@ Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-cod
 Sample은 플러그인의 공개 API만 사용하며 Mock 광고를 사용하지 않습니다. 테스트 설정이 비어 있으면 요청 버튼을 막습니다.
 
 ```bash
-git clone --branch v0.1.1 --depth 1 \
+git clone --branch v0.1.2 --depth 1 \
   https://github.com/Nasmedia-Tech/nap_mx_flutter.git
 cd nap_mx_flutter/example
 

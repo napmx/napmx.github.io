@@ -1,13 +1,13 @@
 # Flutter SDK (Beta)
 
-> 🧪 **초기 공개 Beta** · 플러그인 `v0.1.1` · Android/iOS 빌드 검증 완료
+> 🧪 **초기 공개 Beta** · 플러그인 `v0.1.2` · Android/iOS 빌드 검증 완료
 
 `nap_mx_flutter`는 Flutter 앱에서 nap mx Android·iOS 네이티브 SDK를 같은 Dart API로 사용하는 공개 플러그인입니다.
 
 - 공개 저장소: [Nasmedia-Tech/nap_mx_flutter](https://github.com/Nasmedia-Tech/nap_mx_flutter)
-- 검증된 릴리스: [`v0.1.1`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.1)
-- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.1/example)
-- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.1/doc/integration-guide.md)
+- 검증된 릴리스: [`v0.1.2`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.2)
+- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.2/example)
+- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.2/doc/integration-guide.md)
 
 ## 지원 포맷
 
@@ -69,7 +69,7 @@
 
 ## 현재 제한사항
 
-- `pub.dev`에는 아직 배포하지 않았습니다. 브랜치가 아닌 `v0.1.1` 태그로 설치하세요.
+- `pub.dev`에는 아직 배포하지 않았습니다. 브랜치가 아닌 `v0.1.2` 태그로 설치하세요.
 - 공개 범용 테스트 Media Key/AdUnit ID가 없습니다. 운영 담당자를 통해 별도 테스트 지면을 발급받아야 합니다.
 - CI는 정적 분석, 단위 테스트, Android debug/release, iOS Simulator 빌드를 검증합니다. 실제 노출·클릭·보상 성공을 뜻하지 않습니다.
 - Android `testMode`에 대응하는 iOS 전역 API가 없어 iOS에서 `true`를 전달하면 명시적으로 실패합니다.
