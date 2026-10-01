@@ -39,6 +39,12 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 
 지원 포맷·네트워크 구성은 Android와 다를 수 있습니다. [iOS SDK 시작하기](/ios/native/getting-started)를 참고하시거나 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요.
 
+### Flutter SDK (Beta)
+
+Android와 iOS 네이티브 SDK를 하나의 타입 기반 Dart API로 연결합니다. 배너·전면·네이티브·인스트림/아웃스트림 동영상·리워드를 지원하며, 현재는 `pub.dev`가 아닌 검증된 Git 태그로 설치합니다.
+
+> Flutter 지원은 초기 공개 Beta입니다. 플러그인·Sample 앱 빌드는 검증했지만, 실제 광고 응답은 발급받은 테스트 지면과 Android/iOS 실기기에서 별도로 확인해야 합니다. [Flutter SDK 지원 범위](/flutter/)에서 미지원·미검증 항목을 확인하세요.
+
 ### M.Web
 
 | 광고 포맷 | 지원 네트워크 |
@@ -59,5 +65,6 @@ nap mx에서 지원하는 연동 방식 및 광고 포맷에 대한 공식 가�
 
 - [Android SDK 시작하기](/android/native/getting-started)
 - [iOS SDK 시작하기](/ios/native/getting-started)
+- [Flutter SDK (Beta) 시작하기](/flutter/getting-started)
 - [Android Unity 시작하기](/android/unity/getting-started)
 - [iOS Unity 시작하기](/ios/unity/getting-started)

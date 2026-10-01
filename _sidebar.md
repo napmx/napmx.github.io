@@ -64,6 +64,12 @@
     - [리워드 동영상 - Unity](/ios/unity/rewarded-video)
     - [동영상 - Unity](/ios/unity/video)
 
+- **<i class="fa-solid fa-layer-group nav-icon icon-flutter"></i> Flutter SDK (Beta)**
+  - [개요 및 지원 범위](/flutter/)
+  - [설치와 초기화](/flutter/getting-started)
+  - [광고 구현](/flutter/ad-formats)
+  - [이벤트·오류·테스트](/flutter/events-and-testing)
+
 - **<i class="fa-solid fa-globe nav-icon icon-web"></i> WEB**
   - [개요](/web/)
   - [WEB Script 연동](/web/script)
