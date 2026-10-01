@@ -2,6 +2,36 @@
 
 ---
 
+## v2.3.1 (2026-10-01)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.01`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.3.1** |
+> | `admixer-admanager` | **2.1.4** |
+> | `admixer-gma-nextgen` · `admixer-teads` | **2.1.3** |
+> | `admixer-applovin` | **2.0.6** |
+> | `admixer-compose` | **2.0.3** |
+> | 🧪 `admixer-interactive` | **1.0.0-beta02** |
+> | `admixer-bom` | **2026.10.01** |
+> | `admixer-naveradmanager` 2.1.3 · `admixer-pangle` 2.1.2 · `admixer-adfit` 2.0.6 · `admixer-unity` 2.0.6 · `admixer-unity-nativeadlayout` 2.0.0 | 변경 없음 |
+>
+> 어댑터는 코어 **2.3.0 이상**과 함께 사용하세요.
+
+### 동작 변경 (확인 권장)
+
+- **인라인 광고(배너·네이티브·비디오) 노출 실패를 `AdListener`로 전달**
+- **AppLovin 리워드 서버 검증 거부 시 보상 미지급**
+
+### 🧪 Interactive (1.0.0-beta02)
+
+- 미니게임 30종 플레이 재설계 ([Interactive 가이드](interactive-sdk-guide.md))
+
+안정성을 개선했습니다.
+
+---
+
 ## v2.3.0 (2026-09-21)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.09.03`입니다.
