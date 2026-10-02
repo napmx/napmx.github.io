@@ -2,6 +2,26 @@
 
 ---
 
+## v2.3.2 (2026-10-02)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.02`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.3.2** |
+> | `admixer-admanager` | **2.1.5** |
+> | `admixer-naveradmanager` · `admixer-gma-nextgen` | **2.1.4** |
+> | `admixer-bom` | **2026.10.02** |
+> | `admixer-teads` 2.1.3 · `admixer-pangle` 2.1.2 · `admixer-applovin` 2.0.6 · `admixer-adfit` 2.0.6 · `admixer-unity` 2.0.6 · `admixer-unity-nativeadlayout` 2.0.0 · `admixer-compose` 2.0.3 · 🧪 `admixer-interactive` 1.0.0-beta02 | 변경 없음 |
+>
+> 어댑터는 코어 **2.3.0 이상**과 함께 사용하세요.
+
+### 크래시 수정 (업데이트 권장)
+
+- **Android 6.0~7.1 기기에서 앱 실행 직후 크래시 수정** (`play-services-ads-identifier` 18.2.0 결함)
+
+---
+
 ## v2.3.1 (2026-10-01)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.01`입니다.

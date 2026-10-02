@@ -64,7 +64,7 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.10.01')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.10.02')
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
@@ -93,22 +93,22 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.3.1'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.3.2'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
-    implementation 'io.github.nasmedia-tech:admixer-admanager:2.1.4'       // Google AdManager (play-services-ads:25.2.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-admanager:2.1.5'       // Google AdManager (play-services-ads:25.2.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-adfit:2.0.6'           // Kakao Adfit (ads-base:3.21.17 포함)
     implementation 'io.github.nasmedia-tech:admixer-pangle:2.1.2'          // Pangle (pag-sdk:8.0.0.5 포함)
     implementation 'io.github.nasmedia-tech:admixer-applovin:2.0.6'        // AppLovin (applovin-sdk:13.6.3 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity:2.0.6'           // Unity Ads (unity-ads:4.18.1 포함)
-    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.1.3'  // Naver Ad Manager (nam-bom:8.16.0 포함)
+    implementation 'io.github.nasmedia-tech:admixer-naveradmanager:2.1.4'  // Naver Ad Manager (nam-bom:8.16.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-teads:2.1.3'           // Teads (teads-sdk:6.2.0 포함)
     implementation 'io.github.nasmedia-tech:admixer-unity-nativeadlayout:2.0.0'  // Unity 네이티브 레이아웃 헬퍼 (선택 — admixer-unity와 함께, 직접 NativeAdViewBinder 레이아웃 구성 시 불필요)
 
     // 🧪 (beta) — Google Mobile Ads NextGen SDK (ads-mobile-sdk:1.2.1 포함). admixer-admanager와 택1
-    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.3'
+    // implementation 'io.github.nasmedia-tech:admixer-gma-nextgen:2.1.4'
 }
 ```
 
@@ -394,7 +394,7 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 ```gradle
 dependencies {
     // 이미 Google AdManager SDK를 직접 사용 중인 경우
-    implementation("io.github.nasmedia-tech:admixer-admanager:2.1.4") {
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.1.5") {
         exclude group: "com.google.android.gms", module: "play-services-ads"
     }
 
