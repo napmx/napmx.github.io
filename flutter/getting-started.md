@@ -22,7 +22,7 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 ## 2. 플러그인 설치
 
-현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `main` 브랜치 대신 검증된 태그를 지정합니다.
+현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 AGP 호환 수정과 CI 검증이 완료된 커밋을 고정합니다. 기존 `v0.1.2` 태그에는 이 수정이 포함되지 않습니다.
 
 ```yaml
 # pubspec.yaml
@@ -32,7 +32,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.2 # 검증된 태그를 고정합니다.
+      ref: 5b072c5836cbc384938b09daf83cf7e912c6a78a # AGP 호환 수정 검증 커밋
 ```
 
 ```bash
@@ -70,6 +70,32 @@ const rewardedId = String.fromEnvironment('NAP_MX_REWARDED_ID');
 `--dart-define`은 공개 저장소 커밋을 막는 방법이지 서버 비밀 저장소가 아닙니다. 앱 바이너리에 포함되는 값은 추출될 수 있으므로 관리 API 토큰, 서명키 등은 넣지 마세요.
 
 ## 4. Android 설정
+
+AGP 호환 수정 버전의 기준은 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**입니다. 플러그인 자체는 AGP·Kotlin 버전을 고정하지 않으며 호스트의 설정을 사용합니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전은 해당 AGP가 요구하는 Gradle 버전을 맞추세요.
+
+AGP 8 호스트의 `android/settings.gradle.kts`에서 Kotlin 플러그인 버전을 선언합니다. Flutter 로더와 기존 AGP 선언은 유지하세요.
+
+```kotlin
+plugins {
+    // 기존 Flutter 로더·AGP 선언과 함께 추가합니다.
+    id("org.jetbrains.kotlin.android") version "2.2.10" apply false
+}
+```
+
+앱 모듈에서는 Android 플러그인 다음, Flutter 플러그인 전에 Kotlin 플러그인을 적용합니다.
+
+```kotlin
+// android/app/build.gradle.kts
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("dev.flutter.flutter-gradle-plugin")
+}
+```
+
+플러그인 모듈에는 호스트의 Kotlin 플러그인이 자동 적용되므로 로컬 복사본을 수정할 필요가 없습니다. `admixer-ssp:2.3.0`의 stdlib 의존성은 2.2.10이며 Kotlin 컴파일러 2.1.0에서도 빌드를 검증했습니다. stdlib를 컴파일러 버전에 맞춰 강제로 낮추지 마세요.
+
+AGP 9에서 내장 Kotlin을 끈 호스트(`android.builtInKotlin=false`)도 위 Kotlin 플러그인 설정이 필요합니다. Flutter 3.44에서는 `android.newDsl=false`도 유지하세요. 내장 Kotlin을 켠 AGP 9 호스트에는 별도 Kotlin Android 플러그인을 적용하지 않습니다. Flutter 앱의 내장 Kotlin 연동은 Flutter 3.47 이상이 필요합니다. [Flutter 공식 가이드](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors)를 참고하세요.
 
 플러그인이 nap mx Core를 가져옵니다. 매체 앱은 사용하는 네트워크 어댑터만 추가합니다.
 

@@ -208,18 +208,18 @@ dependencyResolutionManagement {
 
 ### 1-5. Kotlin 툴체인 요구사항
 
-일부 네트워크 SDK는 최신 Kotlin 런타임(`kotlin-stdlib`)을 전이 의존으로 포함합니다. 아래 어댑터를 추가하는 경우 **호스트 앱을 Kotlin 2.0 이상(권장 2.1+)으로 빌드**하세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
+코어 `admixer-ssp:2.3.0`은 `kotlin-stdlib:2.2.10`을 전이 의존으로 포함합니다. Kotlin 컴파일러와 stdlib 버전은 별개이며, 의존성 버전만으로 최소 컴파일러를 단정할 수 없습니다. 현재 Flutter 플러그인에서는 **AGP 8.10.1 / Java 17 / Kotlin 2.1.0 및 2.2.10** 조합으로 debug/release 빌드(R8 포함)를 검증했습니다. Kotlin 2.2.10을 권장하며 stdlib를 구버전으로 강제 낮추지 마세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
 
-| 사용 구성 | 매체 앱 최소 Kotlin | 근거 |
+| 사용 구성 | Kotlin 확인 기준 | 근거 |
 |---|---|---|
-| **코어(`admixer-ssp`)만** | Kotlin 1.8+ / **Java-only 가능** | 코어는 낮은 stdlib만 요구 |
+| **코어(`admixer-ssp:2.3.0`)만** | Kotlin 2.1.0·2.2.10 빌드 검증(Flutter 호스트) | stdlib 2.2.10 의존. Kotlin 1.8 호환은 이번 검증에 포함되지 않음 |
 | + Google AdManager | **Kotlin 2.1+** | GMA가 최소 Kotlin 2.1.0 요구 |
-| + Kakao Adfit | **Kotlin 2.0+** | ads-base가 stdlib 2.0.x + coroutines 유입 |
+| + Kakao Adfit | 코어 기준과 AdFit 요구사항 함께 확인 | AdFit의 stdlib 2.0.x + coroutines 요구가 코어 2.3.0의 의존성을 낮추지는 않음 |
 | + Naver Ad Manager | **Kotlin 2.1+** | GFP SDK(Kotlin 기반) |
 | + 🧪 GMA NextGen **(beta)** | **Kotlin 2.1+** | GMA 계열과 동일 |
-| + Pangle / AppLovin / Unity / Teads | 영향 없음 | 모두 Java 기반, Kotlin 미강제 |
+| + Pangle / AppLovin / Unity / Teads | 코어 기준과 각 벤더 요구사항 함께 확인 | 어댑터 추가 여부와 별개로 코어의 stdlib 의존성 유지 |
 
-> ℹ️ Java 8/11/17 모두 무방합니다. 코어만 임베드하는 앱의 지원 범위(Kotlin 1.8+/Java-only)는 변하지 않습니다. 위 상승은 각 네트워크 SDK 벤더가 요구하는 최소치이며 SDK가 추가로 강제한 것이 아닙니다.
+> ℹ️ 위 Flutter 빌드 검증을 네이티브 Java-only 앱이나 모든 AGP·Java 버전의 호환 보장으로 해석하지 마세요. 네이티브 호스트 및 선택 어댑터 조합은 해당 SDK 요구사항에 맞춰 별도 검증해야 합니다. Flutter 플러그인의 설정과 검증 범위는 [Flutter 설치 가이드](/flutter/getting-started?id=4-android-설정)를 참고하세요.
 
 ### 1-6. Android 15 · 16KB 페이지 크기
 
