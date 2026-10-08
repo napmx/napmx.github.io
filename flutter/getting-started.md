@@ -22,7 +22,7 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 ## 2. 플러그인 설치
 
-현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 AGP 호환 수정과 CI 검증이 완료된 커밋을 고정합니다. 기존 `v0.1.2` 태그에는 이 수정이 포함되지 않습니다.
+현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.3` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
 
 ```yaml
 # pubspec.yaml
@@ -32,7 +32,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: 5b072c5836cbc384938b09daf83cf7e912c6a78a # AGP 호환 수정 검증 커밋
+      ref: v0.1.3
 ```
 
 ```bash
@@ -71,7 +71,7 @@ const rewardedId = String.fromEnvironment('NAP_MX_REWARDED_ID');
 
 ## 4. Android 설정
 
-AGP 호환 수정 버전의 기준은 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**입니다. 플러그인 자체는 AGP·Kotlin 버전을 고정하지 않으며 호스트의 설정을 사용합니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전은 해당 AGP가 요구하는 Gradle 버전을 맞추세요.
+`v0.1.3`의 기준은 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**입니다. 플러그인 자체는 AGP·Kotlin 버전을 고정하지 않으며 호스트의 설정을 사용합니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전은 해당 AGP가 요구하는 Gradle 버전을 맞추세요.
 
 AGP 8 호스트의 `android/settings.gradle.kts`에서 Kotlin 플러그인 버전을 선언합니다. Flutter 로더와 기존 AGP 선언은 유지하세요.
 

@@ -95,10 +95,9 @@ Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-cod
 Sample은 플러그인의 공개 API만 사용하며 Mock 광고를 사용하지 않습니다. 테스트 설정이 비어 있으면 요청 버튼을 막습니다.
 
 ```bash
-git clone https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-cd nap_mx_flutter
-git checkout 5b072c5836cbc384938b09daf83cf7e912c6a78a
-cd example
+git clone --branch v0.1.3 --depth 1 \
+  https://github.com/Nasmedia-Tech/nap_mx_flutter.git
+cd nap_mx_flutter/example
 
 # macOS/Linux
 cp config/example.json config/local.json
@@ -160,7 +159,7 @@ flutter build ios --simulator --no-codesign
 
 최신 결과는 [GitHub Actions](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions)에서 확인할 수 있습니다.
 
-위 결과는 AGP 호환 수정 커밋 `5b072c5`의 [CI 실행 결과](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions/runs/37746974613)를 기준으로 합니다(Flutter 3.44.9 / Gradle 8.11.1). 기존 `v0.1.2` 태그에 대한 AGP 8 검증 결과가 아닙니다.
+`v0.1.3`에 포함된 AGP 호환 구현은 [CI 실행 결과](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions/runs/37746974613)에서 위 조합으로 검증했습니다(Flutter 3.44.9 / Gradle 8.11.1). 릴리스별 최신 빌드 결과는 위 GitHub Actions 링크에서 확인하세요.
 
 AGP 9.0.1 / Gradle 9.1.0에서는 Flutter embedding을 제공한 독립 Android 호스트로 다음 조합의 플러그인 debug/release AAR 및 단위 테스트를 검증했습니다.
 
