@@ -114,11 +114,11 @@ cd android
 ./gradlew :app:dependencies --configuration releaseRuntimeClasspath | grep "play-services-ads:"
 ```
 
-AdFit, Pangle, Teads를 사용할 때만 해당 Maven 저장소를 추가합니다.
+AdFit, Pangle, Teads를 사용할 때만 `android/build.gradle.kts`의 `allprojects` 블록에 해당 Maven 저장소를 추가합니다. 기본 Flutter 템플릿은 이 블록에서 저장소를 선언하므로, `settings.gradle.kts`의 `dependencyResolutionManagement`에 추가한 저장소는 사용되지 않습니다.
 
 ```kotlin
-// android/settings.gradle.kts
-dependencyResolutionManagement {
+// android/build.gradle.kts
+allprojects {
     repositories {
         google()
         mavenCentral()
