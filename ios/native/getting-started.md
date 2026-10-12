@@ -118,9 +118,6 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 | Pod | 네트워크 |
 |-----|---------|
 | `GoogleMobileAdsMediationPangle` | Pangle |
-| `GoogleMobileAdsMediationFacebook` | Meta |
-| `GoogleMobileAdsMediationAppLovin` | AppLovin |
-| `GoogleMobileAdsMediationUnity` | Unity Ads |
 | `GoogleMobileAdsMediationVungle` | Liftoff Monetize |
 | `GoogleMobileAdsMediationMintegral` | Mintegral |
 | `GoogleMobileAdsMediationFyber` | DT Exchange |
