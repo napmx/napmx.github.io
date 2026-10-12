@@ -161,10 +161,13 @@ dependencies {
     implementation("com.google.ads.mediation:vungle:7.7.4.1")     // Liftoff Monetize
     implementation("com.google.ads.mediation:facebook:6.21.0.3")  // Meta Audience Network
     implementation("com.google.ads.mediation:moloco:4.8.1.0")
+    implementation("com.unity3d.ads:unity-ads:4.18.0")            // Unity Ads SDK — 어댑터에 포함되지 않아 함께 추가
     implementation("com.google.ads.mediation:unity:4.18.0.0")
     implementation("com.google.ads.mediation:mintegral:17.1.61.0")
 }
 ```
+
+Unity Ads 어댑터는 다른 어댑터와 달리 Unity Ads SDK(`unity-ads`)를 의존성으로 끌어오지 않습니다. `admixer-unity`를 쓰지 않는다면 반드시 `unity-ads`를 직접 추가하세요. 빠뜨리면 빌드는 성공하지만 런타임에 Unity 입찰 어댑터가 초기화되지 않습니다.
 
 위 버전은 2026-10-12 Google Maven 기준으로, 각 광고 소스에서 `play-services-ads` 25.2.0 이하를 요구하는 가장 최신 버전입니다. Pangle은 `admixer-pangle`과 같은 `pag-sdk` 8.0.0.5를 사용합니다. AppLovin·Unity Ads는 nap mx 어댑터와 함께 쓰면 SDK가 각각 13.6.3·4.18.1로 해석되므로 실기기 확인 결과를 운영 담당자와 공유하세요.
 
@@ -276,7 +279,7 @@ override func application(
 
 1. Debug Options Menu를 열 수 있는 테스트 앱을 빌드합니다.
 2. 테스트 앱을 운영 담당자에게 전달합니다.
-3. 운영 담당자가 테스트 기기에서 메뉴를 열고 광고를 요청해 입찰 광고 소스와 어댑터 상태를 확인합니다.
+3. 운영 담당자가 테스트 기기에서 메뉴를 열고 광고를 요청해 입찰 광고 소스와 어댑터 상태를 확인합니다. 어댑터별 초기화 상태와 SDK 버전은 메뉴에서 **Open ad inspector**를 선택한 뒤 **Adapters** 탭에서 확인합니다. ad inspector는 테스트 기기로 등록된 기기에서만 열립니다. ([Android](https://developers.google.com/ad-manager/mobile-ads-sdk/android/ad-inspector/launch-ad-inspector), [iOS](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/ad-inspector/launch-ad-inspector))
 
 운영 빌드에서는 디버그 메뉴 진입점을 노출하지 마세요.
 
