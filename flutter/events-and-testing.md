@@ -176,6 +176,7 @@ AGP 9 결과는 Flutter 3.47 앱 전체 빌드나 광고 실기기 동작 검증
 - [ ] 운영 ID, 인증서, 서명키가 Git과 로그에 노출되지 않았다.
 - [ ] 실제 사용하는 선택 어댑터만 설치했다.
 - [ ] 네트워크별 App ID와 iOS 네이티브 초기화를 완료했다.
+- [ ] Google을 사용한다면 입찰 광고 소스를 호환 버전으로 추가하고(Unity Ads는 `unity-ads` SDK 포함), Debug Options Menu → Open ad inspector → Adapters 탭에서 어댑터 초기화 상태를 확인했다.
 - [ ] 개인정보 선택을 SDK/네트워크 초기화보다 먼저 확정했다.
 - [ ] ATT 요청 여부·문구·호출 시점을 앱 정책에 맞게 결정했다.
 - [ ] Privacy Manifest, SKAdNetwork와 스토어 개인정보 항목을 검토했다.

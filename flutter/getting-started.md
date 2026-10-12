@@ -140,11 +140,11 @@ cd android
 ./gradlew :app:dependencies --configuration releaseRuntimeClasspath | grep "play-services-ads:"
 ```
 
-AdFit, Pangle, Teads를 사용할 때만 해당 Maven 저장소를 추가합니다.
+AdFit, Pangle, Teads를 사용할 때만 `android/build.gradle.kts`의 `allprojects` 블록에 해당 Maven 저장소를 추가합니다. 기본 Flutter 템플릿은 이 블록에서 저장소를 선언하므로, `settings.gradle.kts`의 `dependencyResolutionManagement`에 추가한 저장소는 사용되지 않습니다.
 
 ```kotlin
-// android/settings.gradle.kts
-dependencyResolutionManagement {
+// android/build.gradle.kts
+allprojects {
     repositories {
         google()
         mavenCentral()
@@ -170,6 +170,48 @@ Google Ad Manager를 사용한다면 발급받은 App ID를 `<application>` 안�
 ```
 
 선택 네트워크가 요구하는 권한·Manifest 항목과 R8 규칙은 [Android 네이티브 가이드](/android/native/getting-started)를 함께 적용합니다. 플러그인의 consumer 규칙은 자동 병합됩니다.
+
+### Google SDK 입찰 광고 소스 (Android)
+
+`admixer-admanager`를 사용한다면 Google SDK 입찰 광고 소스 어댑터를 함께 추가해야 최적 수익화가 가능합니다. 대상 광고 소스는 [Android 네이티브 가이드](/android/native/getting-started)의 "Google SDK 입찰 광고 소스 설정"과 같습니다. Dart 코드나 `NapMxConfiguration` 설정은 필요 없고 호스트 앱의 Gradle 의존성만 추가합니다.
+
+위에서 `play-services-ads`를 25.2.0으로 고정했으므로 어댑터도 **25.2.0 이하를 요구하는 버전**으로 명시합니다. 최신 어댑터는 25.3.0 이상을 기대하는데 `force`가 25.2.0으로 낮춰, 빌드는 성공해도 런타임에 입찰이 실패할 수 있습니다.
+
+```kotlin
+// android/app/build.gradle.kts — play-services-ads 25.2.0 호환 버전
+dependencies {
+    implementation("com.google.ads.mediation:pangle:8.0.0.5.0")
+    implementation("com.google.ads.mediation:applovin:13.6.2.0")
+    implementation("com.google.ads.mediation:fyber:8.4.5.0")      // DT Exchange
+    implementation("com.google.ads.mediation:inmobi:11.3.0.0")
+    implementation("com.google.ads.mediation:vungle:7.7.4.1")     // Liftoff Monetize
+    implementation("com.google.ads.mediation:facebook:6.21.0.3")  // Meta Audience Network
+    implementation("com.google.ads.mediation:moloco:4.8.1.0")
+    implementation("com.unity3d.ads:unity-ads:4.18.0")            // Unity Ads SDK — 어댑터에 포함되지 않아 함께 추가
+    implementation("com.google.ads.mediation:unity:4.18.0.0")
+    implementation("com.google.ads.mediation:mintegral:17.1.61.0")
+}
+```
+
+Unity Ads 어댑터는 다른 어댑터와 달리 Unity Ads SDK(`unity-ads`)를 의존성으로 끌어오지 않습니다. `admixer-unity`를 쓰지 않는다면 반드시 `unity-ads`를 직접 추가하세요. 빠뜨리면 빌드는 성공하지만 런타임에 Unity 입찰 어댑터가 초기화되지 않습니다.
+
+위 버전은 2026-10-12 Google Maven 기준으로, 각 광고 소스에서 `play-services-ads` 25.2.0 이하를 요구하는 가장 최신 버전입니다. Pangle은 `admixer-pangle`과 같은 `pag-sdk` 8.0.0.5를 사용합니다. AppLovin·Unity Ads는 nap mx 어댑터와 함께 쓰면 SDK가 각각 13.6.3·4.18.1로 해석되므로 실기기 확인 결과를 운영 담당자와 공유하세요.
+
+Pangle과 Mintegral은 별도 Maven 저장소가 필요합니다. Pangle 저장소는 `admixer-pangle`을 쓰지 않아도 입찰 광고 소스만으로 필요합니다. 위 저장소 설정과 같이 `android/build.gradle.kts`의 `allprojects` 블록에 추가합니다.
+
+```kotlin
+// android/build.gradle.kts
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://artifact.bytedance.com/repository/pangle/")                         // Pangle
+        maven("https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea") // Mintegral
+    }
+}
+```
+
+입찰 어댑터를 위한 별도 초기화 코드는 추가하지 않습니다. 적용 후 위 `dependencies` 명령으로 `play-services-ads`가 25.2.0으로 해석되는지 다시 확인하세요.
 
 ## 5. iOS 설정
 
@@ -206,6 +248,66 @@ iOS 선택 네트워크는 `AppDelegate` 또는 활성 `SceneDelegate`에서 별
 4. Flutter에서 `NapMx.initialize`를 호출합니다.
 
 플러그인의 `mediation` 맵은 Android 전용이며 iOS 네트워크 초기화를 대신하지 않습니다. iOS에서 비어 있지 않은 맵을 전달하면 `mediation_configuration_unsupported` 오류를 반환합니다.
+
+### Google SDK 입찰 광고 소스 (iOS)
+
+`AdMixerMediationGAM`을 사용한다면 Google SDK 입찰 광고 소스 어댑터를 함께 추가합니다. 대상 광고 소스, SPM Repository URL과 고정 버전은 [iOS 네이티브 가이드](/ios/native/getting-started)의 "1-3. Google 네트워크 - SDK 입찰 광고 소스 설정"과 같습니다. 호스트 앱의 `ios/` 프로젝트에만 추가하며, SPM과 CocoaPods에 같은 어댑터를 중복 연결하지 마세요.
+
+```ruby
+# ios/Podfile — Runner 타깃
+pod 'AdMixerMediationGAM'
+
+pod 'GoogleMobileAdsMediationPangle'     # nap mx Pangle 사용 시 '7.9.0.6.0'으로 고정
+pod 'GoogleMobileAdsMediationAppLovin'   # nap mx AppLovin 사용 시 '13.5.1.0'으로 고정
+pod 'GoogleMobileAdsMediationFacebook'   # Meta
+pod 'GoogleMobileAdsMediationVungle'     # Liftoff Monetize
+pod 'GoogleMobileAdsMediationMintegral'
+pod 'GoogleMobileAdsMediationFyber'      # DT Exchange
+pod 'GoogleMobileAdsMediationInMobi'
+pod 'GoogleMobileAdsMediationMoloco'
+pod 'GoogleMobileAdsMediationUnity'      # nap mx Unity Ads 사용 시 추가하지 않음
+```
+
+SPM 프로젝트는 `ios/Runner.xcworkspace`에서 **File > Add Package Dependencies**로 iOS 네이티브 가이드 표의 Repository URL을 `Runner` 타깃에 추가합니다.
+
+| 조건 | 입찰 어댑터 | CocoaPods | SPM |
+|---|---|---|---|
+| nap mx Pangle도 사용 | Pangle | `7.9.0.6.0` | `7.9.600` |
+| nap mx AppLovin도 사용 | AppLovin | `13.5.1.0` | `13.5.100` |
+| nap mx Unity Ads도 사용 | Unity Ads | 추가하지 않음 | 추가하지 않음 |
+
+nap mx 어댑터가 Pangle `Ads-Global`을 8.2.2 미만, `AppLovinSDK`를 13.5.2 미만으로 제한하므로 최신 입찰 어댑터를 그대로 쓰면 `pod install` 또는 패키지 해석이 실패합니다. 해석이 실패하면 버전을 임의로 올리지 말고 운영 담당자에게 문의하세요.
+
+iOS는 앱이 Google Mobile Ads SDK를 직접 시작해야 입찰 어댑터도 초기화됩니다. 개인정보 신호 설정 뒤, Flutter의 `NapMx.initialize`보다 먼저 호출합니다.
+
+```swift
+// ios/Runner/AppDelegate.swift
+import GoogleMobileAds
+
+override func application(
+  _ application: UIApplication,
+  didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+) -> Bool {
+  // AMMediation.shared.setConsent(consent)를 사용한다면 이 줄보다 먼저 호출합니다.
+  MobileAds.shared.start()
+  return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+}
+```
+
+### Google 입찰 어댑터 작동 확인
+
+입찰 광고 소스를 추가한 뒤에는 Google Mobile Ads SDK의 Debug Options Menu로 입찰 광고 소스와 어댑터 상태를 확인합니다. 플러그인은 이 메뉴를 여는 Dart API를 제공하지 않으므로, 테스트 빌드에서 호스트 앱이 MethodChannel 등으로 네이티브 API를 직접 호출합니다.
+
+- Android: `MobileAds.openDebugMenu(activity, adUnitId)` — [Google 공식 가이드](https://developers.google.com/ad-manager/mobile-ads-sdk/android/debug?hl=ko)
+- iOS: `DebugOptionsViewController(adUnitID:)` — [Google 공식 가이드](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/debug?hl=ko)
+
+메뉴에 사용할 광고 단위 ID는 운영 담당자에게 전달받은 값을 사용하세요. 확인 절차는 네이티브와 같습니다.
+
+1. Debug Options Menu를 열 수 있는 테스트 앱을 빌드합니다.
+2. 테스트 앱을 운영 담당자에게 전달합니다.
+3. 운영 담당자가 테스트 기기에서 메뉴를 열고 광고를 요청해 입찰 광고 소스와 어댑터 상태를 확인합니다. 어댑터별 초기화 상태와 SDK 버전은 메뉴에서 **Open ad inspector**를 선택한 뒤 **Adapters** 탭에서 확인합니다. ad inspector는 테스트 기기로 등록된 기기에서만 열립니다. ([Android](https://developers.google.com/ad-manager/mobile-ads-sdk/android/ad-inspector/launch-ad-inspector), [iOS](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/ad-inspector/launch-ad-inspector))
+
+운영 빌드에서는 디버그 메뉴 진입점을 노출하지 마세요.
 
 ## 6. 개인정보 신호와 nap mx 초기화
 
