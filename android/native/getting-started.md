@@ -430,13 +430,10 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 | 광고 소스 |
 |-----------|
 | Pangle |
-| AppLovin |
 | DT Exchange |
 | InMobi |
 | Liftoff Monetize |
-| Meta Audience Network |
 | Moloco |
-| Unity Ads |
 | Mintegral |
 
 > ⚠️ 프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
