@@ -2,6 +2,43 @@
 
 ---
 
+## v2.3.3 (2026-10-14)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.03`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.3.3** |
+> | `admixer-admanager` | **2.1.6** |
+> | `admixer-gma-nextgen` | **2.1.5** |
+> | `admixer-teads` | **2.1.4** |
+> | `admixer-pangle` | **2.1.3** |
+> | `admixer-adfit` · `admixer-applovin` · `admixer-unity` | **2.0.7** |
+> | `admixer-bom` | **2026.10.03** |
+> | `admixer-naveradmanager` 2.1.4 · `admixer-unity-nativeadlayout` 2.0.0 · `admixer-compose` 2.0.3 · 🧪 `admixer-interactive` 1.0.0-beta02 | 변경 없음 |
+>
+> `admixer-adfit` · `admixer-applovin` · `admixer-unity` · `admixer-pangle`은 코어 **2.3.3 이상**과 함께 사용하세요.
+> 구버전 코어와 조합하면 광고 로드 성공 시 `NoSuchMethodError`가 발생합니다. BOM을 쓰면 자동으로 맞춰집니다.
+> 그 외 어댑터는 코어 **2.3.0 이상**이면 됩니다.
+
+### 광고 수신 수정 (업데이트 권장)
+
+- **배너가 화면에 붙기 전에 로드하면 NO_FILL로 끝나던 문제 수정** (AdFit · AppLovin · Unity · Pangle) — 배너 뷰를
+  레이아웃에 추가하기 전에 `loadAd()`를 호출했거나, 응답 전에 스크롤·탭 전환으로 뷰가 잠시 떨어진 경우 네트워크
+  SDK는 광고를 받았는데 앱에는 전달되지 않고 타임아웃 후 NO_FILL로 처리되던 문제입니다. Pangle은 네이티브도 함께 수정했습니다.
+- **네이티브 광고가 로드 후 표시되지 않던 문제 수정** (Pangle · Google AdManager · GMA NextGen) — 코어 2.3.1 이후 로드는
+  성공하는데 화면에 보이지 않고 `onAdShowFailed`가 오던 문제입니다. 수정 후 이 세 네트워크의 네이티브에서도 impression
+  이벤트와 서버 interval 기반 롤링 재로드가 다른 네트워크와 동일하게 동작합니다.
+
+### 안정성 개선 (코드 변경 불요)
+
+- **Teads 노출 중 실패 처리** — 표시된 뒤 발생한 FAILED(재생 오류 등)를 `onAdShowFailed`로 1회 전달하고 뷰를 회수합니다.
+  실패로 종료된 광고의 늦은 노출·클릭·완료 이벤트는 더 이상 전달되지 않습니다.
+
+공개 API 변경은 없습니다. 버전만 올리면 됩니다.
+
+---
+
 ## v2.3.2 (2026-10-02)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.02`입니다.
