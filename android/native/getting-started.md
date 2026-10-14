@@ -64,7 +64,7 @@ allprojects {
 ```gradle
 dependencies {
     // ✅ 필수 — BOM import (한 줄로 모든 admixer 멤버 버전 고정)
-    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.10.03')
+    implementation platform('io.github.nasmedia-tech:admixer-bom:2026.10.04')
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
@@ -93,7 +93,7 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 ```gradle
 dependencies {
     // ✅ 필수 — Core SDK
-    implementation 'io.github.nasmedia-tech:admixer-ssp:2.3.3'
+    implementation 'io.github.nasmedia-tech:admixer-ssp:2.4.0'
     // ✅ 필수 — Google Advertising ID
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 

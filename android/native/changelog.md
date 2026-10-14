@@ -2,6 +2,25 @@
 
 ---
 
+## v2.4.0 (2026-10-14)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.04`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.4.0** |
+> | `admixer-bom` | **2026.10.04** |
+> | `admixer-admanager` 2.1.6 · `admixer-gma-nextgen` 2.1.5 · `admixer-teads` 2.1.4 · `admixer-naveradmanager` 2.1.4 · `admixer-pangle` 2.1.3 · `admixer-adfit` 2.0.7 · `admixer-applovin` 2.0.7 · `admixer-unity` 2.0.7 · `admixer-unity-nativeadlayout` 2.0.0 · `admixer-compose` 2.0.3 · 🧪 `admixer-interactive` 1.0.0-beta02 | 변경 없음 |
+>
+> 어댑터는 기존과 같이 사용할 수 있습니다. `admixer-adfit` · `admixer-applovin` · `admixer-unity` · `admixer-pangle`은
+> 코어 **2.3.3 이상**, 그 외 어댑터는 코어 **2.3.0 이상**이면 됩니다.
+
+### 네이티브 광고 집계 수정 (업데이트 권장)
+
+- **AdMixer 네이티브 광고의 노출·클릭 트래커가 전송되지 않던 문제 수정**
+
+---
+
 ## v2.3.3 (2026-10-14)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.03`입니다.
