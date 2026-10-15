@@ -258,12 +258,11 @@ pod 'AdMixerMediationGAM'
 
 pod 'GoogleMobileAdsMediationPangle'     # nap mx Pangle 사용 시 '7.9.0.6.0'으로 고정
 pod 'GoogleMobileAdsMediationAppLovin'   # nap mx AppLovin 사용 시 '13.5.1.0'으로 고정
-pod 'GoogleMobileAdsMediationFacebook'   # Meta
 pod 'GoogleMobileAdsMediationVungle'     # Liftoff Monetize
-pod 'GoogleMobileAdsMediationMintegral'
+pod 'GoogleMobileAdsMediationMintegral'  # Mintegral
 pod 'GoogleMobileAdsMediationFyber'      # DT Exchange
-pod 'GoogleMobileAdsMediationInMobi'
-pod 'GoogleMobileAdsMediationMoloco'
+pod 'GoogleMobileAdsMediationInMobi'     # InMobi
+pod 'GoogleMobileAdsMediationMoloco'     # Moloco
 pod 'GoogleMobileAdsMediationUnity'      # nap mx Unity Ads 사용 시 추가하지 않음
 ```
 
