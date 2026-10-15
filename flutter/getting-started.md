@@ -183,13 +183,12 @@ dependencies {
     implementation("com.google.ads.mediation:pangle:8.0.0.5.0")
     implementation("com.google.ads.mediation:applovin:13.6.2.0")
     implementation("com.google.ads.mediation:fyber:8.4.5.0")      // DT Exchange
-    implementation("com.google.ads.mediation:inmobi:11.3.0.0")
+    implementation("com.google.ads.mediation:inmobi:11.3.0.0")   // inmobi
     implementation("com.google.ads.mediation:vungle:7.7.4.1")     // Liftoff Monetize
-    implementation("com.google.ads.mediation:facebook:6.21.0.3")  // Meta Audience Network
-    implementation("com.google.ads.mediation:moloco:4.8.1.0")
+    implementation("com.google.ads.mediation:moloco:4.8.1.0")   // moloco
     implementation("com.unity3d.ads:unity-ads:4.18.0")            // Unity Ads SDK — 어댑터에 포함되지 않아 함께 추가
     implementation("com.google.ads.mediation:unity:4.18.0.0")
-    implementation("com.google.ads.mediation:mintegral:17.1.61.0")
+    implementation("com.google.ads.mediation:mintegral:17.1.61.0") // mintegral
 }
 ```
 
