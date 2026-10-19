@@ -2,7 +2,7 @@
 
 이 문서는 nap mx Android SDK **v1.x → v2 최신 버전** 업그레이드 시 필요한 변경 사항을 설명합니다.
 
-> ℹ️ **이미 v2.0.x를 쓰고 계신다면** Step 1~9는 건너뛰고 [v2.0.x → 최신 버전](#v20x--최신-버전-업그레이드)만 확인하세요.
+> ℹ️ **이미 v2.0.x를 쓰고 계신다면** Step 1~9는 건너뛰고 [v2.0.x → 최신 버전](#v20x-→-최신-버전-업그레이드)만 확인하세요.
 >
 > 코드 예제는 **최신 버전 기준**입니다. 버전은 [BOM](#step-1-gradle-버전-업데이트)으로 관리하는 것을 권장합니다.
 
@@ -32,8 +32,8 @@
 1. **Gradle 버전** 최신으로 변경(BOM 권장) + 새 어댑터(NaverAdManager/Teads) 저장소 추가 → [Step 1](#step-1-gradle-버전-업데이트)
 2. **ProGuard 규칙** 정리(수동 규칙 삭제 가능) → [Step 2](#step-2-proguard-규칙-업데이트)
 3. **`registerAdapter()` 호출 제거**(자동 등록) → [Step 3](#step-3-registeradapter-호출-제거)
-4. **구 클래스 → `AMM*` 전환** + 제거된 별칭 메서드 교체 → [Step 5](#step-5-제거된-클래스-및-api-교체-필수--breaking-change)
-5. **`AdListener` 이벤트 콜백 분리**(`onEventAd` → named 메서드) → [Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)
+4. **구 클래스 → `AMM*` 전환** + 제거된 별칭 메서드 교체 → [Step 5](#step-5-제거된-클래스-및-api-교체-필수-breaking-change)
+5. **`AdListener` 이벤트 콜백 분리**(`onEventAd` → named 메서드) → [Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수-breaking-change)
 6. **네이티브 View ID** `nap_mx_` prefix + `setViewIds()` 제거 → [Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)
 7. **빌드 → 컴파일 오류 해소**(아래 표) → **광고 노출 검증**([맨 아래 체크리스트](#업그레이드-후-검증-체크리스트))
 
@@ -45,8 +45,8 @@
 
 | 증상 (컴파일/런타임) | 원인 | 해결 |
 |---|---|---|
-| `cannot find symbol: class AdView`/`InterstitialAd` 등 | 구 광고 클래스 제거 | `AMM*` 클래스로 교체 ([Step 5](#step-5-제거된-클래스-및-api-교체-필수--breaking-change)) |
-| `method onEventAd ... does not override` | `AdListener.onEventAd` 제거 | 이름 있는 메서드로 분리 ([Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)) |
+| `cannot find symbol: class AdView`/`InterstitialAd` 등 | 구 광고 클래스 제거 | `AMM*` 클래스로 교체 ([Step 5](#step-5-제거된-클래스-및-api-교체-필수-breaking-change)) |
+| `method onEventAd ... does not override` | `AdListener.onEventAd` 제거 | 이름 있는 메서드로 분리 ([Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수-breaking-change)) |
 | `cannot find symbol: method onDestroy()` | 별칭 제거 | `stop()`으로 교체 (인라인·풀스크린 공통) |
 | `cannot find symbol: method startInterstitial()` 등 | 즉시 노출 API 제거 | 수신 콜백 이후 `show(activity)` 호출 |
 | `cannot find symbol: method setViewIds(...)` | 제거됨 | `NativeAdViewBinder` 설정으로 통합 ([Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)) |
@@ -54,10 +54,10 @@
 | `cannot find symbol: method setInterstitialAdType/setPopupAdOption(...)` | 전면 Basic 전용 | 해당 호출 제거 |
 | `cannot find symbol: AdMixer.GAUGE`/`TEXT` | CountDown 상수 제거 | 관련 코드 제거 |
 | 빌드는 되나 네이티브가 비거나 미표시 | View ID prefix 변경 | 레이아웃·바인더에 `nap_mx_` 적용 ([Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)) |
-| `cannot find symbol: method setPrivacyViewId(int)` | **v2.0.x 이후 제거** | `setAdChoicesPosition()`으로 교체 ([v2.0.x → 최신](#v20x--최신-버전-업그레이드)) |
-| `cannot find symbol: method setAdViewBinder(...)` | **v2.0.1에서 제거** | `AMMNativeAdView.setViewBinder()`로 교체 ([v2.0.x → 최신](#v20x--최신-버전-업그레이드)) |
+| `cannot find symbol: method setPrivacyViewId(int)` | **v2.0.x 이후 제거** | `setAdChoicesPosition()`으로 교체 ([v2.0.x → 최신](#v20x-→-최신-버전-업그레이드)) |
+| `cannot find symbol: method setAdViewBinder(...)` | **v2.0.1에서 제거** | `AMMNativeAdView.setViewBinder()`로 교체 ([v2.0.x → 최신](#v20x-→-최신-버전-업그레이드)) |
 
-> 🚨 **컴파일 오류 없이 조용히 깨지는 변경도 있습니다** — 어댑터 식별자 상수의 **값**이 바뀌어 재컴파일이 필요합니다. [v2.0.x → 최신 버전](#v20x--최신-버전-업그레이드)을 반드시 확인하세요.
+> 🚨 **컴파일 오류 없이 조용히 깨지는 변경도 있습니다** — 어댑터 식별자 상수의 **값**이 바뀌어 재컴파일이 필요합니다. [v2.0.x → 최신 버전](#v20x-→-최신-버전-업그레이드)을 반드시 확인하세요.
 
 ---
 
@@ -516,7 +516,7 @@ Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이�
 
 ### 권장 (선택)
 
-- 로드 실패 처리를 **표준 콜백 `onFailedToReceiveAd(int errorCode, String errorMsg)` 하나로 정리** — String·enum 4-인자 오버로드는 둘 다 `@Deprecated`(3.0 제거 예정)이며, 기본 구현이 표준 콜백으로 위임하므로 기존 구현도 동작은 유지됩니다. 로드 성공(`onReceivedAd`)·노출 실패(`onAdShowFailed`)는 `AdNetworkType` enum 오버로드로 전환하세요([위 Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수--breaking-change)).
+- 로드 실패 처리를 **표준 콜백 `onFailedToReceiveAd(int errorCode, String errorMsg)` 하나로 정리** — String·enum 4-인자 오버로드는 둘 다 `@Deprecated`(3.0 제거 예정)이며, 기본 구현이 표준 콜백으로 위임하므로 기존 구현도 동작은 유지됩니다. 로드 성공(`onReceivedAd`)·노출 실패(`onAdShowFailed`)는 `AdNetworkType` enum 오버로드로 전환하세요([위 Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수-breaking-change)).
 
 전체 변경 내역은 [릴리즈 노트](changelog.md)를 확인하세요.
 

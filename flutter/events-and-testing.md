@@ -166,7 +166,7 @@ AGP 9.0.1 / Gradle 9.1.0에서는 Flutter embedding을 제공한 독립 Android 
 | 내장 Kotlin 2.2.10 활성화 | PASS |
 | 내장 Kotlin·새 DSL 비활성화, 외부 KGP 2.3.20 | PASS |
 
-단일 영상·포드 SKIP 콜백 조건, 클릭 랜딩 복귀 시 재생·노출 재전송은 [SDK 이슈 #242](https://github.com/Nasmedia-Tech/AOS-AdMixerSSP/issues/242)에서 Android/iOS 비교 확인 중입니다. 서버의 실제 중복 집계 여부도 아직 확정되지 않았습니다.
+단일 영상·포드 SKIP 콜백 조건, 클릭 랜딩 복귀 시 재생·노출 재전송은 Android/iOS 비교 확인 중입니다. 서버의 실제 중복 집계 여부도 아직 확정되지 않았습니다. 해당 증상을 확인하면 SDK 버전과 이벤트 순서를 정리해 [운영 담당자](mailto:nap_mx@nasmedia.co.kr)에게 전달하세요.
 
 ## 출시 전 체크리스트
 

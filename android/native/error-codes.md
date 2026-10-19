@@ -73,7 +73,7 @@ LogCat에 `[SKIP] <네트워크> configuration is invalid (Missing Keys).`가 �
 5. NaverAdManager: 운영 Ad Unit ID 발급 여부 확인 (`PUBLISHER_CD`는 SDK가 제공)
 6. Adfit: Activity Context 사용 여부 확인
 
-키 주입 방법은 [Q&A — 초기화 · 키 / 네트워크 설정](qna.md#초기화--키--네트워크-설정)을 참고하세요.
+키 주입 방법은 [Q&A — 초기화 · 키 / 네트워크 설정](qna.md#초기화-·-키-네트워크-설정)을 참고하세요.
 
 ### 리워드가 지급되지 않는 경우
 

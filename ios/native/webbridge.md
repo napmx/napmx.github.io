@@ -1,6 +1,6 @@
 # WebBridge — 하이브리드 앱 연동 (iOS)
 
-> ℹ️ WebBridge 연동 전, [iOS SDK 시작하기](getting-started.md)의 Step 1~3 설정이 완료되었는지 확인하세요.
+> ℹ️ WebBridge 연동 전, [iOS SDK 시작하기](/ios/native/getting-started)의 Step 1~3 설정이 완료되었는지 확인하세요.
 
 WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap mx 네이티브 SDK를 JavaScript Bridge를 통해 호출하여 광고를 표시하는 연동 방식입니다.
 
@@ -175,7 +175,7 @@ const NapMxBridge = (() => {
 
 #### 브릿지 미탑재 앱 대응
 
-브릿지가 없는 앱(iOS 코어 SDK v2.4.5 미만, 또는 SDK는 최신이지만 앱이 `AMMWebBridge`를 연결하지 않은 경우)에서는 래퍼의 `request*()` / `show*()` 호출이 **에러나 콜백 없이 무시**됩니다. 타임아웃으로도 감지할 수 없으므로 호출 전에 `NapMxBridge.isAvailable()`로 탑재 여부를 확인하고 대체 동작(광고 진입점 숨김, 웹 광고 노출 등)을 준비하세요.
+브릿지가 없는 앱(iOS Mediation SDK(`AdMixerMediation`) v2.4.5 미만, 또는 SDK는 최신이지만 앱이 `AMMWebBridge`를 연결하지 않은 경우)에서는 래퍼의 `request*()` / `show*()` 호출이 **에러나 콜백 없이 무시**됩니다. 타임아웃으로도 감지할 수 없으므로 호출 전에 `NapMxBridge.isAvailable()`로 탑재 여부를 확인하고 대체 동작(광고 진입점 숨김, 웹 광고 노출 등)을 준비하세요.
 
 ```javascript
 if (!NapMxBridge.isAvailable()) {
@@ -281,7 +281,7 @@ window.NapMxBridgeCallback = {
 }
 ```
 
-> ⚠️ 통일 errorCode는 **iOS 코어 SDK v2.5.0 이상**에서 전달됩니다. v2.4.5·v2.4.6의 브릿지는 SDK 원본 코드를 `errorCode`에 그대로 전달하므로, 앱의 SDK 버전을 v2.5.0 이상으로 맞추세요.
+> ⚠️ 통일 errorCode는 **iOS Mediation SDK(`AdMixerMediation`) v2.5.0 이상**에서 전달됩니다. v2.4.5·v2.4.6의 브릿지는 SDK 원본 코드를 `errorCode`에 그대로 전달하므로, 앱의 Mediation 버전을 v2.5.0 이상으로 맞추세요. Core(`AdMixer`)의 1.x 버전과 구분하세요.
 
 ---
 
