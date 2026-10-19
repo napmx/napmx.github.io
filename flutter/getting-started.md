@@ -362,4 +362,26 @@ try {
 }
 ```
 
+### 같은 포맷의 여러 지면 등록 (v0.1.4 이상)
+
+`adUnitIds` 맵은 포맷당 지면 하나를 등록합니다. 같은 포맷의 지면이 여러 개라면 `additionalAdUnitIds: List<String>`에 추가 ID를 등록하세요. 맵을 생략하고 목록만 사용할 수도 있습니다.
+
+```dart
+await NapMx.initialize(NapMxConfiguration(
+  mediaKey: mediaKey,
+  additionalAdUnitIds: ['789', '790'], // 리워드 지면 A, B의 예시 ID
+));
+
+final placementB = NapMxFullscreenAdController(
+  format: NapMxAdFormat.rewarded,
+  adUnitId: '790',
+);
+await placementB.load();
+// 화면 수명에 맞춰 placementB.dispose()를 호출하세요.
+```
+
+두 컬렉션을 합쳐 공백과 중복 ID를 제거한 뒤 네이티브 SDK 초기화에 전달합니다. iOS에서는 모든 ID가 정수 문자열이어야 합니다. 두 컬렉션이 모두 비었거나 빈 ID가 포함되면 `ArgumentError`가 발생합니다.
+
+컨트롤러와 광고 뷰에는 사용할 ID를 명시하세요. `adUnitIdFor(format)`은 기존 맵만 조회하며 추가 목록에서 ID를 선택하지 않습니다. 초기화 후 재호출로 ID를 추가할 수 없으므로 사용할 지면을 처음에 모두 등록해야 합니다. 미등록 ID도 load 시 SDK로 전달되지만 실제 로드 성공 여부는 검증되지 않았습니다.
+
 다음 단계: [광고 구현](/flutter/ad-formats)
