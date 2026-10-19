@@ -316,7 +316,7 @@ import 'package:nap_mx_flutter/nap_mx_flutter.dart';
 
 Future<void> initializeNapMx() async {
   // 발급값이 비어 있으면 네이티브 SDK를 호출하지 않습니다.
-  if (mediaKey.isEmpty || rewardedId.isEmpty) {
+  if (mediaKey.isEmpty || bannerId.isEmpty || rewardedId.isEmpty) {
     throw StateError('nap mx 테스트 설정이 필요합니다.');
   }
 
@@ -324,11 +324,8 @@ Future<void> initializeNapMx() async {
     NapMxConfiguration(
       mediaKey: mediaKey,
 
-      // 앱에서 실제로 사용하는 포맷만 등록합니다.
-      adUnitIds: const {
-        NapMxAdFormat.banner: bannerId,
-        NapMxAdFormat.rewarded: rewardedId,
-      },
+      // 앱에서 사용할 모든 지면을 목록으로 등록합니다(v0.1.4 이상).
+      additionalAdUnitIds: const [bannerId, rewardedId],
 
       // 아래 값은 예시 기본 동의가 아닙니다.
       // CMP 결과가 없으면 임의로 granted를 넣지 않습니다.
