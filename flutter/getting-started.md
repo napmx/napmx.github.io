@@ -22,9 +22,9 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 ## 2. 플러그인 설치
 
-현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.5` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
+현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.6` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
 
-> 네이티브 SDK 업데이트(Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.5.1 / Core 1.3.0)는 다음 Flutter 릴리스 대상입니다. 아래 `v0.1.5` 태그는 Android Core 2.3.0 / iOS Mediation 2.5.0을 설치합니다. 새 릴리스가 배포되면 플러그인 `ref`와 SDK 버전 안내를 함께 갱신하세요. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
+> `v0.1.6`은 Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.5.1 / Core 1.3.0을 설치합니다. 이전 태그 `v0.1.5`는 Android Core 2.3.0 / iOS Mediation 2.5.0입니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
 
 ```yaml
 # pubspec.yaml
@@ -34,7 +34,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.5
+      ref: v0.1.6
 ```
 
 ```bash
@@ -95,9 +95,9 @@ plugins {
 }
 ```
 
-플러그인 모듈에는 호스트의 Kotlin 플러그인이 자동 적용되므로 로컬 복사본을 수정할 필요가 없습니다. `admixer-ssp:2.3.0`의 stdlib 의존성은 2.2.10이며 Kotlin 컴파일러 2.1.0에서도 빌드를 검증했습니다. stdlib를 컴파일러 버전에 맞춰 강제로 낮추지 마세요.
+플러그인 모듈에는 호스트의 Kotlin 플러그인이 자동 적용되므로 로컬 복사본을 수정할 필요가 없습니다. `admixer-ssp:2.4.0`의 stdlib 의존성은 2.2.10이며 Kotlin 컴파일러 2.1.0에서도 빌드를 검증했습니다. stdlib를 컴파일러 버전에 맞춰 강제로 낮추지 마세요.
 
-다음 릴리스의 Core 2.4.0도 stdlib 2.2.10을 사용합니다. 선택 어댑터의 버전 묶음은 아래 최신 BOM으로 정렬합니다. BOM을 추가하면 `v0.1.5`의 Android Core도 2.4.0으로 해석되므로, 앱에서 최종 해석 버전과 빌드를 확인하세요.
+Core 2.4.0도 stdlib 2.2.10을 사용합니다. 선택 어댑터의 버전 묶음은 아래 최신 BOM으로 정렬합니다. 앱에서 최종 해석 버전과 빌드를 확인하세요.
 
 AGP 9에서 내장 Kotlin을 끈 호스트(`android.builtInKotlin=false`)도 위 Kotlin 플러그인 설정이 필요합니다. Flutter 3.44에서는 `android.newDsl=false`도 유지하세요. 내장 Kotlin을 켠 AGP 9 호스트에는 별도 Kotlin Android 플러그인을 적용하지 않습니다. Flutter 앱의 내장 Kotlin 연동은 Flutter 3.47 이상이 필요합니다. [Flutter 공식 가이드](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors)를 참고하세요.
 
@@ -129,7 +129,7 @@ GMA NextGen은 Android API 24 이상이 필요하며 classic Google Mobile Ads�
 
 Core 2.4.0은 API 21 호환 `play-services-ads-identifier:18.0.0`을 포함합니다. Google 최신 수정판 `18.3.0`은 API 23 이상이 필요합니다. `18.2.0`은 구형 Android에서 `java.time.Duration` 크래시가 있어 사용하지 마세요([Google 릴리스 노트](https://developers.google.com/android/guides/releases#january_27_2026)).
 
-Flutter `v0.1.5`는 `18.2.0`을 직접 선언하므로 최신 BOM만 추가해도 이 선언이 남습니다. `minSdk` 23 이상 앱은 다음을 추가하세요. 최신 AdManager/Naver/GMA NextGen 어댑터를 사용하면 `18.3.0`이 전이 의존성으로 적용됩니다.
+Flutter `v0.1.6`부터는 `18.2.0` 직접 선언이 없어 Core의 `18.0.0`이 적용됩니다. `minSdk` 23 이상 앱은 수정판 `18.3.0`을 다음처럼 추가할 수 있습니다. 최신 AdManager/Naver/GMA NextGen 어댑터를 사용하면 `18.3.0`이 전이 의존성으로 적용됩니다.
 
 ```kotlin
 // android/app/build.gradle.kts — minSdk 23 이상
@@ -138,7 +138,7 @@ dependencies {
 }
 ```
 
-API 21~22를 유지하는 `v0.1.5` 앱은 이 아티팩트만 `resolutionStrategy.force("com.google.android.gms:play-services-ads-identifier:18.0.0")`로 고정합니다. 다음 Flutter 릴리스에서는 `18.2.0` 직접 선언을 제거해 Core의 호환 버전을 따릅니다.
+`v0.1.5`는 `18.2.0`을 직접 선언하므로 이 태그를 유지하는 API 21~22 앱은 이 아티팩트만 `resolutionStrategy.force("com.google.android.gms:play-services-ads-identifier:18.0.0")`로 고정하세요.
 
 ```bash
 cd android
@@ -240,7 +240,7 @@ allprojects {
 
 ## 5. iOS 설정
 
-플러그인은 `AdMixerMediation` 2.5.0과 `AdMixer` 1.3.0을 고정합니다. Flutter 프로젝트가 Swift Package Manager를 사용하면 Xcode Package Dependencies에 필요한 공식 어댑터만 추가합니다. CocoaPods 프로젝트라면 `ios/Podfile`에 필요한 Pod만 추가합니다.
+플러그인은 `AdMixerMediation` 2.5.1과 `AdMixer` 1.3.0을 고정합니다. Flutter 프로젝트가 Swift Package Manager를 사용하면 Xcode Package Dependencies에 필요한 공식 어댑터만 추가합니다. CocoaPods 프로젝트라면 `ios/Podfile`에 필요한 Pod만 추가합니다.
 
 ```ruby
 # ios/Podfile — 사용하는 네트워크만 추가

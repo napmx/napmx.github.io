@@ -1,13 +1,13 @@
 # Flutter SDK (Beta)
 
-> 🧪 **초기 공개 Beta** · 플러그인 `v0.1.5` · AGP 8/9 호환 지원
+> 🧪 **초기 공개 Beta** · 플러그인 `v0.1.6` · AGP 8/9 호환 지원
 
 `nap_mx_flutter`는 Flutter 앱에서 nap mx Android·iOS 네이티브 SDK를 같은 Dart API로 사용하는 공개 플러그인입니다.
 
 - 공개 저장소: [Nasmedia-Tech/nap_mx_flutter](https://github.com/Nasmedia-Tech/nap_mx_flutter)
-- 최신 릴리스: [`v0.1.5`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.5)
-- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.5/example)
-- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.5/doc/integration-guide.md)
+- 최신 릴리스: [`v0.1.6`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.6)
+- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.6/example)
+- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.6/doc/integration-guide.md)
 
 ## 지원 포맷
 
@@ -44,23 +44,23 @@
 
 ## 검증된 버전과 최소 환경
 
-현재 설치 예제의 `v0.1.5` 태그와 네이티브 SDK 업데이트 대상은 다음과 같습니다. 업데이트 대상은 아직 Flutter 릴리스로 배포되지 않았으며, 새 태그가 공개되기 전에는 `v0.1.5` 설치만으로 적용되지 않습니다.
+`v0.1.6`부터 네이티브 SDK가 아래와 같이 갱신됩니다. 이전 태그 `v0.1.5`는 왼쪽 열의 버전을 설치합니다.
 
-| 네이티브 구성 | Flutter `v0.1.5` | 다음 Flutter 릴리스 대상 |
+| 네이티브 구성 | Flutter `v0.1.5` | Flutter `v0.1.6` |
 |---|---|---|
 | Android Core / BOM | 2.3.0 / 2026.09.03 | **2.4.0 / 2026.10.04** |
 | iOS Mediation | 2.5.0 | **2.5.1** |
 | iOS Core | 1.3.0 | **1.3.0** (변경 없음) |
 
-네이티브 최신 배포 버전은 [Android 릴리스 노트](/android/native/changelog)와 [iOS 릴리스 노트](/ios/native/changelog)에서 확인할 수 있습니다. 아래 표는 현재 공개 태그 `v0.1.5` 기준입니다.
+네이티브 최신 배포 버전은 [Android 릴리스 노트](/android/native/changelog)와 [iOS 릴리스 노트](/ios/native/changelog)에서 확인할 수 있습니다. 아래 표는 현재 공개 태그 `v0.1.6` 기준입니다.
 
 | 항목 | 최소/고정 버전 |
 |---|---|
 | Flutter / Dart | Flutter 3.24+, Dart 3.5+ (CI: Flutter 3.44.9) |
 | Android | API 21+, compile SDK 36, Java 17, AGP 8.10.1+, Kotlin 2.1.0+ (권장 2.2.10) |
-| nap mx Android | `admixer-ssp:2.3.0`, BOM `2026.09.03` |
+| nap mx Android | `admixer-ssp:2.4.0`, BOM `2026.10.04` |
 | iOS | iOS 13+, Xcode 16+, Swift 5.9 |
-| nap mx iOS | `AdMixerMediation` 2.5.0, `AdMixer` 1.3.0 |
+| nap mx iOS | `AdMixerMediation` 2.5.1, `AdMixer` 1.3.0 |
 
 선택 어댑터에 따라 최소 OS가 올라갑니다. Android Google/Naver는 API 23, AppLovin/GMA NextGen은 API 24가 필요하며, iOS AdFit/Teads는 iOS 14가 필요합니다.
 
@@ -81,7 +81,7 @@
 
 ## 현재 제한사항
 
-- `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.5` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=2-플러그인-설치)를 참고하세요.
+- `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.6` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=2-플러그인-설치)를 참고하세요.
 - 공개 범용 테스트 Media Key/AdUnit ID가 없습니다. 운영 담당자를 통해 별도 테스트 지면을 발급받아야 합니다.
 - CI는 정적 분석, 단위 테스트, Android debug/release, iOS Simulator 빌드를 검증합니다. 실제 노출·클릭·보상 성공을 뜻하지 않습니다.
 - Android `testMode`에 대응하는 iOS 전역 API가 없어 iOS에서 `true`를 전달하면 명시적으로 실패합니다.
