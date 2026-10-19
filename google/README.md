@@ -37,9 +37,9 @@ AdSense, AdMob을 사용하여 수익화를 진행하고 있다면, 해당 <span
   <strong>⚠️ Ad Manager 신규 가입 시 인증 절차 안내</strong>
   <p>Ad Manager 신규 가입의 경우 계정 본인확인을 위한 인증 절차가 필요합니다. 가입 후 인증 절차 진행해주세요.</p>
   <ul>
-    <li><a href="https://support.google.com/admanager/answer/13985965?hl=ko" target="_blank">본인 인증</a> 진행 (1&#126;2일 소요) 후 기입하신 주소로 <a href="https://support.google.com/admanager/answer/1251398?hl=ko" target="_blank">우편 인증</a> PIN이 자동 발송됩니다. (3&#126;4주 소요)</li>
+    <li>계정에 표시되는 <a href="https://support.google.com/admanager/answer/13985965?hl=ko" target="_blank">본인 인증</a>과 <a href="https://support.google.com/admanager/answer/1251398?hl=ko" target="_blank">주소 확인</a> 절차를 완료해주세요. 지원 지역에서는 온라인 인증을 이용할 수 있으며, 우편 PIN을 요청받은 경우 계정에 등록된 수취인 주소로 인증을 진행합니다.</li>
     <li>주소 입력 시, 1개의 층으로만 기입해주세요. <br><em>예) 2, 3, 4층 ❌ → 3층 ✅</em></li>
-    <li>MCM 퍼블리셔는 수익금 발생 여부와 관계없이 계정 생성 시에 우편 PIN 인증 절차를 진행합니다.</li>
+    <li>일부 MCM 계정은 수입 기준액과 관계없이 본인 인증 후 주소 확인이 시작될 수 있습니다. 인증 면제 여부와 진행 상황은 <a href="https://support.google.com/admanager/answer/9728004?hl=ko" target="_blank">하위 게시자 준비 상태</a>와 계정 안내를 기준으로 확인해주세요.</li>
   </ul>
 </div>
 
@@ -59,7 +59,7 @@ Ad Manager 로그인 → 지급 → 결제정보 → 설정 관리 메뉴에서 
 - **WEB** : 사이트 도메인에 Ads.txt 등록
 - **APP** : 스토어 내 등록된 웹사이트에 App-ads.txt 등록
 
-파일은 루트 도메인에서 업로드 및 [robots.txt에서 크롤링을 허용](https://support.google.com/admanager/answer/6023741?hl=ko)이 필요합니다.
+파일은 루트 도메인에서 업로드 및 [robots.txt에서 크롤링을 허용](https://support.google.com/admanager/answer/7673979?hl=ko)이 필요합니다.
 
 - **Google app-ads.txt / ads.txt** : 운영팀에 요청
 - **nap mx app-ads.txt / ads.txt** : [파트너 사이트 → 지원센터 → 가이드 → ads.txt 내용 적용](https://publisher.admixer.co.kr/board/guide/ads)

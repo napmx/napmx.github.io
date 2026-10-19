@@ -31,7 +31,7 @@ SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하�
     </td>
     <td style="border: none; vertical-align: middle;">
       <strong>AdRevenue Lab: 광고수익 계산기</strong><br/>
-      <a href="https://apps.apple.com/app/adrevenue-lab-%EA%B4%91%EA%B3%A0%EC%88%98%EC%9D%B5-%EA%B3%84%EC%82%B0%EA%B8%B0/id6808604544" target="_blank" style="text-decoration: none;">
+      <a href="https://apps.apple.com/kr/app/id6808604544" target="_blank" style="text-decoration: none;">
         <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr" alt="App Store에서 다운로드" width="120" style="margin-top: 4px;"/>
       </a>
     </td>
@@ -63,7 +63,7 @@ SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하�
 | Mediation | `AdMixerMediation` 2.5.1 | `iOS-SSP-Mediation-SPM` 2.5.1 |
 | Core | `AdMixer` 1.3.0 | `iOS-SSP-SPM` v1.3.0 |
 
-Mediation 2.5.1은 노출 가시 판정, 배너 자동갱신, 클릭 중복 집계를 개선합니다. 자세한 내용은 [릴리스 노트](changelog.md#v251-2026-10-01)를 확인하세요.
+Mediation 2.5.1은 노출 가시 판정, 배너 자동갱신, 클릭 중복 집계를 개선합니다. 자세한 내용은 [릴리스 노트](/ios/native/changelog?id=v251-2026-10-01)를 확인하세요.
 
 ### 1-1. CocoaPods를 통한 설치
 
@@ -105,8 +105,8 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 
 | 패키지 | 설명 | Repository URL |
 |--------|------|----------------|
-| nap mx Mediation (Mediation) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
-| nap mx Mediation (Core) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| nap mx Mediation (`AdMixerMediation`) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
+| nap mx Core (`AdMixer`) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
 | Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
 | Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
 | Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
@@ -177,18 +177,23 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 ### 1-4. 타 네트워크 SDK 버전 정보
 
-| Adapter SDK | 이름 | 버전 | 비고 |
-|-------------|------|------|------|
-| `AdMixerMediationGAM` | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | |
-| `AdMixerMediationAdFit` | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 최소 지원 OS 14 |
-| `AdMixerMediationPangle` | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | |
-| `AdMixerMediationUnityAds` | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | |
-| `AdMixerMediationAppLovin` | AppLovinSDK | `13.3.1` 이상 &#126; `13.5.2` 미만 | |
-| `AdMixerMediationNAM` | NAMSDK | `8.0` 이상 &#126; `8.23` 미만 | |
-| `AdMixerMediationTeads` | TeadsSDK | `6.2` 이상 &#126; `7.0` 미만 | 최소 지원 OS 14 |
+2026-10-19 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
 
-> 기존 적용 중인 네트워크사 버전이 있는 경우, 매체 버전과 nap mx 버전 중 더 낮은 버전으로 탑재됩니다.
-> 별도로 사용 중이신 네트워크 버전이 없으신 경우, 범위 내에서 가장 최신 버전으로 탑재됩니다.
+| Adapter SDK | 어댑터 버전 (Pods / SPM) | 네트워크 SDK | 네트워크 SDK 허용 범위 (Pods) | 최소 Mediation | 비고 |
+|---|---|---|---|---|---|
+| `AdMixerMediationGAM` | 1.2.8 / 1.2.8 | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | 2.5.0 | |
+| `AdMixerMediationAdFit` | 1.1.4 / 1.1.4 | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 2.4.5 | 최소 iOS 14 |
+| `AdMixerMediationPangle` | 1.2.6 / 1.2.6 | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | 2.5.0 | |
+| `AdMixerMediationUnityAds` | 1.1.3 / 1.1.3 | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | 2.4.2 | |
+| `AdMixerMediationAppLovin` | 1.1.5 / 1.1.5 | AppLovinSDK | `13.3.1` 이상 &#126; `13.5.2` 미만 | 2.4.5 | 기본 WithCore 구성 |
+| `AdMixerMediationNAM` | 1.3.5 / 1.3.5 | NAMSDK | `8.0` 이상 &#126; `8.23` 미만 | 2.5.0 | |
+| `AdMixerMediationTeads` | 1.1.0 / 1.1.1 | TeadsSDK | `6.2` 이상 &#126; `7.0` 미만 | 2.4.2 | 최소 iOS 14, Xcode 26+ |
+
+SPM은 벤더 패키지의 태그 체계를 사용하므로 일부 범위가 CocoaPods와 다릅니다. Pangle은 `7.4.1-release.1` 이상 `8.2.2-release.0` 미만, NAM은 `8.20.0` 이상 `8.23.0` 미만입니다. UnityAds SPM 패키지는 네트워크 SDK `4.16.4` 바이너리를 고정합니다.
+
+Teads의 SPM 태그 `1.1.1`은 어댑터 바이너리 `1.1.0`과 Teads SDK `6.2.0`을 포함하는 패키지 버전입니다. CocoaPods와 태그 번호가 다르므로 각각의 배포 버전을 선택하세요.
+
+> 호스트 앱과 모든 의존성의 버전 제약을 동시에 만족하는 조합을 선택합니다. 항상 더 낮은 버전이 선택되는 것은 아니며, 허용 범위가 겹치지 않으면 의존성 해결에 실패합니다. 기존 `Podfile.lock`이나 `Package.resolved`가 있으면 잠긴 버전을 유지할 수 있으므로, 업데이트 후 실제 해석 버전을 확인하세요.
 
 <div class="callout info">
   <strong>중복 사용 가능 네트워크</strong>
@@ -373,4 +378,3 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 - [네이티브 광고 연동하기](/ios/native/native-ad)
 - [리워드 동영상 연동하기](/ios/native/rewarded-video)
 - [동영상 광고 연동하기](/ios/native/video)
-- [비즈보드 연동하기](/ios/native/bizboard)

@@ -100,7 +100,7 @@
 
 ### 🧪 Interactive (1.0.0-beta02)
 
-- 미니게임 30종 플레이 재설계 ([Interactive 가이드](interactive-sdk-guide.md))
+- 미니게임 30종 플레이 재설계 ([Interactive 가이드](/android/native/interactive-sdk-guide))
 
 안정성을 개선했습니다.
 
@@ -124,7 +124,7 @@
 
 ### 동작 변경 (확인 권장)
 
-- **WebBridge 실패 콜백 `errorCode` 통일** ([WebBridge 가이드](webbridge.md#주요-errorcode))
+- **WebBridge 실패 콜백 `errorCode` 통일** ([WebBridge 가이드](/android/native/webbridge?id=errorcode))
 - **NaverAdManager 네이티브 노출 시점 정합**
 
 ### 개인정보 보호 개선 (코드 변경 불요)
@@ -239,7 +239,7 @@
 ### 새로운 기능
 
 - **아동 대상(COPPA) 3-상태 지원** — `setTagForChildDirectedTreatment()`에 **미설정**(-1) 추가. ⚠️ Unity Ads는 `TRUE` → 일반 대상 전환 시 `FALSE` 명시 필요. ([개인정보 가이드](privacy.md))
-- 🧪 **`admixer-interactive` 1.0.0-beta01 Maven Central 최초 배포** — BOM 멤버 편입. 제한된 매체 테스트 전용. ([연동 가이드](interactive-sdk-guide.md))
+- 🧪 **`admixer-interactive` 1.0.0-beta01 Maven Central 최초 배포** — BOM 멤버 편입. 제한된 매체 테스트 전용. ([연동 가이드](/android/native/interactive-sdk-guide))
 
 ### 동작 변경 (확인 권장)
 
@@ -311,7 +311,7 @@
 
 ### ⚠️ Breaking — 조치 필요
 
-- **Teads 어댑터 — Maven 저장소 추가 필요** (`admixer-teads 2.1.0`): Teads SDK를 6.2.0으로 올리면서 공식 설치 가이드가 요구하는 **Huawei 저장소**가 추가로 필요합니다. `settings.gradle`에 `https://developer.huawei.com/repo/`를 추가하세요. 누락 시 향후 의존성 해결에 실패할 수 있습니다. ([시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#1-3-네트워크별-추가-maven-저장소))
+- **Teads 어댑터 — Maven 저장소 추가 필요** (`admixer-teads 2.1.0`): Teads SDK를 6.2.0으로 올리면서 공식 설치 가이드가 요구하는 **Huawei 저장소**가 추가로 필요합니다. `settings.gradle`에 `https://developer.huawei.com/repo/`를 추가하세요. 누락 시 향후 의존성 해결에 실패할 수 있습니다. ([시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#_1-3-네트워크별-추가-maven-저장소))
 - **로드 실패 표준 콜백을 `onFailedToReceiveAd(int errorCode, String errorMsg)`로 단순화** — 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 전달하지 않습니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며, 기본 구현이 표준 콜백으로 위임하므로 **기존 구현의 동작은 변하지 않습니다.** 표준 콜백 하나만 구현하면 내부 No-Ad를 포함한 모든 수신 실패를 받습니다. ([API 레퍼런스](api-reference.md#adlistener-이벤트-콜백))
 
 ### 동작 변경 (코드 변경 불요)

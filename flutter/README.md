@@ -14,7 +14,7 @@
 
 `지원`은 공개 네이티브 SDK API와 Flutter 연결 코드가 구현되어 있다는 뜻입니다.
 
-| 광고 포맷 | Android | iOS | Flutter 구현 
+| 광고 포맷 | Android | iOS | Flutter 구현 |
 |---|---|---|---|
 | 배너 | 지원 | 지원 | `NapMxAdView` |
 | 전면 | 지원 | 지원 | `NapMxFullscreenAdController` |
@@ -57,7 +57,7 @@
 
 선택 어댑터에 따라 최소 OS가 올라갑니다. Android Google/Naver는 API 23, AppLovin/GMA NextGen은 API 24가 필요하며, iOS AdFit/Teads는 iOS 14가 필요합니다.
 
-위 Android 기준은 `v0.1.3`부터 적용됩니다. 플러그인은 호스트의 AGP·Kotlin 버전을 사용합니다. AGP 8 및 AGP 9 내장 Kotlin 비활성화 환경에서는 호스트의 Kotlin Android 플러그인을 적용하고, AGP 9 내장 Kotlin 활성화 환경에서는 내장 Kotlin을 사용합니다. [호스트 설정](/flutter/getting-started?id=4-android-설정)과 [실제 검증 조합](/flutter/events-and-testing?id=자동-검증-명령)을 확인하세요. 모든 버전 조합을 개별 검증한 것은 아닙니다.
+위 Android 기준은 `v0.1.3`부터 적용됩니다. 플러그인은 호스트의 AGP·Kotlin 버전을 사용합니다. AGP 8 및 AGP 9 내장 Kotlin 비활성화 환경에서는 호스트의 Kotlin Android 플러그인을 적용하고, AGP 9 내장 Kotlin 활성화 환경에서는 내장 Kotlin을 사용합니다. [호스트 설정](/flutter/getting-started?id=_4-android-설정)과 [실제 검증 조합](/flutter/events-and-testing?id=자동-검증-명령)을 확인하세요. 모든 버전 조합을 개별 검증한 것은 아닙니다.
 
 ## 플러그인과 매체 앱의 책임
 
@@ -74,7 +74,7 @@
 
 ## 현재 제한사항
 
-- `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.6` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=2-플러그인-설치)를 참고하세요.
+- `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.6` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=_2-플러그인-설치)를 참고하세요.
 - 공개 범용 테스트 Media Key/AdUnit ID가 없습니다. 운영 담당자를 통해 별도 테스트 지면을 발급받아야 합니다.
 - Android `testMode`에 대응하는 iOS 전역 API가 없어 iOS에서 `true`를 전달하면 명시적으로 실패합니다.
 - `mediation` 설정 맵은 Android 전용입니다. iOS 네트워크 초기화는 호스트 앱에서 수행합니다.
