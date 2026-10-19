@@ -387,7 +387,7 @@ try {
 
 ### 같은 포맷의 여러 지면 등록 (v0.1.4 이상)
 
-`adUnitIds` 맵은 포맷당 지면 하나를 등록합니다. 같은 포맷의 지면이 여러 개라면 `additionalAdUnitIds: List<String>`에 추가 ID를 등록하세요. 맵을 생략하고 목록만 사용할 수도 있습니다.
+사용할 모든 지면 ID를 `additionalAdUnitIds: List<String>` 목록으로 등록하는 것을 권장합니다. 같은 포맷의 지면이 여러 개여도 모두 목록에 넣으면 되고, `adUnitIds` 맵은 생략할 수 있습니다. 기존 `adUnitIds` 맵도 계속 지원합니다.
 
 ```dart
 await NapMx.initialize(NapMxConfiguration(
