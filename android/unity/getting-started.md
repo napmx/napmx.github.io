@@ -76,7 +76,9 @@ dependencies {
 
     // 필수
     implementation 'io.github.nasmedia-tech:admixer-ssp'
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+    // 최신 Core가 API 21 호환 ads-identifier 18.0.0을 포함합니다.
+    // minSdk 23 이상 앱에서 최신 수정판을 사용할 때만 추가합니다.
+    // implementation 'com.google.android.gms:play-services-ads-identifier:18.3.0'
 
     // 선택 — 사용하는 네트워크만
     implementation 'io.github.nasmedia-tech:admixer-admanager'      // Google AdManager

@@ -68,8 +68,9 @@ dependencies {
 
     // ✅ 필수 — Core SDK (버전 생략 = BOM이 관리)
     implementation 'io.github.nasmedia-tech:admixer-ssp'
-    // ✅ 필수 — Google Advertising ID
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+    // Google Advertising ID — Core가 API 21 호환 18.0.0을 전이 의존성으로 포함
+    // minSdk 23 이상인 앱에서 최신 수정판을 사용할 때만 추가
+    // implementation 'com.google.android.gms:play-services-ads-identifier:18.3.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가 (버전 생략)
     implementation 'io.github.nasmedia-tech:admixer-admanager'       // Google AdManager
@@ -94,8 +95,9 @@ BOM 없이 각 아티팩트 버전을 직접 명시합니다. (아래는 **현�
 dependencies {
     // ✅ 필수 — Core SDK
     implementation 'io.github.nasmedia-tech:admixer-ssp:2.4.0'
-    // ✅ 필수 — Google Advertising ID
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+    // Google Advertising ID — Core가 API 21 호환 18.0.0을 전이 의존성으로 포함
+    // minSdk 23 이상인 앱에서 최신 수정판을 사용할 때만 추가
+    // implementation 'com.google.android.gms:play-services-ads-identifier:18.3.0'
 
     // 선택 — 사용하는 미디에이션 네트워크만 추가하세요
     implementation 'io.github.nasmedia-tech:admixer-admanager:2.1.6'       // Google AdManager (play-services-ads:25.2.0 포함)
@@ -113,6 +115,15 @@ dependencies {
 ```
 
 ---
+
+#### Google 광고 ID 라이브러리 선택
+
+Core 2.4.0은 API 21 호환 `play-services-ads-identifier:18.0.0`을 포함합니다. **`18.2.0`을 직접 추가하지 마세요.** 구형 Android의 `java.time.Duration` 크래시는 Google `18.3.0`에서 수정되었지만, 이 버전의 최소 API는 23입니다([Google 릴리스 노트](https://developers.google.com/android/guides/releases#january_27_2026)).
+
+- API 21~22를 지원하는 Core 단독 앱: Core의 `18.0.0`을 사용합니다.
+- API 23 이상 앱: 최신 수정판 `18.3.0`을 추가할 수 있습니다. 최신 AdManager/Naver/GMA NextGen 어댑터는 이 버전을 전이 의존성으로 포함합니다.
+
+다른 SDK가 버전을 끌어올리는지 `./gradlew :app:dependencyInsight --dependency play-services-ads-identifier --configuration releaseRuntimeClasspath`로 확인하세요. `18.2.0`으로 해석되면 해당 의존성을 업데이트하고, 업데이트할 수 없는 API 21~22 앱은 `resolutionStrategy.force 'com.google.android.gms:play-services-ads-identifier:18.0.0'`으로 해당 아티팩트만 고정한 뒤 다시 확인합니다.
 
 ### 🧪 GMA NextGen (beta) — 도입 전 필독
 
@@ -176,7 +187,7 @@ dependencyResolutionManagement {
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
-| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.0.0 | **2.3.0** | 2.3.0 | 자체 SDK |
+| AdMixer (Core) | `io.github.nasmedia-tech:admixer-ssp` | 2.3.3 | **2.4.0** | 2.4.0 | BOM 2026.10.04 기준. 최신 AdFit/AppLovin/Unity/Pangle 어댑터는 Core 2.3.3+ 필요 |
 | Google AdManager | `com.google.android.gms:play-services-ads` | 24.0.0 | **25.2.0** | 25.2.0 | ⚠️ **25.3.0+ 비호환**(상한 고정) |
 | Kakao Adfit | `com.kakao.adfit:ads-base` | 3.17.2 | **3.21.17** | 3.22.2 | 3.x 단일 라인 |
 | Pangle | `com.pangle.global:pag-sdk` | 8.0.0.4 | **8.0.0.5** | 8.1.0.3 | 8.x 라인 권장 |
@@ -208,13 +219,13 @@ dependencyResolutionManagement {
 
 ### 1-5. Kotlin 툴체인 요구사항
 
-코어 `admixer-ssp:2.3.0`은 `kotlin-stdlib:2.2.10`을 전이 의존으로 포함합니다. Kotlin 컴파일러와 stdlib 버전은 별개이며, 의존성 버전만으로 최소 컴파일러를 단정할 수 없습니다. 현재 Flutter 플러그인에서는 **AGP 8.10.1 / Java 17 / Kotlin 2.1.0 및 2.2.10** 조합으로 debug/release 빌드(R8 포함)를 검증했습니다. Kotlin 2.2.10을 권장하며 stdlib를 구버전으로 강제 낮추지 마세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
+코어 `admixer-ssp:2.4.0`은 `kotlin-stdlib:2.2.10`을 전이 의존으로 포함합니다. Kotlin 컴파일러와 stdlib 버전은 별개이며, 의존성 버전만으로 최소 컴파일러를 단정할 수 없습니다. 현재 Flutter 플러그인에서는 **AGP 8.10.1 / Java 17 / Kotlin 2.1.0 및 2.2.10** 조합으로 debug/release 빌드(R8 포함)를 검증했습니다. Kotlin 2.2.10을 권장하며 stdlib를 구버전으로 강제 낮추지 마세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
 
 | 사용 구성 | Kotlin 확인 기준 | 근거 |
 |---|---|---|
-| **코어(`admixer-ssp:2.3.0`)만** | Kotlin 2.1.0·2.2.10 빌드 검증(Flutter 호스트) | stdlib 2.2.10 의존. Kotlin 1.8 호환은 이번 검증에 포함되지 않음 |
+| **코어(`admixer-ssp:2.4.0`)만** | Kotlin 2.1.0·2.2.10 빌드 검증(Flutter 호스트) | stdlib 2.2.10 의존. Kotlin 1.8 호환은 이번 검증에 포함되지 않음 |
 | + Google AdManager | **Kotlin 2.1+** | GMA가 최소 Kotlin 2.1.0 요구 |
-| + Kakao Adfit | 코어 기준과 AdFit 요구사항 함께 확인 | AdFit의 stdlib 2.0.x + coroutines 요구가 코어 2.3.0의 의존성을 낮추지는 않음 |
+| + Kakao Adfit | 코어 기준과 AdFit 요구사항 함께 확인 | AdFit의 stdlib 2.0.x + coroutines 요구가 코어 2.4.0의 의존성을 낮추지는 않음 |
 | + Naver Ad Manager | **Kotlin 2.1+** | GFP SDK(Kotlin 기반) |
 | + 🧪 GMA NextGen **(beta)** | **Kotlin 2.1+** | GMA 계열과 동일 |
 | + Pangle / AppLovin / Unity / Teads | 코어 기준과 각 벤더 요구사항 함께 확인 | 어댑터 추가 여부와 별개로 코어의 stdlib 의존성 유지 |
