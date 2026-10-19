@@ -54,6 +54,17 @@ SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하�
 
 ## Step 1. SDK 설치
 
+### 최신 필수 SDK 버전
+
+2026-10-19 배포 저장소 확인 기준으로 Mediation은 **2.5.1**, Core는 **1.3.0**이 최신입니다. CocoaPods와 SPM은 같은 버전 조합으로 맞추세요.
+
+| 구성 | CocoaPods | SPM 태그 |
+|---|---|---|
+| Mediation | `AdMixerMediation` 2.5.1 | `iOS-SSP-Mediation-SPM` 2.5.1 |
+| Core | `AdMixer` 1.3.0 | `iOS-SSP-SPM` v1.3.0 |
+
+Mediation 2.5.1은 노출 가시 판정, 배너 자동갱신, 클릭 중복 집계를 개선합니다. 자세한 내용은 [릴리스 노트](changelog.md#v251-2026-10-01)를 확인하세요.
+
 ### 1-1. CocoaPods를 통한 설치
 
 CocoaPods가 없는 경우 설치 후 초기화합니다.
