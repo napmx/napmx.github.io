@@ -17,16 +17,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nap_mx_flutter/nap_mx_flutter.dart';
 
-class BannerSlot extends StatefulWidget {
-  const BannerSlot({required this.adUnitId, super.key});
+class InlineAdSlot extends StatefulWidget {
+  const InlineAdSlot({
+    required this.adUnitId,
+    this.format = NapMxAdFormat.banner,
+    this.height = 50,
+    super.key,
+  });
 
   final String adUnitId;
+  final NapMxAdFormat format;
+  final double height;
 
   @override
-  State<BannerSlot> createState() => _BannerSlotState();
+  State<InlineAdSlot> createState() => _InlineAdSlotState();
 }
 
-class _BannerSlotState extends State<BannerSlot> {
+class _InlineAdSlotState extends State<InlineAdSlot> {
   NapMxAdViewController? _controller;
   StreamSubscription<NapMxEvent>? _events;
   String _status = '광고 준비 중';
@@ -38,11 +45,11 @@ class _BannerSlotState extends State<BannerSlot> {
       children: [
         // ListView 안에서는 실제 광고 높이를 명시해 무한 높이 오류를 막습니다.
         SizedBox(
-          height: 50,
+          height: widget.height,
           child: NapMxAdView(
-            format: NapMxAdFormat.banner,
+            format: widget.format,
             adUnitId: widget.adUnitId,
-            height: 50,
+            height: widget.height,
             autoLoad: false,
             onViewCreated: (controller) async {
               _controller = controller;
@@ -79,22 +86,22 @@ class _BannerSlotState extends State<BannerSlot> {
 }
 ```
 
-다른 View 포맷은 `format`과 광고 슬롯 높이를 바꿉니다.
+다른 View 포맷은 위 `InlineAdSlot`의 `format`과 높이를 바꿉니다. `onViewCreated`에서 구독·로드하고 화면 해제 시 정리하는 방식은 같습니다.
 
 ```dart
 // 네이티브 광고: SDK 템플릿의 CTA/AdChoices/미디어 영역을 보존합니다.
-NapMxAdView(
+InlineAdSlot(
   format: NapMxAdFormat.native,
   adUnitId: nativeId,
   height: 360,
-)
+);
 
 // 인스트림(인라인) 동영상: 스크롤 영역의 실제 가용 폭과 높이를 지정합니다.
-NapMxAdView(
+InlineAdSlot(
   format: NapMxAdFormat.inlineVideo,
   adUnitId: inlineVideoId,
   height: 180,
-)
+);
 ```
 
 네이티브 광고 자산을 Flutter 위젯으로 임의 재조합하면 SDK의 노출·클릭 등록을 우회할 수 있습니다. 플러그인이 제공하는 네이티브 템플릿을 사용하고 작은 화면·다크 모드·글자 확대에서 CTA, `광고/Ad` 표시와 AdChoices가 잘리지 않는지 확인하세요.
@@ -103,7 +110,7 @@ NapMxAdView(
 
 ## 전면·아웃스트림 동영상
 
-controller 하나는 요청 하나만 소유합니다. 로드된 controller를 여러 화면이나 여러 요청에서 공유하지 마세요.
+controller 하나는 요청 하나만 소유합니다. 로드된 controller를 여러 화면이나 여러 요청에서 공유하지 마세요. `show()` 이후 다음 광고에는 새 controller를 만듭니다.
 
 ```dart
 import 'dart:async';

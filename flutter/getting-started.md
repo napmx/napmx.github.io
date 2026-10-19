@@ -22,7 +22,7 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 ## 2. 플러그인 설치
 
-현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.3` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
+현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.4` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
 
 ```yaml
 # pubspec.yaml
@@ -32,7 +32,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.3
+      ref: v0.1.4
 ```
 
 ```bash
@@ -71,7 +71,7 @@ const rewardedId = String.fromEnvironment('NAP_MX_REWARDED_ID');
 
 ## 4. Android 설정
 
-`v0.1.3`의 기준은 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**입니다. 플러그인 자체는 AGP·Kotlin 버전을 고정하지 않으며 호스트의 설정을 사용합니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전은 해당 AGP가 요구하는 Gradle 버전을 맞추세요.
+`v0.1.4`의 기준은 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**입니다. 플러그인 자체는 AGP·Kotlin 버전을 고정하지 않으며 호스트의 설정을 사용합니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전은 해당 AGP가 요구하는 Gradle 버전을 맞추세요.
 
 AGP 8 호스트의 `android/settings.gradle.kts`에서 Kotlin 플러그인 버전을 선언합니다. Flutter 로더와 기존 AGP 선언은 유지하세요.
 
@@ -316,7 +316,7 @@ import 'package:nap_mx_flutter/nap_mx_flutter.dart';
 
 Future<void> initializeNapMx() async {
   // 발급값이 비어 있으면 네이티브 SDK를 호출하지 않습니다.
-  if (mediaKey.isEmpty || rewardedId.isEmpty) {
+  if (mediaKey.isEmpty || bannerId.isEmpty || rewardedId.isEmpty) {
     throw StateError('nap mx 테스트 설정이 필요합니다.');
   }
 
@@ -324,11 +324,8 @@ Future<void> initializeNapMx() async {
     NapMxConfiguration(
       mediaKey: mediaKey,
 
-      // 앱에서 실제로 사용하는 포맷만 등록합니다.
-      adUnitIds: const {
-        NapMxAdFormat.banner: bannerId,
-        NapMxAdFormat.rewarded: rewardedId,
-      },
+      // 앱에서 사용할 모든 지면을 목록으로 등록합니다(v0.1.4 이상).
+      additionalAdUnitIds: const [bannerId, rewardedId],
 
       // 아래 값은 예시 기본 동의가 아닙니다.
       // CMP 결과가 없으면 임의로 granted를 넣지 않습니다.
@@ -347,6 +344,8 @@ Future<void> initializeNapMx() async {
   );
 }
 ```
+
+`additionalAdUnitIds`에는 같은 포맷의 여러 지면도 등록할 수 있습니다. 각 View/controller의 `adUnitId`에 사용할 지면을 지정하세요. 포맷별 기본값이 필요하면 `adUnitIds` 맵을 함께 사용할 수 있으며, 두 설정의 ID는 합쳐서 중복 없이 네이티브 SDK로 전달됩니다.
 
 ATT 프롬프트는 플러그인이 자동으로 띄우지 않습니다. 앱이 요청 여부, 설명 문구와 호출 시점을 책임집니다. 동의 미설정을 동의로 바꾸지 마세요.
 
