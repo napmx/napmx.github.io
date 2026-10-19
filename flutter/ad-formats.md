@@ -238,7 +238,7 @@ await rewarded.load(
 ## 화면과 앱 수명주기
 
 - 화면을 나갈 때 이벤트 구독과 controller를 함께 해제합니다.
-- 화면 재진입 시 새 controller와 새 요청을 만듭니다.
+- 화면 재진입 또는 전면 광고 `show()` 이후 다음 광고에는 새 controller와 새 요청을 만듭니다.
 - Android Activity 재생성 뒤 이전 화면의 controller를 새 화면에서 재사용하지 않습니다.
 - iOS foreground-active Scene이 없을 때 전면 광고를 표시하지 않습니다.
 - no-fill/timeout에 즉시 무한 재요청하지 말고 최대 횟수와 backoff를 둡니다.

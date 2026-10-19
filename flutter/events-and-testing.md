@@ -76,12 +76,12 @@ try {
 |---|---|
 | `invalid_configuration`, `invalid_ad_unit` | 빈 키/ID, iOS에서 숫자가 아닌 값 |
 | `already_initialized` | 다른 설정으로 중복 초기화 |
-| `not_initialized` | 초기화 완료 전 광고 요청 |
+| `not_initialized` | 초기화 완료 전 광고 요청 (인라인 auto-load도 예외 대신 `loadFailed`로 전달) |
 | `already_loading`, `duplicate_request` | 같은 controller에 동시 요청 |
 | `not_loaded` | 로드 성공 전 show 또는 네이티브 객체 소실 |
 | `load_failed` | `nativeCode`, 선택 어댑터와 서버 설정 확인 |
 | `timeout` | 네트워크 상태와 30초 기본 제한 확인 |
-| `no_activity`, `no_view_controller` | 광고를 표시할 활성 화면 없음 |
+| `no_activity`, `no_view_controller` | 광고를 표시할 활성 화면 없음 (로드된 상태가 유지되므로 화면 복귀 후 `show()` 재시도 가능) |
 | `show_failed` | load 성공 뒤 같은 controller인지 확인 |
 | `cancelled`, `disposed` | 취소/해제된 요청을 다시 사용함 |
 | `test_mode_unsupported` | iOS에서 Android 전용 전역 테스트 모드를 요청함 |
@@ -95,7 +95,7 @@ Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-cod
 Sample은 플러그인의 공개 API만 사용하며 Mock 광고를 사용하지 않습니다. 테스트 설정이 비어 있으면 요청 버튼을 막습니다.
 
 ```bash
-git clone --branch v0.1.3 --depth 1 \
+git clone --branch v0.1.5 --depth 1 \
   https://github.com/Nasmedia-Tech/nap_mx_flutter.git
 cd nap_mx_flutter/example
 

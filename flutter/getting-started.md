@@ -22,7 +22,7 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 ## 2. 플러그인 설치
 
-현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.3` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
+현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.5` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
 
 ```yaml
 # pubspec.yaml
@@ -32,7 +32,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.3
+      ref: v0.1.5
 ```
 
 ```bash
