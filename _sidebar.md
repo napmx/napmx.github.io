@@ -69,6 +69,7 @@
   - [설치와 초기화](/flutter/getting-started)
   - [광고 구현](/flutter/ad-formats)
   - [이벤트·오류·테스트](/flutter/events-and-testing)
+  - [릴리즈 노트](/flutter/changelog)
 
 - **<i class="fa-solid fa-globe nav-icon icon-web"></i> WEB**
   - [개요](/web/)

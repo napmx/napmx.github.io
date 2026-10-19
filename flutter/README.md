@@ -6,6 +6,7 @@
 
 - 공개 저장소: [Nasmedia-Tech/nap_mx_flutter](https://github.com/Nasmedia-Tech/nap_mx_flutter)
 - 최신 릴리스: [`v0.1.6`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.6)
+- 변경 내역: [릴리즈 노트](/flutter/changelog)
 - 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.6/example)
 - 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.6/doc/integration-guide.md)
 
