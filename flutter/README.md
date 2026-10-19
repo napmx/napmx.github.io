@@ -1,14 +1,14 @@
 # Flutter SDK (Beta)
 
-> 🧪 **초기 공개 Beta** · 플러그인 `v0.1.6` · AGP 8/9 호환 지원
+> 🧪 **초기 공개 Beta** · 플러그인 `v0.1.7` · AGP 8/9 호환 지원
 
 `nap_mx_flutter`는 Flutter 앱에서 nap mx Android·iOS 네이티브 SDK를 같은 Dart API로 사용하는 공개 플러그인입니다.
 
 - 공개 저장소: [Nasmedia-Tech/nap_mx_flutter](https://github.com/Nasmedia-Tech/nap_mx_flutter)
-- 최신 릴리스: [`v0.1.6`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.6)
+- 최신 릴리스: [`v0.1.7`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.7)
 - 변경 내역: [릴리즈 노트](/flutter/changelog)
-- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.6/example)
-- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.6/doc/integration-guide.md)
+- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.7/example)
+- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.7/doc/integration-guide.md)
 
 ## 지원 포맷
 
@@ -45,7 +45,7 @@
 
 ## 검증된 버전과 최소 환경
 
-네이티브 최신 배포 버전은 [Android 릴리스 노트](/android/native/changelog)와 [iOS 릴리스 노트](/ios/native/changelog)에서 확인할 수 있습니다. 아래 표는 현재 공개 태그 `v0.1.6` 기준입니다.
+네이티브 최신 배포 버전은 [Android 릴리스 노트](/android/native/changelog)와 [iOS 릴리스 노트](/ios/native/changelog)에서 확인할 수 있습니다. 아래 표는 현재 공개 태그 `v0.1.7` 기준입니다.
 
 | 항목 | 최소/고정 버전 |
 |---|---|
@@ -74,7 +74,7 @@
 
 ## 현재 제한사항
 
-- `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.6` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=_2-플러그인-설치)를 참고하세요.
+- `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.7` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=_2-플러그인-설치)를 참고하세요.
 - 공개 범용 테스트 Media Key/AdUnit ID가 없습니다. 운영 담당자를 통해 별도 테스트 지면을 발급받아야 합니다.
 - Android `testMode`에 대응하는 iOS 전역 API가 없어 iOS에서 `true`를 전달하면 명시적으로 실패합니다.
 - `mediation` 설정 맵은 Android 전용입니다. iOS 네트워크 초기화는 호스트 앱에서 수행합니다.

@@ -22,9 +22,9 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 ## 2. 플러그인 설치
 
-현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.6` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
+현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.7` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
 
-> `v0.1.6`은 Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.5.1 / Core 1.3.0을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
+> `v0.1.7`은 Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.5.1 / Core 1.3.0을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
 
 ```yaml
 # pubspec.yaml
@@ -34,7 +34,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.6
+      ref: v0.1.7
 ```
 
 ```bash
