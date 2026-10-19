@@ -24,7 +24,7 @@ Dart API는 두 플랫폼을 공통 지원하므로 모두 `String`을 받습니
 
 현재 `pub.dev`에는 배포하지 않습니다. 재현 가능한 빌드를 위해 `v0.1.6` 태그를 고정합니다. AGP 8 호환 수정은 `v0.1.3`부터 포함됩니다.
 
-> `v0.1.6`은 Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.5.1 / Core 1.3.0을 설치합니다. 이전 태그 `v0.1.5`는 Android Core 2.3.0 / iOS Mediation 2.5.0입니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
+> `v0.1.6`은 Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.5.1 / Core 1.3.0을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
 
 ```yaml
 # pubspec.yaml
@@ -137,8 +137,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
 }
 ```
-
-`v0.1.5`는 `18.2.0`을 직접 선언하므로 이 태그를 유지하는 API 21~22 앱은 이 아티팩트만 `resolutionStrategy.force("com.google.android.gms:play-services-ads-identifier:18.0.0")`로 고정하세요.
 
 ```bash
 cd android
