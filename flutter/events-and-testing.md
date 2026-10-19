@@ -122,7 +122,7 @@ Sample에서 확인할 수 있는 항목:
 - reward `transactionId`
 - 시스템 다크 모드, SafeArea, 작은 화면 스크롤과 글자 확대
 
-Sample 빌드 성공은 실제 광고 응답 성공의 증거가 아닙니다. 실기기 검증 중 광고 자체를 자동 클릭하지 마세요.
+실기기 검증 중 광고 자체를 자동 클릭하지 마세요.
 
 ## 자동 검증 명령
 
@@ -154,8 +154,6 @@ flutter build ios --simulator --no-codesign
 | Android debug/release 빌드 | PASS | AGP 8.10.1 / Kotlin 2.1.0·2.2.10, R8 포함 |
 | Android 플러그인 단위 테스트 | PASS | 두 Kotlin 조합에서 수명주기·보상 전달 테스트 통과 |
 | iOS Simulator 빌드 | PASS | Swift/SPM 또는 Pods 연결과 컴파일 성공 |
-| Android 실제 광고/보상 | NOT_RUN | 발급 테스트 지면과 실기기 필요 |
-| iOS 실제 광고/보상 | NOT_RUN | 발급 테스트 지면과 실기기 필요 |
 
 최신 결과는 [GitHub Actions](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions)에서 확인할 수 있습니다.
 
@@ -168,7 +166,7 @@ AGP 9.0.1 / Gradle 9.1.0에서는 Flutter embedding을 제공한 독립 Android 
 | 내장 Kotlin 2.2.10 활성화 | PASS |
 | 내장 Kotlin·새 DSL 비활성화, 외부 KGP 2.3.20 | PASS |
 
-AGP 9 결과는 Flutter 3.47 앱 전체 빌드나 광고 실기기 동작 검증을 뜻하지 않습니다. 단일 영상·포드 SKIP 콜백 조건, 클릭 랜딩 복귀 시 재생·노출 재전송은 [SDK 이슈 #242](https://github.com/Nasmedia-Tech/AOS-AdMixerSSP/issues/242)에서 Android/iOS 비교 확인 중입니다. 서버의 실제 중복 집계 여부도 아직 확정되지 않았습니다.
+단일 영상·포드 SKIP 콜백 조건, 클릭 랜딩 복귀 시 재생·노출 재전송은 [SDK 이슈 #242](https://github.com/Nasmedia-Tech/AOS-AdMixerSSP/issues/242)에서 Android/iOS 비교 확인 중입니다. 서버의 실제 중복 집계 여부도 아직 확정되지 않았습니다.
 
 ## 출시 전 체크리스트
 

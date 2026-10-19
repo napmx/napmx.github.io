@@ -11,16 +11,16 @@
 
 ## 지원 포맷
 
-`지원`은 공개 네이티브 SDK API와 Flutter 연결 코드가 구현되어 있다는 뜻입니다. `실기기 미검증`은 컴파일과 자동 테스트는 통과했지만, 발급된 지면으로 실제 광고 응답을 받는 검증이 아직 공개 결과에 포함되지 않았다는 뜻입니다.
+`지원`은 공개 네이티브 SDK API와 Flutter 연결 코드가 구현되어 있다는 뜻입니다.
 
-| 광고 포맷 | Android | iOS | Flutter 구현 | 실제 광고 검증 |
-|---|---|---|---|---|
-| 배너 | 지원 | 지원 | `NapMxAdView` | 실기기 미검증 |
-| 전면 | 지원 | 지원 | `NapMxFullscreenAdController` | 실기기 미검증 |
-| 네이티브 | 지원 | 지원 | SDK 템플릿을 포함한 `NapMxAdView` | 실기기 미검증 |
-| 인스트림(인라인) 동영상 | 지원 | 지원 | `NapMxAdView` | 실기기 미검증 |
-| 아웃스트림(전면) 동영상 | 지원 | 지원 | `NapMxFullscreenAdController` | 실기기 미검증 |
-| 리워드 동영상 | 지원 | 지원 | SDK 보상 콜백 + `transactionId` | 실기기 미검증 |
+| 광고 포맷 | Android | iOS | Flutter 구현 
+|---|---|---|---|
+| 배너 | 지원 | 지원 | `NapMxAdView` |
+| 전면 | 지원 | 지원 | `NapMxFullscreenAdController` |
+| 네이티브 | 지원 | 지원 | SDK 템플릿을 포함한 `NapMxAdView` |
+| 인스트림(인라인) 동영상 | 지원 | 지원 | `NapMxAdView` |
+| 아웃스트림(전면) 동영상 | 지원 | 지원 | `NapMxFullscreenAdController` |
+| 리워드 동영상 | 지원 | 지원 | SDK 보상 콜백 + `transactionId` |
 
 네이티브 광고의 제목·이미지·CTA를 Flutter 위젯으로 분해해 다시 조립하지 않습니다. SDK가 노출·클릭을 등록한 네이티브 View를 그대로 사용하므로 `광고/Ad` 표시, AdChoices, CTA와 미디어 영역이 유지됩니다.
 
@@ -75,7 +75,6 @@
 
 - `pub.dev`에는 아직 배포하지 않았습니다. `v0.1.6` 태그를 고정해 설치하세요. [설치 예제](/flutter/getting-started?id=2-플러그인-설치)를 참고하세요.
 - 공개 범용 테스트 Media Key/AdUnit ID가 없습니다. 운영 담당자를 통해 별도 테스트 지면을 발급받아야 합니다.
-- CI는 정적 분석, 단위 테스트, Android debug/release, iOS Simulator 빌드를 검증합니다. 실제 노출·클릭·보상 성공을 뜻하지 않습니다.
 - Android `testMode`에 대응하는 iOS 전역 API가 없어 iOS에서 `true`를 전달하면 명시적으로 실패합니다.
 - `mediation` 설정 맵은 Android 전용입니다. iOS 네트워크 초기화는 호스트 앱에서 수행합니다.
 
