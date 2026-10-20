@@ -1,6 +1,6 @@
 # 릴리즈 노트
 
-Flutter 플러그인(`nap_mx_flutter`)은 Git 태그로 배포합니다. 설치할 때는 [설치와 초기화](/flutter/getting-started?id=2-플러그인-설치)의 `ref`에 아래 태그를 지정하세요. 네이티브 SDK의 변경 내용은 [Android 릴리즈 노트](/android/native/changelog)와 [iOS 릴리즈 노트](/ios/native/changelog)를 참고하세요.
+Flutter 플러그인(`nap_mx_flutter`)은 Git 태그로 배포합니다. 설치할 때는 [설치와 초기화](/flutter/getting-started?id=_2-플러그인-설치)의 `ref`에 아래 태그를 지정하세요. 네이티브 SDK의 변경 내용은 [Android 릴리즈 노트](/android/native/changelog)와 [iOS 릴리즈 노트](/ios/native/changelog)를 참고하세요.
 
 ---
 

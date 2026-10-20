@@ -1,6 +1,6 @@
 # 자주 묻는 질문 (FAQ)
 
-> 광고가 안 나오거나 빌드가 안 될 때는 먼저 [광고가 노출되지 않을 때](#광고가-노출되지-않을-때-점검-순서)와 [빌드 / Gradle](#빌드--gradle) 섹션을 확인하세요. 실전 연동 문의는 [Q&A](qna.md), 에러 코드는 [에러 코드](error-codes.md)를 함께 참고하세요.
+> 광고가 안 나오거나 빌드가 안 될 때는 먼저 [광고가 노출되지 않을 때](#광고가-노출되지-않을-때-점검-순서)와 [빌드 / Gradle](#빌드-gradle) 섹션을 확인하세요. 실전 연동 문의는 [Q&A](qna.md), 에러 코드는 [에러 코드](error-codes.md)를 함께 참고하세요.
 
 ---
 
@@ -108,7 +108,7 @@ BOM `2026.10.02`, AdFit 어댑터 `2.0.6`, Kakao AdFit SDK `3.21.17`을 유지�
 | Pangle | `https://artifact.bytedance.com/repository/pangle/` |
 | Teads | `https://sdk.teads.tv/android/repo`, `https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod`, `https://developer.huawei.com/repo/` |
 
-Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral()` 만으로 해결됩니다. 자세한 설정은 [SDK 시작하기](getting-started.md#1-3-네트워크별-추가-maven-저장소)를 참고하세요.
+Google AdManager·AppLovin·Unity·NaverAdManager는 `google()` / `mavenCentral()` 만으로 해결됩니다. 자세한 설정은 [SDK 시작하기](getting-started.md#_1-3-네트워크별-추가-maven-저장소)를 참고하세요.
 
 ---
 

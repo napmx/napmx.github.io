@@ -234,7 +234,7 @@ dependencyResolutionManagement {
 | + 🧪 GMA NextGen **(beta)** | **Kotlin 2.1+** | GMA 계열과 동일 |
 | + Pangle / AppLovin / Unity / Teads | 코어 기준과 각 벤더 요구사항 함께 확인 | 어댑터 추가 여부와 별개로 코어의 stdlib 의존성 유지 |
 
-> ℹ️ 위 Flutter 빌드 검증을 네이티브 Java-only 앱이나 모든 AGP·Java 버전의 호환 보장으로 해석하지 마세요. 네이티브 호스트 및 선택 어댑터 조합은 해당 SDK 요구사항에 맞춰 별도 검증해야 합니다. Flutter 플러그인의 설정과 검증 범위는 [Flutter 설치 가이드](/flutter/getting-started?id=4-android-설정)를 참고하세요.
+> ℹ️ 위 Flutter 빌드 검증을 네이티브 Java-only 앱이나 모든 AGP·Java 버전의 호환 보장으로 해석하지 마세요. 네이티브 호스트 및 선택 어댑터 조합은 해당 SDK 요구사항에 맞춰 별도 검증해야 합니다. Flutter 플러그인의 설정과 검증 범위는 [Flutter 설치 가이드](/flutter/getting-started?id=_4-android-설정)를 참고하세요.
 
 ### 1-6. Android 15 · 16KB 페이지 크기
 

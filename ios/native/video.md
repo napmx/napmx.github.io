@@ -2,7 +2,7 @@
 
 동영상 광고를 추가하기 전 [시작하기](/ios/native/getting-started) 설정을 완료해주세요.
 
-> Interstitial Ad 광고 연동을 희망하시는 경우, [배너 - 전면 배너](/ios/native/banner#2-전면-배너interstitial-광고)를 연동해주세요.
+> Interstitial Ad 광고 연동을 희망하시는 경우, [배너 - 전면 배너](/ios/native/banner?id=전면-배너interstitial-광고)를 연동해주세요.
 
 ---
 

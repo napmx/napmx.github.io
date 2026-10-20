@@ -14,7 +14,7 @@
 
 - 노출(imp) 집계 시점을 Android 와 동일하게 정렬
 - WebBridge 실패 콜백 `errorCode` 를 iOS/Android 공통 코드로 통일
-- 어댑터 버전 업데이트 — **아래 3종은 코어 v2.5.0 이상이 필요합니다** (이전 코어와 조합 시 링크 실패)
+- 어댑터 버전 업데이트 — **아래 3종은 Mediation(`AdMixerMediation`) v2.5.0 이상이 필요합니다** (이전 Mediation과 조합 시 링크 실패)
    - AdMixerMediationGAM v1.2.8
    - AdMixerMediationPangle v1.2.6
    - AdMixerMediationNAM v1.3.5
