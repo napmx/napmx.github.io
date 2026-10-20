@@ -217,6 +217,10 @@ dependencyResolutionManagement {
 | AppLovin | API 24 (Android 7.0) — `applovin-sdk:13.6.3` 기준 |
 | 🧪 GMA NextGen **(beta)** | API 24 (Android 7.0) — NextGen SDK 요구 |
 
+> **AdFit + Android 6(API 23)**: 광고 로드 중 `NoClassDefFoundError`가 발생하면
+> 앱 모듈에 코어 라이브러리 디슈가링을 적용하세요.
+> [오류 예시 및 Gradle 설정](faq.md#android-6에서-adfit-noclassdeffounderror-발생)을 참고하세요.
+
 ### 1-5. Kotlin 툴체인 요구사항
 
 코어 `admixer-ssp:2.4.0`은 `kotlin-stdlib:2.2.10`을 전이 의존으로 포함합니다. Kotlin 컴파일러와 stdlib 버전은 별개이며, 의존성 버전만으로 최소 컴파일러를 단정할 수 없습니다. 현재 Flutter 플러그인에서는 **AGP 8.10.1 / Java 17 / Kotlin 2.1.0 및 2.2.10** 조합으로 debug/release 빌드(R8 포함)를 검증했습니다. Kotlin 2.2.10을 권장하며 stdlib를 구버전으로 강제 낮추지 마세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.

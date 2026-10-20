@@ -64,6 +64,40 @@ adb logcat | grep AdMixerSDK
 
 ## 빌드 / Gradle
 
+### Android 6에서 AdFit NoClassDefFoundError 발생
+
+**Q. Android 6.0 / 6.0.1(API 23)에서 AdFit 광고 로드 중 앱이 종료됩니다.**
+
+AdFit 이미지 처리 경로에서 `java.lang.NoClassDefFoundError`가 발생하고,
+`com.kakao.adfit...$$ExternalSyntheticLambda1` 등의 클래스가 표시될 수 있습니다.
+Android 6에 없는 `java.util.function` 및 `computeIfAbsent` 관련 Java API를
+사용하는 경로에서는 **코어 라이브러리 디슈가링** 설정이 필요합니다.
+
+최종 APK/AAB를 생성하는 **앱 모듈의 `build.gradle`**에 다음을 적용하세요.
+
+```gradle
+android {
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        // 기존 sourceCompatibility / targetCompatibility 설정은 유지
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
+}
+```
+
+BOM `2026.10.02`, AdFit 어댑터 `2.0.6`, Kakao AdFit SDK `3.21.17`을 유지한
+상태에서 Android 6 에뮬레이터의 동일 이미지 처리 경로가 정상 실행됨을 확인했습니다.
+이번 검증에서는 추가 keep 규칙을 사용하지 않았습니다.
+
+사용 중인 AGP와의 호환성을 확인하고, 설정 적용 후 앱을 재빌드하여 업데이트 배포하세요.
+검증 범위는 해당 이미지 처리 경로이므로, 배포 전 Android 6에서 실제 광고 요청·노출도
+확인해야 합니다.
+
+---
+
 **Q. `Could not resolve ...`(또는 `Failed to resolve`) 빌드 오류가 납니다.**
 
 일부 네트워크는 **별도 Maven 저장소** 추가가 필요합니다. `settings.gradle`의 `dependencyResolutionManagement`(또는 프로젝트 `build.gradle`)에 추가하세요.
