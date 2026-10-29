@@ -56,14 +56,12 @@ SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하�
 
 ### 최신 필수 SDK 버전
 
-2026-10-19 배포 저장소 확인 기준으로 Mediation은 **2.5.1**, Core는 **1.3.0**이 최신입니다. CocoaPods와 SPM은 같은 버전 조합으로 맞추세요.
+2026-10-29 배포 저장소 확인 기준으로 Mediation은 **2.6.0**, Core는 **1.5.0**이 최신입니다. Mediation 2.6.0은 Core **1.4.1 이상**이 필요합니다. CocoaPods와 SPM은 같은 버전 조합으로 맞추세요.
 
 | 구성 | CocoaPods | SPM 태그 |
 |---|---|---|
-| Mediation | `AdMixerMediation` 2.5.1 | `iOS-SSP-Mediation-SPM` 2.5.1 |
-| Core | `AdMixer` 1.3.0 | `iOS-SSP-SPM` v1.3.0 |
-
-Mediation 2.5.1은 노출 가시 판정, 배너 자동갱신, 클릭 중복 집계를 개선합니다. 자세한 내용은 [릴리스 노트](/ios/native/changelog?id=v251-2026-10-01)를 확인하세요.
+| Mediation | `AdMixerMediation` 2.6.0 | `iOS-SSP-Mediation-SPM` 2.6.0 |
+| Core | `AdMixer` 1.5.0 | `iOS-SSP-SPM` v1.5.0 |
 
 ### 1-1. CocoaPods를 통한 설치
 
@@ -106,7 +104,7 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 | 패키지 | 설명 | Repository URL |
 |--------|------|----------------|
 | nap mx Mediation (`AdMixerMediation`) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
-| nap mx Core (`AdMixer`) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| nap mx Core (`AdMixer`) | 필수 (1.4.1 이상, Mediation 2.6.0 패키지에 의존성 포함) | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
 | Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
 | Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
 | Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
@@ -177,21 +175,19 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 ### 1-4. 타 네트워크 SDK 버전 정보
 
-2026-10-19 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
+2026-10-29 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
 
 | Adapter SDK | 어댑터 버전 (Pods / SPM) | 네트워크 SDK | 네트워크 SDK 허용 범위 (Pods) | 최소 Mediation | 비고 |
 |---|---|---|---|---|---|
-| `AdMixerMediationGAM` | 1.2.8 / 1.2.8 | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | 2.5.0 | |
-| `AdMixerMediationAdFit` | 1.1.4 / 1.1.4 | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 2.4.5 | 최소 iOS 14 |
-| `AdMixerMediationPangle` | 1.2.6 / 1.2.6 | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | 2.5.0 | |
+| `AdMixerMediationGAM` | 1.2.9 / 1.2.9 | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | 2.6.0 | |
+| `AdMixerMediationAdFit` | 1.1.5 / 1.1.5 | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 2.4.5 | 최소 iOS 14 |
+| `AdMixerMediationPangle` | 1.2.7 / 1.2.7 | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | 2.6.0 | |
 | `AdMixerMediationUnityAds` | 1.1.3 / 1.1.3 | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | 2.4.2 | |
 | `AdMixerMediationAppLovin` | 1.1.5 / 1.1.5 | AppLovinSDK | `13.3.1` 이상 &#126; `13.5.2` 미만 | 2.4.5 | 기본 WithCore 구성 |
 | `AdMixerMediationNAM` | 1.3.5 / 1.3.5 | NAMSDK | `8.0` 이상 &#126; `8.23` 미만 | 2.5.0 | |
-| `AdMixerMediationTeads` | 1.1.0 / 1.1.1 | TeadsSDK | `6.2` 이상 &#126; `7.0` 미만 | 2.4.2 | 최소 iOS 14, Xcode 26+ |
+| `AdMixerMediationTeads` | 1.1.2 / 1.1.2 | TeadsSDK | `6.2` 이상 &#126; `7.0` 미만 | 2.4.5 | 최소 iOS 14, Xcode 26+ |
 
 SPM은 벤더 패키지의 태그 체계를 사용하므로 일부 범위가 CocoaPods와 다릅니다. Pangle은 `7.4.1-release.1` 이상 `8.2.2-release.0` 미만, NAM은 `8.20.0` 이상 `8.23.0` 미만입니다. UnityAds SPM 패키지는 네트워크 SDK `4.16.4` 바이너리를 고정합니다.
-
-Teads의 SPM 태그 `1.1.1`은 어댑터 바이너리 `1.1.0`과 Teads SDK `6.2.0`을 포함하는 패키지 버전입니다. CocoaPods와 태그 번호가 다르므로 각각의 배포 버전을 선택하세요.
 
 > 호스트 앱과 모든 의존성의 버전 제약을 동시에 만족하는 조합을 선택합니다. 항상 더 낮은 버전이 선택되는 것은 아니며, 허용 범위가 겹치지 않으면 의존성 해결에 실패합니다. 기존 `Podfile.lock`이나 `Package.resolved`가 있으면 잠긴 버전을 유지할 수 있으므로, 업데이트 후 실제 해석 버전을 확인하세요.
 
@@ -271,13 +267,17 @@ AMMediation.shared.setConsent(consent)
 **호출 순서 (중요)**
 
 1. **네트워크 SDK 초기화보다 먼저** 호출합니다. AppLovin·UnityAds·Pangle 은 SDK 초기화 시점에 동의 값을 읽으므로, 아래 초기화 코드의 `MobileAds.shared.start()`·`ALSdk.shared().initialize`·`PAGSdk.start`·`UnityAds.initialize` 보다 앞에 두세요. GAM 의 아동 대상 설정도 `MobileAds.shared.start()` 이전이 권장됩니다.
-2. **Naver AdManager 예외**: `GFPAdManager.setup` 이 설정 객체를 교체할 수 있어 **setup 완료 후 `setConsent` 를 한 번 더 호출**해야 값이 유지됩니다. 같은 값으로 재호출해도 무해합니다.
+2. **Naver AdManager**: `GFPAdManager.setup` 이 설정 객체를 교체할 수 있지만, Mediation 2.6.0부터는 광고 로드마다 동의 값을 다시 적용하므로 setup 이후 재호출이 필요 없습니다. **2.5.1 이하**에서는 setup 완료 후 `setConsent` 를 한 번 더 호출하세요 (같은 값 재호출은 무해합니다).
 3. 초기화 시점에만 값을 읽는 벤더(AppLovin 등)는 초기화 이후의 재호출이 다음 앱 실행부터 반영될 수 있습니다.
+4. `setConsent` 는 전달한 값을 복사해 저장합니다. 호출 뒤 같은 `AMMConsent` 객체를 수정해도 반영되지 않으니, 변경은 `setConsent` 를 다시 호출해 전달하세요.
+
+**한 번 설정한 동의는 미설정으로 되돌릴 수 없습니다** — `.granted`/`.denied` 로 전달한 뒤 `.unspecified` 로 바꿔 다시 호출해도 벤더 SDK 에 이미 전달된 값은 남습니다(AppLovin 은 앱을 재실행해도 유지). 사용자가 동의를 철회하면 `.unspecified` 가 아니라 `.denied` 로 전달하세요.
 
 **COPPA(`childDirected = .granted`) 시 동작**
 
 - nap mx 서버 요청에서 광고 식별자(IDFA)를 보내지 않고 `coppa=1` 을 전송합니다.
 - AppLovin 은 아동 대상 앱에서 SDK 사용 자체를 허용하지 않아(13.0.0+ API 제거) 해당 네트워크 요청을 건너뜁니다.
+- AdFit·Pangle·Teads 는 아동 신호를 전달할 API 가 없어 해당 네트워크 요청을 건너뜁니다 (AdFit 1.1.5·Pangle 1.2.7·Teads 1.1.2 이상). 아동 대상 지면은 GAM·Naver AdManager·UnityAds·nap mx 광고로만 채워지므로 fill 이 줄 수 있습니다.
 
 **신호별 벤더 반영 범위** — 벤더가 코드 설정 API 를 제공하는 조합에만 실제 호출이 발생합니다. "자동판독"은 CMP 가 UserDefaults 에 기록한 IAB 문자열을 벤더 SDK 가 직접 읽는 경로로, 이 API 와 무관하게 동작합니다.
 
@@ -285,11 +285,13 @@ AMMediation.shared.setConsent(consent)
 |---|---|---|---|---|
 | AppLovin | ✅ | ✅ | 요청 차단 | — |
 | UnityAds | ✅ | ✅ | ✅ | — |
-| Pangle | ✅ | ✅ | — | — |
+| Pangle | ✅ | ✅ | 요청 차단 | — |
 | Google AdManager | 자동판독 | 자동판독 | ✅ | — |
 | Naver AdManager | 자동판독 | 자동판독 | ✅ | ✅ |
-| Teads | 자동판독 | 자동판독 | — | — |
-| AdFit | — | — | — | — |
+| Teads | 자동판독 | ✅ (US Privacy 문자열) | 요청 차단 | — |
+| AdFit | — | — | 요청 차단 | — |
+
+> Teads 의 `usSaleConsent` 는 벤더 SDK 의 custom US Privacy 설정이라, CMP 를 함께 쓰면서 `usSaleConsent` 를 `.granted`/`.denied` 로 설정하면 CMP 가 기록한 값 대신 이 값이 Teads 에 적용될 수 있습니다. CMP 값을 그대로 쓰려면 `usSaleConsent` 를 설정하지 마세요.
 
 ### 초기화 코드
 

@@ -80,8 +80,11 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onClickVideo` | 동영상 광고 클릭(더보기) |
 | `onSkipVideo` | 동영상 광고 내 skip 버튼 클릭 |
 | `onCompleteVideo` | 동영상 광고 재생 완료 |
+| `onFailShowVideo(error:)` | nap mx 동영상 광고 재생 준비 실패 또는 재생 중단 |
 
 > 광고 로드 성공/실패는 `loadAd()`의 completion(`video`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
+
+> **노출 콜백 시점**: nap mx 동영상 광고의 `onSuccessShowVideo` 는 실제 재생이 시작될 때 전달됩니다. 광고 영역이 숨겨져 있거나 화면에 50% 미만으로 보이면 재생을 보류하고 콜백도 오지 않으므로, 광고 뷰를 처음부터 보이는 위치에 붙이세요.
 
 ```swift
 extension VideoAdViewController: AMMVideoViewDelegate {

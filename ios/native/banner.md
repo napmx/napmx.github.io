@@ -78,6 +78,8 @@ override func viewDidDisappear(_ animated: Bool) {
 
 > 광고 로드 성공/실패는 `loadAd()`의 completion(`banner`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
 
+> **노출 콜백 시점**: `onSuccessShowBanner` 는 광고 영역이 화면에 50% 이상 보이거나 네트워크 SDK 가 노출을 판정한 시점(노출 집계와 같은 시점)에 전달됩니다. 광고 영역(또는 상위 뷰)이 숨겨져 있거나(`isHidden`·alpha 0) 화면 밖이면 오지 않으므로, 광고 뷰를 처음부터 보이는 위치에 붙여야 합니다.
+
 ```swift
 extension ViewController: AMMBannerViewDelegate {
 

@@ -1,6 +1,26 @@
 # 릴리즈 노트
 
 
+## v2.6.0 (2026-10-29)
+
+- **필수 Core 버전 변경 — `AdMixer` 1.4.1 이상이 필요합니다.** SPM 은 Mediation 2.6.0 패키지가 Core 의존성(1.4.1 이상)을 포함해 자동으로 해석합니다
+- 배너·네이티브 노출 성공 콜백(`onSuccessShowBanner`·`onSuccessShowNative`) 시점 변경
+   - **연동 주의**: 광고 영역(또는 상위 뷰)이 숨겨져 있거나(`isHidden`·alpha 0) 화면 밖이면 콜백이 오지 않습니다
+- 인라인 동영상(`AMMVideoView`) nap mx 광고 — `onSuccessShowVideo` 를 실제 재생이 시작될 때 전달하고, 재생 준비 실패·재생 중단을 `onFailShowVideo(error:)` 로 전달합니다
+- 자동갱신 중 다른 네트워크의 응답 지연(타임아웃)으로 표시 중인 nap mx 광고의 클릭 콜백이 끊기던 문제 수정
+- 개인정보 동의 처리 개선
+   - `setConsent` 값을 복사해 저장하고, 광고를 로드할 때마다 해당 네트워크에 다시 적용합니다
+   - 아동 대상(`childDirected = .granted`) 설정 시 아동 신호를 전달할 수 없는 네트워크(AdFit·Pangle·Teads)에는 광고를 요청하지 않습니다
+   - Teads 에 `usSaleConsent` 를 US Privacy 문자열로 전달합니다
+- WebBridge 실패 콜백이 Core 로드 실패의 원본 오류 코드를 전달하도록 개선
+- 어댑터 버전 업데이트 — **GAM·Pangle 은 Mediation(`AdMixerMediation`) v2.6.0 이상이 필요합니다**
+   - AdMixerMediationGAM v1.2.9 — 배너 노출 신호 연동
+   - AdMixerMediationPangle v1.2.7 — 배너 노출 신호 연동, 아동 대상 트래픽 제외
+   - AdMixerMediationAdFit v1.1.5 — 아동 대상 트래픽 제외
+   - AdMixerMediationTeads v1.1.2 — 아동 대상 트래픽 제외, US Privacy 문자열 전달
+
+---
+
 ## v2.5.1 (2026-10-01)
 
 - 네이티브 광고 노출(imp) 집계 기준 개선 — 자체 노출 판정이 없는 네트워크(AdFit)는 광고 영역이 화면에 50% 이상 보일 때 노출로 집계합니다
