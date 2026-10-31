@@ -29,8 +29,8 @@ Future<void> stopAdMonitoring() => allAdEvents.cancel();
 | `loadStarted` | 요청 시작 | 로딩 상태 표시 |
 | `loaded` | 표시 가능한 광고 로드 | Show 버튼 활성화 |
 | `loadFailed` | 로드 실패 | 오류 기록 후 앱 본문 복구 |
-| `shown` | SDK 표시 콜백 | 노출 상태 기록 |
-| `showFailed` | 표시 실패 | controller 해제 후 필요 시 새 요청 |
+| `shown` | SDK 표시 콜백. iOS 배너·네이티브는 광고 영역이 50% 이상 보일 때, nap mx 인라인 동영상은 실제 재생이 시작될 때 전달 (`v0.1.8` 이상) | 노출 상태 기록 |
+| `showFailed` | 표시 실패. 인라인 뷰도 전달하며, 전면 광고가 화면에 뜨기 전 실패하면 플러그인이 광고를 바로 해제 (`v0.1.8` 이상) | controller 해제 후 필요 시 새 요청 |
 | `clicked` | SDK 클릭 콜백 | 분석만 기록, 클릭 자동화 금지 |
 | `completed` | 동영상 완료 | 리워드 지급 근거로 사용하지 않음 |
 | `skipped` | 동영상 건너뜀 | 화면 상태 복구 |
@@ -84,9 +84,9 @@ try {
 | `no_activity`, `no_view_controller` | 광고를 표시할 활성 화면 없음 (로드된 상태가 유지되므로 화면 복귀 후 `show()` 재시도 가능) |
 | `show_failed` | load 성공 뒤 같은 controller인지 확인 |
 | `cancelled`, `disposed` | 취소/해제된 요청을 다시 사용함 |
-| `test_mode_unsupported` | iOS에서 Android 전용 전역 테스트 모드를 요청함 |
+| `test_mode_unsupported` | iOS에서 Android 전용 전역 테스트 모드나 `testDeviceIds`를 요청함 |
 | `mediation_configuration_unsupported` | iOS에서 Android 전용 mediation 맵을 전달함 |
-| `unsupported_privacy` | Android Core에 없는 under-age 값을 명시함 |
+| `unsupported_privacy` | Android Core에 없는 under-age 값을, iOS에서 `usPrivacyString`을 명시함 |
 
 Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-codes), iOS `-1`~`-8`은 [iOS SDK 가이드](/ios/native/getting-started)의 원본 표를 확인하세요.
 
@@ -95,7 +95,7 @@ Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-cod
 Sample은 플러그인의 공개 API만 사용하며 Mock 광고를 사용하지 않습니다. 테스트 설정이 비어 있으면 요청 버튼을 막습니다.
 
 ```bash
-git clone --branch v0.1.7 --depth 1 \
+git clone --branch v0.1.8 --depth 1 \
   https://github.com/Nasmedia-Tech/nap_mx_flutter.git
 cd nap_mx_flutter/example
 

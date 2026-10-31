@@ -4,6 +4,24 @@ Flutter 플러그인(`nap_mx_flutter`)은 Git 태그로 배포합니다. 설치�
 
 ---
 
+## v0.1.8 (2026-10-31)
+
+| 네이티브 구성 | 버전 |
+|---|---|
+| Android Core / BOM | 2.4.0 / 2026.10.04 (변경 없음) |
+| iOS Mediation | **2.6.0** |
+| iOS Core | **1.5.1** |
+
+- iOS 네이티브 SDK를 Mediation 2.6.0, Core 1.5.1로 업데이트했습니다. Mediation 2.6.0은 Core 1.4.1 이상이 필요합니다. 변경 내용은 [iOS 릴리즈 노트](/ios/native/changelog)를 참고하세요.
+   - iOS 배너·네이티브의 `shown`은 광고 영역이 화면에 50% 이상 보일 때 전달됩니다. 광고 뷰가 숨겨져 있거나 화면 밖이면 오지 않습니다.
+   - nap mx 인라인 동영상의 `shown`은 실제 재생이 시작될 때 전달됩니다.
+- 인라인 광고(`NapMxAdView`)의 표시 실패를 `showFailed`로 전달합니다. 이전에는 Android·iOS 모두 이 콜백이 누락됐습니다.
+- 전면 광고가 화면에 뜨기 전에 표시에 실패하면 앱의 `dispose()`를 기다리지 않고 네이티브 광고를 바로 해제합니다. 화면에 뜬 뒤의 실패는 기존처럼 닫힘 콜백에서 정리합니다.
+- iOS에서 플러그인 자체 로드 실패(SDK가 광고 없이 응답, 미지원 포맷)가 `isNoFill = true`로 잘못 표시되던 문제를 수정했습니다.
+- **연동 주의 (iOS)**: iOS SDK에 대응 API가 없는 `testDeviceIds`와 `usPrivacyString`을 비어 있지 않은 값으로 전달하면 초기화가 각각 `test_mode_unsupported`, `unsupported_privacy`로 실패합니다. 이전에는 조용히 무시했습니다. Android와 공용 설정을 쓰고 있다면 플랫폼별로 나눠 전달하세요.
+
+---
+
 ## v0.1.7 (2026-10-19)
 
 | 네이티브 구성 | 버전 |
