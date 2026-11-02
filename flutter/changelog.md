@@ -64,7 +64,7 @@ Flutter 플러그인(`nap_mx_flutter`)은 Git 태그로 배포합니다. 설치�
 
 ## v0.1.4 (2026-10-19)
 
-- 같은 포맷의 지면 여러 개를 등록할 수 있도록 `additionalAdUnitIds: List<String>`를 추가했습니다. 기존 `adUnitIds` 맵과 기본 ID 조회는 그대로 유지되며, 목록만으로 초기화할 수도 있습니다. [같은 포맷의 여러 지면 등록](/flutter/getting-started?id=같은-포맷의-여러-지면-등록-v014-이상)을 참고하세요.
+- 같은 포맷의 지면 여러 개를 등록할 수 있도록 `additionalAdUnitIds: List<String>`를 추가했습니다. 기존 `adUnitIds` 맵과 기본 ID 조회는 그대로 유지되며, 목록만으로 초기화할 수도 있습니다. [같은 포맷의 여러 지면 등록](/flutter/getting-started?id=같은-포맷의-여러-지면-등록)을 참고하세요.
 - 두 컬렉션을 합쳐 중복을 제거한 ID를 Android와 iOS 초기화에 전달하며, Dart의 동일 설정 판정에도 추가 지면을 포함합니다.
 - iOS에서 여러 포맷에 같은 ID를 등록하면 검증에 실패하던 문제를 수정했습니다.
 

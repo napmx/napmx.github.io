@@ -1,6 +1,6 @@
 # Flutter 이벤트·오류·테스트
 
-운영 코드에서는 개별 controller의 이벤트로 화면 상태를 갱신하고, `NapMx.events` 전역 스트림은 공통 분석·진단에만 사용하세요. SDK가 제공하지 않은 네트워크 이름이나 어댑터 버전을 추정해서 채우지 않습니다.
+화면 상태는 각 controller의 이벤트로 갱신하고, `NapMx.events` 전역 스트림은 공통 로그나 분석에 사용하세요.
 
 ## 이벤트 수신
 
@@ -12,7 +12,7 @@ void startAdMonitoring() {
     debugPrint(
       'type=${event.type.name}, '
       'format=${event.format?.name}, '
-      // 네이티브 SDK가 실제 보고하지 않으면 null입니다.
+      // SDK가 응답 네트워크를 알려 주지 않으면 null입니다.
       'network=${event.network ?? "not-reported"}, '
       'elapsedMs=${event.elapsedMilliseconds}, '
       'error=${event.error?.code}',
@@ -31,10 +31,10 @@ Future<void> stopAdMonitoring() => allAdEvents.cancel();
 | `loadFailed` | 로드 실패 | 오류 기록 후 앱 본문 복구 |
 | `shown` | SDK 표시 콜백. iOS 배너·네이티브는 광고 영역이 50% 이상 보일 때, nap mx 인라인 동영상은 실제 재생이 시작될 때 전달 (`v0.1.8` 이상) | 노출 상태 기록 |
 | `showFailed` | 표시 실패. 인라인 뷰도 전달하며, 전면 광고가 화면에 뜨기 전 실패하면 플러그인이 광고를 바로 해제 (`v0.1.8` 이상) | controller 해제 후 필요 시 새 요청 |
-| `clicked` | SDK 클릭 콜백 | 분석만 기록, 클릭 자동화 금지 |
+| `clicked` | SDK 클릭 콜백 | 클릭 기록 |
 | `completed` | 동영상 완료 | 리워드 지급 근거로 사용하지 않음 |
 | `skipped` | 동영상 건너뜀 | 화면 상태 복구 |
-| `rewarded` | 실제 SDK 보상 콜백 | `transactionId` 기준 1회 지급 |
+| `rewarded` | SDK 보상 콜백 | `transactionId` 기준 1회 지급 |
 | `closed` | 전체 화면 광고 닫힘 | 원래 화면 상태 복구 |
 | `cancelled` | 요청 취소 | 필요 시 새 controller 생성 |
 | `disposed` | 네이티브 참조 해제 | controller 재사용 금지 |
@@ -57,13 +57,12 @@ try {
   await controller.load();
 } on NapMxError catch (error) {
   if (error.isNoFill) {
-    // 광고 재고가 없는 정상적인 상황일 수 있습니다.
-    // 성공으로 바꾸거나 즉시 무한 재요청하지 않습니다.
+    // 보여 줄 광고가 없다는 뜻입니다. 바로 재요청하지 말고 슬롯을 숨깁니다.
     hideAdSlotTemporarily();
   } else if (error.isTimeout) {
     showContentWithoutAd();
   } else {
-    // message 문자열 대신 안정된 code로 분기합니다.
+    // message는 바뀔 수 있으니 code로 분기합니다.
     reportAdError(error.code, error.nativeCode);
   }
 } on StateError catch (error) {
@@ -92,7 +91,7 @@ Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-cod
 
 ## Sample 앱 실행
 
-Sample은 플러그인의 공개 API만 사용하며 Mock 광고를 사용하지 않습니다. 테스트 설정이 비어 있으면 요청 버튼을 막습니다.
+테스트 값을 넣기 전에는 Sample 앱의 광고 요청 버튼이 비활성화됩니다.
 
 ```bash
 git clone --branch v0.1.8 --depth 1 \
@@ -106,7 +105,7 @@ cp config/example.json config/local.json
 Copy-Item config/example.json config/local.json
 ```
 
-`config/local.json`의 placeholder를 발급받은 테스트 값으로 바꾼 뒤 실행합니다.
+`config/local.json`의 예시 값을 발급받은 테스트 값으로 바꾼 뒤 실행합니다.
 
 ```bash
 flutter pub get
@@ -117,12 +116,12 @@ Sample에서 확인할 수 있는 항목:
 
 - 포맷별 load/show/dispose 상태와 버튼 활성화
 - 오류 code와 native code
-- SDK가 실제 전달한 네트워크 이름
+- SDK가 알려 준 응답 네트워크
 - 요청 소요 시간
 - reward `transactionId`
 - 시스템 다크 모드, SafeArea, 작은 화면 스크롤과 글자 확대
 
-실기기 검증 중 광고 자체를 자동 클릭하지 마세요.
+테스트 중에도 광고를 자동으로 클릭하지 마세요. 무효 트래픽으로 처리될 수 있습니다.
 
 ## 자동 검증 명령
 
@@ -145,34 +144,38 @@ flutter build apk --release
 flutter build ios --simulator --no-codesign
 ```
 
-공개 저장소 CI는 등록된 self-hosted macOS ARM64 runner에서 Android와 iOS를 모두 검증합니다. 현재 자동 검증 범위는 다음과 같습니다.
+플러그인 저장소의 CI는 self-hosted macOS(ARM64) 러너에서 다음 항목을 실행합니다(Flutter 3.44.9).
 
-| 검증 | 결과 | 의미 |
-|---|---|---|
-| Dart format/analyze/test | PASS | 공개 API와 핵심 상태 테스트 통과 |
-| `pub publish --dry-run` | PASS | 패키지 구성 점검, 실제 pub.dev 배포는 하지 않음 |
-| Android debug/release 빌드 | PASS | AGP 8.10.1 / Kotlin 2.1.0·2.2.10, R8 포함 |
-| Android 플러그인 단위 테스트 | PASS | 두 Kotlin 조합에서 수명주기·보상 전달 테스트 통과 |
-| iOS Simulator 빌드 | PASS | Swift/SPM 또는 Pods 연결과 컴파일 성공 |
+| 항목 | 내용 |
+|---|---|
+| Dart format·analyze·test | 공개 API와 상태 처리 테스트 |
+| `pub publish --dry-run` | 패키지 구성 점검 (pub.dev에는 배포하지 않음) |
+| Android debug/release 빌드 | AGP 8.10.1 / Gradle 8.11.1, Kotlin 2.1.0·2.2.10, R8 포함 |
+| Android 플러그인 단위 테스트 | Kotlin 2.1.0·2.2.10 |
+| iOS 시뮬레이터 빌드 | Swift Package Manager |
+| iOS 플러그인 단위 테스트 | XCTest, iOS 시뮬레이터 |
 
-최신 결과는 [GitHub Actions](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions)에서 확인할 수 있습니다.
+결과는 [GitHub Actions](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions)에서 볼 수 있습니다.
 
-`v0.1.3`에 포함된 AGP 호환 구현은 [CI 실행 결과](https://github.com/Nasmedia-Tech/nap_mx_flutter/actions/runs/37746974613)에서 위 조합으로 검증했습니다(Flutter 3.44.9 / Gradle 8.11.1). 릴리스별 최신 빌드 결과는 위 GitHub Actions 링크에서 확인하세요.
-
-AGP 9.0.1 / Gradle 9.1.0에서는 Flutter embedding을 제공한 독립 Android 호스트로 다음 조합의 플러그인 debug/release AAR 및 단위 테스트를 검증했습니다.
+AGP 9.0.1 / Gradle 9.1.0은 Flutter 앱이 아닌 별도 Android 프로젝트에서 플러그인 debug/release 빌드와 단위 테스트로 확인했습니다.
 
 | Kotlin 구성 | 결과 |
 |---|---|
-| 내장 Kotlin 2.2.10 활성화 | PASS |
-| 내장 Kotlin·새 DSL 비활성화, 외부 KGP 2.3.20 | PASS |
+| 내장 Kotlin 2.2.10 사용 | 통과 |
+| 내장 Kotlin·새 DSL 끔, 외부 Kotlin 플러그인 2.3.20 | 통과 |
 
-단일 영상·포드 SKIP 콜백 조건, 클릭 랜딩 복귀 시 재생·노출 재전송은 Android/iOS 비교 확인 중입니다. 서버의 실제 중복 집계 여부도 아직 확정되지 않았습니다. 해당 증상을 확인하면 SDK 버전과 이벤트 순서를 정리해 [운영 담당자](mailto:nap_mx@nasmedia.co.kr)에게 전달하세요.
+다음 동작은 Android와 iOS 사이에 차이가 있는지 확인하고 있습니다.
+
+- 동영상 건너뛰기(`skipped`) 콜백이 오는 조건
+- 광고 클릭 후 앱으로 돌아왔을 때 재생·노출 이벤트가 다시 오는지, 그 경우 서버에서 중복 집계되는지
+
+이런 증상이 보이면 SDK 버전과 이벤트 순서를 정리해 [운영 담당자](mailto:nap_mx@nasmedia.co.kr)에게 알려 주세요.
 
 ## 출시 전 체크리스트
 
 - [ ] Android/iOS 각각 올바른 Media Key와 AdUnit ID를 사용했다.
 - [ ] 운영 ID, 인증서, 서명키가 Git과 로그에 노출되지 않았다.
-- [ ] 실제 사용하는 선택 어댑터만 설치했다.
+- [ ] 사용하는 선택 어댑터만 설치했다.
 - [ ] 네트워크별 App ID와 iOS 네이티브 초기화를 완료했다.
 - [ ] Google을 사용한다면 입찰 광고 소스를 호환 버전으로 추가하고(Unity Ads는 `unity-ads` SDK 포함), Debug Options Menu → Open ad inspector → Adapters 탭에서 어댑터 초기화 상태를 확인했다.
 - [ ] 개인정보 선택을 SDK/네트워크 초기화보다 먼저 확정했다.
@@ -181,9 +184,9 @@ AGP 9.0.1 / Gradle 9.1.0에서는 Flutter embedding을 제공한 독립 Android 
 - [ ] 작은 화면과 글자 확대에서 광고 View가 잘리지 않는다.
 - [ ] 전면 광고가 활성 화면에서 `load → show` 순서로 동작한다.
 - [ ] 보상은 `rewarded` 콜백에서만 지급하고 `transactionId` 중복을 차단한다.
-- [ ] S2S를 사용하면 같은 `transaction_id` 재수신을 무적립 처리한다.
-- [ ] 화면 재진입·백그라운드 복귀·해제 뒤 늦은 콜백을 확인했다.
-- [ ] no-fill/timeout에 무한 재요청하지 않는다.
+- [ ] S2S를 사용하면 같은 `transaction_id`가 다시 와도 한 번만 지급한다.
+- [ ] 화면 재진입·백그라운드 복귀·해제 뒤에도 광고가 정상 동작한다.
+- [ ] no-fill/timeout 뒤 바로 반복 재요청하지 않는다.
 - [ ] Android/iOS 실기기에서 테스트 지면으로 최종 확인했다.
 
 문제를 문의할 때는 플랫폼, 플러그인 버전, 네이티브 SDK 버전, 포맷, 오류 code/nativeCode와 재현 순서를 전달하세요. Media Key와 AdUnit ID 원문은 공개 이슈에 첨부하지 마세요.

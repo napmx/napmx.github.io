@@ -9,7 +9,7 @@
 
 ## 배너·네이티브·인스트림 동영상
 
-세 포맷은 실제 네이티브 SDK View를 Flutter `PlatformView`로 표시합니다. 다음 예제는 생성·로드·오류 처리·해제를 모두 포함합니다.
+세 포맷은 SDK의 광고 뷰를 Flutter `PlatformView`로 표시합니다. 다음 예제는 생성·로드·오류 처리·해제를 모두 포함합니다.
 
 ```dart
 import 'dart:async';
@@ -96,7 +96,7 @@ InlineAdSlot(
   height: 360,
 );
 
-// 인스트림(인라인) 동영상: 스크롤 영역의 실제 가용 폭과 높이를 지정합니다.
+// 인스트림(인라인) 동영상: 광고가 들어갈 높이를 지정합니다.
 InlineAdSlot(
   format: NapMxAdFormat.inlineVideo,
   adUnitId: inlineVideoId,
@@ -104,13 +104,13 @@ InlineAdSlot(
 );
 ```
 
-네이티브 광고 자산을 Flutter 위젯으로 임의 재조합하면 SDK의 노출·클릭 등록을 우회할 수 있습니다. 플러그인이 제공하는 네이티브 템플릿을 사용하고 작은 화면·다크 모드·글자 확대에서 CTA, `광고/Ad` 표시와 AdChoices가 잘리지 않는지 확인하세요.
+네이티브 광고의 제목·이미지를 꺼내 Flutter 위젯으로 다시 만들면 SDK가 노출과 클릭을 집계하지 못합니다. SDK 템플릿을 그대로 쓰고, 작은 화면·다크 모드·큰 글자 설정에서 CTA, `광고/Ad` 표시, AdChoices가 잘리지 않는지 확인하세요.
 
 화면은 유지하지만 진행 중 요청만 중단하려면 `controller.cancel()`을 호출할 수 있습니다. 화면에서 제거할 때는 반드시 `dispose()`합니다.
 
 ## 전면·아웃스트림 동영상
 
-controller 하나는 요청 하나만 소유합니다. 로드된 controller를 여러 화면이나 여러 요청에서 공유하지 마세요. `show()` 이후 다음 광고에는 새 controller를 만듭니다.
+controller 하나로는 광고 한 개만 요청합니다. 로드된 controller를 여러 화면에서 함께 쓰지 마세요. `show()` 이후 다음 광고에는 새 controller를 만듭니다.
 
 ```dart
 import 'dart:async';
@@ -166,7 +166,7 @@ class InterstitialOwner {
 
 ## 리워드 동영상
 
-보상은 `show()` 성공, 영상 완료 추정, 화면 닫힘으로 지급하지 않습니다. 실제 SDK의 `NapMxEventType.rewarded` 이벤트에서만 처리하고 `transactionId`를 지급 원장의 고유 키로 저장하세요.
+보상은 `NapMxEventType.rewarded` 이벤트를 받았을 때만 지급합니다. `show()` 성공, 동영상 완료, 광고 닫힘은 보상 근거가 아닙니다. 지급 기록에는 `transactionId`를 고유 키로 저장하세요.
 
 ```dart
 import 'dart:async';
@@ -187,11 +187,11 @@ Future<void> showRewarded(String adUnitId) async {
     if (event.type == NapMxEventType.rewarded && event.reward != null) {
       final transactionId = event.reward!.transactionId;
       if (transactionId.isNotEmpty) {
-        // 서버/영속 저장소에서 transactionId UNIQUE를 보장합니다.
-        // 앱 메모리 Set만으로는 재실행·다중 기기의 중복 지급을 막지 못합니다.
+        // 서버나 기기 DB에 transactionId를 고유 키로 저장해 한 번만 지급합니다.
+        // 메모리에만 기록하면 앱을 다시 실행했을 때 중복 지급될 수 있습니다.
         unawaited(rewardRepository.grantOnce(transactionId));
       }
-      // 보상을 받았으면 더 기다릴 이유가 없습니다.
+      // 보상을 받았으면 바로 정리합니다.
       if (!finished.isCompleted) finished.complete();
     }
 
@@ -219,11 +219,11 @@ Future<void> showRewarded(String adUnitId) async {
 }
 ```
 
-보상 조건을 채우지 못한 사용자는 닫힘만 받습니다. 이때는 위 유예 시간이 지난 뒤 정리되며 지급은 일어나지 않습니다. 플러그인도 닫힘 이후 잠시 네이티브 광고를 유지하지만, 앱이 먼저 `dispose()`하면 그 유예가 끊기므로 위 순서를 지켜야 합니다. 지급 누락을 완전히 막아야 한다면 S2S Reward Callback을 함께 사용하고 `transaction_id`를 최종 기준으로 삼으세요. (플러그인 `v0.1.2` 이상)
+보상 조건을 채우지 못한 사용자는 닫힘만 받습니다. 이때는 위 유예 시간이 지난 뒤 정리되며 지급은 일어나지 않습니다. 플러그인도 닫힘 이후 잠시 네이티브 광고를 유지하지만, 앱이 먼저 `dispose()`하면 그 유예가 끊기므로 위 순서를 지켜야 합니다. 지급 누락을 막아야 한다면 S2S Reward Callback도 함께 사용하고, 서버가 받은 `transaction_id`를 기준으로 지급하세요.
 
 ### S2S 리워드 검증
 
-S2S Reward Callback을 사용하면 nap mx 서버가 매체 서버의 등록된 URL로 지급 정보를 전달합니다. 앱 콜백과 서버 콜백에 같은 `transaction_id`가 전달되므로 `(adunit_id, transaction_id)`를 고유 키로 두고 재시도·중복 수신을 무적립 처리하세요.
+S2S Reward Callback을 사용하면 nap mx 서버가 매체 서버의 등록된 URL로 지급 정보를 전달합니다. 앱 콜백과 서버 콜백에는 같은 `transaction_id`가 전달됩니다. `(adunit_id, transaction_id)`를 고유 키로 두고, 같은 콜백이 다시 오면 지급하지 않도록 처리하세요.
 
 - Android 등록·파라미터·재시도 정책: [Android 리워드 S2S 가이드](/android/native/rewarded-video?id=s2s-reward-callback-서버-간-리워드-검증)
 - iOS 등록·파라미터: [iOS 리워드 S2S 가이드](/ios/native/rewarded-video?id=s2s-reward-callback-선택사항)
@@ -240,15 +240,14 @@ await rewarded.load(
 );
 ```
 
-리워드 금액과 종류는 플러그인이 만들지 않습니다. 실제 지급 정책과 S2S 콜백 URL 등록은 매체 서버 담당자와 nap mx 운영 담당자가 함께 확정합니다.
+리워드 금액과 종류는 플러그인이 만들지 않습니다. 지급 정책과 S2S 콜백 URL 등록은 매체 서버 담당자와 nap mx 운영 담당자가 함께 확정합니다.
 
 ## 화면과 앱 수명주기
 
 - 화면을 나갈 때 이벤트 구독과 controller를 함께 해제합니다.
 - 화면 재진입 또는 전면 광고 `show()` 이후 다음 광고에는 새 controller와 새 요청을 만듭니다.
 - Android Activity 재생성 뒤 이전 화면의 controller를 새 화면에서 재사용하지 않습니다.
-- iOS foreground-active Scene이 없을 때 전면 광고를 표시하지 않습니다.
-- no-fill/timeout에 즉시 무한 재요청하지 말고 최대 횟수와 backoff를 둡니다.
-- 실제 광고 클릭을 자동화하지 않습니다.
+- iOS 앱이 화면에 활성화되어 있지 않을 때는 전면 광고를 표시하지 않습니다.
+- no-fill/timeout 뒤에는 바로 재요청하지 말고, 재시도 간격을 늘리고 최대 횟수를 정해 둡니다.
 
 다음 단계: [이벤트·오류·테스트](/flutter/events-and-testing)
