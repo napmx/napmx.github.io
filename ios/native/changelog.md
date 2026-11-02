@@ -1,6 +1,16 @@
 # 릴리즈 노트
 
 
+## v2.6.1 (2026-11-02)
+
+- **필수 Core 버전 변경 — `AdMixer` 1.5.1 이상이 필요합니다.** SPM 은 Mediation 2.6.1 패키지가 Core 의존성을 포함해 자동으로 해석합니다
+- 어댑터 버전 업데이트
+   - AdMixerMediationAdFit v2.0.1 — **SPM 전용, iOS 15.0 이상, Mediation v2.6.1 이상, AdFitSDK 3.18.6 이상 3.23 미만**
+      - AdFit 이 CocoaPods 배포를 중단해 v2.0.0 부터 SPM 으로만 제공합니다. CocoaPods 로 연동 중이면 v1.1.x 를 계속 사용하거나 SPM 으로 전환하세요
+      - iOS 14 를 지원하는 앱은 v1.1.x 를 사용하세요. Xcode 기본 규칙(Up to Next Major)으로 추가한 1.x 는 v2.0.x 로 자동 업데이트되지 않습니다
+
+---
+
 ## v2.6.0 (2026-10-29)
 
 - **필수 Core 버전 변경 — `AdMixer` 1.4.1 이상이 필요합니다.** SPM 은 Mediation 2.6.0 패키지가 Core 의존성(1.4.1 이상)을 포함해 자동으로 해석합니다

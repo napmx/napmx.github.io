@@ -56,12 +56,12 @@ SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하�
 
 ### 최신 필수 SDK 버전
 
-2026-10-29 배포 저장소 확인 기준으로 Mediation은 **2.6.0**, Core는 **1.5.0**이 최신입니다. Mediation 2.6.0은 Core **1.4.1 이상**이 필요합니다. CocoaPods와 SPM은 같은 버전 조합으로 맞추세요.
+2026-11-02 배포 저장소 확인 기준으로 Mediation은 **2.6.1**, Core는 **1.5.1**이 최신입니다. Mediation 2.6.1은 Core **1.5.1 이상**이 필요합니다. CocoaPods와 SPM은 같은 버전 조합으로 맞추세요.
 
 | 구성 | CocoaPods | SPM 태그 |
 |---|---|---|
-| Mediation | `AdMixerMediation` 2.6.0 | `iOS-SSP-Mediation-SPM` 2.6.0 |
-| Core | `AdMixer` 1.5.0 | `iOS-SSP-SPM` v1.5.0 |
+| Mediation | `AdMixerMediation` 2.6.1 | `iOS-SSP-Mediation-SPM` 2.6.1 |
+| Core | `AdMixer` 1.5.1 | `iOS-SSP-SPM` v1.5.1 |
 
 ### 1-1. CocoaPods를 통한 설치
 
@@ -80,7 +80,7 @@ target 'MyApp' do
 
   pod 'AdMixerMediation'
   pod 'AdMixerMediationGAM'      # Google AdManager
-  pod 'AdMixerMediationAdFit'    # Kakao AdFit
+  pod 'AdMixerMediationAdFit', '~> 1.1.5'   # Kakao AdFit — CocoaPods 는 1.1.x 가 마지막, 2.0.x 는 SPM 전용
   pod 'AdMixerMediationPangle'   # Pangle
   pod 'AdMixerMediationAppLovin' # AppLovin
   pod 'AdMixerMediationUnityAds' # UnityAds
@@ -104,9 +104,9 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 | 패키지 | 설명 | Repository URL |
 |--------|------|----------------|
 | nap mx Mediation (`AdMixerMediation`) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
-| nap mx Core (`AdMixer`) | 필수 (1.4.1 이상, Mediation 2.6.0 패키지에 의존성 포함) | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| nap mx Core (`AdMixer`) | 필수 (1.5.1 이상, Mediation 2.6.1 패키지에 의존성 포함) | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
 | Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
-| Kakao AdFit | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
+| Kakao AdFit | 선택 — 2.0.x 는 iOS 15 이상, 버전 규칙으로 추가(브랜치 지정 금지) | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
 | Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
 | Unity Ads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git` |
 | AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
@@ -175,12 +175,12 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 ### 1-4. 타 네트워크 SDK 버전 정보
 
-2026-10-29 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
+2026-11-02 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
 
 | Adapter SDK | 어댑터 버전 (Pods / SPM) | 네트워크 SDK | 네트워크 SDK 허용 범위 (Pods) | 최소 Mediation | 비고 |
 |---|---|---|---|---|---|
 | `AdMixerMediationGAM` | 1.2.9 / 1.2.9 | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | 2.6.0 | |
-| `AdMixerMediationAdFit` | 1.1.5 / 1.1.5 | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 2.4.5 | 최소 iOS 14 |
+| `AdMixerMediationAdFit` | 1.1.5 / 2.0.1 | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 2.4.5 (SPM 2.0.1 은 2.6.1) | Pods 최소 iOS 14. SPM 2.0.1 은 최소 iOS 15, AdFitSDK `3.18.6` 이상 &#126; `3.23` 미만. CocoaPods 는 1.1.x 가 마지막 |
 | `AdMixerMediationPangle` | 1.2.7 / 1.2.7 | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | 2.6.0 | |
 | `AdMixerMediationUnityAds` | 1.1.3 / 1.1.3 | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | 2.4.2 | |
 | `AdMixerMediationAppLovin` | 1.1.5 / 1.1.5 | AppLovinSDK | `13.3.1` 이상 &#126; `13.5.2` 미만 | 2.4.5 | 기본 WithCore 구성 |
@@ -277,7 +277,7 @@ AMMediation.shared.setConsent(consent)
 
 - nap mx 서버 요청에서 광고 식별자(IDFA)를 보내지 않고 `coppa=1` 을 전송합니다.
 - AppLovin 은 아동 대상 앱에서 SDK 사용 자체를 허용하지 않아(13.0.0+ API 제거) 해당 네트워크 요청을 건너뜁니다.
-- AdFit·Pangle·Teads 는 아동 신호를 전달할 API 가 없어 해당 네트워크 요청을 건너뜁니다 (AdFit 1.1.5·Pangle 1.2.7·Teads 1.1.2 이상). 아동 대상 지면은 GAM·Naver AdManager·UnityAds·nap mx 광고로만 채워지므로 fill 이 줄 수 있습니다.
+- AdFit·Pangle·Teads 는 아동 신호를 전달할 API 가 없어 해당 네트워크 요청을 건너뜁니다 (AdFit 1.1.5·2.0.0, Pangle 1.2.7·Teads 1.1.2 이상). 아동 대상 지면은 GAM·Naver AdManager·UnityAds·nap mx 광고로만 채워지므로 fill 이 줄 수 있습니다.
 
 **신호별 벤더 반영 범위** — 벤더가 코드 설정 API 를 제공하는 조합에만 실제 호출이 발생합니다. "자동판독"은 CMP 가 UserDefaults 에 기록한 IAB 문자열을 벤더 SDK 가 직접 읽는 경로로, 이 API 와 무관하게 동작합니다.
 
