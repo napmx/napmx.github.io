@@ -6,25 +6,55 @@
 
 ## SDK 에러 코드
 
-`errorCode`는 `AdMixer` 클래스에 정의된 `int` 상수입니다. **전달 경로** 열은 각 코드가 실제로 어느 콜백을 통해 앱에 도달하는지를 나타냅니다.
+`errorCode`는 `AdMixer` 클래스에 정의된 `int` 상수입니다. 2.5.0부터 iOS·WebBridge와 같은 **공통 코드**를 씁니다. **전달 경로** 열은 각 코드가 실제로 어느 콜백을 통해 앱에 도달하는지를 나타냅니다.
 
 | 상수명 | 값 | 전달 경로 | 설명 | 권장 조치 |
 |--------|-----|-----------|------|----------|
-| `AdMixer.AX_ERR_INIT` | `0x80000001` | `onFailedToReceiveAd` | SDK가 초기화되지 않은 상태에서 로드를 요청 | `AdMixer.getInstance().initialize()` 호출 여부 확인 |
-| `AdMixer.AX_ERR_ADUNIT` | `0x80000002` | `onFailedToReceiveAd` | AdInfo/AdUnit ID 누락, 또는 전면 광고에 Activity Context가 아닌 Context 전달 | AdUnit ID·Media Key 및 전달한 Context 확인 |
-| `AdMixer.AX_ERR_TIMEOUT` | `0x80000004` | `onAdShowFailed` / 어댑터 단계 | `show()` 이후 노출/실패 신호가 제한 시간 내에 오지 않음, 또는 어댑터 로드가 제한 시간을 초과함 | 재요청 |
-| `AdMixer.AX_ERR_NO_ADAPTER` | `0x80000005` | `onFailedToReceiveAd` | 미디에이션 실행 컴포넌트를 준비하지 못했거나, 선택된 어댑터가 요청 포맷을 지원하지 않음 | `errorMsg` 확인. 어댑터 모듈이 빌드에 없는 경우는 이 코드가 아니라 해당 네트워크가 워터폴에서 건너뛰어져 최종 `AX_ERR_NO_ADS`로 이어집니다 |
-| `AdMixer.AX_ERR_ADAPTER` | `0x80000006` | `onFailedToReceiveAd` / `onAdShowFailed` | 어댑터 내부 오류(필수 키 누락, 지원하지 않는 포맷, 표시 실패 등) | `errorMsg`의 상세 문구와 해당 네트워크 SDK 상태 확인 |
-| `AdMixer.AX_ERR_CONFIG_FAIL` | `0x80000007` | `onFailedToReceiveAd` | 서버 config 미수신·타임아웃, 또는 config에 해당 AdUnit이 없음 | Media Key·AdUnit 프로비저닝 및 네트워크 상태 확인 |
-| `AdMixer.AX_ERR_NO_ADS` | `0x80000008` | `onFailedToReceiveAd` / `onAdShowFailed` | 워터폴의 모든 네트워크가 실패/no-fill로 소진됨 (앱이 가장 자주 받는 코드). **no-fill은 전부 이 코드로 통지됩니다.** 준비되지 않은 상태에서 `show()`를 호출한 경우에도 같은 코드가 `onAdShowFailed`(`onAdFailedToShowFullScreenContent`)로 전달됩니다 | 일정 시간 후 재요청 |
-| `AdMixer.AX_ERR_INVALID_REQUEST` | `0x8000000A` | 주로 어댑터 단계 | 잘못된 요청 파라미터(예: 형식이 맞지 않는 placement 값) | AdInfo 및 서버 키 설정 값 확인 |
-| `AdMixer.AX_ERR_NETWORK` | `0x8000000B` | 주로 어댑터 단계 | 네트워크 오류 | 네트워크 연결 상태 확인 |
+| `AdMixer.AX_ERR_ADUNIT` | `-1` | `onFailedToReceiveAd` | 잘못된 요청: AdInfo/AdUnit ID 누락, `destroy()` 한 전면 광고 인스턴스로 `loadAd()` | AdUnit ID 확인, 전면 광고는 새 인스턴스 생성 |
+| `AdMixer.AX_ERR_INIT` | `-2` | `onFailedToReceiveAd` | 초기화 안 됨: Media Key 없이 로드 요청 | `AdMixer.getInstance().initialize()` 호출 여부와 Media Key 확인 |
+| `AdMixer.AX_ERR_NOT_READY` | `-3` | `onAdShowFailed` | 로드가 끝나기 전에 `show()` 호출. 메시지 "Ad is not ready to show." | `onAdReceived` 이후 `show()` |
+| `AdMixer.AX_ERR_PRESENTER_UNAVAILABLE` | `-4` | `onAdShowFailed`(인라인 비디오) | 광고를 표시할 Activity를 찾지 못함 | Activity Context로 뷰 생성 |
+| `AdMixer.AX_ERR_NO_ADAPTER` | `-10` | `onFailedToReceiveAd` | 미디에이션 실행 컴포넌트를 준비하지 못함(예: SDK 초기화 전에 `setAdInfo` 한 뷰) | 초기화 이후 `setAdInfo`. 어댑터 모듈이 빌드에 없는 경우는 이 코드가 아니라 해당 네트워크가 건너뛰어져 최종 `AX_ERR_NO_ADS`로 이어집니다 |
+| `AdMixer.AX_ERR_NO_ADS` | `-20` | `onFailedToReceiveAd` | 워터폴의 모든 네트워크가 실패/no-fill로 소진됨 (앱이 가장 자주 받는 코드). **no-fill은 전부 이 코드로 통지됩니다** | 일정 시간 후 재요청 |
+| `AdMixer.AX_ERR_CONFIG_FAIL` | `-21` | `onFailedToReceiveAd` | 서버 config 미수신·타임아웃, 또는 config에 해당 AdUnit이 없음 | Media Key·AdUnit 프로비저닝 및 네트워크 상태 확인 |
+| `AdMixer.AX_ERR_TIMEOUT` | `-22` | `onFailedToReceiveAd` | `loadAd()` 호출부터 30초 안에 결과가 없음 | 재요청 |
+| `AdMixer.AX_ERR_SHOW_FAILED` | `-23` | `onAdShowFailed` | `show()` 이후의 모든 실패: 어댑터 show 실패·예외, 제한 시간 안에 노출/실패 신호 없음, 비디오 재생 실패. **네트워크 원인은 `errorMsg`에 남습니다** | `errorMsg` 로깅 후 재요청 |
+| `AdMixer.AX_ERR_BACKGROUND` | `-24` | `onFailedToReceiveAd` | 앱이 백그라운드라 로드를 막음(media-conf `bg_req_yn=0`). 메시지 "Load blocked in background." | 포그라운드 복귀 후 재요청 |
+| `AdMixer.AX_ERR_ADAPTER` | `-30` | 거의 없음 | SDK 내부 오류 | `errorMsg`와 LogCat 확인 |
+| `AdMixer.AX_ERR_CANCELLED` | `-31` | `onFailedToReceiveAd` | 로드 중 `cancelLoad()` 호출. 배너·네이티브·인라인 비디오가 이전 광고를 표시하는 중(자동 갱신 로드 중)이면 광고가 그대로 남으므로 보내지 않습니다 | 필요 시 다시 `loadAd()` |
 
-> 🚫 **`AdMixer.AX_ERR_NO_FILL`(`0x80000009`)로 분기하지 마세요.** 상수는 존재하지만 **SDK가 이 코드를 전달하는 경로가 없습니다.** 모든 네트워크의 no-fill(재고 없음)은 위 표의 **`AX_ERR_NO_ADS`(`0x80000008`)** 로 통지됩니다. `AX_ERR_NO_FILL`을 조건으로 쓰면 **절대 실행되지 않는 분기**가 되어 no-fill 처리가 통째로 누락됩니다. 차기 메이저 버전에서 상수 자체가 삭제될 예정이므로 신규 코드에서는 사용하지 마세요.
+`AX_ERR_SUCCESS`(`0`)는 실패 콜백으로 오지 않으며 결과 코드 비교용입니다.
+
+> 🚫 **`AX_ERR_NO_FILL`·`AX_ERR_INVALID_REQUEST`·`AX_ERR_NETWORK`로 분기하지 마세요.** SDK가 이 코드를 앱에 보내는 경로가 없습니다. no-fill은 **`AX_ERR_NO_ADS`**, 표시 단계의 네트워크 오류는 **`AX_ERR_SHOW_FAILED`** 로 옵니다. 세 상수는 어댑터 내부 분류용으로 남아 있고, 앱 `switch`에서 공통 코드와 겹치지 않도록 2.4.x 이하 값을 유지합니다. `AX_ERR_NO_FILL`은 다음 major에서 제거됩니다.
 
 > ⚠️ **미디에이션이 개별 어댑터 실패를 흡수합니다.**
-> 워터폴이 동작 중일 때 개별 네트워크의 실패(`AX_ERR_NETWORK`, `AX_ERR_TIMEOUT`, `AX_ERR_INVALID_REQUEST`, 어댑터 단계 `AX_ERR_ADAPTER` 등)는 다음 네트워크 시도로 승계되며, 앱 리스너로 직접 전달되지 않는 것이 일반적입니다. 모든 네트워크가 소진되면 **`AX_ERR_NO_ADS`("All adapters failed.")** 한 번만 전달됩니다.
+> 워터폴이 동작 중일 때 개별 네트워크의 로드 실패(네트워크 오류, 네트워크별 타임아웃, 잘못된 요청 등)는 다음 네트워크 시도로 승계되며 앱 리스너로 전달되지 않습니다. 모든 네트워크가 소진되면 **`AX_ERR_NO_ADS`("All adapters failed.")** 한 번만 전달됩니다.
 > 따라서 특정 코드가 반드시 온다고 가정하지 말고, **`AX_ERR_NO_ADS`를 기본 분기로 두고 나머지는 `else`로 처리**하는 것을 권장합니다. 어느 네트워크에서 무엇이 실패했는지는 `errorMsg` 문자열과 LogCat 로그로 확인하세요.
+
+## 2.5.0 마이그레이션
+
+2.5.0에서 상수 **이름은 그대로**이고 **값만** 바뀌었습니다. `AX_ERR_*` 상수로 비교하는 코드는 **2.5.0으로 다시 빌드하면 그대로 동작**합니다. 상수는 컴파일 시 앱 바이너리에 값으로 들어가므로, 다시 빌드하지 않은 앱은 이전 값과 비교하게 됩니다. 숫자 값을 직접 쓰거나 서버·로그에 저장한 코드는 아래 표로 바꾸세요.
+
+| 상수 | 2.4.x 이하 값 | 2.5.0 값 | 바뀐 점 |
+|------|--------|--------|---------|
+| `AX_ERR_ADUNIT` | `0x80000002` | `-1` | |
+| `AX_ERR_INIT` | `0x80000001` | `-2` | |
+| `AX_ERR_NO_ADAPTER` | `0x80000005` | `-10` | |
+| `AX_ERR_NO_ADS` | `0x80000008` | `-20` | 준비 전 `show()`는 이제 `AX_ERR_NOT_READY` |
+| `AX_ERR_CONFIG_FAIL` | `0x80000007` | `-21` | |
+| `AX_ERR_TIMEOUT` | `0x80000004` | `-22` | 표시 가드 시간 초과(`onAdShowFailed`)는 이제 `AX_ERR_SHOW_FAILED` |
+| `AX_ERR_BACKGROUND` | — | `-24` | 신설. 2.4.x 이하에서는 백그라운드 로드 차단 시 콜백이 없었습니다 |
+| `AX_ERR_ADAPTER` | `0x80000006` | `-30` | 표시 실패는 이제 `AX_ERR_SHOW_FAILED`, 인라인 비디오 Activity 없음은 `AX_ERR_PRESENTER_UNAVAILABLE` |
+| `AX_ERR_SUCCESS` | — | `0` | 신설 |
+| `AX_ERR_NOT_READY` | — | `-3` | 신설 |
+| `AX_ERR_PRESENTER_UNAVAILABLE` | — | `-4` | 신설 |
+| `AX_ERR_SHOW_FAILED` | — | `-23` | 신설 |
+| `AX_ERR_CANCELLED` | — | `-31` | 신설. 2.4.x 이하의 `cancelLoad()`는 콜백이 없었습니다 |
+| `AX_ERR_NO_FILL`·`AX_ERR_INVALID_REQUEST`·`AX_ERR_NETWORK` | `0x80000009`·`0x8000000A`·`0x8000000B` | 같음 | 앱에 오지 않음 |
+
+**`onAdShowFailed`는 원인 코드 대신 `AX_ERR_SHOW_FAILED`** 를 받습니다(준비 안 됨 `-3`, 화면 없음 `-4` 제외). 2.4.x 이하에서 `onAdShowFailed`의 `AX_ERR_ADAPTER`·`AX_ERR_NETWORK`·`AX_ERR_INVALID_REQUEST`·`AX_ERR_NO_ADS`·`AX_ERR_TIMEOUT`으로 분기했다면 `AX_ERR_SHOW_FAILED`로 합치고, 세부 원인은 `errorMsg`로 확인하세요.
+
+**`com.nasmedia.admixerssp.common.error.ErrorCode` enum은 2.5.0에서 제거됐습니다.** SDK가 쓰지 않던 타입으로 값이 콜백 코드와 달랐습니다. 이 enum을 import했다면 `AdMixer.AX_ERR_*`로 바꾸세요.
 
 ```java
 // 에러 코드 비교 예시
@@ -42,7 +72,7 @@ public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) {
 
 ## 미디에이션 에러 코드
 
-네트워크 어댑터는 각 네트워크 SDK의 원본 에러 코드를 위 표의 `AX_ERR_*` 값으로 **매핑해서** 전달합니다. 네트워크 SDK의 원본 코드·메시지는 `errorCode`가 아니라 **`errorMsg` 문자열**에 담깁니다(예: `"Pangle placement_id is null"`, `"NAM banner error: [3210] ..."`). 매핑 규칙은 네트워크마다 다르며, 자세한 원본 코드 의미는 해당 네트워크 공식 문서를 참고하십시오.
+네트워크 어댑터는 각 네트워크 SDK의 원본 에러 코드를 `AX_ERR_*` 값으로 **매핑해서** 미디에이션에 전달합니다(로드 실패는 흡수, 표시 실패는 앱에 `AX_ERR_SHOW_FAILED`). 네트워크 SDK의 원본 코드·메시지는 `errorCode`가 아니라 **`errorMsg` 문자열**에 담깁니다(예: `"Pangle placement_id is null"`, `"NAM banner error: [3210] ..."`). 매핑 규칙은 네트워크마다 다르며, 자세한 원본 코드 의미는 해당 네트워크 공식 문서를 참고하십시오.
 
 > ℹ️ LogCat 태그는 `AdMixerSDK::<버전>` 형태입니다(하위 태그가 붙으면 `AdMixerSDK::<버전>::<컴포넌트>`). 접두사로 필터링하세요.
 > ```
