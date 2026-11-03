@@ -2,6 +2,40 @@
 
 ---
 
+## v2.5.0 (2026-11-03)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.11.01`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.5.0** |
+> | `admixer-admanager` · `admixer-gma-nextgen` · `admixer-pangle` · `admixer-naveradmanager` · `admixer-teads` | **2.2.0** |
+> | `admixer-adfit` · `admixer-applovin` · `admixer-unity` | **2.1.0** |
+> | 🧪 `admixer-interactive` | **1.0.0-beta03** |
+> | `admixer-bom` | **2026.11.01** |
+> | `admixer-unity-nativeadlayout` 2.0.0 · `admixer-compose` 2.0.3 | 변경 없음 |
+>
+> 코어와 어댑터를 함께 올려 주세요. BOM을 쓰면 자동으로 맞춰집니다.
+
+### ⚠️ 업데이트 전 확인 (앱 재빌드 필요)
+
+- **에러 코드 값 변경** — `AdMixer.AX_ERR_*` 상수의 이름은 그대로이고 값이 iOS·WebBridge와 같은 공통 코드로 바뀌었습니다
+  (예: `AX_ERR_NO_ADS` `0x80000008` → `-20`). 상수는 빌드할 때 앱에 값으로 들어가므로 **SDK 업데이트 후 앱을 다시 빌드**해 주세요.
+  상수 이름으로 비교하는 코드는 다시 빌드하면 그대로 동작합니다. Flutter 등 래퍼 플러그인도 다시 빌드가 필요합니다.
+
+### 리워드 비디오 수정 (업데이트 권장)
+
+- **재생 중 닫기 버튼이 노출되고 보상이 지급되지 않던 문제 수정**
+
+### 동작 변경 (코드 변경 불요)
+
+- **배너·네이티브 노출** — 배너 `onAdDisplayed()`는 노출 로그를 보내는 시점에 호출됩니다. 노출 신호가 없는 네이티브(AdFit · AdMixer)는
+  광고 영역이 50% 이상 보일 때 노출로 처리합니다.
+- **아동 대상 지면** — 아동 신호를 전달할 수 없는 Teads · Pangle은 아동 대상 트래픽에서 제외됩니다.
+- **새 에러 코드** — 로드 중 `cancelLoad()` 시 `AX_ERR_CANCELLED`, 백그라운드 로드 차단 시 `AX_ERR_BACKGROUND` 실패 콜백을 전달합니다.
+
+---
+
 ## v2.4.0 (2026-10-14)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.04`입니다.
