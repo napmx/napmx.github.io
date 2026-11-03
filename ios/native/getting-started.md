@@ -175,11 +175,11 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 ### 1-4. 타 네트워크 SDK 버전 정보
 
-2026-11-02 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
+2026-11-03 CocoaPods 명세와 공식 SPM 태그 확인 기준입니다. 어댑터 버전과 아래 네트워크 SDK 허용 범위를 함께 적용하세요.
 
 | Adapter SDK | 어댑터 버전 (Pods / SPM) | 네트워크 SDK | 네트워크 SDK 허용 범위 (Pods) | 최소 Mediation | 비고 |
 |---|---|---|---|---|---|
-| `AdMixerMediationGAM` | 1.2.9 / 1.2.9 | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | 2.6.0 | |
+| `AdMixerMediationGAM` | 1.2.9 / 1.2.10 | Google-Mobile-Ads-SDK | `12.7.0` 이상 &#126; `13.10` 미만 | 2.6.0 | SPM 1.2.10 은 `12.7.0` 이상 &#126; `13.13` 미만(iPhone Duo 지원 13.11.0 포함). CocoaPods 1.2.10 은 등록 후 반영 |
 | `AdMixerMediationAdFit` | 1.1.5 / 2.0.1 | AdFitSDK | `3.14.7` 이상 &#126; `3.18.6` 미만 | 2.4.5 (SPM 2.0.1 은 2.6.1) | Pods 최소 iOS 14. SPM 2.0.1 은 최소 iOS 15, AdFitSDK `3.18.6` 이상 &#126; `3.23` 미만. CocoaPods 는 1.1.x 가 마지막 |
 | `AdMixerMediationPangle` | 1.2.7 / 1.2.7 | Ads-Global | `7.4.0.8` 이상 &#126; `8.2.2` 미만 | 2.6.0 | |
 | `AdMixerMediationUnityAds` | 1.1.3 / 1.1.3 | UnityAds | `4.15.1` 이상 &#126; `4.16.6` 미만 | 2.4.2 | |
