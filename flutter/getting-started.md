@@ -22,9 +22,9 @@ Dart API는 두 플랫폼 모두 `String`으로 받습니다. iOS에서 `'12345'
 
 ## 2. 플러그인 설치
 
-`pub.dev`에는 배포하지 않습니다. 매번 같은 버전이 설치되도록 `v0.1.8` 태그를 지정합니다.
+`pub.dev`에는 배포하지 않습니다. 매번 같은 버전이 설치되도록 `v0.1.9` 태그를 지정합니다.
 
-> `v0.1.8`은 Android Core 2.4.0 / BOM 2026.10.04, iOS Mediation 2.6.0 / Core 1.5.1을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
+> `v0.1.9`는 Android Core 2.5.0 / BOM 2026.11.01, iOS Mediation 2.6.0 / Core 1.5.1을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
 
 ```yaml
 # pubspec.yaml
@@ -34,7 +34,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.8
+      ref: v0.1.9
 ```
 
 ```bash
@@ -95,7 +95,7 @@ plugins {
 }
 ```
 
-플러그인 모듈에는 호스트의 Kotlin 플러그인이 자동 적용되므로 로컬 복사본을 수정할 필요가 없습니다. `admixer-ssp:2.4.0`은 `kotlin-stdlib` 2.2.10을 사용하며, Kotlin 2.1.0 컴파일러로도 빌드됩니다. stdlib를 컴파일러 버전에 맞춰 강제로 낮추지 마세요. 선택 어댑터 버전은 아래 BOM으로 맞춥니다.
+플러그인 모듈에는 호스트의 Kotlin 플러그인이 자동 적용되므로 로컬 복사본을 수정할 필요가 없습니다. `admixer-ssp:2.5.0`은 `kotlin-stdlib` 2.2.10을 사용하며, Kotlin 2.1.0 컴파일러로도 빌드됩니다. stdlib를 컴파일러 버전에 맞춰 강제로 낮추지 마세요. 선택 어댑터 버전은 아래 BOM으로 맞춥니다.
 
 AGP 9에서 내장 Kotlin을 끈 호스트(`android.builtInKotlin=false`)도 위 Kotlin 플러그인 설정이 필요합니다. Flutter 3.44에서는 `android.newDsl=false`도 유지하세요. 내장 Kotlin을 켠 AGP 9 호스트에는 별도 Kotlin Android 플러그인을 적용하지 않습니다. Flutter 앱의 내장 Kotlin 연동은 Flutter 3.47 이상이 필요합니다. [Flutter 공식 가이드](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors)를 참고하세요.
 
@@ -105,7 +105,7 @@ AGP 9에서 내장 Kotlin을 끈 호스트(`android.builtInKotlin=false`)도 위
 // android/app/build.gradle.kts
 dependencies {
     // nap mx 모듈 버전을 BOM으로 맞춥니다.
-    implementation(platform("io.github.nasmedia-tech:admixer-bom:2026.10.04"))
+    implementation(platform("io.github.nasmedia-tech:admixer-bom:2026.11.01"))
 
     // 사용하는 네트워크만 주석을 해제합니다.
     implementation("io.github.nasmedia-tech:admixer-admanager")
@@ -125,7 +125,7 @@ GMA NextGen은 Android API 24 이상이 필요하며 classic Google Mobile Ads�
 
 ### Google 광고 ID 버전 확인
 
-Core 2.4.0은 API 21 호환 `play-services-ads-identifier:18.0.0`을 포함합니다. Google 최신 수정판 `18.3.0`은 API 23 이상이 필요합니다. `18.2.0`은 구형 Android에서 `java.time.Duration` 크래시가 있어 사용하지 마세요([Google 릴리스 노트](https://developers.google.com/android/guides/releases#january_27_2026)).
+Core 2.5.0은 API 21 호환 `play-services-ads-identifier:18.0.0`을 포함합니다. Google 최신 수정판 `18.3.0`은 API 23 이상이 필요합니다. `18.2.0`은 구형 Android에서 `java.time.Duration` 크래시가 있어 사용하지 마세요([Google 릴리스 노트](https://developers.google.com/android/guides/releases#january_27_2026)).
 
 기본으로는 Core의 `18.0.0`이 적용됩니다. `minSdk` 23 이상 앱은 수정판 `18.3.0`을 다음처럼 추가할 수 있습니다. 최신 AdManager/Naver/GMA NextGen 어댑터를 사용하면 `18.3.0`이 전이 의존성으로 적용됩니다.
 

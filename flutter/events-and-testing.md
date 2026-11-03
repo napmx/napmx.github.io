@@ -87,14 +87,14 @@ try {
 | `mediation_configuration_unsupported` | iOS에서 Android 전용 mediation 맵을 전달함 |
 | `unsupported_privacy` | Android Core에 없는 under-age 값을, iOS에서 `usPrivacyString`을 명시함 |
 
-Android `0x8000000x` 계열은 [Android 오류 코드](/android/native/error-codes), iOS `-1`~`-8`은 [iOS SDK 가이드](/ios/native/getting-started)의 원본 표를 확인하세요.
+Android 공통 코드(`-1`~`-31`, 예: no-fill `-20`, timeout `-22`)는 [Android 오류 코드](/android/native/error-codes), iOS `-1`~`-8`은 [iOS SDK 가이드](/ios/native/getting-started)의 원본 표를 확인하세요.
 
 ## Sample 앱 실행
 
 테스트 값을 넣기 전에는 Sample 앱의 광고 요청 버튼이 비활성화됩니다.
 
 ```bash
-git clone --branch v0.1.8 --depth 1 \
+git clone --branch v0.1.9 --depth 1 \
   https://github.com/Nasmedia-Tech/nap_mx_flutter.git
 cd nap_mx_flutter/example
 
