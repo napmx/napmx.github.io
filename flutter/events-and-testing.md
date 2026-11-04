@@ -29,7 +29,7 @@ Future<void> stopAdMonitoring() => allAdEvents.cancel();
 | `loadStarted` | 요청 시작 | 로딩 상태 표시 |
 | `loaded` | 표시 가능한 광고 로드 | Show 버튼 활성화 |
 | `loadFailed` | 로드 실패 | 오류 기록 후 앱 본문 복구 |
-| `shown` | SDK 표시 콜백. iOS 배너·네이티브는 광고 영역이 50% 이상 보일 때, nap mx 인라인 동영상은 실제 재생이 시작될 때 전달 (`v0.1.8` 이상) | 노출 상태 기록 |
+| `shown` | SDK 표시 콜백. iOS 배너·네이티브는 광고 영역이 50% 이상 보일 때 전달되며, 그보다 먼저 네트워크의 노출 콜백이 오면 그 시점에 전달(네트워크 콜백은 광고가 숨겨진 상태에서도 올 수 있음). nap mx 인라인 동영상은 실제 재생이 시작될 때 전달 (`v0.1.8` 이상) | 노출 상태 기록 |
 | `showFailed` | 표시 실패. 인라인 뷰도 전달하며, 전면 광고가 화면에 뜨기 전 실패하면 플러그인이 광고를 바로 해제 (`v0.1.8` 이상) | controller 해제 후 필요 시 새 요청 |
 | `clicked` | SDK 클릭 콜백 | 클릭 기록 |
 | `completed` | 동영상 완료 | 리워드 지급 근거로 사용하지 않음 |
@@ -94,7 +94,7 @@ Android 공통 코드(`-1`~`-31`, 예: no-fill `-20`, timeout `-22`)는 [Android
 테스트 값을 넣기 전에는 Sample 앱의 광고 요청 버튼이 비활성화됩니다.
 
 ```bash
-git clone --branch v0.1.9 --depth 1 \
+git clone --branch v0.1.10 --depth 1 \
   https://github.com/Nasmedia-Tech/nap_mx_flutter.git
 cd nap_mx_flutter/example
 

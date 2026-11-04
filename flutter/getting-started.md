@@ -22,9 +22,9 @@ Dart API는 두 플랫폼 모두 `String`으로 받습니다. iOS에서 `'12345'
 
 ## 2. 플러그인 설치
 
-`pub.dev`에는 배포하지 않습니다. 매번 같은 버전이 설치되도록 `v0.1.9` 태그를 지정합니다.
+`pub.dev`에는 배포하지 않습니다. 매번 같은 버전이 설치되도록 `v0.1.10` 태그를 지정합니다.
 
-> `v0.1.9`는 Android Core 2.5.0 / BOM 2026.11.01, iOS Mediation 2.6.0 / Core 1.5.1을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
+> `v0.1.10`은 Android Core 2.5.0 / BOM 2026.11.01, iOS Mediation 2.6.1 / Core 1.5.1을 설치합니다. iOS의 정확한 의존성은 플러그인에 고정되어 있으므로 호스트 Podfile의 버전만 바꿔서 업데이트할 수 없습니다.
 
 ```yaml
 # pubspec.yaml
@@ -34,7 +34,7 @@ dependencies:
   nap_mx_flutter:
     git:
       url: https://github.com/Nasmedia-Tech/nap_mx_flutter.git
-      ref: v0.1.9
+      ref: v0.1.10
 ```
 
 ```bash
@@ -236,7 +236,7 @@ allprojects {
 
 ## 5. iOS 설정
 
-플러그인은 `AdMixerMediation` 2.6.0과 `AdMixer` 1.5.1을 고정합니다. Flutter 프로젝트가 Swift Package Manager를 사용하면 Xcode Package Dependencies에 필요한 공식 어댑터만 추가합니다. CocoaPods 프로젝트라면 `ios/Podfile`에 필요한 Pod만 추가합니다.
+플러그인은 `AdMixerMediation` 2.6.1과 `AdMixer` 1.5.1을 고정합니다. Flutter 프로젝트가 Swift Package Manager를 사용하면 Xcode Package Dependencies에 필요한 공식 어댑터만 추가합니다. CocoaPods 프로젝트라면 `ios/Podfile`에 필요한 Pod만 추가합니다.
 
 ```ruby
 # ios/Podfile — 사용하는 네트워크만 추가

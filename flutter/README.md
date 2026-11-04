@@ -1,14 +1,14 @@
 # Flutter SDK (Beta)
 
-> **Beta** · 플러그인 `v0.1.9`
+> **Beta** · 플러그인 `v0.1.10`
 
 `nap_mx_flutter`는 Flutter 앱에서 nap mx Android·iOS 네이티브 SDK를 같은 Dart API로 사용하는 공개 플러그인입니다.
 
 - 공개 저장소: [Nasmedia-Tech/nap_mx_flutter](https://github.com/Nasmedia-Tech/nap_mx_flutter)
-- 최신 릴리스: [`v0.1.9`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.9)
+- 최신 릴리스: [`v0.1.10`](https://github.com/Nasmedia-Tech/nap_mx_flutter/releases/tag/v0.1.10)
 - 변경 내역: [릴리즈 노트](/flutter/changelog)
-- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.9/example)
-- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.9/doc/integration-guide.md)
+- 실행 예제: [Sample 앱](https://github.com/Nasmedia-Tech/nap_mx_flutter/tree/v0.1.10/example)
+- 상세 API 문서: [플러그인 저장소 가이드](https://github.com/Nasmedia-Tech/nap_mx_flutter/blob/v0.1.10/doc/integration-guide.md)
 
 ## 지원 포맷
 
@@ -43,7 +43,7 @@
 
 ## 버전과 최소 환경
 
-아래 표는 `v0.1.9` 기준입니다. 네이티브 SDK의 최신 버전은 [Android 릴리스 노트](/android/native/changelog)와 [iOS 릴리스 노트](/ios/native/changelog)에서 확인하세요.
+아래 표는 `v0.1.10` 기준입니다. 네이티브 SDK의 최신 버전은 [Android 릴리스 노트](/android/native/changelog)와 [iOS 릴리스 노트](/ios/native/changelog)에서 확인하세요.
 
 | 항목 | 최소/고정 버전 |
 |---|---|
@@ -51,7 +51,7 @@
 | Android | API 21+, compile SDK 36, Java 17, AGP 8.10.1+, Kotlin 2.1.0+ (권장 2.2.10) |
 | nap mx Android | `admixer-ssp:2.5.0`, BOM `2026.11.01` |
 | iOS | iOS 13+, Xcode 16+, Swift 5.9 |
-| nap mx iOS | `AdMixerMediation` 2.6.0, `AdMixer` 1.5.1 |
+| nap mx iOS | `AdMixerMediation` 2.6.1, `AdMixer` 1.5.1 |
 
 선택 어댑터에 따라 최소 OS가 올라갑니다. Android Google/Naver는 API 23, AppLovin/GMA NextGen은 API 24가 필요하며, iOS AdFit/Teads는 iOS 14가 필요합니다.
 
@@ -72,7 +72,7 @@
 
 ## 현재 제한사항
 
-- `pub.dev`에는 배포하지 않습니다. `v0.1.9` 태그로 설치하세요. [설치 예제](/flutter/getting-started?id=_2-플러그인-설치)를 참고하세요.
+- `pub.dev`에는 배포하지 않습니다. `v0.1.10` 태그로 설치하세요. [설치 예제](/flutter/getting-started?id=_2-플러그인-설치)를 참고하세요.
 - 공용 테스트 Media Key/AdUnit ID는 없습니다. 운영 담당자에게 테스트 지면을 따로 발급받으세요.
 - `testMode`는 Android 전용입니다. iOS에서 `true`를 전달하면 초기화가 실패합니다.
 - `testDeviceIds`와 `usPrivacyString`도 Android 전용입니다. `v0.1.8`부터 iOS에서 비어 있지 않은 값을 전달하면 초기화가 실패하므로 플랫폼별로 나눠 설정하세요.
