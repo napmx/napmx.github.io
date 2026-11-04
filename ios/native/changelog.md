@@ -1,6 +1,14 @@
 # 릴리즈 노트
 
 
+## AdMixerMediationPangle v1.2.8 (2026-11-04)
+
+- Pangle SDK(Ads-Global) 허용 범위의 상한을 **`8.4.1` 미만**으로 넓혔습니다 (기존 `8.2.2` 미만, 하한은 그대로) — iOS 27 환경 크래시가 수정된 Pangle SDK 8.4.0.7 을 사용할 수 있습니다. SPM 으로는 `AdsGlobalPackage` `8.4.0-release.7` 입니다
+- 필요한 Mediation 버전은 v1.2.7 과 같은 **v2.6.0 이상**입니다
+- **SPM 으로 먼저 제공합니다.** CocoaPods 는 등록되면 이 페이지에 반영합니다
+
+---
+
 ## AdMixerMediationGAM v1.2.10 (2026-11-03)
 
 - Google Mobile Ads SDK 허용 범위를 **`12.7.0` 이상 `13.13` 미만**으로 넓혔습니다 (기존 `13.10` 미만) — 13.11.0·13.12.0 을 사용할 수 있습니다. 13.11.0 부터 Google 이 iPhone Duo 를 공식 지원합니다
