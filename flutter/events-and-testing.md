@@ -94,7 +94,7 @@ Android 공통 코드(`-1`~`-31`, 예: no-fill `-20`, timeout `-22`)는 [Android
 테스트 값을 넣기 전에는 Sample 앱의 광고 요청 버튼이 비활성화됩니다.
 
 ```bash
-git clone --branch v0.1.10 --depth 1 \
+git clone --branch v0.1.11 --depth 1 \
   https://github.com/Nasmedia-Tech/nap_mx_flutter.git
 cd nap_mx_flutter/example
 

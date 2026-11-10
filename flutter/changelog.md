@@ -4,6 +4,22 @@ Flutter 플러그인(`nap_mx_flutter`)은 Git 태그로 배포합니다. 설치�
 
 ---
 
+## v0.1.11 (2026-11-10)
+
+| 네이티브 구성 | 버전 |
+|---|---|
+| Android Core / BOM | **2.5.1** / **2026.11.02** |
+| iOS Mediation | 2.6.1 (변경 없음) |
+| iOS Core | 1.5.1 (변경 없음) |
+
+- Android 네이티브 SDK를 Core 2.5.1로 업데이트하고, 어댑터 예시를 BOM 2026.11.02로 올렸습니다. 변경 내용은 [Android 릴리즈 노트](/android/native/changelog)를 참고하세요. iOS 동작은 변경 없습니다.
+   - **Android 전면·리워드 로드 실패 수정** — 플러그인은 전면·리워드를 Application Context로 로드하므로, Unity Ads 전면·리워드, Naver Ad Manager 전면·리워드, Google AdManager 전면이 광고를 요청하지 않고 바로 실패했습니다(`Activity context required`).
+     **앱의 `android/app/build.gradle(.kts)`에서 BOM을 `2026.11.02`로 올려야 적용됩니다**(`admixer-unity` 2.1.1, `admixer-naveradmanager` 2.2.1, `admixer-admanager` 2.2.1). 어댑터는 앱이 추가하는 의존성이라 플러그인 태그만 올려서는 바뀌지 않습니다.
+   - Naver Ad Manager 네이티브 캐러셀에서 슬롯을 한 번 탭하면 `clicked`가 2번 오던 문제가 수정됐습니다.
+   - 미디어 영역 크기를 고정한 네이티브 동영상에서 세로로 긴 영상이 늘어나지 않고 좌우 여백으로 표시됩니다.
+
+---
+
 ## v0.1.10 (2026-11-04)
 
 | 네이티브 구성 | 버전 |
