@@ -104,7 +104,7 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 | 패키지 | 설명 | Repository URL |
 |--------|------|----------------|
 | nap mx Mediation (`AdMixerMediation`) | 필수 | `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git` |
-| nap mx Core (`AdMixer`) | 필수 (1.5.1 이상, Mediation 2.6.1 패키지에 의존성 포함) | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
+| nap mx Core (`AdMixer`) | 자동 설치 — Mediation 패키지 추가 시 함께 설치되므로 별도 추가 불필요 (Mediation 2.6.1 → Core 1.5.1 이상) | `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` |
 | Google AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git` |
 | Kakao AdFit | 선택 — 2.0.x 는 iOS 15 이상, 버전 규칙으로 추가(브랜치 지정 금지) | `https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git` |
 | Pangle | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git` |
@@ -112,6 +112,8 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 | AppLovin | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git` |
 | Naver AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-NAM-SPM` |
 | Teads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Teads-SPM.git` |
+
+> `iOS-SSP-Mediation-SPM` 패키지는 nap mx Core(`iOS-SSP-SPM`)를 의존성으로 포함하고 있어, Mediation 패키지만 추가하면 Core(`AdMixer`)도 자동으로 설치됩니다. Mediation 2.6.0부터 적용되며, 2.5.x 이하를 사용하는 경우에는 Core 패키지를 직접 추가해야 합니다. CocoaPods도 `pod 'AdMixerMediation'`만 추가하면 `AdMixer`가 함께 설치됩니다.
 
 > Unity Ads를 nap mx Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
 
