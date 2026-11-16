@@ -4,6 +4,51 @@ Flutter 플러그인(`nap_mx_flutter`)은 Git 태그로 배포합니다. 설치�
 
 ---
 
+## v0.1.11 (2026-11-10)
+
+| 네이티브 구성 | 버전 |
+|---|---|
+| Android Core / BOM | **2.5.1** / **2026.11.02** |
+| iOS Mediation | 2.6.1 (변경 없음) |
+| iOS Core | 1.5.1 (변경 없음) |
+
+- Android 네이티브 SDK를 Core 2.5.1로 업데이트하고, 어댑터 예시를 BOM 2026.11.02로 올렸습니다. 변경 내용은 [Android 릴리즈 노트](/android/native/changelog)를 참고하세요. iOS 동작은 변경 없습니다.
+   - **Android 전면·리워드 로드 실패 수정** — 플러그인은 전면·리워드를 Application Context로 로드하므로, Unity Ads 전면·리워드, Naver Ad Manager 전면·리워드, Google AdManager 전면이 광고를 요청하지 않고 바로 실패했습니다(`Activity context required`).
+     **앱의 `android/app/build.gradle(.kts)`에서 BOM을 `2026.11.02`로 올려야 적용됩니다**(`admixer-unity` 2.1.1, `admixer-naveradmanager` 2.2.1, `admixer-admanager` 2.2.1). 어댑터는 앱이 추가하는 의존성이라 플러그인 태그만 올려서는 바뀌지 않습니다.
+   - Naver Ad Manager 네이티브 캐러셀에서 슬롯을 한 번 탭하면 `clicked`가 2번 오던 문제가 수정됐습니다.
+   - 미디어 영역 크기를 고정한 네이티브 동영상에서 세로로 긴 영상이 늘어나지 않고 좌우 여백으로 표시됩니다.
+
+---
+
+## v0.1.10 (2026-11-04)
+
+| 네이티브 구성 | 버전 |
+|---|---|
+| Android Core / BOM | 2.5.0 / 2026.11.01 (변경 없음) |
+| iOS Mediation | **2.6.1** |
+| iOS Core | 1.5.1 (변경 없음) |
+
+- iOS 네이티브 SDK를 Mediation 2.6.1로 업데이트했습니다. Core는 1.5.1을 유지합니다. 변경 내용은 [iOS 릴리즈 노트](/ios/native/changelog)를 참고하세요. Android 동작은 변경 없습니다.
+   - GAM·Pangle·NAM·nap mx 네이티브의 `shown`은 광고 영역이 50% 이상 보이면 네트워크 노출 콜백을 기다리지 않고 전달됩니다. 콜백이 먼저 오면 그 시점에 전달되며, 콜백이 누락돼도 자동 갱신이 멈추지 않습니다.
+   - 숨겨진 상태나 화면 밖에서 붙은 배너·네이티브 광고가 노출 전에 자동 갱신으로 교체되던 문제가 수정됐습니다.
+   - 표시 중이던 배너·네이티브 광고가 렌더 실패 등으로 실패하면 SDK가 광고를 내리고 바로 새 광고를 요청합니다. 이때 광고 영역이 잠깐 비어 보일 수 있습니다.
+
+---
+
+## v0.1.9 (2026-11-03)
+
+| 네이티브 구성 | 버전 |
+|---|---|
+| Android Core / BOM | **2.5.0** / **2026.11.01** |
+| iOS Mediation | 2.6.0 (변경 없음) |
+| iOS Core | 1.5.1 (변경 없음) |
+
+- Android 네이티브 SDK를 Core 2.5.0으로, Android 어댑터 예제를 BOM `2026.11.01` 기준으로 업데이트했습니다. 변경 내용은 [Android 릴리즈 노트](/android/native/changelog)를 참고하세요.
+   - nap mx 리워드 동영상에서 재생 중 닫기 버튼이 노출되고 중도에 닫으면 보상이 지급되지 않던 문제가 수정됐습니다. 끝까지 시청해야 닫기 버튼이 노출되며, 시청 완료 시 보상 이벤트가 전달됩니다.
+- **연동 주의 (Android)**: Core 2.5.0에서 Android `nativeCode` 값이 바뀌었습니다(no-fill `-20`, timeout `-22`, 잘못된 광고 단위 `-1`, 표시 실패 `-23`). `isNoFill`·`isTimeout`은 플랫폼별로 판정하므로 그대로 사용하면 되며, 잘못된 광고 단위(`-1`)는 no-fill로 표시되지 않습니다. `nativeCode` 숫자를 직접 비교하거나 저장하고 있다면 새 값으로 바꿔 주세요.
+
+---
+
 ## v0.1.8 (2026-10-31)
 
 | 네이티브 구성 | 버전 |

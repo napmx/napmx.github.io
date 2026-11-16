@@ -2,6 +2,69 @@
 
 ---
 
+## v2.5.1 (2026-11-10)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.11.02`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.5.1** |
+> | `admixer-admanager` · `admixer-naveradmanager` | **2.2.1** |
+> | `admixer-unity` | **2.1.1** |
+> | `admixer-bom` | **2026.11.02** |
+> | 그 밖의 어댑터·`admixer-interactive`·`admixer-compose`·`admixer-unity-nativeadlayout` | 변경 없음 |
+>
+> 모두 버그 수정이며 코드 변경 없이 업데이트할 수 있습니다. BOM을 쓰면 자동으로 맞춰집니다.
+
+### 전면·리워드 로드 수정 (Flutter 등 Application Context로 로드하는 앱은 업데이트 권장)
+
+- **Application Context로 로드하면 바로 실패하던 문제 수정** — Unity Ads 전면·리워드, Naver Ad Manager 전면·리워드, Google AdManager 전면을
+  Activity가 아닌 Context(예: `getApplicationContext()`)로 로드하면 광고를 요청하지 않고 바로 실패했습니다. 이제 어떤 Context로든 로드하고,
+  Activity는 표시(`show(Activity)`)할 때만 필요합니다. Flutter 플러그인처럼 Application Context로 로드하는 앱에 해당하며,
+  Activity로 로드하던 앱의 동작은 같습니다.
+
+### 그 밖의 수정
+
+- **Naver Ad Manager 네이티브 캐러셀** — 슬롯을 한 번 탭하면 클릭 콜백(`onAdClicked()`)이 2번 오던 문제를 수정했습니다. 서버 클릭 집계는 이전에도 1회였습니다.
+- **네이티브 동영상 비율** — 미디어 영역의 가로·세로를 모두 고정했을 때 영역보다 세로로 긴 영상이 가로로 늘어나던 문제를 수정했습니다.
+  원본 비율을 유지하고 좌우를 검은 여백으로 표시합니다(iOS와 같음). 높이를 `wrap_content`로 둔 경우는 그대로입니다.
+
+---
+
+## v2.5.0 (2026-11-03)
+
+> 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.11.01`입니다.
+>
+> | 아티팩트 | 버전 |
+> |---|---|
+> | `admixer-ssp` (코어) | **2.5.0** |
+> | `admixer-admanager` · `admixer-gma-nextgen` · `admixer-pangle` · `admixer-naveradmanager` · `admixer-teads` | **2.2.0** |
+> | `admixer-adfit` · `admixer-applovin` · `admixer-unity` | **2.1.0** |
+> | 🧪 `admixer-interactive` | **1.0.0-beta03** |
+> | `admixer-bom` | **2026.11.01** |
+> | `admixer-unity-nativeadlayout` 2.0.0 · `admixer-compose` 2.0.3 | 변경 없음 |
+>
+> 코어와 어댑터를 함께 올려 주세요. BOM을 쓰면 자동으로 맞춰집니다.
+
+### ⚠️ 업데이트 전 확인 (앱 재빌드 필요)
+
+- **에러 코드 값 변경** — `AdMixer.AX_ERR_*` 상수의 이름은 그대로이고 값이 iOS·WebBridge와 같은 공통 코드로 바뀌었습니다
+  (예: `AX_ERR_NO_ADS` `0x80000008` → `-20`). 상수는 빌드할 때 앱에 값으로 들어가므로 **SDK 업데이트 후 앱을 다시 빌드**해 주세요.
+  상수 이름으로 비교하는 코드는 다시 빌드하면 그대로 동작합니다. Flutter 등 래퍼 플러그인도 다시 빌드가 필요합니다.
+
+### 리워드 비디오 수정 (업데이트 권장)
+
+- **재생 중 닫기 버튼이 노출되고 보상이 지급되지 않던 문제 수정**
+
+### 동작 변경 (코드 변경 불요)
+
+- **배너·네이티브 노출** — 배너 `onAdDisplayed()`는 노출 로그를 보내는 시점에 호출됩니다. 노출 신호가 없는 네이티브(AdFit · AdMixer)는
+  광고 영역이 50% 이상 보일 때 노출로 처리합니다.
+- **아동 대상 지면** — 아동 신호를 전달할 수 없는 Teads · Pangle은 아동 대상 트래픽에서 제외됩니다.
+- **새 에러 코드** — 로드 중 `cancelLoad()` 시 `AX_ERR_CANCELLED`, 백그라운드 로드 차단 시 `AX_ERR_BACKGROUND` 실패 콜백을 전달합니다.
+
+---
+
 ## v2.4.0 (2026-10-14)
 
 > 변경된 모듈만 개별 버전으로 배포됩니다(모듈별 버전 상이). 이 릴리스 시점의 BOM은 `admixer-bom:2026.10.04`입니다.

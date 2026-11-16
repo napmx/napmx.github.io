@@ -1,6 +1,32 @@
 # 릴리즈 노트
 
 
+## AdMixerMediationPangle v1.2.8 (2026-11-04)
+
+- Pangle SDK(Ads-Global) 허용 범위의 상한을 **`8.4.1` 미만**으로 넓혔습니다 (기존 `8.2.2` 미만, 하한은 그대로) — iOS 27 환경 크래시가 수정된 Pangle SDK 8.4.0.7 을 사용할 수 있습니다. SPM 으로는 `AdsGlobalPackage` `8.4.0-release.7` 입니다
+- 필요한 Mediation 버전은 v1.2.7 과 같은 **v2.6.0 이상**입니다
+- **SPM 으로 먼저 제공합니다.** CocoaPods 는 등록되면 이 페이지에 반영합니다
+
+---
+
+## AdMixerMediationGAM v1.2.10 (2026-11-03)
+
+- Google Mobile Ads SDK 허용 범위를 **`12.7.0` 이상 `13.13` 미만**으로 넓혔습니다 (기존 `13.10` 미만) — 13.11.0·13.12.0 을 사용할 수 있습니다. 13.11.0 부터 Google 이 iPhone Duo 를 공식 지원합니다
+- 필요한 Mediation 버전은 v1.2.9 와 같은 **v2.6.0 이상**입니다. Mediation 2.5.x 이하에서 올리면 Mediation·Core 도 함께 올라갑니다
+- **SPM 으로 먼저 제공합니다.** CocoaPods 는 등록되면 이 페이지에 반영합니다
+
+---
+
+## v2.6.1 (2026-11-02)
+
+- **필수 Core 버전 변경 — `AdMixer` 1.5.1 이상이 필요합니다.** SPM 은 Mediation 2.6.1 패키지가 Core 의존성을 포함해 자동으로 해석합니다
+- 어댑터 버전 업데이트
+   - AdMixerMediationAdFit v2.0.1 — **SPM 전용, iOS 15.0 이상, Mediation v2.6.1 이상, AdFitSDK 3.18.6 이상 3.23 미만**
+      - AdFit 이 CocoaPods 배포를 중단해 v2.0.0 부터 SPM 으로만 제공합니다. CocoaPods 로 연동 중이면 v1.1.x 를 계속 사용하거나 SPM 으로 전환하세요
+      - iOS 14 를 지원하는 앱은 v1.1.x 를 사용하세요. Xcode 기본 규칙(Up to Next Major)으로 추가한 1.x 는 v2.0.x 로 자동 업데이트되지 않습니다
+
+---
+
 ## v2.6.0 (2026-10-29)
 
 - **필수 Core 버전 변경 — `AdMixer` 1.4.1 이상이 필요합니다.** SPM 은 Mediation 2.6.0 패키지가 Core 의존성(1.4.1 이상)을 포함해 자동으로 해석합니다
