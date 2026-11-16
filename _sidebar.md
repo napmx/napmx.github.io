@@ -3,6 +3,7 @@
 - **<i class="fa-solid fa-rocket nav-icon"></i> 소개**
   - [nap mx 소개](/overview)
   - [연동 방식 및 지원 포맷](/overview?id=연동-방식)
+  - [SDK 가이드 개선 설문](/survey.html ":ignore")
 
 - **<i class="fa-solid fa-clipboard-check nav-icon"></i> 연동 준비**
   - [사전 요구사항](/prerequisites)

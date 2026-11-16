@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>napMX SDK 연동 가이드 개선을 위한 설문</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter & Pretendard Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        body {
+            font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* 부드러운 전환 애니메이션 */
+        .fade-slide-enter {
+            animation: fadeSlideIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 라디오 및 체크박스 커스텀 스타일 */
+        .option-card:has(input:checked) {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            box-shadow: 0 1px 2px 0 rgba(59, 130, 246, 0.1);
+        }
+        .option-card:has(input:disabled) {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-100 selection:text-blue-900 pb-20">
+
+    <!-- 상단 진행률 바 (Sticky) -->
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-200 z-50">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300 ease-out" style="width: 0%;"></div>
+    </div>
+
+    <!-- 상단 네비게이션 헤더 -->
+    <header class="bg-white border-b border-slate-200 sticky top-1.5 z-40 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    N
+                </div>
+                <span class="font-bold text-slate-900 tracking-tight text-lg">napMX <span class="text-slate-400 font-normal text-sm ml-1">Developer Survey</span></span>
+            </div>
+            <a href="https://napmx.github.io/" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+                <span>연동 가이드 보기</span>
+                <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 pt-8">
+
+        <!-- 인트로 배너 카드 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+            <div class="h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"></div>
+            <div class="p-6 sm:p-8">
+                <div class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 mb-4">
+                    ⏱️ 소요 시간: 약 3~5분 (12개 기본 문항 및 조건부 질문)
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-4">
+                    napMX SDK 연동 가이드 개선을 위한 설문
+                </h1>
+                <div class="space-y-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+                    <p>안녕하세요, <strong class="text-slate-800">napMX</strong>입니다.</p>
+                    <p>현재 napMX에서는 <span class="font-semibold text-slate-800">Flutter, Unity, React Native</span> 환경에서 SDK를 보다 쉽고 안정적으로 연동할 수 있도록 개발 가이드를 제공하고 있습니다.</p>
+                    <p>실제 개발 환경에서 가이드의 정확성과 활용도를 높이기 위해, 해당 프레임워크를 사용하는 개발자분들의 의견을 수렴하고자 합니다. 가이드를 참고하면서 <strong class="text-blue-600">부족했던 설명, 실제 구현과 차이가 있는 내용, 추가로 필요한 예제</strong> 등에 대해 자유롭게 의견을 부탁드립니다.</p>
+                </div>
+                <div class="mt-6 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+                    <div>* <span class="text-red-500 font-bold">*</span> 표시는 필수 응답 항목입니다. 응답은 메일 앱에서 직접 발송해 주세요.</div>
+                    <a href="https://napmx.github.io/" target="_blank" class="text-slate-600 hover:text-blue-600 underline underline-offset-2">
+                        가이드 URL: https://napmx.github.io/
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 설문 폼 시작 -->
+        <form id="surveyForm" class="space-y-8" novalidate>
+
+            <!-- ==================== PART 1. 사용 환경 ==================== -->
+            <section class="space-y-6">
+                <div class="flex items-center space-x-2 px-1">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold">1</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">사용 환경</h2>
+                </div>
+
+                <!-- Q1 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="checkbox" data-name="Q1">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q1. 현재 사용 중인 개발 프레임워크는 무엇인가요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">복수 선택이 가능하며, 선택하신 프레임워크에 따른 추가 질문이 아래에 표시됩니다.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="q1-options">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q1" value="Flutter" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 framework-trigger">
+                            <span class="ml-3 text-sm font-medium text-slate-800">Flutter</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q1" value="Unity" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 framework-trigger">
+                            <span class="ml-3 text-sm font-medium text-slate-800">Unity</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q1" value="React Native" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 framework-trigger">
+                            <span class="ml-3 text-sm font-medium text-slate-800">React Native</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q1" value="기타" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 other-checkbox" data-target="Q1_other">
+                            <span class="ml-3 text-sm font-medium text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="Q1_other_wrap" class="hidden mt-3">
+                        <input type="text" id="Q1_other" name="Q1_other" placeholder="사용 중인 프레임워크 또는 환경을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">최소 1개 이상의 프레임워크를 선택해 주세요.</p>
+                </div>
+
+                <!-- F1: Flutter 조건부 질문 -->
+                <div id="section-Flutter" class="hidden fade-slide-enter bg-blue-50/40 rounded-2xl border-2 border-blue-200 p-6 sm:p-7 shadow-sm">
+                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-100 text-blue-800 mb-3">
+                        🔹 Flutter 환경 추가 질문
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            F1. Flutter 환경에서 가이드에 추가 설명이 필요한 항목은 무엇인가요?
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">복수 선택 가능</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="pubspec.yaml 및 패키지 의존성" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800"><code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded text-pink-600">pubspec.yaml</code> 및 패키지 의존성</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="Android Gradle / iOS CocoaPods 설정" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">Android Gradle / iOS CocoaPods 설정</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="Dart 비동기 처리 및 콜백" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">Dart 비동기 처리 및 콜백</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="Widget 생명주기 및 광고 리소스 해제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">Widget 생명주기 및 광고 리소스 해제</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="Android / iOS 빌드 호환성" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">Android / iOS 빌드 호환성</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="특별히 없음" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 exclusive-checkbox" data-group="F1">
+                            <span class="ml-3 text-sm text-slate-800">특별히 없음</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="F1" value="기타" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 other-checkbox" data-target="F1_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="F1_other_wrap" class="hidden mt-3">
+                        <input type="text" id="F1_other" name="F1_other" placeholder="기타 의견을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- U1: Unity 조건부 질문 -->
+                <div id="section-Unity" class="hidden fade-slide-enter bg-indigo-50/40 rounded-2xl border-2 border-indigo-200 p-6 sm:p-7 shadow-sm">
+                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-800 mb-3">
+                        🔹 Unity 환경 추가 질문
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            U1. Unity 환경에서 가이드에 추가 설명이 필요한 항목은 무엇인가요?
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">복수 선택 가능</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="Unity Package 설치 및 의존성" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-slate-800">Unity Package 설치 및 의존성 (EDM4U 등)</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="Unity Editor 및 빌드 환경 설정" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-slate-800">Unity Editor 및 빌드 환경 설정</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="Android / iOS 네이티브 설정" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-slate-800">Android / iOS 네이티브 설정</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="광고 표시 전후 게임 일시정지 및 재개" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-slate-800">광고 표시 전후 게임 일시정지 및 재개</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="리워드 지급 및 이벤트 처리" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-slate-800">리워드 지급 및 이벤트 처리</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="IL2CPP / Mono 호환성" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                            <span class="ml-3 text-sm text-slate-800">IL2CPP / Mono 호환성</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="특별히 없음" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 exclusive-checkbox" data-group="U1">
+                            <span class="ml-3 text-sm text-slate-800">특별히 없음</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 transition-all">
+                            <input type="checkbox" name="U1" value="기타" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 other-checkbox" data-target="U1_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="U1_other_wrap" class="hidden mt-3">
+                        <input type="text" id="U1_other" name="U1_other" placeholder="기타 의견을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- R1: React Native 조건부 질문 -->
+                <div id="section-React Native" class="hidden fade-slide-enter bg-sky-50/40 rounded-2xl border-2 border-sky-200 p-6 sm:p-7 shadow-sm">
+                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-sky-100 text-sky-800 mb-3">
+                        🔹 React Native 환경 추가 질문
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            R1. React Native 환경에서 가이드에 추가 설명이 필요한 항목은 무엇인가요?
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">복수 선택 가능</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="npm / yarn 패키지 설치 및 의존성" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                            <span class="ml-3 text-sm text-slate-800"><code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded text-pink-600">npm</code> / <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded text-pink-600">yarn</code> 패키지 설치 및 의존성</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="Android Gradle / iOS CocoaPods 설정" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                            <span class="ml-3 text-sm text-slate-800">Android Gradle / iOS CocoaPods 설정</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="JavaScript / TypeScript 코드 예제" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                            <span class="ml-3 text-sm text-slate-800">JavaScript / TypeScript 코드 예제</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="Native Module 및 Bridge 처리" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                            <span class="ml-3 text-sm text-slate-800">Native Module 및 Bridge 처리</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="React 컴포넌트 생명주기 및 이벤트 처리" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                            <span class="ml-3 text-sm text-slate-800">React 컴포넌트 생명주기 및 이벤트 처리</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="Expo 환경 지원 및 제약사항" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                            <span class="ml-3 text-sm text-slate-800">Expo 환경 지원 및 제약사항</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="특별히 없음" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500 exclusive-checkbox" data-group="R1">
+                            <span class="ml-3 text-sm text-slate-800">특별히 없음</span>
+                        </label>
+                        <label class="option-card bg-white flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-sky-300 transition-all">
+                            <input type="checkbox" name="R1" value="기타" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500 other-checkbox" data-target="R1_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="R1_other_wrap" class="hidden mt-3">
+                        <input type="text" id="R1_other" name="R1_other" placeholder="기타 의견을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="radio" data-name="Q2">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q2. napMX 연동 가이드를 어느 정도 활용해 보셨나요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">단일 선택</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q2" value="가이드를 참고하여 연동 완료" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">가이드를 참고하여 연동 완료</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q2" value="현재 가이드를 참고하여 연동 진행 중" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">현재 가이드를 참고하여 연동 진행 중</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q2" value="가이드만 검토" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">가이드만 검토</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q2" value="아직 확인하지 않음" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">아직 확인하지 않음</span>
+                        </label>
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">항목을 선택해 주세요.</p>
+                </div>
+            </section>
+
+            <!-- ==================== PART 2. 가이드 정확성 및 완성도 ==================== -->
+            <section class="space-y-6 pt-4">
+                <div class="flex items-center space-x-2 px-1">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold">2</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">가이드 정확성 및 완성도</h2>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="radio" data-name="Q3">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q3. 현재 제공되는 연동 가이드만으로 SDK 연동이 가능한 수준이라고 생각하시나요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">단일 선택</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q3" value="가이드만으로 충분히 연동 가능" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">가이드만으로 충분히 연동 가능</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q3" value="일부 추가 설명이 필요하지만 연동 가능" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">일부 추가 설명이 필요하지만 연동 가능</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q3" value="중요한 설명이 부족하여 연동이 어려움" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">중요한 설명이 부족하여 연동이 어려움</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q3" value="실제 코드나 설정에 오류가 있어 연동이 어려움" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">실제 코드나 설정에 오류가 있어 연동이 어려움</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q3" value="아직 판단하기 어려움" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">아직 판단하기 어려움 (미확인 등)</span>
+                        </label>
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">항목을 선택해 주세요.</p>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="checkbox" data-name="Q4">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q4. 가이드에서 설명이 부족하거나 보완이 필요한 부분은 무엇인가요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">복수 선택 가능</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="SDK / 플러그인 설치 방법" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">SDK / 플러그인 설치 방법</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="프로젝트 환경 설정" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">프로젝트 환경 설정</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="Android / iOS 플랫폼별 설정" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">Android / iOS 플랫폼별 설정</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="SDK 초기화 방법" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">SDK 초기화 방법</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="광고 요청 및 노출 방법" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">광고 요청 및 노출 방법</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="광고 이벤트 / 콜백 처리" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">광고 이벤트 / 콜백 처리</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="오류 코드 및 예외 처리" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">오류 코드 및 예외 처리</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="테스트 광고 및 정상 동작 확인" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">테스트 광고 및 정상 동작 확인</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="SDK 버전 및 호환성 정보" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">SDK 버전 및 호환성 정보</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="실제 서비스 적용 및 운영 방법" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">실제 서비스 적용 및 운영 방법</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="특별히 없음" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 exclusive-checkbox" data-group="Q4">
+                            <span class="ml-3 text-sm text-slate-800">특별히 없음 / 해당 없음</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q4" value="기타" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 other-checkbox" data-target="Q4_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="Q4_other_wrap" class="hidden mt-3">
+                        <input type="text" id="Q4_other" name="Q4_other" placeholder="보완이 필요한 기타 항목을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">최소 1개 이상 선택해 주세요.</p>
+                </div>
+
+                <!-- Q5 & Q5-1 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="radio" data-name="Q5">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q5. 가이드에 작성된 내용 중 실제 개발 환경과 다르거나 잘못 설명된 부분이 있었나요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">단일 선택</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q5" value="있음" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm font-medium text-slate-800">있음</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q5" value="없음" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm font-medium text-slate-800">없음</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q5" value="아직 확인하지 못함" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm font-medium text-slate-800">아직 확인하지 못함</span>
+                        </label>
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">항목을 선택해 주세요.</p>
+
+                    <!-- Q5-1 자유 응답 -->
+                    <div id="q5-1-container" class="mt-6 pt-5 border-t border-slate-100">
+                        <label for="Q5_1" class="block text-sm sm:text-base font-semibold text-slate-900 mb-1.5">
+                            Q5-1. 잘못되거나 실제 환경과 다른 부분이 있었다면 구체적으로 알려주세요. <span class="text-xs font-normal text-slate-400">(선택)</span>
+                        </label>
+                        <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-3 mb-3 text-xs text-amber-900 leading-relaxed">
+                            💡 <strong>작성 팁:</strong> 해당 <strong>가이드 페이지 URL, 섹션명, 또는 코드 위치</strong>를 함께 적어주시면 문서 수정에 즉시 반영할 수 있습니다.<br>
+                            <span class="text-amber-700">예: 설정 파일 위치, 플러그인 설치 방법, 코드 예제 오류, 플랫폼별 설정 누락 등</span>
+                        </div>
+                        <textarea id="Q5_1" name="Q5_1" rows="3" placeholder="내용을 자유롭게 작성해 주세요..."
+                                  class="w-full px-4 py-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PART 3. 샘플 코드 및 개발 편의성 ==================== -->
+            <section class="space-y-6 pt-4">
+                <div class="flex items-center space-x-2 px-1">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold">3</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">샘플 코드 및 개발 편의성</h2>
+                </div>
+
+                <!-- Q6 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="radio" data-name="Q6">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q6. 현재 가이드의 코드 예제는 실제 프로젝트에 적용하기에 충분한가요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">단일 선택</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q6" value="충분함" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">충분함</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q6" value="일부 예제 추가 필요" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">일부 예제 추가 필요</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q6" value="전체 동작 흐름을 보여주는 예제가 필요" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">전체 동작 흐름을 보여주는 예제가 필요</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q6" value="예제 코드 수정 또는 보완 필요" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">예제 코드 수정 또는 보완 필요</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="radio" name="Q6" value="판단하기 어려움" class="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">판단하기 어려움 (미확인 등)</span>
+                        </label>
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">항목을 선택해 주세요.</p>
+                </div>
+
+                <!-- Q7 (최대 3개) -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="checkbox" data-name="Q7" data-max="3">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                                Q7. 추가로 제공되면 도움이 될 자료는 무엇인가요? <span class="text-red-500">*</span>
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">최대 3개까지 선택 가능</p>
+                        </div>
+                        <span id="Q7-counter" class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                            0 / 3 선택
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="설치부터 광고 노출까지 전체 연동 예제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">설치부터 광고 노출까지 전체 연동 예제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="실행 가능한 샘플 프로젝트" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">실행 가능한 샘플 프로젝트 (GitHub 등)</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="배너 광고 구현 예제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">배너 광고 구현 예제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="전면 광고 구현 예제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">전면 광고 구현 예제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="리워드 광고 및 보상 처리 예제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">리워드 광고 및 보상 처리 예제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="오류 처리 및 재시도 예제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">오류 처리 및 재시도 예제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="Android / iOS 플랫폼별 설정 예제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">Android / iOS 플랫폼별 설정 예제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="SDK 업데이트 및 마이그레이션 가이드" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">SDK 업데이트 및 마이그레이션 가이드</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="자주 발생하는 오류 및 FAQ" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">자주 발생하는 오류 및 FAQ</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q7" value="기타" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox other-checkbox" data-target="Q7_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="Q7_other_wrap" class="hidden mt-3">
+                        <input type="text" id="Q7_other" name="Q7_other" placeholder="필요한 기타 자료를 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">최소 1개 이상(최대 3개) 선택해 주세요.</p>
+                </div>
+            </section>
+
+            <!-- ==================== PART 4. 개발 및 운영 시 발생하는 문제 ==================== -->
+            <section class="space-y-6 pt-4">
+                <div class="flex items-center space-x-2 px-1">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold">4</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">개발 및 운영 시 발생하는 문제</h2>
+                </div>
+
+                <!-- Q8 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="checkbox" data-name="Q8">
+                    <div class="mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                            Q8. 실제 SDK 연동 과정에서 발생했거나 발생할 가능성이 높다고 생각하는 문제는 무엇인가요? <span class="text-red-500">*</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">복수 선택 가능</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="SDK / 플러그인 의존성 충돌" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">SDK / 플러그인 의존성 충돌</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="빌드 오류" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">빌드 오류</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="OS / 프레임워크 버전 호환성" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">OS / 프레임워크 버전 호환성</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="광고 로드 또는 노출 실패" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">광고 로드 또는 노출 실패</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="이벤트 / 콜백 처리 문제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">이벤트 / 콜백 처리 문제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="앱 생명주기 및 화면 전환 문제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">앱 생명주기 및 화면 전환 문제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="메모리 / 성능 문제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">메모리 / 성능 문제</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="Release 빌드 환경 문제" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">Release 빌드 환경 문제 (ProGuard 등)</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="현재 가이드에서 해결 방법을 찾기 어려움" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-slate-800">현재 가이드에서 해결 방법을 찾기 어려움</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q8" value="특별히 없음" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 exclusive-checkbox" data-group="Q8">
+                            <span class="ml-3 text-sm text-slate-800">특별히 없음 / 해당 없음</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all sm:col-span-2">
+                            <input type="checkbox" name="Q8" value="기타" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 other-checkbox" data-target="Q8_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="Q8_other_wrap" class="hidden mt-3">
+                        <input type="text" id="Q8_other" name="Q8_other" placeholder="기타 문제점을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">최소 1개 이상 선택해 주세요.</p>
+                </div>
+
+                <!-- Q9 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm">
+                    <label for="Q9" class="block text-base sm:text-lg font-semibold text-slate-900 mb-1.5">
+                        Q9. 실제 개발 또는 운영 경험상 napMX 가이드에 반드시 추가되어야 한다고 생각하는 내용이 있나요? <span class="text-xs font-normal text-slate-400">(선택)</span>
+                    </label>
+                    <p class="text-xs sm:text-sm text-slate-500 mb-3">
+                        예: 특정 프레임워크 설정, 필수 예외 처리, 실서비스 운영 주의사항, 버전 충돌 해결 방법 등 (관련 가이드 URL이 있다면 함께 적어주세요)
+                    </p>
+                    <textarea id="Q9" name="Q9" rows="3" placeholder="내용을 자유롭게 작성해 주세요..."
+                              class="w-full px-4 py-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+            </section>
+
+            <!-- ==================== PART 5. 향후 가이드 개선 방향 ==================== -->
+            <section class="space-y-6 pt-4">
+                <div class="flex items-center space-x-2 px-1">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold">5</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">향후 가이드 개선 방향</h2>
+                </div>
+
+                <!-- Q10 (최대 3개) -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm question-block" data-required="checkbox" data-name="Q10" data-max="3">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                                Q10. napMX 연동 가이드에서 가장 우선적으로 개선하면 좋을 항목은 무엇인가요? <span class="text-red-500">*</span>
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">최대 3개까지 선택 가능</p>
+                        </div>
+                        <span id="Q10-counter" class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                            0 / 3 선택
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="가이드 내용의 정확성 검증" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">가이드 내용의 정확성 검증</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="설치 및 초기 설정 단계 상세화" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">설치 및 초기 설정 단계 상세화</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="실제 동작하는 샘플 프로젝트 제공" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">실제 동작하는 샘플 프로젝트 제공</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="광고 형식별 예제 보강" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">광고 형식별 예제 보강</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="프레임워크 및 OS 버전 호환성 안내" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">프레임워크 및 OS 버전 호환성 안내</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="오류 해결 및 디버깅 가이드" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">오류 해결 및 디버깅 가이드</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="실제 서비스 적용 시 주의사항" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">실제 서비스 적용 시 주의사항</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all">
+                            <input type="checkbox" name="Q10" value="문서 구조 및 검색 편의성" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox">
+                            <span class="ml-3 text-sm text-slate-800">문서 구조 및 검색 편의성</span>
+                        </label>
+                        <label class="option-card flex items-center p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-300 transition-all sm:col-span-2">
+                            <input type="checkbox" name="Q10" value="기타" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 max-limit-checkbox other-checkbox" data-target="Q10_other">
+                            <span class="ml-3 text-sm text-slate-800">기타</span>
+                        </label>
+                    </div>
+                    <div id="Q10_other_wrap" class="hidden mt-3">
+                        <input type="text" id="Q10_other" name="Q10_other" placeholder="기타 개선 희망 항목을 입력해 주세요"
+                               class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <p class="error-msg hidden text-xs text-red-500 mt-2 font-medium">최소 1개 이상(최대 3개) 선택해 주세요.</p>
+                </div>
+
+                <!-- Q11 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm">
+                    <label for="Q11" class="block text-base sm:text-lg font-semibold text-slate-900 mb-1.5">
+                        Q11. 다른 광고 SDK 또는 플러그인 가이드와 비교했을 때, napMX 가이드에 추가되면 좋을 내용이나 구성 방식이 있다면 알려주세요. <span class="text-xs font-normal text-slate-400">(선택)</span>
+                    </label>
+                    <textarea id="Q11" name="Q11" rows="3" placeholder="예: AdMob이나 AppLovin 문서처럼 프레임워크별 탭 전환, 복사하기 쉬운 전체 코드 블록 등"
+                              class="w-full mt-2 px-4 py-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+
+                <!-- Q12 -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm">
+                    <label for="Q12" class="block text-base sm:text-lg font-semibold text-slate-900 mb-1.5">
+                        Q12. 그 외 napMX SDK 및 연동 가이드 개선을 위한 의견이 있다면 자유롭게 작성해 주세요. <span class="text-xs font-normal text-slate-400">(선택)</span>
+                    </label>
+                    <textarea id="Q12" name="Q12" rows="3" placeholder="소중한 의견을 자유롭게 남겨주세요..."
+                              class="w-full mt-2 px-4 py-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+            </section>
+
+            <!-- 제출 버튼 영역 -->
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <button type="button" id="resetBtn" class="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-100 transition-colors">
+                    응답 초기화
+                </button>
+                <button type="submit" id="submitBtn" class="w-full sm:w-auto flex-1 sm:max-w-xs px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+                    <span>메일 작성하기</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <!-- 제출 완료 화면 (초기 숨김) -->
+        <div id="thankYouScreen" class="hidden fade-slide-enter bg-white rounded-2xl border border-slate-200 p-8 sm:p-10 shadow-sm text-center">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">메일 내용을 확인해 주세요</h2>
+            <p class="text-slate-600 text-sm sm:text-base max-w-lg mx-auto leading-relaxed mb-6">
+                메일 앱에서 받는 사람과 내용을 확인한 후 직접 발송해 주세요. 메일 앱이 열리지 않거나 내용이 잘린 경우 아래 응답을 복사해 nap_mx@nasmedia.co.kr로 보내 주세요. 이 화면만으로는 응답이 전송되지 않습니다.
+            </p>
+
+            <!-- 정적 페이지용 응답 데이터 요약 및 복사 박스 -->
+            <div class="max-w-xl mx-auto bg-slate-50 border border-slate-200 rounded-xl p-4 text-left mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-slate-700">📋 응답 요약 (복사 가능)</span>
+                    <button type="button" id="copyResultBtn" class="text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-md transition-colors">
+                        결과 복사하기
+                    </button>
+                </div>
+                <pre id="resultSummary" class="text-xs text-slate-600 bg-white p-3 rounded-lg border border-slate-200 overflow-x-auto max-h-48 whitespace-pre-wrap font-mono"></pre>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <a id="emailResultLink" href="mailto:nap_mx@nasmedia.co.kr" class="px-6 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">메일 앱 다시 열기</a>
+                <a href="https://napmx.github.io/" class="px-6 py-3 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors">
+                    napMX 연동 가이드로 돌아가기
+                </a>
+                <button type="button" id="reSubmitBtn" class="px-6 py-3 rounded-xl border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors">
+                    다시 작성하기
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 토스트 알림 (alert 대체) -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+        <div id="toastContent" class="px-5 py-3 rounded-xl shadow-lg text-sm font-medium text-white bg-slate-900 flex items-center space-x-2">
+            <span id="toastMessage">알림 메시지</span>
+        </div>
+    </div>
+
+    <!-- 초기화 확인 모달 (confirm 대체) -->
+    <div id="resetModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">응답을 초기화할까요?</h3>
+            <p class="text-sm text-slate-600 mb-6">작성하신 모든 설문 내용이 삭제되며 복구할 수 없습니다.</p>
+            <div class="flex justify-end space-x-2.5">
+                <button type="button" id="cancelResetBtn" class="px-4 py-2 rounded-xl border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50">취소</button>
+                <button type="button" id="confirmResetBtn" class="px-4 py-2 rounded-xl bg-red-600 text-sm font-medium text-white hover:bg-red-700">초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('surveyForm');
+            const progressBar = document.getElementById('progressBar');
+            const thankYouScreen = document.getElementById('thankYouScreen');
+            const resultSummary = document.getElementById('resultSummary');
+
+            // 1. 토스트 알림 유틸리티
+            let toastTimer;
+            function showToast(message, type = 'default') {
+                const toast = document.getElementById('toast');
+                const toastContent = document.getElementById('toastContent');
+                const toastMessage = document.getElementById('toastMessage');
+
+                toastMessage.textContent = message;
+                toastContent.className = 'px-5 py-3 rounded-xl shadow-lg text-sm font-medium text-white flex items-center space-x-2 transition-all ' +
+                    (type === 'error' ? 'bg-red-600' : type === 'success' ? 'bg-emerald-600' : 'bg-slate-900');
+
+                toast.classList.remove('hidden');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 3000);
+            }
+
+            // 2. Q1 프레임워크 선택에 따른 조건부 문항(F1, U1, R1) 표시/숨김
+            const frameworkTriggers = document.querySelectorAll('.framework-trigger');
+            frameworkTriggers.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const targetSection = document.getElementById(`section-${checkbox.value}`);
+                    if (targetSection) {
+                        if (checkbox.checked) {
+                            targetSection.classList.remove('hidden');
+                        } else {
+                            targetSection.classList.add('hidden');
+                            // 숨겨질 때 내부 체크박스 초기화
+                            targetSection.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                            targetSection.querySelectorAll('input[type="text"]').forEach(txt => {
+                                txt.value = '';
+                                txt.parentElement.classList.add('hidden');
+                            });
+                        }
+                    }
+                    updateProgress();
+                });
+            });
+
+            // 3. '기타' 체크박스 선택 시 직접 입력 텍스트 필드 토글
+            document.querySelectorAll('.other-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const targetId = checkbox.dataset.target;
+                    const wrap = document.getElementById(`${targetId}_wrap`);
+                    const input = document.getElementById(targetId);
+                    if (wrap && input) {
+                        if (checkbox.checked) {
+                            wrap.classList.remove('hidden');
+                            input.focus();
+                        } else {
+                            wrap.classList.add('hidden');
+                            input.value = '';
+                        }
+                    }
+                });
+            });
+
+            // 4. '특별히 없음' 배타적 선택 처리
+            document.querySelectorAll('.exclusive-checkbox').forEach(exclusiveCb => {
+                exclusiveCb.addEventListener('change', () => {
+                    const groupName = exclusiveCb.dataset.group;
+                    const groupCheckboxes = document.querySelectorAll(`input[name="${groupName}"]`);
+                    if (exclusiveCb.checked) {
+                        groupCheckboxes.forEach(cb => {
+                            if (cb !== exclusiveCb) {
+                                cb.checked = false;
+                                cb.dispatchEvent(new Event('change'));
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 일반 체크박스 선택 시 '특별히 없음' 해제
+            ['F1', 'U1', 'R1', 'Q4', 'Q8'].forEach(groupName => {
+                const groupCheckboxes = document.querySelectorAll(`input[name="${groupName}"]`);
+                groupCheckboxes.forEach(cb => {
+                    if (!cb.classList.contains('exclusive-checkbox')) {
+                        cb.addEventListener('change', () => {
+                            if (cb.checked) {
+                                const exclusiveCb = document.querySelector(`input[name="${groupName}"].exclusive-checkbox`);
+                                if (exclusiveCb && exclusiveCb.checked) {
+                                    exclusiveCb.checked = false;
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 5. 최대 3개 선택 제한 로직 (Q7, Q10)
+            ['Q7', 'Q10'].forEach(name => {
+                const checkboxes = document.querySelectorAll(`input[name="${name}"]`);
+                const counterBadge = document.getElementById(`${name}-counter`);
+                const maxLimit = 3;
+
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        const checkedCount = document.querySelectorAll(`input[name="${name}"]:checked`).length;
+                        if (counterBadge) {
+                            counterBadge.textContent = `${checkedCount} / ${maxLimit} 선택`;
+                            if (checkedCount === maxLimit) {
+                                counterBadge.classList.replace('bg-slate-100', 'bg-blue-100');
+                                counterBadge.classList.replace('text-slate-700', 'text-blue-700');
+                            } else {
+                                counterBadge.classList.replace('bg-blue-100', 'bg-slate-100');
+                                counterBadge.classList.replace('text-blue-700', 'text-slate-700');
+                            }
+                        }
+
+                        if (checkedCount >= maxLimit) {
+                            checkboxes.forEach(item => {
+                                if (!item.checked) item.disabled = true;
+                            });
+                            if (cb.checked && checkedCount === maxLimit) {
+                                showToast(`최대 ${maxLimit}개까지 선택할 수 있습니다.`);
+                            }
+                        } else {
+                            checkboxes.forEach(item => {
+                                item.disabled = false;
+                            });
+                        }
+                    });
+                });
+            });
+
+            // 6. 상단 진행률 바 계산
+            function updateProgress() {
+                const requiredBlocks = document.querySelectorAll('.question-block');
+                let answeredCount = 0;
+
+                requiredBlocks.forEach(block => {
+                    const name = block.dataset.name;
+                    const checked = block.querySelectorAll(`input[name="${name}"]:checked`).length > 0;
+                    if (checked) {
+                        answeredCount++;
+                        block.querySelector('.error-msg')?.classList.add('hidden');
+                        block.classList.remove('border-red-400');
+                    }
+                });
+
+                const percentage = Math.round((answeredCount / requiredBlocks.length) * 100);
+                progressBar.style.width = `${percentage}%`;
+            }
+
+            form.addEventListener('change', updateProgress);
+
+            // 7. 폼 유효성 검사 및 제출
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const requiredBlocks = document.querySelectorAll('.question-block');
+                let firstInvalidBlock = null;
+
+                requiredBlocks.forEach(block => {
+                    const name = block.dataset.name;
+                    const checkedCount = block.querySelectorAll(`input[name="${name}"]:checked`).length;
+                    const errorMsg = block.querySelector('.error-msg');
+
+                    if (checkedCount === 0) {
+                        block.classList.add('border-red-400');
+                        if (errorMsg) errorMsg.classList.remove('hidden');
+                        if (!firstInvalidBlock) firstInvalidBlock = block;
+                    } else {
+                        block.classList.remove('border-red-400');
+                        if (errorMsg) errorMsg.classList.add('hidden');
+                    }
+                });
+
+                if (firstInvalidBlock) {
+                    showToast('필수 응답 항목을 모두 선택해 주세요.', 'error');
+                    firstInvalidBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+
+                // 메일 앱에 응답을 전달합니다. 실제 발송은 사용자가 확인합니다.
+                const summary = formatSummaryText(collectFormData());
+                resultSummary.textContent = summary;
+                const mailto = 'mailto:nap_mx@nasmedia.co.kr?subject=' +
+                    encodeURIComponent('[nap mx] SDK 연동 가이드 설문 응답') +
+                    '&body=' + encodeURIComponent(summary);
+                document.getElementById('emailResultLink').href = mailto;
+                form.classList.add('hidden');
+                thankYouScreen.classList.remove('hidden');
+                progressBar.style.width = '100%';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.location.href = mailto;
+            });
+
+            // 데이터 수집 함수
+            function collectFormData() {
+                const getCheckedValues = (name) => {
+                    const vals = Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+                    const otherInput = document.getElementById(`${name}_other`);
+                    if (vals.includes('기타') && otherInput && otherInput.value.trim()) {
+                        const idx = vals.indexOf('기타');
+                        vals[idx] = `기타(${otherInput.value.trim()})`;
+                    }
+                    return vals;
+                };
+
+                const getRadioValue = (name) => {
+                    const el = document.querySelector(`input[name="${name}"]:checked`);
+                    return el ? el.value : '';
+                };
+
+                const q1 = getCheckedValues('Q1');
+                const data = {
+                    submittedAt: new Date().toISOString(),
+                    Q1_프레임워크: q1,
+                };
+
+                if (q1.some(v => v.startsWith('Flutter'))) data.F1_Flutter추가설명 = getCheckedValues('F1');
+                if (q1.some(v => v.startsWith('Unity'))) data.U1_Unity추가설명 = getCheckedValues('U1');
+                if (q1.some(v => v.startsWith('React Native'))) data.R1_RN추가설명 = getCheckedValues('R1');
+
+                data.Q2_가이드활용도 = getRadioValue('Q2');
+                data.Q3_연동가능수준 = getRadioValue('Q3');
+                data.Q4_보완필요부분 = getCheckedValues('Q4');
+                data.Q5_오류존재여부 = getRadioValue('Q5');
+                data.Q5_1_오류상세내용 = document.getElementById('Q5_1').value.trim();
+                data.Q6_예제충분도 = getRadioValue('Q6');
+                data.Q7_필요자료_최대3개 = getCheckedValues('Q7');
+                data.Q8_예상발생문제 = getCheckedValues('Q8');
+                data.Q9_필수추가내용 = document.getElementById('Q9').value.trim();
+                data.Q10_우선개선항목_최대3개 = getCheckedValues('Q10');
+                data.Q11_타사비교의견 = document.getElementById('Q11').value.trim();
+                data.Q12_기타의견 = document.getElementById('Q12').value.trim();
+
+                return data;
+            }
+
+            // 보기 좋은 텍스트 포맷 변환
+            function formatSummaryText(data) {
+                let lines = [`[napMX SDK 연동 가이드 설문 응답] (${new Date().toLocaleString('ko-KR')})`, '----------------------------------------'];
+                for (const [key, val] of Object.entries(data)) {
+                    if (key === 'submittedAt') continue;
+                    const displayVal = Array.isArray(val) ? (val.length ? val.join(', ') : '없음') : (val || '미작성');
+                    lines.push(`• ${key}: ${displayVal}`);
+                }
+                return lines.join('\n');
+            }
+
+            // 8. 결과 복사 버튼 (iframe 호환 execCommand 사용)
+            document.getElementById('copyResultBtn').addEventListener('click', () => {
+                const text = resultSummary.textContent;
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('응답 결과가 클립보드에 복사되었습니다.', 'success');
+                } catch (err) {
+                    showToast('복사에 실패했습니다.', 'error');
+                }
+                document.body.removeChild(textarea);
+            });
+
+            // 9. 초기화 모달 및 다시 작성하기
+            const resetModal = document.getElementById('resetModal');
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                resetModal.classList.remove('hidden');
+                resetModal.classList.add('flex');
+            });
+
+            document.getElementById('cancelResetBtn').addEventListener('click', () => {
+                resetModal.classList.add('hidden');
+                resetModal.classList.remove('flex');
+            });
+
+            function performReset() {
+                form.reset();
+                ['Flutter', 'Unity', 'React Native'].forEach(fw => {
+                    document.getElementById(`section-${fw}`)?.classList.add('hidden');
+                });
+                document.querySelectorAll('[id$="_other_wrap"]').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.disabled = false);
+                ['Q7', 'Q10'].forEach(name => {
+                    const badge = document.getElementById(`${name}-counter`);
+                    if (badge) {
+                        badge.textContent = '0 / 3 선택';
+                        badge.className = 'shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700';
+                    }
+                });
+                document.querySelectorAll('.question-block').forEach(b => {
+                    b.classList.remove('border-red-400');
+                    b.querySelector('.error-msg')?.classList.add('hidden');
+                });
+                updateProgress();
+                resetModal.classList.add('hidden');
+                resetModal.classList.remove('flex');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            document.getElementById('confirmResetBtn').addEventListener('click', () => {
+                performReset();
+                showToast('설문 내용이 초기화되었습니다.');
+            });
+
+            document.getElementById('reSubmitBtn').addEventListener('click', () => {
+                performReset();
+                thankYouScreen.classList.add('hidden');
+                form.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
