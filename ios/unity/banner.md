@@ -8,7 +8,7 @@
 
 ### 1-1. 배너 인스턴스 생성
 
-`AdMixer` Inspector에 `iOS Banner AdUnitId`를 입력하면 `Awake()` 시 320×50 배너 인스턴스가 자동 생성됩니다. 위치는 `iOS Banner Top Position`으로 선택합니다 (`true`: 상단, `false`: 하단, Safe Area 기준).
+`AdMixer` Inspector에 `iOS Banner AdUnitId`를 입력하면 `Awake()`에서 320×50 배너 인스턴스가 자동 생성됩니다. 위치는 `iOS Banner Top Position`으로 선택합니다(`true`: 상단, `false`: 하단, Safe Area 기준).
 
 직접 인스턴스를 만들려면 `NAPSSPPluginIOS`의 정적 메서드를 호출합니다.
 
@@ -29,7 +29,7 @@ NAPSSPPluginIOS.BannerViewInit(adUnitId, x, y, 320, 50);
 
 ### 1-2. 배너 광고 요청
 
-`LoadBanner()`는 로드만 수행합니다.
+`LoadBanner()`는 로드만 하며, 노출은 `ShowBanner()`로 따로 합니다.
 
 ```csharp
 AdMixer.Instance.LoadBanner();
@@ -37,7 +37,7 @@ AdMixer.Instance.LoadBanner();
 
 ### 1-3. 배너 광고 노출
 
-`OnSuccessBanner` 수신 후 호출하면 화면에 부착되어 노출됩니다. 로드가 끝나기 전에 호출하면 무시됩니다.
+`OnSuccessBanner`를 받은 뒤 호출하면 배너가 화면에 붙어 노출됩니다. 로드가 끝나기 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowBanner();
@@ -106,7 +106,7 @@ AdMixer.Instance.LoadInterstitial();
 
 ### 2-2. 전면 배너 광고 노출
 
-`OnSuccessLoadInterstitial` 수신 후 원하는 시점에 호출합니다.
+`OnSuccessLoadInterstitial`을 받은 뒤 원하는 시점에 호출합니다.
 
 ```csharp
 AdMixer.Instance.ShowInterstitial();
@@ -162,4 +162,4 @@ public class InterstitialAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **노출 실패(`OnFailShowInterstitial`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
+> ⚠️ **노출 실패(`OnFailShowInterstitial`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.

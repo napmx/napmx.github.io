@@ -16,7 +16,7 @@ AdMixer.Instance.LoadRewardVideo();
 
 ## 2. 리워드 광고 노출
 
-`OnSuccessLoadRewardAd` 수신 후 원하는 시점에 호출합니다.
+`OnSuccessLoadRewardAd`를 받은 뒤 원하는 시점에 호출합니다.
 
 ```csharp
 AdMixer.Instance.ShowRewardVideo();
@@ -86,9 +86,9 @@ public class RewardedAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **`OnRewardVideoComplete`나 `OnCloseRewardVideo`로 보상을 지급하지 마세요.** `OnRewardVideoEarned`와 `OnCloseRewardVideo`의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다. 보상 지급은 `OnRewardVideoEarned`에서 즉시 처리하고, 사용자 알림(Toast 등)은 닫힘 이후로 미루는 것을 권장합니다.
+> ⚠️ **`OnRewardVideoComplete`나 `OnCloseRewardVideo`로 보상을 지급하지 마세요.** `OnRewardVideoEarned`와 `OnCloseRewardVideo`의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다. 보상은 `OnRewardVideoEarned`에서 바로 지급하고, 사용자 알림(Toast 등)은 닫힌 뒤로 미루기를 권장합니다.
 >
-> ⚠️ **노출 실패(`OnFailShowRewardAd`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
+> ⚠️ **노출 실패(`OnFailShowRewardAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.
 
 ---
 
@@ -101,7 +101,7 @@ public class RewardedAd : MonoBehaviour
 
 **파트너 사이트 → 미디어 관리 → 애드유닛 광고 설정**에서 매체사의 콜백 서버 URL을 입력합니다.
 
-유저가 해당 애드유닛을 통해 리워드 지급이 완료되면, 입력된 콜백 서버 URL로 리워드 콜백 데이터를 전송합니다.
+해당 애드유닛에서 유저에게 리워드 지급이 완료되면 입력한 콜백 서버 URL로 리워드 콜백 데이터를 전송합니다.
 
 기본 파라미터는 아래와 같습니다.
 
@@ -110,11 +110,13 @@ public class RewardedAd : MonoBehaviour
 | `media_key` | 미디어 키 (자동 포함) | `12345678` |
 | `adunit_id` | 애드유닛 ID (자동 포함) | `87654321` |
 | `ifa` | iOS 기기 고유 식별자 (자동 포함) | `860635ea-65bc-eaed-d355-1b5283b30b94` |
+| `ifa_use` | 광고 식별자(IFA) 사용 가능 여부 — ATT 미승인 시 `0` (자동 포함, v2.4.3+) | `1` |
 | `timestamp` | 리워드 지급 이벤트 발생 시간 (자동 포함) | `1546300800` |
+| `transaction_id` | 지급 건별 고유 ID — 중복 지급 방지 멱등 키, `OnRewardVideoEarned`의 `transactionId` 인자와 동일 값 (자동 포함, v2.4.3+) | `11111111-2222-3333-4444-555555555555` |
 
 ### 설정 2: CustomParam 추가
 
-CustomParam을 통해 콜백에서 추가 데이터를 수집할 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
+CustomParam으로 콜백에서 추가 데이터를 수집할 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
 
 ```csharp
 var customParam = new Dictionary<string, string>

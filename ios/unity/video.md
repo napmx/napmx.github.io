@@ -2,7 +2,7 @@
 
 동영상 광고를 추가하기 전 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
 
-> 전면(Interstitial) 동영상 광고 연동을 원하시는 경우, 아래 **전면 비디오** 섹션을 참고해주세요.
+> 전면(Interstitial) 동영상 광고를 연동하려면 아래 **전면 비디오** 섹션을 참고해주세요.
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### 1-1. 비디오 인스턴스 생성
 
-`AdMixer` Inspector에 `iOS Video AdUnitId`를 입력하면 `Awake()` 시 좌표 (0, 400), 크기 400×200 비디오 인스턴스가 자동 생성됩니다. 위치·크기를 바꾸려면 `AdMixer.cs`의 `VideoViewInit` 호출을 수정하거나 직접 호출합니다.
+`AdMixer` Inspector에 `iOS Video AdUnitId`를 입력하면 `Awake()`에서 좌표 (0, 400)에 400×200 크기의 비디오 인스턴스가 자동 생성됩니다. 위치·크기를 바꾸려면 `AdMixer.cs`의 `VideoViewInit` 호출을 수정하거나 아래처럼 직접 호출하세요.
 
 ```csharp
 // 좌표 기반 생성 — adUnitId 는 int, 원점은 화면 왼쪽 상단
@@ -25,7 +25,7 @@ NAPSSPPluginIOS.VideoViewInit(adUnitId, x, y, width, height);
 
 ### 1-2. 비디오 광고 요청
 
-로드 성공 시 화면에 자동으로 부착·노출됩니다.
+로드에 성공하면 화면에 자동으로 붙어 노출됩니다.
 
 ```csharp
 AdMixer.Instance.LoadVideoAd();
@@ -102,7 +102,7 @@ AdMixer.Instance.LoadVideoInterstitial();
 
 ### 2-2. 전면 비디오 광고 노출
 
-`OnSuccessLoadVideoInterstitial` 수신 후 원하는 시점에 호출합니다.
+`OnSuccessLoadVideoInterstitial`을 받은 뒤 원하는 시점에 호출합니다.
 
 ```csharp
 AdMixer.Instance.ShowVideoInterstitial();
@@ -164,4 +164,4 @@ public class VideoInterstitialAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **노출 실패(`OnFailShowVideoInterstitial`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
+> ⚠️ **노출 실패(`OnFailShowVideoInterstitial`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.

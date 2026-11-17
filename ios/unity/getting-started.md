@@ -1,6 +1,6 @@
 # iOS SDK 시작하기 - Unity
 
-Unity 프로젝트에서 nap mx iOS SDK를 연동하기 위한 가이드 문서이며, nap mx Mediation을 지원합니다.
+Unity 프로젝트에서 nap mx iOS SDK를 연동하기 위한 가이드 문서이며 nap mx Mediation을 지원합니다.
 
 ---
 
@@ -14,7 +14,7 @@ Unity 프로젝트에서 nap mx iOS SDK를 연동하기 위한 가이드 문서�
 
 [GitHub — Unity-SSP-Download](https://github.com/Nasmedia-Tech/Unity-SSP-Download)에서 최신 `NAPSSPSDK-x.y.z.unitypackage`를 다운로드합니다.
 
-다운로드한 `.unitypackage`를 Unity 프로젝트 내에 추가합니다.
+다운로드한 `.unitypackage`를 Unity 프로젝트에 추가합니다.
 
 ```
 Assets > Import Package > Custom Package > NAPSSPSDK-x.y.z.unitypackage
@@ -37,7 +37,7 @@ Assets > Import Package > Custom Package > NAPSSPSDK-x.y.z.unitypackage
 
 nap mx SDK는 **Xcode 16 이상**, **iOS deployment target 13.0 이상** 환경에서 동작합니다.
 
-nap mx SDK는 CocoaPods를 지원합니다. 플러그인이 대응하는 `AdMixerMediation` 버전은 빌드 시 자동 생성되는 `Podfile`에 명시되어 있으며, 그 버전을 그대로 사용하세요.
+nap mx SDK는 CocoaPods를 지원합니다. 플러그인에 맞는 `AdMixerMediation` 버전은 빌드할 때 자동 생성되는 `Podfile`에 적혀 있으니 그 버전을 그대로 사용하세요.
 
 ### 2-1. CocoaPods를 통한 설치
 
@@ -47,9 +47,9 @@ CocoaPods가 없는 경우 먼저 설치합니다.
 sudo gem install cocoapods
 ```
 
-Unity에서 iOS 빌드를 생성하면 플러그인의 빌드 후처리(`iOSPostProcess.cs`)가 Xcode 프로젝트 디렉토리에 **`Podfile`을 자동 생성**합니다. (이미 `Podfile`이 있으면 건드리지 않습니다) `pod init`을 별도로 실행할 필요가 없습니다.
+Unity에서 iOS 빌드를 생성하면 플러그인의 빌드 후처리(`iOSPostProcess.cs`)가 Xcode 프로젝트 디렉토리에 **`Podfile`을 자동 생성**하므로 `pod init`을 따로 실행할 필요가 없습니다. 이미 `Podfile`이 있으면 그대로 둡니다.
 
-생성되는 `Podfile`은 다음과 같습니다. nap mx Mediation과 미디에이션에 추가할 네트워크 SDK가 `UnityFramework` 타겟에 포함되어 있으며, 사용하지 않는 어댑터는 지우세요.
+생성되는 `Podfile`은 다음과 같습니다. `UnityFramework` 타겟에 nap mx Mediation과 미디에이션 네트워크 SDK가 들어 있으니, 사용하지 않는 어댑터는 지우세요.
 
 ```ruby
 platform :ios, '13.0'
@@ -80,13 +80,13 @@ pod install --repo-update
 
 이후 `.xcworkspace`를 열어 남은 설정을 진행해주세요.
 
-> SDK는 `UnityFramework` 타겟에 추가합니다. 플러그인의 Swift 브릿지가 `UnityFramework`에서 컴파일되기 때문입니다.
+> 플러그인의 Swift 브릿지가 `UnityFramework`에서 컴파일되므로 SDK는 `UnityFramework` 타겟에 추가합니다.
 >
 > ⚠️ 플러그인의 Swift 브릿지는 `AdMixerMediation`의 API에 직접 의존하므로, 자동 생성된 `Podfile`의 버전을 임의로 올리면 빌드가 실패할 수 있습니다. SDK 업데이트는 플러그인 업데이트와 함께 진행하세요.
 
 ### 2-2. Google 네트워크 - SDK 입찰 광고 소스 설정
 
-Google 네트워크를 사용하시는 경우, SDK 입찰 광고 소스 사용을 위해 아래 광고 소스 라이브러리를 모두 추가해주세요.
+Google 네트워크를 사용하는 경우 SDK 입찰 광고 소스를 쓰려면 아래 광고 소스 라이브러리를 모두 추가해주세요.
 
 - Pangle / AppLovin / DT Exchange / InMobi / Liftoff Monetize / Meta / Moloco / Unity Ads / Mintegral
 
@@ -96,11 +96,11 @@ Google 네트워크를 사용하시는 경우, SDK 입찰 광고 소스 사용�
 
 ### 3-1. IOSPostProcess - IDFA
 
-ATT(App Tracking Transparency) 프레임워크를 사용하여 추적 권한을 요청합니다.
+ATT(App Tracking Transparency) 프레임워크로 추적 권한을 요청합니다.
 
-광고 요청 시 IDFA를 사용하려면 사용자의 추적 권한 승인 여부를 먼저 확인해야 합니다. 따라서 추적 권한 요청은 반드시 광고 요청 전에 이루어져야 하며, 플러그인의 `iOSATTRequest.mm`이 앱 활성화(`UIApplicationDidBecomeActive`) 1초 후 자동으로 요청합니다. 별도 코드가 필요 없습니다.
+광고 요청에 IDFA를 쓰려면 사용자가 추적을 허용했는지 먼저 확인해야 하므로, 추적 권한은 반드시 광고 요청 전에 요청해야 합니다. 플러그인의 `iOSATTRequest.mm`이 앱 활성화(`UIApplicationDidBecomeActive`) 1초 후 자동으로 요청하므로 별도 코드는 필요 없습니다.
 
-`Info.plist`의 추적 동의 문구(`NSUserTrackingUsageDescription`)와 `AppTrackingTransparency.framework` 추가는 `Assets > Editor > iOSPostProcess.cs`가 빌드 시 자동으로 처리합니다. 추적 권한 요청 팝업에 표시되는 문구를 수정하고 싶은 경우, 해당 파일에서 문구를 변경해 주세요.
+`Info.plist`의 추적 동의 문구(`NSUserTrackingUsageDescription`)와 `AppTrackingTransparency.framework` 추가는 `Assets > Editor > iOSPostProcess.cs`가 빌드 시 자동으로 처리합니다. 추적 권한 요청 팝업의 문구를 바꾸려면 이 파일에서 수정해주세요.
 
 ```csharp
 // iOSPostProcess.cs
@@ -115,13 +115,13 @@ Google AdManager 네트워크를 사용하는 경우, `AdMixer` Inspector의 `iO
 
 ### 3-3. Delegate 설정
 
-각 광고 타입별 델리게이트가 정상적으로 동작하기 위해서는 아래의 두 가지가 필수로 설정되어 있어야 합니다.
+광고 타입별 델리게이트가 정상적으로 동작하려면 아래 세 가지를 설정해야 합니다.
 
 **① GameObject의 이름 설정 및 전달**
 
 네이티브 브릿지는 `UnitySendMessage`로 이벤트를 전달하므로, 수신할 GameObject의 이름을 SDK에 전달해야 합니다.
 
-- `AdMixer` 컴포넌트를 사용하는 경우 — `Awake()`에서 자기 GameObject 이름을 **자동으로** 전달합니다. 별도 코드가 필요 없습니다.
+- `AdMixer` 컴포넌트를 사용하는 경우 — `Awake()`에서 자기 GameObject 이름을 **자동으로** 전달하므로 별도 코드는 필요 없습니다.
 - `NAPSSPPluginIOS`를 직접 호출하는 경우 — 초기화 전에 `SetUnityCallbackHandler`로 이름을 전달합니다.
 
 ```csharp
@@ -134,16 +134,16 @@ void Awake()
 
 > ⚠️ 이름을 전달한 뒤 **Inspector에서 해당 GameObject의 이름을 변경하면 이벤트가 수신되지 않습니다.**
 
-**② GameObject에 ssp plugin 파일 추가**
+**② GameObject에 SSP 플러그인 파일 추가**
 
-nap mx의 delegate를 이용하려면 `Assets/Scripts` 폴더 밑에 있는 `NAPSSPPluginIOS.cs` 파일을 ①에서 이름을 전달한 GameObject에 추가해주세요.
+nap mx 델리게이트를 사용하려면 `Assets/Scripts` 폴더의 `NAPSSPPluginIOS.cs` 파일을 ①에서 이름을 전달한 GameObject에 추가해주세요.
 
 - `AdMixer` 컴포넌트를 사용하는 경우 — `Awake()`에서 **자동으로** 추가됩니다.
 - 직접 호출하는 경우 — Inspector에서 컴포넌트를 추가하거나 `AddComponent<NAPSSPPluginIOS>()`를 호출합니다.
 
 **③ 이벤트 구독**
 
-이벤트는 `NAPSSPPluginIOS`의 **C# `static event`** 로 제공됩니다. 원하는 이벤트에 핸들러를 구독하세요. 이벤트 목록은 광고 타입별 페이지를 참고하세요.
+이벤트는 `NAPSSPPluginIOS`의 **C# `static event`**로 제공됩니다. 필요한 이벤트에 핸들러를 구독하세요. 이벤트 목록은 광고 타입별 페이지를 참고하세요.
 
 ```csharp
 void OnEnable()
@@ -163,14 +163,14 @@ void OnDisable()
 
 ## 4. SDK 초기화
 
-반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 초기화해주세요.
+광고를 호출하기 전에 앱에서 초기화를 반드시 1회 호출해주세요.
 
 - **MEDIA_KEY**: nap mx 파트너 사이트에서 발급받은 미디어 키 (**int**)
 - **ADUNIT**: nap mx 파트너 사이트에서 발급받은 애드유닛 ID 리스트 (**int[]**)
 
 ### 4-1. 방법 A — `AdMixer` 컴포넌트 (권장)
 
-씬에 GameObject를 만들고 `AdMixer.cs` 컴포넌트를 추가한 뒤, Inspector에 `iOS MediaKey`와 사용할 광고 타입의 `iOS ... AdUnitId`를 입력합니다. `Awake()`에서 자동으로 초기화되며, 씬에 **하나만** 존재해야 합니다 (`DontDestroyOnLoad` 처리).
+씬에 GameObject를 만들고 `AdMixer.cs` 컴포넌트를 추가한 뒤, Inspector에 `iOS MediaKey`와 사용할 광고 타입의 `iOS ... AdUnitId`를 입력합니다. `Awake()`에서 자동으로 초기화됩니다. `DontDestroyOnLoad`로 처리되므로 씬에는 **하나만** 있어야 합니다.
 
 | Inspector 필드 | 타입 | 설명 |
 |---|---|---|
@@ -185,7 +185,7 @@ void OnDisable()
 | `iOS Native Top Position` | bool | 네이티브 위치 (`true`: 상단, `false`: 하단) |
 | `iOS GAD Application Id` | string | Google AdManager App ID (GAM 사용 시) |
 
-`Awake()` 시점에 다음이 자동으로 수행됩니다.
+`Awake()`에서 다음 작업이 자동으로 수행됩니다.
 
 - 이벤트 수신 오브젝트 등록 (`AdMixer` GameObject 자신)
 - Inspector의 Adunit ID 전체로 SDK 초기화
@@ -236,7 +236,7 @@ NAPSSPPluginIOS.initUnityAds("게임 ID");
 
 ## 광고 타입별 흐름
 
-공통 API는 `AdMixer.Instance`를 통해 호출합니다. Adunit ID는 Inspector 값을 사용하므로 인자로 넘기지 않습니다.
+공통 API는 `AdMixer.Instance`로 호출합니다. Adunit ID는 Inspector 값을 사용하므로 인자로 넘기지 않습니다.
 
 | 광고 타입 | 로드 | 표시 | 제거 |
 |-----------|------|------|------|

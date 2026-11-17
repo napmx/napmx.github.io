@@ -6,9 +6,9 @@
 
 ## 1. 구성
 
-`Assets/Plugins/iOS/NativeTemplates/NapSSPNativeTemplateView.xib` 파일을 열어 네이티브 뷰를 커스텀해주세요.
+`Assets/Plugins/iOS/NativeTemplates/NapSSPNativeTemplateView.xib` 파일을 열어 네이티브 뷰를 원하는 대로 수정해주세요.
 
-네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
+네이티브 광고는 6가지 asset으로 구성되며 각 asset으로 자유롭게 UI를 구성할 수 있습니다.
 
 | Asset | 설명 |
 |-------|------|
@@ -25,7 +25,7 @@
 
 ## 2. 네이티브 인스턴스 생성
 
-`AdMixer` Inspector에 `iOS Native AdUnitId`를 입력하면 `Awake()` 시 400×200 네이티브 인스턴스가 자동 생성됩니다. 위치는 `iOS Native Top Position`으로 선택합니다 (`true`: 상단, `false`: 하단).
+`AdMixer` Inspector에 `iOS Native AdUnitId`를 입력하면 `Awake()`에서 400×200 네이티브 인스턴스가 자동 생성됩니다. 위치는 `iOS Native Top Position`으로 선택합니다(`true`: 상단, `false`: 하단).
 
 직접 인스턴스를 만들려면 `NAPSSPPluginIOS`의 정적 메서드를 호출합니다.
 
@@ -48,7 +48,7 @@ NAPSSPPluginIOS.NativeViewInit(adUnitId, x, y, 300, 250);
 
 ## 3. 네이티브 광고 요청
 
-로드 성공 시 화면에 자동으로 부착·노출됩니다.
+로드에 성공하면 화면에 자동으로 붙어 노출됩니다.
 
 ```csharp
 AdMixer.Instance.LoadNativeAd();

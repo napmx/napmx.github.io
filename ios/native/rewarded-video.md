@@ -208,9 +208,9 @@ func onCloseRewardVideo() {
 | `timestamp` | 리워드 지급 이벤트 발생 시간 (자동 포함) | `1546300800` |
 | `transaction_id` | 지급 건별 고유 ID — 중복 지급 방지 멱등 키, `rewardInfo.transactionId`와 동일 값 (자동 포함, v2.4.3+) | `11111111-2222-3333-4444-555555555555` |
 
-### 설정 2: SDK CustomParm 추가
+### 설정 2: SDK CustomParam 추가
 
-CustomParm으로 콜백에서 추가 데이터를 수집할 수 있습니다. Dictionary 형태로 추가해야 합니다.
+CustomParam으로 콜백에서 추가 데이터를 수집할 수 있습니다. Dictionary 형태로 추가해야 합니다.
 
 ```swift
 let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
