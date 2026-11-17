@@ -2,7 +2,7 @@
 
 리워드 동영상 광고를 추가하기 전 [시작하기](/ios/native/getting-started) 설정을 완료해주세요.
 
-리워드 동영상 광고는 광고 요청 후 받은 뒤, 원하는 시점에 노출하는 방식을 지원합니다.
+리워드 동영상 광고는 광고를 요청해 받은 뒤 원하는 시점에 노출하는 방식을 지원합니다.
 
 ---
 
@@ -23,7 +23,7 @@ class RewardedAdViewController: UIViewController {
 
 ## 광고 요청
 
-`loadAd()`를 호출하여 리워드 동영상 광고를 로드합니다.
+`loadAd()`로 리워드 동영상 광고를 로드합니다.
 
 ```swift
 class RewardedAdViewController: UIViewController {
@@ -56,7 +56,7 @@ class RewardedAdViewController: UIViewController {
 
 ## 광고 노출
 
-`show()`를 호출하여 로드된 리워드 동영상 광고를 보여줍니다.
+`show()`로 로드된 리워드 동영상 광고를 보여줍니다.
 
 ```swift
 rewardVideo?.show(rootViewController: self)
@@ -66,7 +66,7 @@ rewardVideo?.show(rootViewController: self)
 
 ## 리소스 해제
 
-`stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
+`stop()`으로 사용한 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
 override func viewDidDisappear(_ animated: Bool) {
@@ -86,7 +86,7 @@ override func viewDidDisappear(_ animated: Bool) {
 리워드 동영상 광고에서 발생하는 이벤트에 대한 델리게이트를 제공합니다.  
 델리게이트를 사용하려면 `AMMRewardVideoDelegate`를 추가해야 합니다.
 
-> 광고 네트워크 별로 이벤트가 상이할 수 있습니다. (일부 네트워크는 재생 완료 이벤트 제공 X)
+> 광고 네트워크별로 이벤트가 다를 수 있습니다. 일부 네트워크는 재생 완료 이벤트를 제공하지 않습니다.
 
 | 메서드 | 설명 |
 |--------|------|
@@ -95,7 +95,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | `onCloseRewardVideo()` | 리워드 동영상 광고 닫기 |
 | `onClickRewardVideo()` | 리워드 동영상 광고 클릭 |
 | `onRewardVideoComplete()` | 재생 완료 — 일부 네트워크는 미발화, **지급 판단에 사용 금지** |
-| `onRewardVideoEarned(rewardInfo:)` | **리워드 지급 완료 (권장)** — `rewardInfo.transactionId` 로 지급 건별 고유 ID 수신 (v2.4.3+) |
+| `onRewardVideoEarned(rewardInfo:)` | **리워드 지급 완료 (권장)** — `rewardInfo.transactionId`로 지급 건별 고유 ID 수신 (v2.4.3+) |
 
 ```swift
 extension RewardedAdViewController: AMMRewardVideoDelegate {
@@ -130,16 +130,16 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
 
 ## 보상 지급 안전 수칙
 
-리워드 지급 누락·중복은 대부분 아래 두 가지에서 발생합니다. 지급 로직을 배선하기 전에 반드시 확인하세요.
+지급 로직을 구현하기 전에 아래 내용을 반드시 확인하세요.
 
 ### 1. 지급 판단은 `onRewardVideoEarned(rewardInfo:)` 하나만 사용
 
-- `rewardInfo.transactionId`(노출당 고유 UUID)를 자체 서버 지급의 멱등 키로 사용하면 중복 적립을 방지할 수 있습니다. 같은 값이 S2S Reward Callback 의 `transaction_id` 파라미터로도 전달됩니다.
-- `onRewardVideoComplete()` 는 일부 네트워크에서 발화하지 않는 재생 완료 통지입니다 — **지급 판단에 사용하지 마세요.**
+- `rewardInfo.transactionId`(노출당 고유 UUID)를 자체 서버 지급의 멱등 키로 사용하면 중복 적립을 방지할 수 있습니다. 같은 값이 S2S Reward Callback의 `transaction_id` 파라미터로도 전달됩니다.
+- `onRewardVideoComplete()`는 일부 네트워크에서 발화하지 않는 재생 완료 통지입니다 — **지급 판단에 사용하지 마세요.**
 
 ### 2. 보상·닫힘 이벤트 순서
 
-- 보상(earn)·재생 완료(complete)·닫힘(close) 이벤트를 언제, 어떤 순서로 보낼지는 각 광고 네트워크 SDK가 결정합니다. 미디에이션 SDK는 이를 전달받아 앱에 중계하는 위치에 있습니다.
+- 보상(earn)·재생 완료(complete)·닫힘(close) 이벤트를 언제, 어떤 순서로 보낼지는 각 광고 네트워크 SDK가 결정합니다. 미디에이션 SDK는 이를 전달받아 앱에 중계합니다.
 - 따라서 보상과 닫힘 중 어느 쪽이 먼저 도착할지는 네트워크와 상황에 따라 달라질 수 있습니다. 특정 순서를 전제하지 마세요.
 
 | 상황 | 앱이 받는 콜백 |
@@ -149,18 +149,18 @@ extension RewardedAdViewController: AMMRewardVideoDelegate {
 | 표시에 실패한 경우 | `onFailShowReward(error:)` — 보상·닫힘 콜백 없음 |
 
 **SDK가 보장하는 것**
-- 지급 통지는 노출 1회당 **정확히 1회**입니다
+- 지급 통지는 노출 1회당 **정확히 1회**입니다.
 - 네트워크가 보낸 보상 콜백을 SDK가 무기한 지연하거나 유실하지 않습니다.
-- **네트워크가 보내지 않은 이벤트를 SDK가 합성하지 않습니다.** 닫힘·재생 완료를 지어내지 않습니다. 특히 재생 완료는 '완주'라는 사실이고 보상은 '보상 조건 충족'이라 의미가 달라, 합성하면 매체의 완주율 지표가 왜곡됩니다.
+- **네트워크가 보내지 않은 이벤트를 SDK가 합성하지 않습니다.** 닫힘·재생 완료를 지어내지 않습니다. 특히 재생 완료는 '완주'라는 사실이고 보상은 '보상 조건 충족'이라 의미가 다르므로 합성하면 매체의 완주율 지표가 왜곡됩니다.
 
 > ⚠️ **콜백 도착 순서를 전제로 지급·UI 로직을 작성하지 마세요.**
-> 지급 여부는 **순서가 아니라 플래그로 판정**하세요
+> 지급 여부는 **순서가 아니라 플래그로 판정**하세요.
 
-> ⚠️ 닫힘 이후에 보상이 도착하는 동안 앱이 광고를 파기(`stop()`)하면 **클라이언트 보상 콜백을 받지 못할 수 있습니다.** 서버 지급까지 보장해야 한다면 서버 검증(S2S)을 병행하세요.
+> ⚠️ 닫힘 콜백을 받은 직후, 보상이 아직 도착하지 않았을 때 앱이 광고를 파기(`stop()`)하면 **클라이언트 보상 콜백을 받지 못할 수 있습니다.** 서버 지급까지 보장해야 한다면 서버 검증(S2S)을 병행하세요.
 
 ### 3. 지급 시점과 사용자 알림(UI) 시점을 분리 — 순서 대신 플래그로 판정
 
-보상 콜백은 영상이 끝나기 전에 도착할 수 있고(광고 화면 위에는 앱 UI 를 띄울 수 없음), 보상·닫힘 중 무엇이 먼저 도착할지는 네트워크에 따라 다릅니다. 두 플래그를 두고 **나중에 도착한 쪽이 알림을 띄우도록** 작성하면 순서와 무관하게 성립합니다.
+보상 콜백은 영상이 끝나기 전에 도착할 수 있고(광고 화면 위에는 앱 UI를 띄울 수 없음), 보상·닫힘 중 무엇이 먼저 도착할지는 네트워크에 따라 다릅니다. 두 플래그를 두고 **나중에 도착한 쪽이 알림을 띄우도록** 작성하면 순서와 무관하게 성립합니다.
 
 ```swift
 private var rewardGranted = false  // 보상 지급 완료 여부
@@ -206,11 +206,11 @@ func onCloseRewardVideo() {
 | `ifa` | iOS 기기 고유 식별자 (자동 포함) | `860635ea-65bc-eaed-d355-1b5283b30b94` |
 | `ifa_use` | 광고 식별자(IFA) 사용 가능 여부 — ATT 미승인 시 `0` (자동 포함, v2.4.3+) | `1` |
 | `timestamp` | 리워드 지급 이벤트 발생 시간 (자동 포함) | `1546300800` |
-| `transaction_id` | 지급 건별 고유 ID — 중복 지급 방지 멱등 키, `rewardInfo.transactionId` 와 동일 값 (자동 포함, v2.4.3+) | `11111111-2222-3333-4444-555555555555` |
+| `transaction_id` | 지급 건별 고유 ID — 중복 지급 방지 멱등 키, `rewardInfo.transactionId`와 동일 값 (자동 포함, v2.4.3+) | `11111111-2222-3333-4444-555555555555` |
 
 ### 설정 2: SDK CustomParm 추가
 
-CustomParm을 통해 콜백에서 추가 데이터를 수집할 수 있습니다. Dictionary 형태로 추가해야 합니다.
+CustomParm으로 콜백에서 추가 데이터를 수집할 수 있습니다. Dictionary 형태로 추가해야 합니다.
 
 ```swift
 let customParam = ["userid": "nas", "name": "hdragon", "phone": "010-1111-1111"]
