@@ -296,7 +296,7 @@ public abstract class AdListener {
 | `onReceivedAd` / `onFailedToReceiveAd` ¹ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `onAdDisplayed` (`onAdShowedFullScreenContent`) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `onAdClicked` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `onAdClosed` (`onAdDismissedFullScreenContent`) | — | — | ✅ | ✅ | ✅ | ✅ |
+| `onAdClosed` (`onAdDismissedFullScreenContent`) | — | — | ✅ | — ³ | ✅ | ✅ |
 | `onAdShowFailed` (`onAdFailedToShowFullScreenContent`) | — | — | ✅ | — | ✅ | ✅ |
 | `onAdCompleted` | — | — | — | ✅ | ✅ | ✅ |
 | `onAdSkipped` ² | — | — | — | ✅ | ✅ ² | ✅ ² |
@@ -304,6 +304,7 @@ public abstract class AdListener {
 
 ¹ 전면·리워드·전면 동영상은 정적 `loadAd()`의 `AMMxxxLoadCallback`(`onSuccessLoadXxx`/`onFailLoadXxx`)으로 로드 결과를 받습니다.
 ² **전면 동영상·리워드의 `onAdSkipped`는 `FullScreenContentCallback`에 없습니다.** 스킵이 필요하면 `ad.setAdListener(AdListener)`로 등록하세요(`setFullScreenContentCallback`과 **동일 슬롯 공유 = 택1**). 인라인 동영상은 `AdListener`로 바로 받습니다.
+³ 인라인 동영상은 화면 안 View라 닫힘 콜백이 없습니다(SDK 2.5.0+). Skip 시 `onAdSkipped`만 전달되고 광고 뷰가 컨테이너에서 제거됩니다.
 
 > ℹ️ 인라인(배너·네이티브·인라인 동영상)은 `onAdShowFailed`가 발생하지 않습니다 — 표시 단계 실패는 풀스크린 전용이며, 로드 실패는 `onFailedToReceiveAd`로 처리합니다.
 > Compose(`AdMixerBanner` 등)는 전 포맷을 단일 `AdListener`로 노출합니다.
