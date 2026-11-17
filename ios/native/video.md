@@ -2,7 +2,7 @@
 
 동영상 광고를 추가하기 전 [시작하기](/ios/native/getting-started) 설정을 완료해주세요.
 
-> Interstitial Ad 광고 연동을 희망하시는 경우, [배너 - 전면 배너](/ios/native/banner?id=전면-배너interstitial-광고)를 연동해주세요.
+> Interstitial 광고 연동을 희망하시는 경우, [배너 - 전면 배너](/ios/native/banner?id=전면-배너interstitial-광고)를 연동해주세요.
 
 ---
 
@@ -12,7 +12,7 @@
 
 ### 광고 요청 및 노출
 
-`AMMVideoView.loadAd()`로 동영상 광고를 요청합니다. 로드가 완료되면 completion으로 동영상 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
+`AMMVideoView.loadAd()`로 동영상 광고를 요청합니다. 로드가 완료되면 completion으로 동영상 뷰를 전달받으며 이를 화면에 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
@@ -56,7 +56,7 @@ class VideoAdViewController: UIViewController {
 
 ### 리소스 해제
 
-`stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
+`stop()`으로 사용한 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
 override func viewDidDisappear(_ animated: Bool) {
@@ -84,7 +84,7 @@ override func viewDidDisappear(_ animated: Bool) {
 
 > 광고 로드 성공/실패는 `loadAd()`의 completion(`video`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
 
-> **노출 콜백 시점**: nap mx 동영상 광고의 `onSuccessShowVideo` 는 실제 재생이 시작될 때 전달됩니다. 광고 영역이 숨겨져 있거나 화면에 50% 미만으로 보이면 재생을 보류하고 콜백도 오지 않으므로, 광고 뷰를 처음부터 보이는 위치에 붙이세요.
+> **노출 콜백 시점**: nap mx 동영상 광고의 `onSuccessShowVideo`는 실제 재생이 시작될 때 전달됩니다. 광고 영역이 숨겨져 있거나 화면에 50% 미만으로 보이면 재생을 보류하고 콜백도 오지 않으므로, 광고 뷰를 처음부터 보이는 위치에 붙이세요.
 
 ```swift
 extension VideoAdViewController: AMMVideoViewDelegate {
@@ -104,6 +104,10 @@ extension VideoAdViewController: AMMVideoViewDelegate {
     func onCompleteVideo() {
         // 재생 완료
     }
+
+    func onFailShowVideo(error: Error?) {
+        // 재생 준비 실패 또는 재생 중단
+    }
 }
 ```
 
@@ -111,7 +115,7 @@ extension VideoAdViewController: AMMVideoViewDelegate {
 
 ## 전면 동영상(Interstitial Video) 광고
 
-전면 동영상 광고는 광고 요청 후 받은 뒤, 원하는 시점에 노출하는 방식을 지원합니다.
+전면 동영상 광고는 광고를 요청해 받은 뒤 원하는 시점에 노출하는 방식을 지원합니다.
 
 > 전면 동영상 재생 시 Skip 버튼은 제공되지 않으며, Skip 가능한 시점에 닫기 버튼이 노출됩니다.
 
@@ -130,7 +134,7 @@ class VideoInterstitialViewController: UIViewController {
 
 ### 광고 요청
 
-`loadAd()`를 사용하여 전면 동영상 광고를 로드합니다.
+`loadAd()`로 전면 동영상 광고를 로드합니다.
 
 ```swift
 class VideoInterstitialViewController: UIViewController {
@@ -159,7 +163,7 @@ class VideoInterstitialViewController: UIViewController {
 
 ### 광고 노출
 
-`show()`를 사용하여 로드된 전면 동영상 광고를 보여줍니다.
+`show()`로 로드된 전면 동영상 광고를 보여줍니다.
 
 ```swift
 videoInterstitial?.show(rootViewController: self)
@@ -185,7 +189,7 @@ override func viewDidDisappear(_ animated: Bool) {
 | 메서드 | 설명 |
 |--------|------|
 | `onSuccessShowVideoInterstitial` | 전면 동영상 광고 노출 성공 |
-| `onFailShowVideoInterstitial` | 전면 동영상 광고 노출 실패 |
+| `onFailShowVideoInterstitial(error:)` | 전면 동영상 광고 노출 실패 |
 | `onCloseVideoInterstitial` | 전면 동영상 광고 닫기 |
 | `onClickVideoInterstitial` | 전면 동영상 광고 내 더보기 버튼 클릭 |
 | `onCompleteVideoInterstitial` | 전면 동영상 광고 재생 완료 |
