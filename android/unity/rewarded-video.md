@@ -39,7 +39,8 @@ AdMixer.Instance.DestroyRewardVideo();
 | 이벤트 | 설명 |
 |---|---|
 | `OnReceivedAd` | 리워드 광고 로드 성공 |
-| `OnFailedToReceiveAd` | 리워드 광고 로드 · 노출 실패 |
+| `OnFailedToReceiveAd` | 리워드 광고 로드 실패 |
+| `OnFailedToShowAd` | 리워드 광고 노출 실패 (다시 노출하려면 다시 로드) |
 | `OnEventAd("DISPLAYED")` | 리워드 광고 노출 |
 | `OnEventAd("CLICK")` | 리워드 광고 클릭 |
 | `OnEventAd("COMPLETION")` | 재생 완료 — **보상과 별개**이며 네트워크에 따라 발화하지 않을 수 있음 |
@@ -90,7 +91,7 @@ void GrantReward(string transactionId)
 
 > ⚠️ **`COMPLETION`이나 `CLOSE`로 보상을 지급하지 마세요.** `EARNEDREWARD`와 `CLOSE`의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다. 보상은 `EARNEDREWARD`에서 바로 지급하고, 사용자 알림(Toast 등)은 닫힌 뒤로 미루기를 권장합니다.
 >
-> ⚠️ **노출 실패(`OnFailedToReceiveAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.
+> ⚠️ **노출 실패(`OnFailedToShowAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.
 
 ---
 

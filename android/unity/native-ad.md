@@ -15,25 +15,35 @@
 | `true` (기본) | `item_320x480` | 대형 |
 | `false` | `item_320x100` | 소형 |
 
-레이아웃은 아이콘 · 제목 · 광고주 · 설명 · 메인 이미지 · CTA 버튼으로 구성됩니다. 다른 레이아웃(`item_300x250`, `item_320x50`)을 쓰거나 View ID를 바꾸려면 [시작하기 - 네이티브 레이아웃](/android/unity/getting-started?id=_2-5-네이티브-레이아웃)을 참고하세요.
+레이아웃은 아이콘 · 제목 · 광고주 · 설명 · 메인 이미지 · CTA 버튼으로 구성됩니다. 다른 레이아웃(`item_300x250`, `item_320x50`)을 쓰거나 View ID를 바꾸려면 [시작하기 - 네이티브 레이아웃](/android/unity/getting-started?id=_2-6-네이티브-레이아웃)을 참고하세요.
 
 ---
 
 ## 2. 네이티브 인스턴스 설정
 
-Adunit ID는 `AdMixer` Inspector의 `Android Native AdUnitId`를 사용합니다. 로드에 성공하면 화면 **하단**에 자동으로 붙습니다.
+Adunit ID는 `AdMixer` Inspector의 `Android Native AdUnitId`를 사용합니다. 로드에 성공한 뒤 `ShowNativeAd()`를 호출하면 화면 **하단**에 붙어 노출됩니다.
 
 ---
 
 ## 3. 네이티브 광고 요청
 
 ```csharp
-AdMixer.Instance.LoadNativeAd();   // 로드 성공 시 자동 표시
+AdMixer.Instance.LoadNativeAd();
 ```
 
 ---
 
-## 4. 네이티브 제거
+## 4. 네이티브 광고 노출
+
+`OnReceivedAd`를 받은 뒤 원하는 시점에 호출합니다. 로드 전이거나 이미 노출 중이면 무시됩니다.
+
+```csharp
+AdMixer.Instance.ShowNativeAd();
+```
+
+---
+
+## 5. 네이티브 제거
 
 ```csharp
 AdMixer.Instance.DestroyNativeAd();
@@ -41,14 +51,15 @@ AdMixer.Instance.DestroyNativeAd();
 
 ---
 
-## 5. 이벤트
+## 6. 이벤트
 
 `AdMixerAdListener`로 수신합니다.
 
 | 이벤트 | 설명 |
 |---|---|
-| `OnReceivedAd` | 네이티브 광고 로드 성공 (자동 표시) |
-| `OnFailedToReceiveAd` | 네이티브 광고 로드 · 표시 실패 |
+| `OnReceivedAd` | 네이티브 광고 로드 성공 — 이후 `ShowNativeAd()` 호출 |
+| `OnFailedToReceiveAd` | 네이티브 광고 로드 실패 |
+| `OnFailedToShowAd` | 네이티브 광고 표시 실패 |
 | `OnEventAd("DISPLAYED")` | 네이티브 광고 노출 |
 | `OnEventAd("CLICK")` | 네이티브 광고 클릭 |
 | `OnEventAd("NATIVE_DESTROYED")` | 제거 완료 |
@@ -61,6 +72,12 @@ public class NativeAd : MonoBehaviour
     void Start()
     {
         AdMixer.Instance.LoadNativeAd();
+    }
+
+    // AdMixerAdListener.OnReceivedAd 수신 후 호출
+    public void ShowNativeAd()
+    {
+        AdMixer.Instance.ShowNativeAd();
     }
 
     void OnDestroy()

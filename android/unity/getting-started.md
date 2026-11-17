@@ -25,7 +25,9 @@ Unity 메뉴 **Assets > Import Package > Custom Package**를 선택하고, 다�
 | `Assets/Plugins/Android/AdMixerUnityBridge.java` | 네이티브 브릿지 |
 | `Assets/Plugins/Android/nativeadlayout-release.aar` | 네이티브 광고 레이아웃 |
 | `Assets/Plugins/Android/mainTemplate.gradle`, `settingsTemplate.gradle` | SDK 의존성 · Maven 저장소 |
-| `Assets/Plugins/Android/AndroidManifest.xml` | 권한 · 네트워크 메타데이터 |
+| `Assets/Plugins/Android/AndroidManifest.xml` | 권한 |
+| `Assets/Editor/AdMixerGAMBuild.cs` | 빌드 시 GAM App ID 검증 및 매니페스트 기록 |
+| `Assets/Editor/AdMixerAndroidBuild.cs` | 빌드 시 Unity Activity 하드웨어 가속 활성화 |
 
 ---
 
@@ -53,13 +55,11 @@ nap mx SDK는 **Unity 6**(Unity 6 gradle 템플릿 사용), **최소 Android API
 
 Google AdManager 어댑터를 사용하려면 아래 설정을 추가합니다. 설정하기 전에 [Google 광고 진행에 대한 안내사항](/google/)의 절차를 모두 마쳐야 합니다.
 
-`AndroidManifest.xml`의 주석 처리된 `<meta-data>`에 발급받은 App ID를 입력합니다.
+`AdMixer` Inspector의 `Android GAD Application Id`에 **발급받은 App ID**(`ca-app-pub-xxx~yyy`)를 입력합니다. 빌드 시 `AdMixerGAMBuild.cs`가 이 값을 매니페스트의 `com.google.android.gms.ads.APPLICATION_ID`로 기록하므로 `AndroidManifest.xml`에 직접 넣지 않아도 됩니다.
 
-```xml
-<meta-data
-    android:name="com.google.android.gms.ads.APPLICATION_ID"
-    android:value="발급받은 App ID" />
-```
+- `mainTemplate.gradle`에 `admixer-admanager`가 있는데 값이 비어 있으면 **빌드가 실패**합니다 (App ID 없이 실행하면 앱 시작 시 크래시하므로 빌드 단계에서 막습니다).
+- Google 테스트 App ID(`ca-app-pub-3940256099942544~...`)는 개발 빌드(Development Build)에서만 허용되며, 릴리스 빌드에서는 실패합니다.
+- 빌드 씬에 배치된 `AdMixer`에서 값을 읽으므로 `AdMixer`는 씬에 배치해야 합니다 ([3-1. 컴포넌트 설정](/android/unity/getting-started?id=_3-1-컴포넌트-설정) 참고).
 
 > Google App ID와 AppLovin SDK Key 발급은 nap mx 운영팀([nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr))으로 문의해주세요.
 >
@@ -116,7 +116,11 @@ dependencyResolutionManagement {
 
 > ℹ️ 개별 버전 지정, ProGuard, 네트워크 SDK 중복 예외 처리 등 상세 설정은 [네이티브 시작하기](/android/native/getting-started)와 동일합니다.
 
-### 2-5. 네이티브 레이아웃
+### 2-5. 하드웨어 가속
+
+Unity는 생성하는 매니페스트의 Unity Activity에 `android:hardwareAccelerated="false"`를 넣습니다. 이 상태에서는 하드웨어 비트맵을 쓰는 광고 소재(예: Kakao AdFit 네이티브)가 표시될 때 앱이 종료되므로, 플러그인의 `AdMixerAndroidBuild.cs`가 빌드 시 Unity Activity의 하드웨어 가속을 **자동으로 켭니다**. 별도 설정은 필요 없습니다.
+
+### 2-6. 네이티브 레이아웃
 
 `nativeadlayout-release.aar`에 다음 레이아웃이 포함되어 있습니다.
 
@@ -160,19 +164,21 @@ dependencyResolutionManagement {
 | `Android Video Interstitial AdUnitId` | 전면 동영상 Adunit ID |
 | `Android Native AdUnitId` | 네이티브 Adunit ID |
 | `Android Native Use Large Layout` | 네이티브 레이아웃 (`true`: `item_320x480`, `false`: `item_320x100`) |
+| `Android GAD Application Id` | Google AdManager App ID (GAM 사용 시 필수) |
 
-> ⚠️ 코드로 GameObject를 생성할 때는 `AdMixer.Awake()`가 필드를 읽으므로 **비활성 상태로 생성 → 필드 설정 → 활성화** 순서로 진행하세요.
+> ⚠️ `AdMixer`는 **씬에 배치**하세요. 빌드 시 빌드 씬의 `AdMixer`에서 GAM App ID를 읽으므로, 코드로 런타임에 생성하면 값을 찾지 못해 GAM 포함 빌드가 실패합니다.
 
 ### 3-2. 이벤트 수신 (Delegate 설정)
 
-네이티브 브릿지는 모든 광고 타입의 이벤트를 `UnitySendMessage`로 **`AdMixerAdListener`** GameObject의 세 메서드에 전달합니다. 이벤트만으로는 광고 타입을 구분할 수 없으므로 어떤 광고를 요청했는지 앱에서 상태를 관리해야 합니다.
+네이티브 브릿지는 모든 광고 타입의 이벤트를 `UnitySendMessage`로 **`AdMixerAdListener`** GameObject의 네 메서드에 전달합니다. 이벤트만으로는 광고 타입을 구분할 수 없으므로 어떤 광고를 요청했는지 앱에서 상태를 관리해야 합니다.
 
 > ⚠️ GameObject 이름은 Java 브릿지에 `"AdMixerAdListener"`로 고정되어 있습니다. **이름을 변경하면 이벤트가 수신되지 않습니다.**
 
 | 메서드 | 파라미터 | 설명 |
 |---|---|---|
 | `OnReceivedAd(string param)` | 응답한 네트워크 어댑터명 (예: `"admixer"`) | 광고 로드 성공 |
-| `OnFailedToReceiveAd(string param)` | `"message\|code"` | 광고 로드 · 표시 실패 |
+| `OnFailedToReceiveAd(string param)` | `"message\|code"` | 광고 로드 실패 |
+| `OnFailedToShowAd(string param)` | `"message\|code"` | 광고 노출(표시) 실패 — 로드는 성공했지만 화면에 띄우지 못함. 전면형은 다시 로드해야 합니다 |
 | `OnEventAd(string param)` | 이벤트 이름 | 아래 표 참고 |
 
 **`OnEventAd` 이벤트 이름**
@@ -217,6 +223,16 @@ public class AdMixerAdListener : MonoBehaviour
     }
 
     [Preserve]
+    public void OnFailedToShowAd(string param)
+    {
+        // 노출(표시) 실패 — 형식: "message|code"
+        string[] tokens = (param ?? "").Split('|');
+        string message = tokens.Length > 0 ? tokens[0] : "";
+        string code    = tokens.Length > 1 ? tokens[1] : "";
+        Debug.Log($"[AdMixer] OnFailedToShowAd: message={message}, code={code}");
+    }
+
+    [Preserve]
     public void OnEventAd(string param)
     {
         Debug.Log("[AdMixer] OnEventAd: " + param);
@@ -255,10 +271,12 @@ AdMixer.Awake() → AdMixerUnityBridge.initSdk(activity, mediaKey, adUnitIds)
 |-----------|------|------|------|
 | 배너 | `LoadBanner()` | `ShowBanner()` | `DestroyBanner()` |
 | 전면 | `LoadInterstitial()` | `ShowInterstitial()` | `DestroyInterstitial()` |
-| 네이티브 | `LoadNativeAd()` | (로드 시 자동 표시) | `DestroyNativeAd()` |
+| 네이티브 | `LoadNativeAd()` | `ShowNativeAd()` | `DestroyNativeAd()` |
 | 리워드 동영상 | `LoadRewardVideo()` | `ShowRewardVideo()` | `DestroyRewardVideo()` |
-| 동영상 | `LoadVideoAd()` | (로드 시 자동 표시) | `DestroyVideoAd()` |
+| 동영상 | `LoadVideoAd()` | `ShowVideoAd()` | `DestroyVideoAd()` |
 | 전면 동영상 | `LoadVideoInterstitial()` | `ShowVideoInterstitial()` | `DestroyVideoInterstitial()` |
+
+모든 광고는 `Load` → (로드 성공 이벤트 `OnReceivedAd` 수신 후) `Show` 순서로 호출합니다. 로드 전이거나 이미 노출 중일 때 `Show`를 호출하면 무시됩니다.
 
 배너는 `BannerOnPause()` / `BannerOnResume()`으로 갱신 타이머를 수동 제어할 수 있습니다.
 

@@ -25,24 +25,31 @@ NAPSSPPluginIOS.VideoViewInit(adUnitId, x, y, width, height);
 
 ### 1-2. 비디오 광고 요청
 
-로드에 성공하면 화면에 자동으로 붙어 노출됩니다.
-
 ```csharp
 AdMixer.Instance.LoadVideoAd();
 ```
 
-### 1-3. 비디오 제거
+### 1-3. 비디오 광고 노출
+
+`OnSuccessVideo`를 받은 뒤 원하는 시점에 호출하면 1-1에서 지정한 위치에 붙어 노출됩니다. 로드 전이거나 이미 노출 중이면 무시됩니다.
+
+```csharp
+AdMixer.Instance.ShowVideoAd();
+```
+
+### 1-4. 비디오 제거
 
 ```csharp
 AdMixer.Instance.DestroyVideoAd();
 ```
 
-### 1-4. 이벤트
+### 1-5. 이벤트
 
 | 이벤트 | 시그니처 | 설명 |
 |-----------|------|------|
-| `OnSuccessVideo` | `Action` | 비디오 광고 로드 성공 (자동 표시) |
+| `OnSuccessVideo` | `Action` | 비디오 광고 로드 성공 — 이후 `ShowVideoAd()` 호출 |
 | `OnFailVideo` | `Action` | 비디오 광고 로드 실패 |
+| `OnFailShowVideo` | `Action<string>` | 비디오 광고 표시 실패 (에러 메시지) — SDK가 뷰를 숨기며, 다시 노출하려면 `DestroyVideoAd()` → `LoadVideoAd()` → `ShowVideoAd()` |
 | `OnSkipVideo` | `Action` | 비디오 광고 내 skip 버튼 클릭 |
 | `OnTapVideoViewMore` | `Action` | 비디오 광고 내 더보기 버튼 클릭 |
 | `OnCompleteVideo` | `Action` | 비디오 광고 재생 완료 |
@@ -56,6 +63,7 @@ public class VideoAd : MonoBehaviour
     {
         NAPSSPPluginIOS.OnSuccessVideo     += OnSuccessVideo;
         NAPSSPPluginIOS.OnFailVideo        += OnFailVideo;
+        NAPSSPPluginIOS.OnFailShowVideo    += OnFailShowVideo;
         NAPSSPPluginIOS.OnSkipVideo        += OnSkipVideo;
         NAPSSPPluginIOS.OnTapVideoViewMore += OnTapVideoViewMore;
         NAPSSPPluginIOS.OnCompleteVideo    += OnCompleteVideo;
@@ -65,6 +73,7 @@ public class VideoAd : MonoBehaviour
     {
         NAPSSPPluginIOS.OnSuccessVideo     -= OnSuccessVideo;
         NAPSSPPluginIOS.OnFailVideo        -= OnFailVideo;
+        NAPSSPPluginIOS.OnFailShowVideo    -= OnFailShowVideo;
         NAPSSPPluginIOS.OnSkipVideo        -= OnSkipVideo;
         NAPSSPPluginIOS.OnTapVideoViewMore -= OnTapVideoViewMore;
         NAPSSPPluginIOS.OnCompleteVideo    -= OnCompleteVideo;
@@ -75,8 +84,9 @@ public class VideoAd : MonoBehaviour
         AdMixer.Instance.LoadVideoAd();
     }
 
-    void OnSuccessVideo()     { Debug.Log("비디오 광고 로드 성공"); }
+    void OnSuccessVideo()     { AdMixer.Instance.ShowVideoAd(); }
     void OnFailVideo()        { Debug.Log("비디오 광고 로드 실패"); }
+    void OnFailShowVideo(string error) { Debug.Log($"비디오 광고 표시 실패: {error}"); }
     void OnSkipVideo()        { Debug.Log("비디오 광고 skip"); }
     void OnTapVideoViewMore() { Debug.Log("더보기 버튼 클릭"); }
     void OnCompleteVideo()    { Debug.Log("비디오 광고 재생 완료"); }

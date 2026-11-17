@@ -10,28 +10,37 @@
 
 ### 1-1. 비디오 인스턴스 설정
 
-Adunit ID는 `AdMixer` Inspector의 `Android Video AdUnitId`를 사용합니다. 로드에 성공하면 화면 **중앙**에 자동으로 붙습니다.
+Adunit ID는 `AdMixer` Inspector의 `Android Video AdUnitId`를 사용합니다. 로드에 성공한 뒤 `ShowVideoAd()`를 호출하면 화면 **중앙**에 붙어 노출됩니다.
 
 ### 1-2. 비디오 광고 요청
 
 ```csharp
-AdMixer.Instance.LoadVideoAd();   // 로드 성공 시 자동 표시
+AdMixer.Instance.LoadVideoAd();
 ```
 
-### 1-3. 비디오 제거
+### 1-3. 비디오 광고 노출
+
+`OnReceivedAd`를 받은 뒤 원하는 시점에 호출합니다. 로드 전이거나 이미 노출 중이면 무시됩니다.
+
+```csharp
+AdMixer.Instance.ShowVideoAd();
+```
+
+### 1-4. 비디오 제거
 
 ```csharp
 AdMixer.Instance.DestroyVideoAd();
 ```
 
-### 1-4. 이벤트
+### 1-5. 이벤트
 
 `AdMixerAdListener`로 수신합니다.
 
 | 이벤트 | 설명 |
 |---|---|
-| `OnReceivedAd` | 비디오 광고 로드 성공 (자동 표시) |
-| `OnFailedToReceiveAd` | 비디오 광고 로드 · 표시 실패 |
+| `OnReceivedAd` | 비디오 광고 로드 성공 — 이후 `ShowVideoAd()` 호출 |
+| `OnFailedToReceiveAd` | 비디오 광고 로드 실패 |
+| `OnFailedToShowAd` | 비디오 광고 표시 실패 — 다시 노출하려면 `DestroyVideoAd()` → `LoadVideoAd()` → `ShowVideoAd()` |
 | `OnEventAd("DISPLAYED")` | 비디오 광고 노출 |
 | `OnEventAd("CLICK")` | 비디오 광고 내 더보기 버튼 클릭 |
 | `OnEventAd("SKIPPED")` | 비디오 광고 내 skip 버튼 클릭 |
@@ -46,6 +55,12 @@ public class VideoAd : MonoBehaviour
     void Start()
     {
         AdMixer.Instance.LoadVideoAd();
+    }
+
+    // AdMixerAdListener.OnReceivedAd 수신 후 호출
+    public void ShowVideoAd()
+    {
+        AdMixer.Instance.ShowVideoAd();
     }
 
     void OnDestroy()
@@ -88,7 +103,8 @@ AdMixer.Instance.DestroyVideoInterstitial();
 | 이벤트 | 설명 |
 |---|---|
 | `OnReceivedAd` | 전면 비디오 광고 로드 성공 |
-| `OnFailedToReceiveAd` | 전면 비디오 광고 로드 · 노출 실패 |
+| `OnFailedToReceiveAd` | 전면 비디오 광고 로드 실패 |
+| `OnFailedToShowAd` | 전면 비디오 광고 노출 실패 (다시 노출하려면 다시 로드) |
 | `OnEventAd("DISPLAYED")` | 전면 비디오 광고 노출 |
 | `OnEventAd("CLICK")` | 전면 비디오 광고 내 더보기 버튼 클릭 |
 | `OnEventAd("COMPLETION")` | 전면 비디오 광고 재생 완료 |
@@ -118,4 +134,4 @@ public class VideoInterstitialAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **노출 실패(`OnFailedToReceiveAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.
+> ⚠️ **노출 실패(`OnFailedToShowAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.

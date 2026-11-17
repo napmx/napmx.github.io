@@ -29,60 +29,45 @@ Assets > Import Package > Custom Package > NAPSSPSDK-x.y.z.unitypackage
 | `Assets/Plugins/iOS/NAPSSPBridge.swift` | 네이티브 브릿지 |
 | `Assets/Plugins/iOS/iOSATTRequest.mm` | ATT 권한 요청 (앱 활성화 후 자동 호출) |
 | `Assets/Plugins/iOS/NativeTemplates/NapSSPNativeTemplateView.xib` | 네이티브 광고 템플릿 |
-| `Assets/Editor/iOSPostProcess.cs` | 빌드 후처리 — `Info.plist` 항목 · `AppTrackingTransparency.framework` · `Podfile` 생성 |
+| `Assets/Editor/iOSPostProcess.cs` | 빌드 후처리 — `Info.plist` 항목 · `AppTrackingTransparency.framework` · SDK Swift Package 추가 |
+| `Assets/Editor/AdMixerGAMBuild.cs` | 빌드 시 GAM App ID 검증 및 `Info.plist` 기록 |
 
 ---
 
 ## 2. Xcode 설정하기
 
-nap mx SDK는 **Xcode 16 이상**, **iOS deployment target 13.0 이상** 환경에서 동작합니다.
+nap mx SDK는 **iOS deployment target 13.0 이상** 환경에서 동작합니다.
 
-nap mx SDK는 CocoaPods를 지원합니다. 플러그인에 맞는 `AdMixerMediation` 버전은 빌드할 때 자동 생성되는 `Podfile`에 적혀 있으니 그 버전을 그대로 사용하세요.
+> ⚠️ **Xcode 버전**: Xcode 27(iOS 27 SDK)은 배포 타깃 15.0 미만을 빌드하지 못합니다. 최소 iOS 버전을 13.0~14.x로 두려면 **Xcode 26.x**로 빌드하고, Xcode 27을 쓰려면 Unity Player Settings의 **Target minimum iOS Version**을 15.0 이상으로 올리세요.
 
-### 2-1. CocoaPods를 통한 설치
+### 2-1. Swift Package Manager를 통한 설치 (자동)
 
-CocoaPods가 없는 경우 먼저 설치합니다.
+Unity에서 iOS 빌드를 생성하면 플러그인의 빌드 후처리(`iOSPostProcess.cs`)가 Xcode 프로젝트에 nap mx SDK와 미디에이션 어댑터를 **Swift Package로 자동 추가**합니다. CocoaPods 설치나 `pod install`은 필요 없습니다. 생성된 `Unity-iPhone.xcodeproj`를 Xcode로 열면 패키지를 자동으로 받습니다(최초 1회 네트워크 필요).
 
-```bash
-sudo gem install cocoapods
+기본으로 추가되는 패키지는 다음과 같습니다. 각 패키지는 같은 메이저 버전 안의 최신 배포 버전을 받습니다.
+
+| 패키지 | 네트워크 |
+|---|---|
+| `AdMixerMediation` | nap mx Mediation (필수, nap mx SDK 포함) |
+| `AdMixerMediationGAM` | Google AdManager |
+| `AdMixerMediationPangle` | Pangle |
+| `AdMixerMediationAppLovin` | AppLovin |
+| `AdMixerMediationUnityAds` | UnityAds |
+| `AdMixerMediationAdFit` | Kakao AdFit — **기본 제외** (iOS 15.0 이상 필요) |
+
+사용할 네트워크는 `Assets/Editor/iOSPostProcess.cs`의 `SwiftPackages` 목록에서 켜고 끕니다.
+
+```csharp
+// iOSPostProcess.cs — (패키지 URL, 최소 버전, 제품 이름, 필요 최소 iOS, 사용 여부)
+new SwiftPackage("https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git", "2.0.1", "AdMixerMediationAdFit", "15.0", false),
 ```
 
-Unity에서 iOS 빌드를 생성하면 플러그인의 빌드 후처리(`iOSPostProcess.cs`)가 Xcode 프로젝트 디렉토리에 **`Podfile`을 자동 생성**하므로 `pod init`을 따로 실행할 필요가 없습니다. 이미 `Podfile`이 있으면 그대로 둡니다.
+- **Kakao AdFit**을 쓰려면 Target minimum iOS Version을 15.0 이상으로 올린 뒤 해당 항목을 `true`로 바꾸세요. 요구 버전보다 낮으면 빌드 시작 전에 실패합니다.
+- 네트워크를 끈 뒤에는 Xcode 프로젝트를 **Replace**로 다시 빌드하세요. 이전 빌드에서 추가된 패키지가 남아 있으면 Append 빌드는 실패합니다.
 
-생성되는 `Podfile`은 다음과 같습니다. `UnityFramework` 타겟에 nap mx Mediation과 미디에이션 네트워크 SDK가 들어 있으니, 사용하지 않는 어댑터는 지우세요.
-
-```ruby
-platform :ios, '13.0'
-
-target 'Unity-iPhone' do
-  use_frameworks!
-end
-
-target 'UnityFramework' do
-  use_frameworks!
-
-  pod 'AdMixerMediation', '<플러그인 대응 버전>'   # 자동 생성된 Podfile 의 값을 그대로 사용
-
-  # 미디에이션 네트워크 (사용하는 것만 남기세요)
-  pod 'AdMixerMediationGAM'       # Google AdManager
-  pod 'AdMixerMediationAdFit'     # Kakao AdFit
-  pod 'AdMixerMediationPangle'    # Pangle
-  pod 'AdMixerMediationAppLovin'  # AppLovin
-  pod 'AdMixerMediationUnityAds'  # UnityAds
-end
-```
-
-Xcode 프로젝트 디렉토리에서 pod를 설치합니다.
-
-```bash
-pod install --repo-update
-```
-
-이후 `.xcworkspace`를 열어 남은 설정을 진행해주세요.
-
-> 플러그인의 Swift 브릿지가 `UnityFramework`에서 컴파일되므로 SDK는 `UnityFramework` 타겟에 추가합니다.
+> ⚠️ **CocoaPods 방식(이전 버전)에서 업그레이드하는 경우** — 이전 플러그인이 만든 `Podfile`에 `AdMixer*` pod이 남아 있으면 SDK가 중복 링크되지 않도록 빌드가 실패합니다. `Podfile`에서 `AdMixer*` pod을 지우고(다른 pod이 없으면 `Podfile`과 `Pods` 폴더 삭제) Xcode 프로젝트를 **Replace**로 다시 빌드하세요.
 >
-> ⚠️ 플러그인의 Swift 브릿지는 `AdMixerMediation`의 API에 직접 의존하므로, 자동 생성된 `Podfile`의 버전을 임의로 올리면 빌드가 실패할 수 있습니다. SDK 업데이트는 플러그인 업데이트와 함께 진행하세요.
+> 플러그인의 Swift 브릿지는 `AdMixerMediation`의 API에 직접 의존합니다. SDK 업데이트는 플러그인 업데이트와 함께 진행하세요.
 
 ### 2-2. Google 네트워크 - SDK 입찰 광고 소스 설정
 
@@ -111,7 +96,11 @@ plist.root.SetString("NSUserTrackingUsageDescription", "사용자에게 최적�
 
 Google AdManager 네트워크를 사용하는 경우, `AdMixer` Inspector의 `iOS GAD Application Id`에 **발급받은 App ID**(`ca-app-pub-xxx~yyy`)를 입력합니다.
 
-빌드 시 `iOSPostProcess.cs`가 이 값을 `Info.plist`의 `GADApplicationIdentifier`로 기록합니다. 비워 두면 기록하지 않습니다.
+빌드 시 `AdMixerGAMBuild.cs`가 이 값을 `Info.plist`의 `GADApplicationIdentifier`로 기록합니다.
+
+- GAM 패키지(`AdMixerMediationGAM`)가 포함된 빌드에서 값이 비어 있으면 **빌드가 실패**합니다 (App ID 없이 실행하면 앱 시작 시 크래시하므로 빌드 단계에서 막습니다).
+- Google 테스트 App ID(`ca-app-pub-3940256099942544~...`)는 개발 빌드(Development Build)에서만 허용되며, 릴리스 빌드에서는 실패합니다.
+- 빌드 씬에 배치된 `AdMixer`에서 값을 읽으므로 `AdMixer`는 코드로 생성하지 말고 **씬에 배치**하세요.
 
 ### 3-3. Delegate 설정
 
@@ -242,10 +231,12 @@ NAPSSPPluginIOS.initUnityAds("게임 ID");
 |-----------|------|------|------|
 | 배너 | `LoadBanner()` | `ShowBanner()` | `DestroyBanner()` |
 | 전면 | `LoadInterstitial()` | `ShowInterstitial()` | `DestroyInterstitial()` |
-| 네이티브 | `LoadNativeAd()` | (로드 시 자동 표시) | `DestroyNativeAd()` |
+| 네이티브 | `LoadNativeAd()` | `ShowNativeAd()` | `DestroyNativeAd()` |
 | 리워드 동영상 | `LoadRewardVideo()` | `ShowRewardVideo()` | `DestroyRewardVideo()` |
-| 동영상 | `LoadVideoAd()` | (로드 시 자동 표시) | `DestroyVideoAd()` |
+| 동영상 | `LoadVideoAd()` | `ShowVideoAd()` | `DestroyVideoAd()` |
 | 전면 동영상 | `LoadVideoInterstitial()` | `ShowVideoInterstitial()` | `DestroyVideoInterstitial()` |
+
+모든 광고는 `Load` → (로드 성공 이벤트 수신 후) `Show` 순서로 호출합니다. 로드 전이거나 이미 노출 중일 때 `Show`를 호출하면 무시됩니다.
 
 ---
 

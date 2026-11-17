@@ -51,7 +51,8 @@ void OnApplicationPause(bool pause)
 | 이벤트 | 설명 |
 |---|---|
 | `OnReceivedAd` | 배너 광고 로드 성공 |
-| `OnFailedToReceiveAd` | 배너 광고 로드 · 표시 실패 |
+| `OnFailedToReceiveAd` | 배너 광고 로드 실패 |
+| `OnFailedToShowAd` | 배너 광고 표시 실패 |
 | `OnEventAd("DISPLAYED")` | 배너 광고 노출 |
 | `OnEventAd("CLICK")` | 배너 광고 클릭 |
 | `OnEventAd("BANNER_DESTROYED")` | 제거 완료 |
@@ -112,7 +113,8 @@ AdMixer.Instance.DestroyInterstitial();
 | 이벤트 | 설명 |
 |---|---|
 | `OnReceivedAd` | 전면 광고 로드 성공 |
-| `OnFailedToReceiveAd` | 전면 광고 로드 · 노출 실패 |
+| `OnFailedToReceiveAd` | 전면 광고 로드 실패 |
+| `OnFailedToShowAd` | 전면 광고 노출 실패 (다시 노출하려면 다시 로드) |
 | `OnEventAd("DISPLAYED")` | 전면 광고 노출 |
 | `OnEventAd("CLICK")` | 전면 광고 클릭 |
 | `OnEventAd("COMPLETION")` | 동영상 소재 재생 완료 (네트워크에 따라 미발화) |
@@ -142,4 +144,4 @@ public class InterstitialAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **노출 실패(`OnFailedToReceiveAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.
+> ⚠️ **노출 실패(`OnFailedToShowAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.

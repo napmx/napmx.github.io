@@ -48,15 +48,23 @@ NAPSSPPluginIOS.NativeViewInit(adUnitId, x, y, 300, 250);
 
 ## 3. 네이티브 광고 요청
 
-로드에 성공하면 화면에 자동으로 붙어 노출됩니다.
-
 ```csharp
 AdMixer.Instance.LoadNativeAd();
 ```
 
 ---
 
-## 4. 네이티브 제거
+## 4. 네이티브 광고 노출
+
+`OnSuccessNative`를 받은 뒤 원하는 시점에 호출하면 2에서 지정한 위치에 붙어 노출됩니다. 로드 전이거나 이미 노출 중이면 무시됩니다.
+
+```csharp
+AdMixer.Instance.ShowNativeAd();
+```
+
+---
+
+## 5. 네이티브 제거
 
 ```csharp
 AdMixer.Instance.DestroyNativeAd();
@@ -64,11 +72,11 @@ AdMixer.Instance.DestroyNativeAd();
 
 ---
 
-## 5. 이벤트
+## 6. 이벤트
 
 | 이벤트 | 시그니처 | 설명 |
 |-----------|------|------|
-| `OnSuccessNative` | `Action` | 네이티브 광고 로드 성공 (자동 표시) |
+| `OnSuccessNative` | `Action` | 네이티브 광고 로드 성공 — 이후 `ShowNativeAd()` 호출 |
 | `OnFailNative` | `Action` | 네이티브 광고 로드 실패 |
 | `OnTapNative` | `Action` | 네이티브 광고 클릭 |
 
@@ -96,7 +104,7 @@ public class NativeAd : MonoBehaviour
         AdMixer.Instance.LoadNativeAd();
     }
 
-    void OnSuccessNative() { Debug.Log("네이티브 광고 로드 성공"); }
+    void OnSuccessNative() { AdMixer.Instance.ShowNativeAd(); }
     void OnFailNative()    { Debug.Log("네이티브 광고 로드 실패"); }
     void OnTapNative()     { Debug.Log("네이티브 광고 클릭"); }
 
