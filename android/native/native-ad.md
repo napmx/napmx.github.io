@@ -10,20 +10,20 @@
 
 네이티브 광고는 아래 6가지 asset으로 구성됩니다.
 
-| Asset | 레이아웃 `android:id` | 설명 | 필수 여부 |
-|-------|---------------------|------|----------|
-| 제목 | `nap_mx_tv_title` | 광고 제목 (TextView) | AdMixer 단독: 1개 이상 필수 |
-| 아이콘 | `nap_mx_iv_icon` | 광고주 아이콘 이미지 (ImageView) | AdMixer 단독: 1개 이상 필수 |
-| 광고주 | `nap_mx_tv_adv` | 광고주명 (TextView) | 선택 |
-| 설명 | `nap_mx_tv_desc` | 광고 설명 텍스트 (TextView) | 선택 |
-| 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 슬롯 (빈 `FrameLayout` 등 ViewGroup 컨테이너) | AdMixer 단독: 1개 이상 필수 |
-| CTA 버튼 | `nap_mx_btn_cta` | 행동 유도 버튼 (Button) | 선택 |
+| Asset | 레이아웃 `android:id` | 설명 |
+|-------|---------------------|------|
+| 제목 | `nap_mx_tv_title` | 광고 제목 (TextView) |
+| 아이콘 | `nap_mx_iv_icon` | 광고주 아이콘 이미지 (ImageView) |
+| 광고주 | `nap_mx_tv_adv` | 광고주명 (TextView) |
+| 설명 | `nap_mx_tv_desc` | 광고 설명 텍스트 (TextView) |
+| 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 슬롯 (빈 `FrameLayout` 등 ViewGroup 컨테이너) |
+| CTA 버튼 | `nap_mx_btn_cta` | 행동 유도 버튼 (Button) |
 
 > ℹ️ 광고 정보 고지(AdChoices) 아이콘은 SDK가 자동 오버레이하므로 **레이아웃 슬롯이 필요 없습니다**.
 > 위치는 [`setAdChoicesPosition()`](#광고-정보-고지adchoices-위치-지정)으로 지정합니다.
 
 > ⚠️ **필수 규칙**
-> - AdMixer 단독 사용 시: `title`, `icon`, `mainView` 중 **최소 1개**는 반드시 사용해야 합니다.
+> - AdMixer 단독 사용 시: 제목(`title`)·아이콘(`icon`)·메인(`mainView`) 중 **최소 1개**는 반드시 사용해야 합니다. 셋 중 하나만 있어도 되고, 함께 사용해도 됩니다.
 > - Google AdManager 사용 시: Google이 요구하는 최소 View를 반드시 설정해야 합니다.
 
 > ℹ️ **선택 asset 미수신 시 동작 — [현재 버전]**
