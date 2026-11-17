@@ -8,7 +8,7 @@
 
 ## 구성 Asset
 
-네이티브 광고는 6가지 asset으로 구성되어 있으며, 각 asset을 사용하여 자유롭게 UI를 구성할 수 있습니다.
+네이티브 광고는 6가지 asset으로 구성되며 각 asset으로 자유롭게 UI를 구성할 수 있습니다.
 
 <img src="/resources/ios_native_assets.png" alt="네이티브 광고 구성" width="480">
 
@@ -29,7 +29,7 @@
 
 **Step 1. AMMNativeAdView.xib 파일 추가**
 
-아래의 `AMMNativeAdView.xib` 파일을 프로젝트에 추가합니다. 광고 사이즈에 맞는 권장 xib 파일을 사용해주세요.
+아래 `AMMNativeAdView.xib` 파일을 프로젝트에 추가합니다. 광고 사이즈에 맞는 권장 xib 파일을 사용해주세요.
 
 | 사이즈 | 다운로드 |
 |--------|----------|
@@ -80,7 +80,7 @@ class NativeAdViewController: UIViewController {
 
 ## 리소스 해제
 
-`stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
+`stop()`으로 사용한 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
 override func viewDidDisappear(_ animated: Bool) {
@@ -107,7 +107,7 @@ override func viewDidDisappear(_ animated: Bool) {
 
 > 광고 로드 성공/실패는 `loadAd()`의 completion(`container`, `adapterType`, `error`)으로 전달됩니다. `adapterType`은 로드된 네트워크(`AdNetworkType`)입니다.
 
-> **노출 콜백 시점**: `onSuccessShowNative()` 는 광고 영역이 화면에 50% 이상 보이거나 네트워크 SDK 가 노출을 판정한 시점(노출 집계와 같은 시점)에 전달됩니다. 광고 영역(또는 상위 뷰)이 숨겨져 있거나(`isHidden`·alpha 0) 화면 밖이면 오지 않으므로, 광고 뷰를 처음부터 보이는 위치에 붙여야 합니다.
+> **노출 콜백 시점**: `onSuccessShowNative()`는 광고 영역이 화면에 50% 이상 보이거나 네트워크 SDK가 노출을 판정한 시점(노출 집계와 같은 시점)에 전달됩니다. 광고 영역(또는 상위 뷰)이 숨겨져 있거나(`isHidden`·alpha 0) 화면 밖이면 오지 않으므로, 광고 뷰를 처음부터 보이는 위치에 붙여야 합니다.
 
 ```swift
 extension NativeAdViewController: AMMNativeDelegate {
