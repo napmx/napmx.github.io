@@ -19,8 +19,8 @@
 ### 전면·리워드 로드 수정 (Flutter 등 Application Context로 로드하는 앱은 업데이트 권장)
 
 - **Application Context로 로드하면 바로 실패하던 문제 수정** — Unity Ads 전면·리워드, Naver Ad Manager 전면·리워드, Google AdManager 전면을
-  Activity가 아닌 Context(예: `getApplicationContext()`)로 로드하면 광고를 요청하지 않고 바로 실패했습니다. 이제 어떤 Context로든 로드하고,
-  Activity는 표시(`show(Activity)`)할 때만 필요합니다. Flutter 플러그인처럼 Application Context로 로드하는 앱에 해당하며,
+  Activity가 아닌 Context(예: `getApplicationContext()`)로 로드하면 광고를 요청하지 않고 바로 실패했습니다. 이제 어떤 Context로든 로드하고
+  Activity는 표시(`show(Activity)`)할 때만 필요합니다. Flutter 플러그인처럼 Application Context로 로드하는 앱에 해당하며
   Activity로 로드하던 앱의 동작은 같습니다.
 
 ### 그 밖의 수정
@@ -240,7 +240,7 @@
 
 - **전화 상태 권한 정책 정비 (#167)** — 미사용 `READ_PHONE_NUMBERS` 등 불필요한 권한
   선언을 제거했습니다. 통신 세대 판별은 Android 13+에서 `READ_BASIC_PHONE_STATE`,
-  Android 12 이하는 앱이 `READ_PHONE_STATE`를 허용한 경우에만 수행하며, 권한이 없으면
+  Android 12 이하는 앱이 `READ_PHONE_STATE`를 허용한 경우에만 수행하며 권한이 없으면
   기존처럼 `3G`로 폴백합니다. 병합 매니페스트의 권한 목록이 달라질 수 있으니 확인하세요.
 - **어댑터 로드 타임아웃 오류 코드 정정** — 어댑터 자체 타임아웃이 네트워크 오류 대신
   `AX_ERR_TIMEOUT`으로 보고됩니다. 오류 코드로 분기하는 앱은 확인하세요.
@@ -248,7 +248,7 @@
 ### 개인정보 보호 개선 (코드 변경 불요)
 
 - **설치 앱 목록 수집 차단 (#134)** — COPPA 아동 대상 또는 GDPR 명시적 거부 상태에서는
-  설치 앱 목록을 수집하지 않으며, 로그에서도 마스킹됩니다.
+  설치 앱 목록을 수집하지 않으며 로그에서도 마스킹됩니다.
   ([개인정보 가이드](privacy.md#설치-앱-목록-수집-정책))
 - **전면 광고 신고 캡처 최소화 (#136)** — 사용자가 신고 아이콘을 누른 경우에만 화면을
   캡처합니다.
@@ -307,7 +307,7 @@
 ### 동작 변경 (확인 권장)
 
 - **전면·리워드 동영상 재생 실패 시 자동 복귀** — 재생 시작 실패·정지 시 화면을 닫고 종료 콜백을 한 번 전달합니다. 노출 콜백 없이 닫힘 콜백이 올 수 있으니 보상 지급은 리워드 콜백 기준인지 확인하세요.
-- **Pangle 네이티브 표기 정비** — 광고 로고 탭이 프라이버시 안내를 열고, 광고주 뷰는 `"Pangle"` 고정 문구 대신 숨김(GONE) 처리됩니다.
+- **Pangle 네이티브 표기 정비** — 광고 로고 탭이 프라이버시 안내를 열고 광고주 뷰는 `"Pangle"` 고정 문구 대신 숨김(GONE) 처리됩니다.
 - **네이티브 빈 에셋 뷰 숨김 통일** — admanager·gma-nextgen·Pangle에서 에셋 값이 없으면 해당 뷰를 `GONE` 처리합니다.
 
 ### 안정성 개선 (코드 변경 불요)
@@ -329,7 +329,7 @@
 
 ### 새로운 기능
 
-- **로드 상태 조회 API `isReady()` / `isLoading()`** — 광고 클래스 6종(배너·네이티브·인라인 동영상·전면·리워드·전면 동영상) 공통. `loadAd()`는 준비된 광고 보호·중복 요청 방지를 위해 재요청을 콜백 없이 무시할 수 있는데, 콜백만으로 판정하는 호출자(하이브리드 웹뷰 브릿지 등)가 이를 무응답과 구분하지 못해 재시도 타임아웃이 반복될 수 있었습니다. 요청 전 상태를 사전 판별하세요 — `isReady()`가 `true`면 재로드 대신 노출, `isLoading()`이 `true`면 진행 중 로드의 콜백 대기. 기존 콜백 계약은 변경 없음. ([API 레퍼런스](api-reference.md) · [WebBridge 가이드](webbridge.md))
+- **로드 상태 조회 API `isReady()` / `isLoading()`** — 광고 클래스 6종(배너·네이티브·인라인 동영상·전면·리워드·전면 동영상) 공통. `loadAd()`는 준비된 광고 보호·중복 요청 방지를 위해 재요청을 콜백 없이 무시할 수 있는데, 콜백만으로 판정하는 호출자(하이브리드 웹뷰 브릿지 등)가 이를 무응답과 구분하지 못해 재시도 타임아웃이 반복될 수 있었습니다. 요청 전에 상태를 판별하세요 — `isReady()`가 `true`면 재로드 대신 노출, `isLoading()`이 `true`면 진행 중 로드의 콜백 대기. 기존 콜백 계약은 변경 없음. ([API 레퍼런스](api-reference.md) · [WebBridge 가이드](webbridge.md))
 
 ### 안정성 개선 (코드 변경 불요)
 
@@ -354,8 +354,8 @@
 
 ### 안정성 개선 (코드 변경 불요)
 
-- **AdManager · GMA NextGen 어댑터의 Activity Context 보유 완화** — 배너·네이티브 로드 경로에서 Activity Context를 필요 이상으로 붙들지 않도록 정리했습니다. 화면 회전·백그라운드 전환이 잦은 지면에서의 누수 위험이 줄어듭니다. (앞선 2026-07-23 배포 `admixer-admanager:2.0.3`의 후속으로, `2.0.4`에서 배너 로드 경로까지 확대 적용 — BOM `2026.07.04` → `2026.07.05`)
-- **SDK 매니페스트의 미사용 컴포넌트 선언 제거** — 실제로 사용되지 않는 `ContentProvider` 선언이 앱 기동 최우선 경로에 등록되어 있어, 설치본이 손상된 일부 단말에서 기동 크래시 리포트에 SDK 컴포넌트명이 나타나는 사례가 있었습니다. 선언을 제거해 기동 경로를 축소했습니다. **공개 API 변경 없음** — 호스트 앱 조치는 필요 없습니다.
+- **AdManager · GMA NextGen 어댑터의 Activity Context 보유 완화** — 배너·네이티브 로드 경로에서 Activity Context를 필요 이상으로 붙들지 않도록 정리했습니다. 화면 회전·백그라운드 전환이 잦은 지면에서 누수 위험이 줄어듭니다. (앞선 2026-07-23 배포 `admixer-admanager:2.0.3`의 후속으로, `2.0.4`에서 배너 로드 경로까지 확대 적용 — BOM `2026.07.04` → `2026.07.05`)
+- **SDK 매니페스트의 미사용 컴포넌트 선언 제거** — 실제로 사용되지 않는 `ContentProvider` 선언이 앱 기동 최우선 경로에 등록되어 있어 설치본이 손상된 일부 단말에서 기동 크래시 리포트에 SDK 컴포넌트명이 나타나는 사례가 있었습니다. 선언을 제거해 기동 경로를 축소했습니다. **공개 API 변경 없음** — 호스트 앱 조치는 필요 없습니다.
 
 ---
 
@@ -375,14 +375,14 @@
 ### ⚠️ Breaking — 조치 필요
 
 - **Teads 어댑터 — Maven 저장소 추가 필요** (`admixer-teads 2.1.0`): Teads SDK를 6.2.0으로 올리면서 공식 설치 가이드가 요구하는 **Huawei 저장소**가 추가로 필요합니다. `settings.gradle`에 `https://developer.huawei.com/repo/`를 추가하세요. 누락 시 향후 의존성 해결에 실패할 수 있습니다. ([시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#_1-3-네트워크별-추가-maven-저장소))
-- **로드 실패 표준 콜백을 `onFailedToReceiveAd(int errorCode, String errorMsg)`로 단순화** — 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 전달하지 않습니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며, 기본 구현이 표준 콜백으로 위임하므로 **기존 구현의 동작은 변하지 않습니다.** 표준 콜백 하나만 구현하면 내부 No-Ad를 포함한 모든 수신 실패를 받습니다. ([API 레퍼런스](api-reference.md#adlistener-이벤트-콜백))
+- **로드 실패 표준 콜백을 `onFailedToReceiveAd(int errorCode, String errorMsg)`로 단순화** — 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 전달하지 않습니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며 기본 구현이 표준 콜백으로 위임하므로 **기존 구현의 동작은 변하지 않습니다.** 표준 콜백 하나만 구현하면 내부 No-Ad를 포함한 모든 수신 실패를 받습니다. ([API 레퍼런스](api-reference.md#adlistener-이벤트-콜백))
 
 ### 동작 변경 (코드 변경 불요)
 
 - **리워드 지급 채널 상호배타** — `show(activity, onUserEarnedRewardListener)`로 **전용 보상 리스너를 등록하면 `AdListener.onAdRewarded()`는 호출되지 않습니다**(전용 리스너 우선, 지급 통지는 정확히 1회). 두 채널로 각각 지급 처리하던 앱의 중복 지급이 구조적으로 차단됩니다. 전용 리스너를 등록하지 않은 경우에는 종전대로 `onAdRewarded()`로 통지됩니다.
 - **show 무응답 가드(5s) 실패의 네트워크 귀속 정확화** — `show()` 후 5초 내 성공/실패 통지가 없어 SDK가 발사하는 `onAdShowFailed` 백스톱이, 합성값 `"Mediation"` 대신 **실제 무응답 네트워크명으로 통지**됩니다(`AdNetworkType` enum 오버로드 우선 전달).
 - **하우스(자체) 전면 광고 노출 집계 시작** — 하우스 전면 광고 표시 시 노출 콜백/집계가 누락되던 갭을 수정했습니다. **AdMixer 리포트의 하우스 전면 노출 수치가 증가**할 수 있습니다(실제 노출은 종전과 동일 — 집계만 정상화).
-- **하우스 광고의 리워드 지면 채움 중단** — 하우스 엔진은 보상 적립 신호가 없어, 리워드 지면에서는 하우스를 채우지 않고 다음 네트워크로 넘어갑니다(지급 불가 노출 차단). 현재 서버가 리워드 지면에 하우스를 내려주지 않아 실동작 변화는 없습니다.
+- **하우스 광고의 리워드 지면 채움 중단** — 하우스 엔진은 보상 적립 신호가 없어 리워드 지면에서는 하우스를 채우지 않고 다음 네트워크로 넘어갑니다(지급 불가 노출 차단). 현재 서버가 리워드 지면에 하우스를 내려주지 않아 실동작 변화는 없습니다.
 - **리워드 SSV 포스트백에 `transaction_id` 추가 + COPPA 시 `ifa` 미전송** — `callback_url` 포스트백에 지급 1건당 고유 `transaction_id`(UUID)와 `ifa_use`(LAT 신호)가 추가됩니다. 아동 대상(`setTagForChildDirectedTreatment(TRUE)`) 설정 시 `ifa`는 전송되지 않습니다. ([리워드 가이드](rewarded-video.md#s2s-reward-callback-서버-간-리워드-검증))
 
 ### 안정성 개선
@@ -409,7 +409,7 @@
 ### ⚠️ Breaking — 조치 필요
 
 - **`NativeAdViewBinder.Builder.setPrivacyViewId(int)` 제거** — 호출 중이면 컴파일 오류입니다. `setAdChoicesPosition(AdChoicesPosition)`으로 교체하세요(4모서리, 기본 우측 상단). 레이아웃의 `nap_mx_privacy_container` 슬롯은 삭제 가능(SDK가 자동 오버레이). ([네이티브 가이드](native-ad.md#광고-정보-고지adchoices-위치-지정))
-- **어댑터 식별자 값 변경 — 재컴파일 필수** — `AdMixer.ADAPTER_*` 상수의 **문자열 값**이 바뀌었습니다(`ADAPTER_ADMANAGER` `"AdManager"`→`"GoogleAdManager"`, `ADAPTER_ADFIT` `"KaKao Adfit"`→`"AdFit"`, `ADAPTER_ADMIXER_HOUSE` `"houseAd"`→`"HouseAd"`). 상수 이름은 그대로라 컴파일 오류가 없어, SDK만 올리고 재컴파일하지 않으면 문자열 비교·`setAdapterConfig` 매칭이 **조용히 어긋납니다.** 반드시 재컴파일하세요.
+- **어댑터 식별자 값 변경 — 재컴파일 필수** — `AdMixer.ADAPTER_*` 상수의 **문자열 값**이 바뀌었습니다(`ADAPTER_ADMANAGER` `"AdManager"`→`"GoogleAdManager"`, `ADAPTER_ADFIT` `"KaKao Adfit"`→`"AdFit"`, `ADAPTER_ADMIXER_HOUSE` `"houseAd"`→`"HouseAd"`). 상수 이름은 그대로라 컴파일 오류가 없어 SDK만 올리고 재컴파일하지 않으면 문자열 비교·`setAdapterConfig` 매칭이 **조용히 어긋납니다.** 반드시 재컴파일하세요.
 
 ### ⚠️ 화면 변경 주의 (코드 변경 불요)
 
@@ -430,7 +430,7 @@
 
 ## v2.0.0 (2026-06-17)
 
-> v1 → v2 메이저 전환. 공개 광고 클래스가 iOS-AdMixer 정합의 `AMM*` 네이밍으로 통일되고,
+> v1 → v2 메이저 전환. 공개 광고 클래스가 iOS-AdMixer 정합의 `AMM*` 네이밍으로 통일되고
 > 풀스크린 광고가 정적 `loadAd()` + `FullScreenContentCallback` 구조로 바뀝니다.
 > 자세한 교체 방법은 [v2 마이그레이션 가이드](migration.md)를 참고하세요.
 

@@ -28,7 +28,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 > 네트워크별 전파 매핑은 [개인정보 동의 및 테스트 설정](privacy.md) 참고.
 
-> ℹ️ **어댑터 자동 등록 (v2.0.0)**: `initialize()` 내부에서 클래스패스(Gradle 의존성)에 포함된 어댑터를 자동으로 탐지하여 등록합니다. `registerAdapter()` 수동 호출은 더 이상 필요하지 않습니다.
+> ℹ️ **어댑터 자동 등록 (v2.0.0)**: `initialize()` 내부에서 클래스패스(Gradle 의존성)에 포함된 어댑터를 자동으로 탐지해 등록합니다. `registerAdapter()` 수동 호출은 더 이상 필요하지 않습니다.
 
 | 어댑터 상수 | 대상 네트워크 |
 |-----------|-------------|
@@ -74,7 +74,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
 
-> ℹ️ **`isReady()` / `isLoading()` (SDK 2.1.3+)** — 모든 광고 클래스 6종(인라인 3종·풀스크린 3종)에서 동일하게 제공됩니다. `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 콜백만으로 로드 결과를 판정하는 호출자(하이브리드 웹뷰 브릿지 등)는 이 무시를 무응답과 구분할 수 없으므로, **로드 요청 전에 두 메서드로 상태를 사전 판별**하세요 — `isReady()`가 `true`면 재로드 대신 노출을, `isLoading()`이 `true`면 진행 중인 로드의 콜백 대기를 하면 됩니다. `stop()`/`destroy` 이후에는 둘 다 `false`입니다. 하이브리드 연동 예제는 [WebBridge 가이드](webbridge.md)를 참고하세요.
+> ℹ️ **`isReady()` / `isLoading()` (SDK 2.1.3+)** — 모든 광고 클래스 6종(인라인 3종·풀스크린 3종)에서 동일하게 제공됩니다. `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 콜백만으로 로드 결과를 판정하는 호출자(하이브리드 웹뷰 브릿지 등)는 이 무시를 무응답과 구분할 수 없으므로, **로드 요청 전에 두 메서드로 상태를 사전 판별**하세요 — `isReady()`가 `true`면 재로드 대신 노출하고 `isLoading()`이 `true`면 진행 중인 로드의 콜백을 기다리면 됩니다. `stop()`/`destroy` 이후에는 둘 다 `false`입니다. 하이브리드 연동 예제는 [WebBridge 가이드](webbridge.md)를 참고하세요.
 
 ---
 
@@ -190,7 +190,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `onUserEarnedReward()` | 사용자가 시청을 완료해 보상을 획득함. `AMMRewardVideo.show(activity, listener)`로 등록 |
 | `onUserEarnedReward(RewardInfo info)` | 위와 동일하되 **지급 식별 정보 포함** (SDK 2.1.1+). `default` 메서드라 기존 구현체는 그대로 동작합니다 |
 
-> ℹ️ SDK는 **`RewardInfo` 오버로드만 호출**하며, 기본 구현이 무인자 버전으로 위임합니다. 따라서 두 콜백이 함께 발화하지 않고 **지급 통지는 정확히 1회**입니다. 서버 포스트백과 대조가 필요한 매체만 `RewardInfo` 버전을 override하세요.
+> ℹ️ SDK는 **`RewardInfo` 오버로드만 호출**하며 기본 구현이 무인자 버전으로 위임합니다. 따라서 두 콜백이 함께 발화하지 않고 **지급 통지는 정확히 1회**입니다. 서버 포스트백과 대조가 필요한 매체만 `RewardInfo` 버전을 override하세요.
 
 **RewardInfo (class — 지급 식별 정보)**
 
@@ -229,7 +229,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 
 ## AdListener (이벤트 콜백)
 
-> **[v2.0.0]** 기존 단일 `onEventAd(adView, AdEvent)`는 **이름 있는 이벤트 메서드로 분리**되었습니다. `AdListener`는 `abstract class`이며 **모든 메서드가 기본 no-op**이라 **필요한 메서드만 override**하면 됩니다(필수 구현 없음). 기존 `onEventAd` 구현은 아래 named 메서드로 이전해야 합니다(Breaking Change).
+> **[v2.0.0]** 기존 단일 `onEventAd(adView, AdEvent)`는 **이름 있는 이벤트 메서드로 분리**되었습니다. `AdListener`는 `abstract class`이며 **모든 메서드가 기본 no-op**이라 **필요한 메서드만 override**하면 됩니다(필수 구현 없음). 기존 `onEventAd` 구현은 아래 이름 있는 메서드로 이전해야 합니다(Breaking Change).
 
 ```java
 import com.nasmedia.admixerssp.common.core.AdNetworkType;
@@ -258,13 +258,13 @@ public abstract class AdListener {
 }
 ```
 
-> **로드 실패 표준 콜백 = `onFailedToReceiveAd(int errorCode, String errorMsg)`** 입니다. 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 매체에 유의미하지 않아, 풀스크린 로드 실패 콜백(`onFailLoad*`)과 동일하게 `errorCode`/`errorMsg`만 전달합니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며, 기본 구현이 표준 콜백으로 위임하므로 기존 구현도 동작은 그대로입니다.
+> **로드 실패 표준 콜백 = `onFailedToReceiveAd(int errorCode, String errorMsg)`** 입니다. 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 매체에 유의미하지 않아 풀스크린 로드 실패 콜백(`onFailLoad*`)과 동일하게 `errorCode`/`errorMsg`만 전달합니다. 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 **둘 다 `@Deprecated`(3.0 제거 예정)** 이며 기본 구현이 표준 콜백으로 위임하므로 기존 구현도 동작은 그대로입니다.
 >
 > ✅ **표준 콜백 하나만 구현하면** 전 네트워크 No-Ad("All adapters failed."), SDK 미초기화·AdUnit 누락 등 **내부 실패를 포함한 모든 수신 실패**를 받습니다. String 오버로드를 함께 구현할 필요가 없습니다.
 
 > 로드 성공(`onReceivedAd`)과 노출 실패(`onAdShowFailed`)는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드도 여전히 호출되지만 **`@Deprecated`(3.0에서 제거 예정)** 이므로 신규 구현은 enum 버전을 사용하세요. `String` 문자열이 필요하면 `networkType.getAdapterName()`으로 얻을 수 있습니다.
 
-> ⚠️ 배너(`AMMBannerView`)는 `AdListener`를 내부적으로 `WeakReference`로 보유합니다. 익명 클래스로 구현하면 GC에 의해 수집될 수 있으므로 반드시 **멤버 변수**로 선언하세요.
+> ⚠️ 배너(`AMMBannerView`)는 `AdListener`를 내부적으로 `WeakReference`로 보유합니다. 익명 클래스로 구현하면 GC가 수집할 수 있으므로 반드시 **멤버 변수**로 선언하세요.
 >
 > ℹ️ 전면형태(전면/리워드/전면 동영상)는 GAM 규약의 [`FullScreenContentCallback`](interstitial.md)으로도 노출 단계 콜백을 받을 수 있습니다.
 

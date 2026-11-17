@@ -6,8 +6,8 @@
 
 ## 📱 실제 연동 서비스 앱 참고
 
-SDK를 연동하기 전, 구글 플레이 스토어에 출시된 아래 앱들을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
-*(본 앱들은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
+SDK를 연동하기 전에 구글 플레이 스토어에 출시된 아래 앱들을 설치해 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
+*(본 앱들은 테스트용으로 제공하는 데모 앱이 아니라 실제 상용 서비스 앱입니다. SDK가 어떻게 적용되어 화면을 구성하는지 보여 주는 연동 사례입니다.)*
 
 <table style="border: none; background: transparent;">
   <tr style="border: none; background: transparent;">
@@ -127,7 +127,7 @@ Core 2.5.1은 API 21 호환 `play-services-ads-identifier:18.0.0`을 포함합�
 
 ### 🧪 GMA NextGen (beta) — 도입 전 필독
 
-Google이 차세대로 발표한 **Mobile Ads NextGen SDK** 연동 어댑터입니다. **beta 단계**이며, 기존 `admixer-admanager`(classic)를 대체하는 별도 모듈입니다.
+Google이 차세대로 발표한 **Mobile Ads NextGen SDK** 연동 어댑터입니다. **beta 단계**이며 기존 `admixer-admanager`(classic)를 대체하는 별도 모듈입니다.
 
 > 🚨 **classic `play-services-ads`를 쓰는 어댑터와 같은 앱에 넣을 수 없습니다.**
 > NextGen SDK는 classic `com.google.android.gms:play-services-ads`의 **전역 exclude**를 요구합니다. 따라서:
@@ -181,9 +181,9 @@ dependencyResolutionManagement {
 
 ### 1-4. 네트워크 SDK 지원 버전 범위
 
-각 어댑터(`admixer-*`)는 아래 **번들(검증) 버전**으로 빌드·검증되었습니다. 어댑터 aar에는 해당 네트워크 SDK가 전이 의존으로 포함되므로, 별도로 버전을 지정하지 않아도 번들 버전이 자동 적용됩니다.
+각 어댑터(`admixer-*`)는 아래 **번들(검증) 버전**으로 빌드·검증되었습니다. 어댑터 aar에는 해당 네트워크 SDK가 전이 의존으로 포함되므로 별도로 버전을 지정하지 않아도 번들 버전이 자동 적용됩니다.
 
-> ℹ️ **최소 / 최대**는 각 네트워크 벤더의 릴리스 호환성 기준 권장 범위입니다. 어댑터가 호출하는 SDK 클래스·메서드·인자가 해당 범위에서 존재·동일한지 **소스 레벨로 교차검증**하고, 실제 Gradle resolve 결과 및 네이티브 라이브러리 16KB 정렬까지 **전수 재점검**(2026-07-12)했습니다. 다만 운영 적용 전 해당 버전으로 빌드·동작을 한 번 더 확인하는 것을 권장합니다.
+> ℹ️ **최소 / 최대**는 각 네트워크 벤더의 릴리스 호환성 기준 권장 범위입니다. 어댑터가 호출하는 SDK 클래스·메서드·인자가 해당 범위에서 존재·동일한지 **소스 레벨로 교차검증**하고 실제 Gradle resolve 결과 및 네이티브 라이브러리 16KB 정렬까지 **전수 재점검**(2026-07-12)했습니다. 다만 운영 적용 전 해당 버전으로 빌드·동작을 한 번 더 확인하는 것을 권장합니다.
 
 | 네트워크 | Maven 라이브러리 | 최소 지원 | 번들(검증) | 최대 호환 | 비고 |
 |---|---|---|---|---|---|
@@ -197,7 +197,7 @@ dependencyResolutionManagement {
 | Teads | `tv.teads.sdk.android:sdk` | 6.0.4 (권장 6.2.0) | **6.2.0** | 6.2.0 | 6.x 통합 SDK(5.x는 레거시) |
 | 🧪 GMA NextGen **(beta)** | `com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk` | 1.2.1 | **1.2.1** | 1.2.1 | classic AdManager와 공존 불가 / NaverAd는 공존 가능 |
 
-> ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어, 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
+> ⚠️ **Google AdManager (`play-services-ads`)는 25.2.0 상한을 반드시 지키세요.** 25.3.0+는 호환 이슈가 있어 다른 어댑터의 전이 의존이 상위 버전을 끌어오지 못하도록 강제 고정을 권장합니다.
 > ```gradle
 > configurations.all {
 >     resolutionStrategy {
@@ -223,7 +223,7 @@ dependencyResolutionManagement {
 
 ### 1-5. Kotlin 툴체인 요구사항
 
-코어 `admixer-ssp:2.5.1`은 `kotlin-stdlib:2.2.10`을 전이 의존으로 포함합니다. Kotlin 컴파일러와 stdlib 버전은 별개이며, 의존성 버전만으로 최소 컴파일러를 단정할 수 없습니다. 현재 Flutter 플러그인에서는 **AGP 8.10.1 / Java 17 / Kotlin 2.1.0 및 2.2.10** 조합으로 debug/release 빌드(R8 포함)를 검증했습니다. Kotlin 2.2.10을 권장하며 stdlib를 구버전으로 강제 낮추지 마세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
+코어 `admixer-ssp:2.5.1`은 `kotlin-stdlib:2.2.10`을 전이 의존으로 포함합니다. Kotlin 컴파일러와 stdlib 버전은 별개이며 의존성 버전만으로 최소 컴파일러를 단정할 수 없습니다. 현재 Flutter 플러그인에서는 **AGP 8.10.1 / Java 17 / Kotlin 2.1.0 및 2.2.10** 조합으로 debug/release 빌드(R8 포함)를 검증했습니다. Kotlin 2.2.10을 권장하며 stdlib를 구버전으로 강제 낮추지 마세요. 구 Kotlin 컴파일러로 빌드 시 `Module was compiled with an incompatible version of Kotlin` 경고/오류가 발생할 수 있습니다.
 
 | 사용 구성 | Kotlin 확인 기준 | 근거 |
 |---|---|---|
@@ -275,11 +275,11 @@ Android 12(API 32) 이하에서 2G/3G/4G/5G를 정확히 구분해야 하는 매
 
 별도 설정이 필요 없습니다. Naver Ad Manager의 `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx가 SDK(`admixer-naveradmanager` aar)에서 제공·관리하므로 **호스트 앱 매니페스트에 설정하지 마세요.** (SDK 동기화 시 자동 포함)
 
-> ℹ️ Google App ID는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 문의하여 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
+> ℹ️ Google App ID는 **[nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)**로 문의해 발급받으세요. (Naver `PUBLISHER_CD`는 SDK가 제공하므로 매체 설정 불필요)
 
 ### 네트워크 보안 설정(networkSecurityConfig)을 직접 선언하는 경우
 
-코어 SDK는 광고 네트워크(매체사/DSP) 호환을 위해 `<application>`에 `android:networkSecurityConfig`를 선언합니다. **매체 앱이 자체 `networkSecurityConfig`를 선언하면** 매니페스트 병합 충돌이 발생하므로, 앱 매니페스트 `<application>`에 `tools:replace`를 지정해 매체 설정이 우선하도록 하세요. (매체가 자체 NSC를 선언하지 않으면 별도 조치 불필요)
+코어 SDK는 광고 네트워크(매체사/DSP) 호환을 위해 `<application>`에 `android:networkSecurityConfig`를 선언합니다. **매체 앱이 자체 `networkSecurityConfig`를 선언하면** 매니페스트 병합 충돌이 발생하므로 앱 매니페스트 `<application>`에 `tools:replace`를 지정해 매체 설정이 우선하도록 하세요. (매체가 자체 NSC를 선언하지 않으면 별도 조치 불필요)
 
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -394,7 +394,7 @@ AdMixer.setTestDeviceIds(Arrays.asList("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"));
 
 ## Step 4. ProGuard 설정
 
-**별도 작업이 필요하지 않습니다.** Core SDK(`admixer-ssp`)와 각 어댑터 모듈은 AAR에 `consumer-rules.pro`를 내장하고 있어, Gradle이 의존성을 해석할 때 해당 규칙이 호스트 앱의 릴리즈 빌드(R8/ProGuard)에 자동으로 병합됩니다. 앱의 `proguard-rules.pro`에 규칙을 직접 추가하지 않아도 됩니다.
+**별도 작업이 필요하지 않습니다.** Core SDK(`admixer-ssp`)와 각 어댑터 모듈은 AAR에 `consumer-rules.pro`를 내장하고 있어 Gradle이 의존성을 해석할 때 해당 규칙이 호스트 앱의 릴리즈 빌드(R8/ProGuard)에 자동으로 병합됩니다. 앱의 `proguard-rules.pro`에 규칙을 직접 추가하지 않아도 됩니다.
 
 각 네트워크 SDK도 자체 규칙을 `consumerProguardFiles`로 제공하므로 동일하게 자동 적용됩니다.
 
@@ -436,11 +436,11 @@ dependencies {
 
 ## Google SDK 입찰 광고 소스 설정
 
-Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소스 라이브러리를 모두 추가해야 최적 수익화가 가능합니다.
+Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소스 라이브러리를 모두 추가해야 수익을 최대로 낼 수 있습니다.
 
 * [Google 공식 가이드 — 네트워크 선택](https://developers.google.com/ad-manager/mobile-ads-sdk/android/choose-networks?hl=ko)
 
-**추가해야 할 광고 소스 (모두 추가 권장):**
+**추가해야 할 광고 소스 (모두 추가 권장)**
 
 | 광고 소스 |
 |-----------|
@@ -453,13 +453,13 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 > ⚠️ 프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
 
-> ### Google SDK 입찰 어댑터 작동 여부 확인
+### Google SDK 입찰 어댑터 작동 여부 확인
 
-광고 소스 라이브러리 적용 후, Google Mobile Ads SDK의 Debug Menu를 통해 **입찰 어댑터의 정상 작동 여부를 확인**할 수 있습니다.
+광고 소스 라이브러리 적용 후, Google Mobile Ads SDK의 Debug Menu로 **입찰 어댑터의 정상 작동 여부를 확인**할 수 있습니다.
 테스트 앱에서 `MobileAds.openDebugMenu(this, "AD_UNIT_ID")`를 호출할 수 있도록 적용합니다.
 해당 메서드는 Google Mobile Ads SDK 초기화 이후 호출해 주세요.
 
-하기 가이드 참고 부탁드립니다.
+아래 가이드를 참고해 주세요.
 [Google 공식 가이드 — aOS 광고 소재 미리보기 및 게재 도구](https://developers.google.com/ad-manager/mobile-ads-sdk/android/debug?hl=ko)
 
 > `AD_UNIT_ID`는 **운영팀에 문의하여 전달받은 광고 단위 ID를 적용해 주세요.**
@@ -469,6 +469,6 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 1. 테스트 앱에서 `MobileAds.openDebugMenu(this, "AD_UNIT_ID")`를 호출할 수 있도록 적용합니다.
 2. 적용 완료 후 **디버그 옵션이 적용된 테스트 앱(APK)을 운영팀에 전달해 주세요.**
 3. 운영팀에서 테스트 앱을 실행하고 Debug Options Menu를 호출합니다.
-4. 테스트 기기를 연결한 후 광고를 요청하여 입찰 광고 소스 및 어댑터의 동작 상태를 확인합니다.
+4. 테스트 기기를 연결한 후 광고를 요청해 입찰 광고 소스 및 어댑터의 동작 상태를 확인합니다.
 
 > `MobileAds.openDebugMenu()`는 **Google Mobile Ads SDK 초기화 이후 호출**해 주세요.

@@ -110,7 +110,7 @@ fun NativeSlot() {
 
 ## 전면 — `rememberInterstitialAd`
 
-전면·리워드는 **Activity 노출형**이라 화면에 배치하는 컴포저블이 아니라, `remember*`가 반환하는 **state-holder 핸들**로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고(중복 콜백 방지), 이탈 시 `stop()`으로 정식 해제합니다.
+전면·리워드는 **Activity 노출형**이라 화면에 배치하는 컴포저블이 아니라, `remember*`가 반환하는 **state-holder 핸들**로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고(중복 콜백 방지) 이탈 시 `stop()`으로 정식 해제합니다.
 
 ```kotlin
 import com.nasmedia.admixerssp.compose.rememberInterstitialAd
@@ -134,7 +134,7 @@ fun MyScreen() {
 - `load()` 비동기 로드 / `show()` 노출 / `cancelLoad()` 진행 중 로드만 취소 / `isLoaded` 수신 여부.
 - 로드 즉시 노출하려면 `rememberInterstitialAd(adUnitId, autoShow = true)`. 내부적으로 수신 시 `show()`만 호출하며 `start*`를 재호출하지 않습니다.
 
-> 🚨 **수신 콜백에서 `start*`(로드+자동노출)를 직접 호출하지 마세요.** 매 수신마다 재로드되어 무한 루프가 발생합니다. 노출은 항상 `show()`(=`showAd()`)로 하며, 헬퍼는 이 규약을 강제합니다.
+> 🚨 **수신 콜백에서 `start*`(로드+자동노출)를 직접 호출하지 마세요.** 매 수신마다 재로드되어 무한 루프가 발생합니다. 노출은 항상 `show()`(=`showAd()`)로 하며 헬퍼는 이 규약을 강제합니다.
 
 ---
 
@@ -165,7 +165,7 @@ fun RewardScreen() {
 
 - API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onAdRewarded()`로 통지됩니다.
   Compose 헬퍼는 전용 보상 리스너 없이 노출하므로, 보상은 `AdListener` 경로로 옵니다.
-- **지급 이력 키가 필요하면 `RewardInfo` 오버로드를 구현하세요.** 지급 1건당 고유 `transaction_id`가 전달되며, 서버 포스트백과 대조할 수 있습니다.
+- **지급 이력 키가 필요하면 `RewardInfo` 오버로드를 구현하세요.** 지급 1건당 고유 `transaction_id`가 전달되며 서버 포스트백과 대조할 수 있습니다.
 
   ```kotlin
   object : AdListener() {
@@ -182,7 +182,7 @@ fun RewardScreen() {
 
 ## 전면 비디오 — `rememberVideoInterstitialAd`
 
-보상이 없는 **전면 비디오 광고**(`AMMVideoInterstitial`)도 전면·리워드와 동일한 state-holder 패턴으로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고, 이탈 시 `stop()`으로 정식 해제합니다.
+보상이 없는 **전면 비디오 광고**(`AMMVideoInterstitial`)도 전면·리워드와 동일한 state-holder 패턴으로 제어합니다. 헬퍼가 매니저를 컴포지션당 1개만 생성하고 이탈 시 `stop()`으로 정식 해제합니다.
 
 ```kotlin
 import com.nasmedia.admixerssp.compose.rememberVideoInterstitialAd
@@ -199,9 +199,9 @@ fun VideoScreen() {
 }
 ```
 
-- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 내부적으로 정식 메서드 `loadAd()`/`showAd()`/`stop()`를 호출합니다(구 `loadInterstitialVideoAd`/`showInterstitialVideoAd`는 deprecated).
+- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 내부적으로 정식 메서드 `loadAd()`/`showAd()`/`stop()`을 호출합니다(구 `loadInterstitialVideoAd`/`showInterstitialVideoAd`는 deprecated).
 
-> 🚨 전면과 동일하게 **수신 콜백에서 로드+자동노출을 재호출하지 마세요**(무한 재로드). 노출은 항상 `show()`로 하며, 헬퍼가 이 규약을 강제합니다.
+> 🚨 전면과 동일하게 **수신 콜백에서 로드+자동노출을 재호출하지 마세요**(무한 재로드). 노출은 항상 `show()`로 하며 헬퍼가 이 규약을 강제합니다.
 
 ---
 
@@ -223,7 +223,7 @@ fun VideoScreen() {
 | `onAdSkipped` | – | – | – | ✅ | ✅ |
 | `onAdRewarded` | – | – | – | – | ✅ |
 
-> ⚠️ **`onAdCompleted`·`onAdSkipped` 는 네트워크에 따라 발화하지 않을 수 있습니다.** 재생 완료·스킵을 별도 신호로 통지할지는 각 네트워크 SDK가 결정하며, SDK는 이를 합성하지 않습니다. **보상 지급 판정은 반드시 `onAdRewarded` 로만** 하세요.
+> ⚠️ **`onAdCompleted`·`onAdSkipped`는 네트워크에 따라 발화하지 않을 수 있습니다.** 재생 완료·스킵을 별도 신호로 통지할지는 각 네트워크 SDK가 결정하며 SDK는 이를 합성하지 않습니다. **보상 지급 판정은 반드시 `onAdRewarded` 로만** 하세요.
 >
 > 위 표는 해당 포맷에서 그 콜백이 **전달될 수 있는지**를 나타냅니다. 매번 발화한다는 뜻이 아닙니다.
 
@@ -239,8 +239,8 @@ fun VideoScreen() {
 > }
 > ```
 
-- `–` 는 해당 포맷에서 발생하지 않는 이벤트입니다(예: 배너/네이티브는 닫힘·재생완료·스킵 이벤트 없음).
-- `onAdShowFailed` 는 **로드 성공 후 표시(show) 단계 실패**로, 인라인(배너/네이티브)에는 해당되지 않습니다.
+- `–`는 해당 포맷에서 발생하지 않는 이벤트입니다(예: 배너/네이티브는 닫힘·재생완료·스킵 이벤트 없음).
+- `onAdShowFailed`는 **로드 성공 후 표시(show) 단계 실패**로, 인라인(배너/네이티브)에는 해당되지 않습니다.
 - 배너/네이티브는 `listener` 파라미터로, 전면류는 `rememberInterstitialAd`/`rememberVideoInterstitialAd`/`rememberRewardVideoAd`의 `listener` 인자로 위 콜백을 받습니다. 보상 적립은 `onAdRewarded`로 통지됩니다.
 
 ---
@@ -281,7 +281,7 @@ DisposableEffect(owner, adUnitId) {
 
 ## LazyColumn / LazyRow 내 광고
 
-> ⚠️ 리스트 항목이 화면 밖으로 스크롤되면 dispose되고, 복귀 시 재구성됩니다. 항목을 **안정적인 key로 고정**하지 않으면 슬롯 재사용으로 상태가 꼬여 **광고가 사라져 돌아오지 않을** 수 있습니다.
+> ⚠️ 리스트 항목이 화면 밖으로 스크롤되면 dispose되고 복귀 시 재구성됩니다. 항목을 **안정적인 key로 고정**하지 않으면 슬롯 재사용으로 상태가 꼬여 **광고가 사라져 돌아오지 않을** 수 있습니다.
 
 ```kotlin
 LazyColumn {

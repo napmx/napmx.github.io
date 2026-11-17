@@ -63,7 +63,7 @@
 
 ## Step 1. Gradle 버전 업데이트
 
-**BOM 사용을 권장합니다.** 모듈마다 버전이 갈릴 수 있어(코어와 어댑터가 독립 배포됨) BOM이 조합 호환을 보장하고, 업그레이드 시 **BOM 버전 한 줄만** 바꾸면 됩니다.
+**BOM 사용을 권장합니다.** 모듈마다 버전이 갈릴 수 있어(코어와 어댑터가 독립 배포됨) BOM이 조합 호환을 보장하고 업그레이드 시 **BOM 버전 한 줄만** 바꾸면 됩니다.
 
 ```gradle
 // Before (v1.x)
@@ -122,7 +122,7 @@ AdMixer.registerAdapter(AdMixer.ADAPTER_PANGLE);
 // (Gradle 의존성에 포함된 어댑터는 initialize() 호출 시 자동 등록)
 ```
 
-> ℹ️ `registerAdapter(String)` 메서드는 하위 호환성을 위해 남아 있지만, `initialize()` 내부의 자동 탐지가 클래스패스에 포함된 어댑터를 이미 등록하므로 중복 호출입니다. 제거를 권장합니다. 또한 현재 버전에서 이 메서드는 **SDK 내장 어댑터 이름만 처리**하며, 그 외 이름은 경고 로그를 남기고 무시됩니다(외부 커스텀 어댑터 등록은 지원하지 않습니다).
+> ℹ️ `registerAdapter(String)` 메서드는 하위 호환성을 위해 남아 있지만 `initialize()` 내부의 자동 탐지가 클래스패스에 포함된 어댑터를 이미 등록하므로 중복 호출입니다. 제거를 권장합니다. 또한 현재 버전에서 이 메서드는 **SDK 내장 어댑터 이름만 처리**하며 그 외 이름은 경고 로그를 남기고 무시됩니다(외부 커스텀 어댑터 등록은 지원하지 않습니다).
 
 ---
 
@@ -153,7 +153,7 @@ repositories {
 
 ### ⚠️ 구버전 클래스 제거 및 AMM* 클래스 전환
 
-v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제거되었습니다. 아래와 같이 새 클래스로 교체하여 빌드 오류를 해결하십시오.
+v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제거되었습니다. 아래와 같이 새 클래스로 교체해 빌드 오류를 해결하십시오.
 
 | 구 클래스 (v1.x) | 신 클래스 (v2.0.0) | 설명 |
 |---|---|---|
@@ -229,7 +229,7 @@ interstitialVideoAd.stop();
 |------------|------------|------|
 | `onDestroy()` | `stop()` | `destroy()` 별칭이었음. `destroy()` 자체도 `@Deprecated` — `stop()`을 사용하세요 |
 
-> ℹ️ 인라인 뷰(배너·네이티브·동영상)는 호스트의 `LifecycleOwner`(Activity/Fragment)를 자동으로 탐색해 관찰하며, `ON_DESTROY` 시점에 SDK가 스스로 해제합니다.
+> ℹ️ 인라인 뷰(배너·네이티브·동영상)는 호스트의 `LifecycleOwner`(Activity/Fragment)를 자동으로 탐색해 관찰하며 `ON_DESTROY` 시점에 SDK가 스스로 해제합니다.
 >
 > 다만 **자동 해제는 안전망이지, 명시적 호출을 대체하지 않습니다.** `LifecycleOwner`를 찾을 수 없는 Context(커스텀 뷰 계층, `Application` Context 등)에서는 동작하지 않으므로, 가이드 전반의 권장대로 **`onResume`/`onPause`/`stop`을 직접 연결**하는 것을 기준으로 삼으세요.
 
@@ -276,7 +276,7 @@ new AdInfo.Builder(ADUNIT_ID)
 `AdListener`의 단일 `onEventAd(adView, AdEvent)`가 **이름 있는 이벤트 메서드로 분리**되었습니다. 전면용 `FullScreenContentCallback`과 동일한 named-method 스타일로 통일하기 위함입니다.
 
 - `AdListener`가 `interface` → `abstract class`로 바뀌어 **모든 메서드가 기본 no-op**입니다(필요한 것만 override, 필수 구현 없음).
-- `onReceivedAd`는 v1.x 시그니처(`String adapterName, Object ad`)가 그대로 동작하지만 현재는 `@Deprecated`이며, `AdNetworkType` enum 오버로드가 표준입니다. `onFailedToReceiveAd`는 이후 릴리스에서 `(errorCode, errorMsg)` 2-인자 표준 콜백으로 단순화되었습니다(아래 3단계 참고).
+- `onReceivedAd`는 v1.x 시그니처(`String adapterName, Object ad`)가 그대로 동작하지만 현재는 `@Deprecated`이며 `AdNetworkType` enum 오버로드가 표준입니다. `onFailedToReceiveAd`는 이후 릴리스에서 `(errorCode, errorMsg)` 2-인자 표준 콜백으로 단순화되었습니다(아래 3단계 참고).
 - 로드 실패(`onFailedToReceiveAd`)와 구분되는 **표시 단계 실패** 시 호출되는 `onAdShowFailed`가 추가되었습니다.
 - `AdEvent` enum은 공개 콜백에서 더 이상 사용되지 않습니다(SDK 내부 디스패치 전용). 앱 코드에서 직접 참조할 필요가 없습니다.
 
@@ -292,7 +292,7 @@ new AdInfo.Builder(ADUNIT_ID)
 | `EARNEDREWARD` | `onAdRewarded()` | 보상 적립 |
 | - | `onAdShowFailed(adView, networkType, errorCode, errorMsg)` | 광고 노출(show) 실패 (신규 추가) |
 
-> ℹ️ 좌측 `AdEvent` 상수명은 **v1.x 기준**입니다. v2.0.0에서 `AdEvent`는 **SDK 내부 전용**으로 전환되었고, 내부적으로 `COMPLETION`은 `COMPLETE`로 리네임되었습니다. 앱 코드는 더 이상 `AdEvent`를 직접 참조하지 않으므로(이름 있는 메서드만 override) 이 리네임은 연동에 영향을 주지 않습니다.
+> ℹ️ 좌측 `AdEvent` 상수명은 **v1.x 기준**입니다. v2.0.0에서 `AdEvent`는 **SDK 내부 전용**으로 전환되었고 내부적으로 `COMPLETION`은 `COMPLETE`로 리네임되었습니다. 앱 코드는 더 이상 `AdEvent`를 직접 참조하지 않으므로(이름 있는 메서드만 override)이 리네임은 연동에 영향을 주지 않습니다.
 
 ### 로드 실패 콜백은 3단계를 거쳤습니다
 
@@ -302,7 +302,7 @@ new AdInfo.Builder(ADUNIT_ID)
 | ② 과도기 | `onFailedToReceiveAd(Object ad, AdNetworkType networkType, int code, String msg)` | `@Deprecated` — 3.0 제거 예정 |
 | ③ **현행 표준** | **`onFailedToReceiveAd(int errorCode, String errorMsg)`** | ✅ 정식 |
 
-①·②의 기본 구현은 위임 체인(enum → String → 표준)을 통해 ③으로 이어지므로, **표준 콜백 하나만 구현하면 내부 No-Ad(전 네트워크 실패)·SDK 미초기화를 포함한 모든 수신 실패를 받습니다.** 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 매체에 유의미하지 않아 전달하지 않습니다. ①·② 구현이 이미 있다면 지우지 않아도 그대로 동작합니다(override가 위임 체인의 해당 지점을 대체).
+①·②의 기본 구현은 위임 체인(enum → String → 표준)을 거쳐 ③으로 이어지므로, **표준 콜백 하나만 구현하면 내부 No-Ad(전 네트워크 실패)·SDK 미초기화를 포함한 모든 수신 실패를 받습니다.** 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 매체에 유의미하지 않아 전달하지 않습니다. ①·② 구현이 이미 있다면 지우지 않아도 그대로 동작합니다(override가 위임 체인의 해당 지점을 대체).
 
 ```java
 // ① Before (v1.x) — onEventAd 제거됨, 컴파일 오류. v1은 네트워크를 String으로 전달했습니다.
@@ -329,7 +329,7 @@ adView.setAdViewListener(new AdListener() {
 });
 ```
 
-> 로드 성공 `onReceivedAd`와 노출 실패 `onAdShowFailed`는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드는 `@Deprecated`(3.0에서 제거 예정)이며, 문자열이 필요하면 `networkType.getAdapterName()`으로 얻으세요.
+> 로드 성공 `onReceivedAd`와 노출 실패 `onAdShowFailed`는 **`AdNetworkType networkType` enum 오버로드가 표준**입니다. 기존 `String adapterName` 오버로드는 `@Deprecated`(3.0에서 제거 예정)이며 문자열이 필요하면 `networkType.getAdapterName()`으로 얻으세요.
 
 > 🗺️ **Deprecation 로드맵** — 차기 메이저 버전(3.0)에서 로드 실패의 String·enum 4-인자 오버로드와 노출 실패의 String 오버로드가 **제거**됩니다. 남는 것은 로드 실패 `onFailedToReceiveAd(int, String)`, 노출 실패 `onAdShowFailed(Object, AdNetworkType, int, String)`입니다.
 
@@ -402,7 +402,7 @@ nativeAdView.setViewBinder(viewBinder);
 
 ### setViewIds 제거 (v2.0.0 Breaking Change)
 
-v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. 네이티브 렌더링을 자체 레이아웃으로 수행하는 어댑터(AdMixer 하우스애드·AdManager·Adfit·Pangle·NaverAdManager 등)가 `NativeAdViewBinder`를 직접 읽으므로, `setViewIds()` 호출을 제거하고 위의 `NativeAdViewBinder` 설정만으로 동작합니다. 네트워크에 따라 자체 렌더링 규격을 사용하는 경우 일부 슬롯이 적용되지 않을 수 있으니, 표시 결과는 각 네트워크별로 확인하십시오.
+v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. 네이티브 렌더링을 자체 레이아웃으로 수행하는 어댑터(AdMixer 하우스애드·AdManager·Adfit·Pangle·NaverAdManager 등)가 `NativeAdViewBinder`를 직접 읽으므로, `setViewIds()` 호출을 제거하고 위의 `NativeAdViewBinder` 설정만으로 동작합니다. 네트워크에 따라 자체 렌더링 규격을 사용하는 경우 일부 슬롯이 적용되지 않을 수 있으니, 표시 결과는 네트워크별로 확인하십시오.
 
 ```java
 // Before (v1.x) — 제거하세요
@@ -467,7 +467,7 @@ AdMixer.setTestDeviceIds(Arrays.asList("..."));
 
 ## 주요 Public API 변경 여부 요약
 
-v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변경 없음'으로 표시된 API는 기존 v1.x 코드를 그대로 사용할 수 있습니다.
+v2.0.0의 주요 Public API 변경 여부를 요약한 표입니다. '변경 없음'으로 표시된 API는 기존 v1.x 코드를 그대로 사용할 수 있습니다.
 
 | 클래스 | 변경 여부 |
 |--------|----------|
@@ -505,7 +505,7 @@ v2.0.0에서의 주요 Public API 변경 여부를 요약한 표입니다. '변�
 | `AdMixer.ADAPTER_ADFIT` | `"KaKao Adfit"` | `"AdFit"` |
 | `AdMixer.ADAPTER_ADMIXER_HOUSE` | `"houseAd"` | `"HouseAd"` |
 
-Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이너리로 복사**합니다. SDK만 올리고 재컴파일하지 않으면 옛 문자열이 앱에 남아, `adapterName.equals(AdMixer.ADAPTER_ADFIT)` 같은 분기와 `setAdapterConfig(AdMixer.ADAPTER_ADFIT, ...)` 키가 **오류 없이 어긋납니다.**
+Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이너리로 복사**합니다. SDK만 올리고 재컴파일하지 않으면 옛 문자열이 앱에 남아 `adapterName.equals(AdMixer.ADAPTER_ADFIT)` 같은 분기와 `setAdapterConfig(AdMixer.ADAPTER_ADFIT, ...)` 키가 **오류 없이 어긋납니다.**
 
 > ✅ **조치** — 반드시 **클린 빌드로 재컴파일**하세요. 근본적으로는 문자열 비교 대신 `AdNetworkType` enum 오버로드로 전환하면 이 문제가 재발하지 않습니다.
 
@@ -516,7 +516,7 @@ Java는 `public static final String` 상수를 **컴파일 시점에 앱 바이�
 
 ### 권장 (선택)
 
-- 로드 실패 처리를 **표준 콜백 `onFailedToReceiveAd(int errorCode, String errorMsg)` 하나로 정리** — String·enum 4-인자 오버로드는 둘 다 `@Deprecated`(3.0 제거 예정)이며, 기본 구현이 표준 콜백으로 위임하므로 기존 구현도 동작은 유지됩니다. 로드 성공(`onReceivedAd`)·노출 실패(`onAdShowFailed`)는 `AdNetworkType` enum 오버로드로 전환하세요([위 Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수-breaking-change)).
+- 로드 실패 처리를 **표준 콜백 `onFailedToReceiveAd(int errorCode, String errorMsg)` 하나로 정리** — String·enum 4-인자 오버로드는 둘 다 `@Deprecated`(3.0 제거 예정)이며 기본 구현이 표준 콜백으로 위임하므로 기존 구현도 동작은 유지됩니다. 로드 성공(`onReceivedAd`)·노출 실패(`onAdShowFailed`)는 `AdNetworkType` enum 오버로드로 전환하세요([위 Step 5-B](#step-5-b-adlistener-이벤트-콜백-분리-필수-breaking-change)).
 
 전체 변경 내역은 [릴리즈 노트](changelog.md)를 확인하세요.
 

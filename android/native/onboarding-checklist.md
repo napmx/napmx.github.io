@@ -51,7 +51,7 @@
 
 ## 4. Naver no-fill (`GFP_SERVER_ERROR`) 구분
 
-- `PUBLISHER_CD`는 **SDK가 공급**하므로 호스트가 신경쓸 필요 없습니다(매니페스트
+- `PUBLISHER_CD`는 **SDK가 공급**하므로 호스트가 신경 쓸 필요 없습니다(매니페스트
   설정 금지).
 - `test_aos_*` 같은 **테스트 Ad Unit**은 `GFP_SERVER_ERROR/NO_FILL`이 정상입니다
   → **운영 Ad Unit ID 발급/전환**이 필요합니다(운영팀).

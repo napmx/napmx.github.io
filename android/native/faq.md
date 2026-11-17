@@ -8,7 +8,7 @@
 
 **Q. 하나의 앱에 여러 개의 Media Key를 적용할 수 있나요?**
 
-한 개의 앱에는 **한 개의 Media Key만** 적용 가능합니다. 여러 키를 번갈아 사용하면 광고가 정상 동작하지 않습니다.
+한 개의 앱에는 **한 개의 Media Key만** 적용할 수 있습니다. 여러 키를 번갈아 사용하면 광고가 정상 동작하지 않습니다.
 
 ---
 
@@ -42,7 +42,7 @@ public void onCreate() {
 
 **Q. 지원하는 최소 OS 버전은?**
 
-Android 5.0(API 21, Lollipop) 이상입니다. 단, 일부 네트워크 SDK(GMS 의존 등)는 더 높은 minSdk를 요구할 수 있어, 빌드 시 `manifest merger`가 호스트 앱 minSdk를 올리도록 요구할 수 있습니다.
+Android 5.0(API 21, Lollipop) 이상입니다. 단, 일부 네트워크 SDK(GMS 의존 등)는 더 높은 minSdk를 요구할 수 있어 빌드 시 `manifest merger`가 호스트 앱 minSdk를 올리도록 요구할 수 있습니다.
 
 ---
 
@@ -68,7 +68,7 @@ adb logcat | grep AdMixerSDK
 
 **Q. Android 6.0 / 6.0.1(API 23)에서 AdFit 광고 로드 중 앱이 종료됩니다.**
 
-AdFit 이미지 처리 경로에서 `java.lang.NoClassDefFoundError`가 발생하고,
+AdFit 이미지 처리 경로에서 `java.lang.NoClassDefFoundError`가 발생하고
 `com.kakao.adfit...$$ExternalSyntheticLambda1` 등의 클래스가 표시될 수 있습니다.
 Android 6에 없는 `java.util.function` 및 `computeIfAbsent` 관련 Java API를
 사용하는 경로에서는 **코어 라이브러리 디슈가링** 설정이 필요합니다.
@@ -92,7 +92,7 @@ BOM `2026.10.02`, AdFit 어댑터 `2.0.6`, Kakao AdFit SDK `3.21.17`을 유지�
 상태에서 Android 6 에뮬레이터의 동일 이미지 처리 경로가 정상 실행됨을 확인했습니다.
 이번 검증에서는 추가 keep 규칙을 사용하지 않았습니다.
 
-사용 중인 AGP와의 호환성을 확인하고, 설정 적용 후 앱을 재빌드하여 업데이트 배포하세요.
+사용 중인 AGP와의 호환성을 확인하고 설정 적용 후 앱을 재빌드하여 업데이트 배포하세요.
 검증 범위는 해당 이미지 처리 경로이므로, 배포 전 Android 6에서 실제 광고 요청·노출도
 확인해야 합니다.
 
@@ -167,7 +167,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 광고가 표시되려면 반드시 `container.addView(adView)`로 레이아웃에 부착해야 합니다. 뷰가 화면에 부착되는 시점에 **자동 노출**되므로 `showAd()` 호출은 필요 없습니다.
 
 - **즉시 노출**: `loadAd()` 호출 시점에 이미 부착돼 있으면 수신 후 자동 표시
-- **지연 노출**: `loadAd()`로 미리 로드한 뒤, 원하는 시점에 `addView(adView)`로 부착하면 그때 노출
+- **지연 노출**: `loadAd()`로 미리 로드한 뒤 원하는 시점에 `addView(adView)`로 부착하면 그때 노출
 
 ---
 
@@ -205,7 +205,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 
 **Q. Naver 통합형 지면에서 레이아웃 바인딩이 적용되지 않습니다.**
 
-Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플릿으로 렌더링**하므로 `NativeAdViewBinder`의 자산 매핑이 적용되지 않으며, 높이는 소재 비율로 자동 결정됩니다. 연동 방법은 일반 네이티브와 동일하고 응답 타입 분기는 SDK가 자동 처리합니다.
+Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플릿으로 렌더링**하므로 `NativeAdViewBinder`의 자산 매핑이 적용되지 않으며 높이는 소재 비율로 자동 결정됩니다. 연동 방법은 일반 네이티브와 동일하고 응답 타입 분기는 SDK가 자동 처리합니다.
 
 ---
 
@@ -213,7 +213,7 @@ Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플
 
 네. **같은 홈 Activity가 생성과 표시를 모두 담당하는 경우** Activity Context로 광고
 뷰를 직접 생성해 부모에 붙이지 않은 채 로드하고, 팝업을 열 때 전용 컨테이너에
-붙이면 됩니다. 기존 부모가 있다면 `addView()` 전에 반드시 선분리하고, 앱에서
+붙이면 됩니다. 기존 부모가 있다면 `addView()` 전에 반드시 선분리하고 앱에서
 신선도 기준(권장 30분)과 `stop()` 해제를 관리하세요.
 
 Unity 배너가 포함된 지면은 로드 시점에 네트워크 임프레션이 잡힐 수 있어 엄격한
@@ -252,13 +252,13 @@ Unity 배너가 포함된 지면은 로드 시점에 네트워크 임프레션�
 
 **Q. 리워드를 서버에서 안전하게 검증하고 싶습니다.**
 
-S2S Reward Callback을 사용하세요. 파트너 사이트에 콜백 URL을 등록하고, 필요 시 `AdInfo.Builder.setCustomParams(...)`로 사용자 식별자 등을 전달합니다. 자세한 내용은 [리워드 동영상 — S2S Reward Callback](rewarded-video.md#s2s-reward-callback-서버-간-리워드-검증)을 참고하세요.
+S2S Reward Callback을 사용하세요. 파트너 사이트에 콜백 URL을 등록하고 필요 시 `AdInfo.Builder.setCustomParams(...)`로 사용자 식별자 등을 전달합니다. 자세한 내용은 [리워드 동영상 — S2S Reward Callback](rewarded-video.md#s2s-reward-callback-서버-간-리워드-검증)을 참고하세요.
 
 ---
 
 **Q. 배너·네이티브 광고는 자동으로 갱신되나요?**
 
-서버 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고, 실패 시 재요청합니다(최소 5초 간격). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 무한 실패-재로드는 SDK 내부 가드가 차단합니다. *(v2.0.0: 기존 `isRetry`/`maxRetryCountInSlot` 옵션은 제거되고 서버 `interval`로 일원화)*
+서버 광고 단위 `interval`(초)이 **0보다 클 때만** 노출 후 `interval`마다 자동 갱신되고 실패 시 재요청합니다(최소 5초 간격). `interval`이 0(미설정)이면 단발성(자동 재로드 없음)입니다. 무한 실패-재로드는 SDK 내부 가드가 차단합니다. *(v2.0.0: 기존 `isRetry`/`maxRetryCountInSlot` 옵션은 제거되고 서버 `interval`로 일원화)*
 
 ---
 
@@ -296,13 +296,13 @@ App ID 발급은 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의
 
 **Q. Google AdManager를 이미 운영 중인 앱에 추가해도 되나요?**
 
-기존 운영 지면과 **다른 지면**에 한해 중복 사용이 가능합니다. 동일 지면이면 `exclude`로 중복을 방지하세요([중복 예외 처리](getting-started.md#네트워크-sdk-중복-예외-처리)).
+기존 운영 지면과 **다른 지면**에 한해 중복 사용할 수 있습니다. 동일 지면이면 `exclude`로 중복을 방지하세요([중복 예외 처리](getting-started.md#네트워크-sdk-중복-예외-처리)).
 
 ---
 
 **Q. Pangle은 `app_id`/`placement_id`를 어디에 설정하나요?**
 
-Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`는 서버(media-conf)에서 전달되며, 서버에 없으면 `AdInfo.Builder.setAdapterConfig(AdMixer.ADAPTER_PANGLE, {...})`로 주입할 수 있습니다([Q&A](qna.md)).
+Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`는 서버(media-conf)에서 전달되며 서버에 없으면 `AdInfo.Builder.setAdapterConfig(AdMixer.ADAPTER_PANGLE, {...})`로 주입할 수 있습니다([Q&A](qna.md)).
 
 ---
 
@@ -322,7 +322,7 @@ Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`�
 
 **Q. 디버그에서는 정상인데 릴리즈(난독화) 빌드에서 광고가 안 나오거나 크래시 납니다.**
 
-**앱에 별도 keep 규칙을 추가할 필요는 없습니다.** Core SDK와 각 어댑터 AAR이 `consumer-rules.pro`를 내장하고 있어, Gradle이 의존성을 해석할 때 호스트 앱의 릴리즈 빌드(R8/ProGuard)에 **자동으로 병합**됩니다.
+**앱에 별도 keep 규칙을 추가할 필요는 없습니다.** Core SDK와 각 어댑터 AAR이 `consumer-rules.pro`를 내장하고 있어 Gradle이 의존성을 해석할 때 호스트 앱의 릴리즈 빌드(R8/ProGuard)에 **자동으로 병합**됩니다.
 
 그래도 릴리즈 빌드에서만 문제가 생긴다면 아래를 확인하세요.
 

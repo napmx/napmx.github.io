@@ -52,7 +52,7 @@ AdInfo adInfo = new AdInfo.Builder(adUnitId)
 
 **아니요.** `com.naver.gfpsdk.PUBLISHER_CD`는 nap mx(네트워크 사업자)가 **SDK(`admixer-naveradmanager` aar)에서 제공·관리**합니다. 매체 앱은 별도로 설정하지 마세요(이미 추가했다면 제거 권장). 최신 SDK 동기화 시 자동 포함됩니다.
 
-> 운영 환경에서 광고가 노필(GFP_NO_FILL)이라면, 이는 PUBLISHER_CD가 아니라 **운영 Ad Unit ID 프로비저닝** 이슈입니다. 운영 Ad Unit으로 전환이 필요한지 운영팀에 확인하세요.
+> 운영 환경에서 광고가 노필(GFP_NO_FILL)이라면 PUBLISHER_CD가 아니라 **운영 Ad Unit ID 프로비저닝** 이슈입니다. 운영 Ad Unit으로 전환이 필요한지 운영팀에 확인하세요.
 
 ---
 
@@ -81,7 +81,7 @@ exclude 후 의존성 트리에서 해당 SDK가 1개만 남는지 확인하세�
 
 **Q. 화면 전환/백그라운드 진입 시 표시 중인 광고는 끊지 않고 진행 중 로드만 취소하고 싶습니다.**
 
-`cancelLoad()`를 사용하세요. 내부 상태가 로딩 중일 때만 취소하고, **표시 중(SHOWING)이면 아무 동작도 하지 않습니다**. 전체 정리는 `stop()`입니다.
+`cancelLoad()`를 사용하세요. 내부 상태가 로딩 중일 때만 취소하고 **표시 중(SHOWING)이면 아무 동작도 하지 않습니다**. 전체 정리는 `stop()`입니다.
 
 ```java
 interstitialAd.cancelLoad();  // 진행 중 로드만 취소 (표시 중이면 no-op)
@@ -124,7 +124,7 @@ adView.setAdViewListener(adListener);
 
 **Q. 한 화면에 여러 개의 광고(배너+네이티브 등)를 띄워도 되나요?**
 
-됩니다. 단 **AdUnit ID 1개당 광고 객체 1개** 원칙을 지키고, 각 객체의 생명주기 메서드(`onResume`/`onPause`/`stop`)를 모두 개별 연결하세요.
+됩니다. 단 **AdUnit ID 1개당 광고 객체 1개** 원칙을 지키고 각 객체의 생명주기 메서드(`onResume`/`onPause`/`stop`)를 모두 개별 연결하세요.
 
 ---
 
@@ -140,7 +140,7 @@ adView.setAdViewListener(adListener);
 
 **Q. 아동 대상 앱은 무엇을 설정하나요?**
 
-`AdMixer.setTagForChildDirectedTreatment(...)`를 설정하세요. Google Play **Families 정책**은 국가와 무관하게 적용되므로 국내 서비스도 필수입니다. 이 값은 SDK 자체 광고 요청에 반영되며, 하위 네트워크로는 AdManager·GMA NextGen(`setTagForChildDirectedTreatment`), Unity(`user.nonbehavioral`)로 전파됩니다.
+`AdMixer.setTagForChildDirectedTreatment(...)`를 설정하세요. Google Play **Families 정책**은 국가와 무관하게 적용되므로 국내 서비스도 필수입니다. 이 값은 SDK 자체 광고 요청에 반영되며 하위 네트워크로는 AdManager·GMA NextGen(`setTagForChildDirectedTreatment`), Unity(`user.nonbehavioral`)로 전파됩니다.
 
 > 아동 대상 설정을 노출하는 API는 네트워크마다 다르며, **일부 네트워크는 아동 대상 설정을 지원하지 않을 수 있습니다**(해당 네트워크 SDK가 관련 API를 제공하지 않는 경우). 지원 여부는 각 네트워크 공식 문서를 참고하십시오. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
@@ -173,7 +173,7 @@ AdManager 배너는 서버 광고단위에 등록된 너비와 높이로 요청�
 | `setTestDeviceIds(...)` | AdManager, GMA NextGen, AppLovin (각 SDK의 테스트 디바이스 설정) |
 | `setTestMode(true)` | Unity(테스트 모드), Pangle(디버그 로그) |
 
-> 테스트 광고 제공 방식은 네트워크 정책에 따라 달라질 수 있으며, **일부 네트워크는 테스트 디바이스 지정을 지원하지 않을 수 있습니다.** 지원 여부와 테스트 지면 발급 방법은 해당 네트워크 공식 문서를 참고하십시오. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
+> 테스트 광고 제공 방식은 네트워크 정책에 따라 달라질 수 있으며 **일부 네트워크는 테스트 디바이스 지정을 지원하지 않을 수 있습니다.** 지원 여부와 테스트 지면 발급 방법은 해당 네트워크 공식 문서를 참고하십시오. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 

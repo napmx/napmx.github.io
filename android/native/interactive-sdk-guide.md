@@ -1,6 +1,6 @@
 # AdMixer Interactive SDK 매체 앱 연동 가이드 (실험실)
 
-AdMixer Interactive SDK는 30종 미니게임을 매체 Android 앱 안에서 실행하고, 게임 결과와
+AdMixer Interactive SDK는 30종 미니게임을 매체 Android 앱 안에서 실행하고 게임 결과와
 예상 보상, 티켓 및 리워드 광고 결과를 매체 앱에 전달하는 선택형 모듈입니다.
 
 > 🧪 **실험실(Labs) · Beta 테스트 제공**
@@ -25,7 +25,7 @@ AdMixer Interactive SDK는 30종 미니게임을 매체 Android 앱 안에서 �
 | 계정·보안 | 자동 수집하지 않음 | 사용자 인증, 부정 방지, 서버 검증 |
 
 `RewardResult`는 **지급 요청 또는 지급 참고값**입니다. SDK는 포인트·코인·젬을 실제로
-지급하거나 잔액을 변경하지 않습니다. `eventId` 역시 중복 처리 키일 뿐 보안 원장이 아니며,
+지급하거나 잔액을 변경하지 않습니다. `eventId` 역시 중복 처리 키일 뿐 보안 원장이 아니며
 앱 데이터 삭제·변조·재설치까지 포함한 exactly-once 지급을 보장하지 않습니다.
 
 ## 2. 연동 흐름 한눈에 보기
@@ -52,7 +52,7 @@ AdMixer Interactive SDK는 30종 미니게임을 매체 Android 앱 안에서 �
 
 ### 3.1 Maven Central 방식 (권장)
 
-`1.0.0-beta01`부터 Maven Central에서 바로 받을 수 있습니다. BOM(`2026.08.01`+)을 쓰면 버전 생략이 가능합니다.
+`1.0.0-beta01`부터 Maven Central에서 바로 받을 수 있습니다. BOM(`2026.08.01`+)을 쓰면 버전을 생략할 수 있습니다.
 
 ```groovy
 dependencies {
@@ -87,7 +87,7 @@ AAR 직접 연동은 전이 의존성을 자동 설치하지 않으므로 `admix
 | 고급 Claim | `CALLBACK_ONLY` / `CALLBACK_WITH_ACK` | `RewardSettlementHandler`에서 매체가 지급 | 정산 결과 확인만 수행, 재지급 금지 |
 
 이 문서의 기본 예제는 `RewardMode.NONE`을 사용합니다. 이 모드는 SDK 내부 Claim 정산을
-사용하지 않는다는 뜻이며, 성공 결과의 `RewardResult`는 그대로 전달됩니다.
+사용하지 않는다는 뜻이며 성공 결과의 `RewardResult`는 그대로 전달됩니다.
 
 ## 5. Java 빠른 시작
 
@@ -517,7 +517,7 @@ List<GameMetadata> games = MiniGameSdk.getAvailableGames();
 
 ## 11. 콜백 계약
 
-`onMiniGameEvent()`는 관찰·분석용이고, `onMiniGameFinished()`만 지급 판단용입니다.
+`onMiniGameEvent()`는 관찰·분석용이고 `onMiniGameFinished()`만 지급 판단용입니다.
 
 ### 성공
 
@@ -841,13 +841,13 @@ MiniGameSdkConfig config = new MiniGameSdkConfig.Builder()
 
 ## 18. R8·Manifest·의존성 확인
 
-- 라이브러리 consumer ProGuard 규칙은 enum 이름 계약만 제한적으로 보존하며, 공개 이름 계약은
+- 라이브러리 consumer ProGuard 규칙은 enum 이름 계약만 제한적으로 보존하며 공개 이름 계약은
   source `@Keep`를 정본으로 사용합니다. Interactive 전체 패키지 keep은 제공하지 않습니다.
 - 매체 release 빌드에서 R8를 반드시 실제 실행하세요.
 - 앱 테스트용 광고 Gateway 대역(Fake)은 매체 앱의 자체 test source에서 `RewardedAdGateway`를
-  구현해 사용하고, 운영 빌드에 남지 않도록 debug 소스셋에만 두세요.
+  구현해 사용하고 운영 빌드에 남지 않도록 debug 소스셋에만 두세요.
 - 병합 Manifest에 불필요한 권한이나 exported 컴포넌트가 없는지 확인하세요.
-- Sample 광고 그래프의 Google Mobile Ads 25.2.0은 Kotlin metadata 2.2.0 경고가 발생할 수
+- Sample 광고 그래프의 Google Mobile Ads 25.2.0에서는 Kotlin metadata 2.2.0 경고가 발생할 수
   있습니다. 매체의 Kotlin compiler, GMA, 어댑터 버전을 검증된 조합으로 정렬하세요.
 - Interactive 코어 때문에 AGP/Kotlin 전체를 무조건 업그레이드하지 마세요.
 
