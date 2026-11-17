@@ -10,7 +10,7 @@
 
 ### 광고 요청 및 노출
 
-`AMMBannerView.loadAd()`로 배너 광고를 요청합니다. 로드가 완료되면 completion으로 배너 뷰를 전달받으며, 이를 화면에 `addSubview`하면 노출됩니다.
+`AMMBannerView.loadAd()`로 배너 광고를 요청합니다. 로드가 완료되면 completion으로 배너 뷰를 전달받으며 이를 화면에 `addSubview`하면 노출됩니다.
 
 ```swift
 import AdMixerMediation
@@ -53,7 +53,7 @@ class ViewController: UIViewController {
 
 ### 리소스 해제
 
-`stop()`을 사용하여 사용된 리소스를 해제하고 메모리 누수를 방지합니다.
+`stop()`으로 사용한 리소스를 해제하고 메모리 누수를 방지합니다.
 
 ```swift
 override func viewDidDisappear(_ animated: Bool) {
@@ -97,7 +97,7 @@ extension ViewController: AMMBannerViewDelegate {
 
 ## 전면 배너(Interstitial) 광고
 
-전면 배너는 광고 요청 후 받은 뒤, 원하는 시점에 노출하는 방식을 지원합니다.
+전면 배너는 광고를 요청해 받은 뒤 원하는 시점에 노출하는 방식을 지원합니다.
 
 ### 네트워크에 따른 전면 광고 형태
 
@@ -134,7 +134,7 @@ class InterstitialViewController: UIViewController {
 
 ### 광고 요청
 
-`loadAd()`를 사용하여 전면 배너 광고를 로드합니다.
+`loadAd()`로 전면 배너 광고를 로드합니다.
 
 ```swift
 // ADUNIT_ID: 발급받은 광고 단위 ID (Int)
@@ -154,7 +154,7 @@ AMMInterstitial.loadAd(adUnitID: ADUNIT_ID, config: config) { [weak self] inters
 
 ### 광고 노출
 
-`show()`를 사용하여 로드된 광고를 보여줍니다.
+`show()`로 로드된 광고를 보여줍니다.
 
 ```swift
 interstitial?.show(rootViewController: self)
