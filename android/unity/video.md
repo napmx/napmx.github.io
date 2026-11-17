@@ -2,7 +2,7 @@
 
 광고를 추가하기 전 [Android SDK 시작하기 - Unity](/android/unity/getting-started) 설정을 완료해주세요.
 
-> 전면(Interstitial) 동영상 광고 연동을 원하시는 경우, 아래 **전면 비디오** 섹션을 참고해주세요. (네이티브 기준 동작은 [동영상 광고](/android/native/video) 참고)
+> 전면(Interstitial) 동영상 광고를 연동하려면 아래 **전면 비디오** 섹션을 참고해주세요(네이티브 기준 동작은 [동영상 광고](/android/native/video) 참고).
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### 1-1. 비디오 인스턴스 설정
 
-Adunit ID는 `AdMixer` Inspector의 `Android Video AdUnitId`를 사용합니다. 로드 성공 시 화면 **중앙**에 자동으로 부착됩니다.
+Adunit ID는 `AdMixer` Inspector의 `Android Video AdUnitId`를 사용합니다. 로드에 성공하면 화면 **중앙**에 자동으로 붙습니다.
 
 ### 1-2. 비디오 광고 요청
 
@@ -69,7 +69,7 @@ AdMixer.Instance.LoadVideoInterstitial();
 
 ### 2-2. 전면 비디오 광고 노출
 
-`OnReceivedAd` 수신 후 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
+`OnReceivedAd`를 받은 뒤 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowVideoInterstitial();
@@ -118,4 +118,4 @@ public class VideoInterstitialAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **노출 실패(`OnFailedToReceiveAd`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
+> ⚠️ **노출 실패(`OnFailedToReceiveAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.

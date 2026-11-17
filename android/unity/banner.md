@@ -12,7 +12,7 @@ Adunit ID는 `AdMixer` Inspector의 `Android Banner AdUnitId`를 사용합니다
 
 ### 1-2. 배너 광고 요청
 
-`LoadBanner()`는 로드만 수행합니다.
+`LoadBanner()`는 로드만 하며, 노출은 `ShowBanner()`로 따로 합니다.
 
 ```csharp
 AdMixer.Instance.LoadBanner();
@@ -20,7 +20,7 @@ AdMixer.Instance.LoadBanner();
 
 ### 1-3. 배너 광고 노출
 
-`OnReceivedAd` 수신 후 호출하면 화면에 부착되어 노출됩니다. 로드가 끝나기 전에 호출하면 무시됩니다.
+`OnReceivedAd`를 받은 뒤 호출하면 배너가 화면에 붙어 노출됩니다. 로드가 끝나기 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowBanner();
@@ -34,7 +34,7 @@ AdMixer.Instance.DestroyBanner();
 
 ### 1-5. 일시정지 / 재개
 
-배너의 광고 갱신 타이머를 앱 생명주기에 맞춰 제어하려면 다음을 호출합니다.
+앱 생명주기에 맞춰 배너의 광고 갱신 타이머를 제어하려면 다음을 호출합니다.
 
 ```csharp
 void OnApplicationPause(bool pause)
@@ -93,7 +93,7 @@ AdMixer.Instance.LoadInterstitial();
 
 ### 2-2. 전면 배너 광고 노출
 
-`OnReceivedAd` 수신 후 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
+`OnReceivedAd`를 받은 뒤 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowInterstitial();
@@ -142,4 +142,4 @@ public class InterstitialAd : MonoBehaviour
 }
 ```
 
-> ⚠️ **노출 실패(`OnFailedToReceiveAd`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
+> ⚠️ **노출 실패(`OnFailedToReceiveAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.

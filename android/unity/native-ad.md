@@ -2,7 +2,7 @@
 
 광고를 추가하기 전 [Android SDK 시작하기 - Unity](/android/unity/getting-started) 설정을 완료해주세요.
 
-> ⚠️ **에셋 텍스트만 꺼내 Unity UI에 그리면 노출·클릭이 집계되지 않습니다.** 네이티브 광고는 SDK에 **뷰를 등록**해야 임프레션과 클릭이 잡히고, 그래야 수익으로 인정됩니다. 플러그인은 네이티브 레이아웃(`nativeadlayout-release.aar`)으로 SDK가 직접 렌더링하는 방식을 사용합니다. (네이티브 기준 동작은 [네이티브 광고](/android/native/native-ad) 참고)
+> ⚠️ **에셋 텍스트만 꺼내 Unity UI에 그리면 노출·클릭이 집계되지 않습니다.** 네이티브 광고는 SDK에 **뷰를 등록**해야 임프레션과 클릭이 잡히고, 그래야 수익으로 인정됩니다. 플러그인은 네이티브 레이아웃(`nativeadlayout-release.aar`)을 써서 SDK가 직접 렌더링합니다(네이티브 기준 동작은 [네이티브 광고](/android/native/native-ad) 참고).
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## 2. 네이티브 인스턴스 설정
 
-Adunit ID는 `AdMixer` Inspector의 `Android Native AdUnitId`를 사용합니다. 로드 성공 시 화면 **하단**에 자동으로 부착됩니다.
+Adunit ID는 `AdMixer` Inspector의 `Android Native AdUnitId`를 사용합니다. 로드에 성공하면 화면 **하단**에 자동으로 붙습니다.
 
 ---
 

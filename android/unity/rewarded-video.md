@@ -16,7 +16,7 @@ AdMixer.Instance.LoadRewardVideo();
 
 ## 2. 리워드 광고 노출
 
-`OnReceivedAd` 수신 후 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
+`OnReceivedAd`를 받은 뒤 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowRewardVideo();
@@ -88,9 +88,9 @@ void GrantReward(string transactionId)
 }
 ```
 
-> ⚠️ **`COMPLETION`이나 `CLOSE`로 보상을 지급하지 마세요.** `EARNEDREWARD`와 `CLOSE`의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다. 보상 지급은 `EARNEDREWARD`에서 즉시 처리하고, 사용자 알림(Toast 등)은 닫힘 이후로 미루는 것을 권장합니다.
+> ⚠️ **`COMPLETION`이나 `CLOSE`로 보상을 지급하지 마세요.** `EARNEDREWARD`와 `CLOSE`의 도착 순서는 네트워크 정책에 따라 달라질 수 있습니다. 보상은 `EARNEDREWARD`에서 바로 지급하고, 사용자 알림(Toast 등)은 닫힌 뒤로 미루기를 권장합니다.
 >
-> ⚠️ **노출 실패(`OnFailedToReceiveAd`) 처리를 반드시 준비하세요.** 성공·닫힘 이벤트만으로 흐름을 구성하면 앱이 대기 상태에 빠질 수 있습니다.
+> ⚠️ **노출 실패(`OnFailedToReceiveAd`)도 반드시 처리하세요.** 성공·닫힘 이벤트만으로 흐름을 짜면 노출에 실패했을 때 앱이 계속 대기할 수 있습니다.
 
 ---
 
@@ -103,11 +103,24 @@ void GrantReward(string transactionId)
 
 **파트너 사이트 → 미디어 관리 → 애드유닛 광고 설정**에서 매체사의 콜백 서버 URL을 입력합니다.
 
-유저가 해당 애드유닛을 통해 리워드 지급이 완료되면, 입력된 콜백 서버 URL로 리워드 콜백 데이터를 전송합니다.
+해당 애드유닛에서 유저에게 리워드 지급이 완료되면 입력한 콜백 서버 URL로 리워드 콜백 데이터를 전송합니다.
+
+기본 파라미터는 아래와 같습니다.
+
+| 파라미터 | 설명 | 예시 |
+|---------|------|------|
+| `media_key` | 미디어 키 (자동 포함) | `12345678` |
+| `adunit_id` | 애드유닛 ID (자동 포함) | `87654321` |
+| `timestamp` | 포스트백 전송 시각, Unix 타임스탬프 (**밀리초**, 자동 포함) | `1704067200000` |
+| `transaction_id` | 리워드 지급 1건당 고유값(UUID) — 중복 지급 방지 멱등 키, `EARNEDREWARD\|<transactionId>`의 `transactionId`와 동일 값 (자동 포함) | `f47ac10b-58cc-...` |
+| `ifa` | 광고 ID(GAID) — 광고 ID를 얻었고 아동 대상(COPPA)으로 설정되지 않은 경우에만 포함 | `860635ea-...` |
+| `ifa_use` | 광고 추적 허용 여부(`1`=허용, `0`=제한) — `ifa`가 포함될 때만 함께 포함 | `1` |
+
+> `ifa`와 `ifa_use`는 오지 않을 수 있으므로 매체 서버는 두 값이 없어도 정상 동작하게 구현하세요. 자세한 내용은 [리워드 동영상 - S2S Reward Callback](/android/native/rewarded-video?id=s2s-reward-callback-서버-간-리워드-검증)을 참고하세요.
 
 ### 설정 2: CustomParam 추가
 
-CustomParam을 통해 콜백에서 추가 데이터를 수집할 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
+CustomParam으로 콜백에서 추가 데이터를 수집할 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
 
 ```csharp
 var customParam = new Dictionary<string, string>
