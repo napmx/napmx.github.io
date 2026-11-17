@@ -451,7 +451,7 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 | Moloco |
 | Mintegral |
 
-> ⚠️ 프로젝트 수준 `build.gradle`과 앱 수준 `build.gradle` **양쪽에 모두** 추가해야 합니다.
+> ⚠️ 광고 소스 어댑터 **의존성**은 앱 수준 `build.gradle`에, 어댑터가 요구하는 **Maven 저장소**(Pangle·Mintegral 등)는 `settings.gradle`의 `dependencyResolutionManagement`(또는 프로젝트 수준 `build.gradle`의 `repositories`)에 추가해야 합니다. 네트워크별 아티팩트·버전·저장소 주소는 위 [Google 공식 가이드](https://developers.google.com/ad-manager/mobile-ads-sdk/android/choose-networks?hl=ko)에서 확인하세요.
 
 ### Google SDK 입찰 어댑터 작동 여부 확인
 
