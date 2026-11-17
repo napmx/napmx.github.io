@@ -302,13 +302,13 @@ App ID 발급은 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의
 
 **Q. Pangle은 `app_id`/`placement_id`를 어디에 설정하나요?**
 
-Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`는 서버(media-conf)에서 전달되며 서버에 없으면 `AdInfo.Builder.setAdapterConfig(AdMixer.ADAPTER_PANGLE, {...})`로 주입할 수 있습니다([Q&A](qna.md)).
+Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`는 서버(media-conf)에서 전달되며 서버에 없으면 `AdInfo.Builder.setAdapterConfig(AdMixer.ADAPTER_PANGLE, Map<String, String>)`로 주입할 수 있습니다([Q&A](qna.md)).
 
 ---
 
 **Q. AppLovin SDK Key는 어디에 넣나요?**
 
-번들 AppLovin은 코드 기반 초기화이므로 `setAdapterConfig(AdMixer.ADAPTER_APPLOVIN, {"sdkKey": "..."})`로 전달합니다(미지정 시 어댑터 기본 키 사용). 매니페스트 `applovin.sdk.key`는 사용하지 않습니다.
+번들 AppLovin은 코드 기반 초기화이므로 `setAdapterConfig(AdMixer.ADAPTER_APPLOVIN, Collections.singletonMap("sdkKey", "..."))`로 전달합니다(미지정 시 어댑터 기본 키 사용). 매니페스트 `applovin.sdk.key`는 사용하지 않습니다.
 
 ---
 
@@ -351,7 +351,7 @@ Pangle SDK init은 어댑터가 자동 처리합니다. `app_id`/`placement_id`�
 
 **Q. 테스트 광고는 어떻게 받나요? 테스트 기기는 어떻게 지정하나요?**
 
-초기화 시 `AdMixer.setTestMode(true)`와 `AdMixer.setTestDeviceIds([GAID])`를 설정하세요. 기기의 **광고 ID(GAID)** 는 안드로이드 설정 → Google → 광고에서 확인하거나, 초기화 후 LogCat 로그에서도 확인할 수 있습니다. AppLovin·Unity·AdManager·Pangle에 반영됩니다([privacy.md](privacy.md)).
+초기화 시 `AdMixer.setTestMode(true)`와 `AdMixer.setTestDeviceIds(Arrays.asList(GAID))`를 설정하세요. 기기의 **광고 ID(GAID)** 는 안드로이드 설정 → Google → 광고에서 확인하거나, 초기화 후 LogCat 로그에서도 확인할 수 있습니다. AppLovin·Unity·AdManager·Pangle에 반영됩니다([privacy.md](privacy.md)).
 
 ---
 

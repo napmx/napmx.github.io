@@ -883,5 +883,5 @@ MiniGameSdkConfig config = new MiniGameSdkConfig.Builder()
 - 운영 지급 상한과 일일 한도는 SDK 콘텐츠 설정이 아니라 매체 서버가 집행합니다.
 - Beta에서 최종 GA로 이동할 때 Maven 좌표, BOM, 공개 API와 마이그레이션 문서를 다시
   확인해야 합니다.
-- #119의 test fixture/AAR 경계와 실제 host R8 축소는 완료했습니다. 실광고·물리 단말·운영 원장
-  staging 승인은 정식 GA 외부 게이트로 계속 추적합니다.
+- AAR 경계와 R8 축소 환경 검증은 완료했습니다. 실광고·실물 단말·운영 원장 연동 검증은
+  정식 GA 전까지 계속 진행합니다.

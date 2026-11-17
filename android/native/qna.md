@@ -44,7 +44,7 @@ AdInfo adInfo = new AdInfo.Builder(adUnitId)
 
 **Q. AppLovin SDK Key는 어디에 넣나요?**
 
-번들 AppLovin 13.x는 코드 기반 초기화이므로, `AdInfo.Builder.setAdapterConfig(AdMixer.ADAPTER_APPLOVIN, {"sdkKey": "..."})`로 전달합니다(미지정 시 어댑터 기본 키 사용). 매니페스트 `applovin.sdk.key`는 사용하지 않습니다.
+번들 AppLovin 13.x는 코드 기반 초기화이므로, `AdInfo.Builder.setAdapterConfig(AdMixer.ADAPTER_APPLOVIN, Collections.singletonMap("sdkKey", "..."))`로 전달합니다(미지정 시 어댑터 기본 키 사용). 매니페스트 `applovin.sdk.key`는 사용하지 않습니다.
 
 ---
 
@@ -164,7 +164,7 @@ AdManager 배너는 서버 광고단위에 등록된 너비와 높이로 요청�
 
 **Q. QA용 테스트 광고를 실기기에서 띄우려면?**
 
-`AdMixer.setTestMode(true)` + `AdMixer.setTestDeviceIds([GAID])`를 초기화 시 설정하세요. 기기 GAID는 안드로이드 설정 → Google → 광고에서 확인할 수 있습니다.
+`AdMixer.setTestMode(true)` + `AdMixer.setTestDeviceIds(Arrays.asList(GAID))`를 초기화 시 설정하세요. 기기 GAID는 안드로이드 설정 → Google → 광고에서 확인할 수 있습니다.
 
 두 API는 반영되는 네트워크가 서로 다릅니다.
 

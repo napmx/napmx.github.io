@@ -298,9 +298,13 @@ private boolean rewardGranted = false; // show() 호출 직전에 false로 초�
 
 ad.show(this, new OnUserEarnedRewardListener() {
     @Override public void onUserEarnedReward() {
+        // 무인자 버전은 구현만 필요합니다 — SDK는 RewardInfo 오버로드만 호출합니다.
+    }
+
+    @Override public void onUserEarnedReward(@NonNull RewardInfo info) {
         if (rewardGranted) return; // 이미 지급됨 — 무시
         rewardGranted = true;
-        giveRewardToUser();
+        giveRewardToUser(info.getTransactionId());
     }
 });
 ```

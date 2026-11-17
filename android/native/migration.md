@@ -21,7 +21,7 @@
 | 신규 API | `cancelLoad()` (로드만 취소), `AdMixer.setTestMode`/`setTestDeviceIds` (테스트 설정) |
 | Naver PUBLISHER_CD | SDK 제공으로 변경 — 호스트 매니페스트 설정 불필요 |
 | **제거된 API (Breaking)** | **`onDestroy()`, `closeInterstitial()`, 배경 알파 빌더 옵션 `isUseBackgroundAlpha(...)`, `AdMixer.GAUGE`/`AdMixer.TEXT` 등 — v1.x deprecated 별칭/무효 옵션을 v2.0.0에서 제거. 정식 메서드로 교체 필요 (`setUseBackgroundAlpha(boolean)`는 남아 있으나 **동작하지 않습니다** — 제거 권장)** |
-| **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
+| **AdListener 이벤트 콜백 분리 (Breaking)** | **`onEventAd(Object, AdEvent)` 제거 → `onAdDisplayed`/`onAdClicked`/`onAdClosed`/`onAdCompleted` 및 노출 실패 `onAdShowFailed` 등 이름 있는 메서드. `AdListener`는 abstract class(필요한 것만 override). Step 5-B 참고** |
 | ProGuard | `consumer-rules.pro` 자동 병합 — v1.x에서 수동 추가한 AdMixer keep 규칙은 삭제 가능 |
 | Gradle 버전 | v1.x 버전 → 최신 버전 (BOM 권장) |
 
@@ -273,7 +273,7 @@ new AdInfo.Builder(ADUNIT_ID)
 
 ## Step 5-B. AdListener 이벤트 콜백 분리 (필수 — Breaking Change)
 
-`AdListener`의 단일 `onEventAd(adView, AdEvent)`가 **이름 있는 이벤트 메서드로 분리**되었습니다. 전면용 `FullScreenContentCallback`과 동일한 named-method 스타일로 통일하기 위함입니다.
+`AdListener`의 단일 `onEventAd(Object adView, AdEvent event)`가 **이름 있는 이벤트 메서드로 분리**되었습니다. 전면용 `FullScreenContentCallback`과 동일한 named-method 스타일로 통일하기 위함입니다.
 
 - `AdListener`가 `interface` → `abstract class`로 바뀌어 **모든 메서드가 기본 no-op**입니다(필요한 것만 override, 필수 구현 없음).
 - `onReceivedAd`는 v1.x 시그니처(`String adapterName, Object ad`)가 그대로 동작하지만 현재는 `@Deprecated`이며 `AdNetworkType` enum 오버로드가 표준입니다. `onFailedToReceiveAd`는 이후 릴리스에서 `(errorCode, errorMsg)` 2-인자 표준 콜백으로 단순화되었습니다(아래 3단계 참고).
@@ -402,7 +402,7 @@ nativeAdView.setViewBinder(viewBinder);
 
 ### setViewIds 제거 (v2.0.0 Breaking Change)
 
-v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. 네이티브 렌더링을 자체 레이아웃으로 수행하는 어댑터(AdMixer 하우스애드·AdManager·Adfit·Pangle·NaverAdManager 등)가 `NativeAdViewBinder`를 직접 읽으므로, `setViewIds()` 호출을 제거하고 위의 `NativeAdViewBinder` 설정만으로 동작합니다. 네트워크에 따라 자체 렌더링 규격을 사용하는 경우 일부 슬롯이 적용되지 않을 수 있으니, 표시 결과는 네트워크별로 확인하십시오.
+v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. 네이티브 렌더링을 자체 레이아웃으로 수행하는 어댑터(AdMixer 하우스애드·AdManager·Adfit·Pangle·NaverAdManager 등)가 `NativeAdViewBinder`를 직접 읽으므로 `setViewIds()` 호출은 제거하세요. 위의 `NativeAdViewBinder` 설정만으로 동작합니다. 네트워크에 따라 자체 렌더링 규격을 사용하는 경우 일부 슬롯이 적용되지 않을 수 있으니, 표시 결과는 네트워크별로 확인하십시오.
 
 ```java
 // Before (v1.x) — 제거하세요
@@ -412,11 +412,12 @@ new AdInfo.Builder(ADUNIT_ID)
     .setViewIds(AdMixer.ADAPTER_ADFIT, ids)
     .build();
 
-// After (v2.0.0) — NativeAdViewBinder 설정만으로 충분
-new NativeAdViewBinder.Builder(R.layout.item_native_ad)
+// After (v2.0.0) — NativeAdViewBinder 설정 후 setViewBinder()로 연결
+NativeAdViewBinder viewBinder = new NativeAdViewBinder.Builder(R.layout.item_native_ad)
     .setMainViewId(R.id.nap_mx_iv_main)
     // ... 나머지 View ID 설정
     .build();
+nativeAdView.setViewBinder(viewBinder);
 ```
 
 ### setAdapterConfig 추가 (어댑터별 초기화 파라미터)

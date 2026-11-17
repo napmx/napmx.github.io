@@ -47,7 +47,7 @@ AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
 ```java
 public class InterstitialActivity extends AppCompatActivity {
 
-    // 정적 load() 콜백으로 받은 로드 완료 광고 객체 (지연 노출/정리를 위해 보관)
+    // 정적 loadAd() 콜백으로 받은 로드 완료 광고 객체 (지연 노출/정리를 위해 보관)
     private AMMInterstitial loadedAd;
 
     @Override
@@ -64,7 +64,7 @@ public class InterstitialActivity extends AppCompatActivity {
         AdInfo adInfo = new AdInfo.Builder(MyApplication.ADUNIT_ID_INTERSTITIAL)
             .build();
 
-        // 정적 load() — 로드 완료 시 콜백으로 광고 객체를 받는다
+        // 정적 loadAd() — 로드 완료 시 콜백으로 광고 객체를 받는다
         AMMInterstitial.loadAd(this, adInfo, new AMMInterstitialLoadCallback() {
             @Override
             public void onSuccessLoadInterstitial(@NonNull AdNetworkType networkType, @NonNull AMMInterstitial ad) {
@@ -264,7 +264,7 @@ if (loadedAd != null && loadedAd.isReady()) {
 
 > ℹ️ `cancelLoad()`는 "로드만 취소", `stop()`은 "전체 정리(리스너 해제 포함)"입니다. 표시 중인 광고를 끊지 않고 미완료 로드만 중단할 때 `cancelLoad()`를 사용하세요. (리워드·전면 동영상도 동일하게 `cancelLoad()` 제공)
 
-> ⚠️ `show(activity)`는 **Activity Context**가 필요합니다. `load()`는 Application Context로도 가능하나, 노출 시점에는 Activity가 필요합니다.
+> ⚠️ `show(activity)`는 **Activity Context**가 필요합니다. `loadAd()`는 Application Context로도 가능하나, 노출 시점에는 Activity가 필요합니다.
 
 ---
 

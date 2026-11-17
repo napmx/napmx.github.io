@@ -24,7 +24,7 @@
 | **Google AdManager**      | `adunit_code`                  | **`com.google.android.gms.ads.APPLICATION_ID`** (호스트 앱 필수)                                | 미설정 시 **런치 크래시**                                                           |
 | **Naver NAM**             | `adunit_id`                    | `com.naver.gfpsdk.PUBLISHER_CD` — **SDK(admixer-naveradmanager)가 제공·고정. 호스트 설정 금지** | 운영 Ad Unit ID 발급 필요                                                           |
 | **Pangle**                | `placement_id`(필수), `app_id` | 없음                                                                                            | 키는 media-conf 또는 `setAdapterConfig`                                             |
-| **AppLovin**              | `zone_id`(필수)                | 없음                                                                                            | SDK key는 `setAdapterConfig("AppLovin",{"sdkKey":...})`                             |
+| **AppLovin**              | `zone_id`(필수)                | 없음                                                                                            | SDK key는 `setAdapterConfig(ADAPTER_APPLOVIN, Map)`의 `sdkKey`로 전달  |
 | **Unity Ads**             | `game_id`, `placement_id`      | 없음                                                                                            |                                                                                     |
 | **Teads / Adfit**         | placement_id / data-ad-unit    | 없음                                                                                            | 각 광고단위 식별자                                                                  |
 | 🧪 **GMA NextGen (beta)** | `adunit_code`                  | **`com.google.android.gms.ads.APPLICATION_ID`** (호스트 앱 필수)                                | **AdManager·NaverAd와 공존 불가**(택1) · minSdk 24 · [시작하기](getting-started.md) |
@@ -60,7 +60,7 @@
 
 ## 5. 테스트 광고 / 개인정보
 
-- 테스트: `AdMixer.setTestMode(true)` + `AdMixer.setTestDeviceIds([...])`.
+- 테스트: `AdMixer.setTestMode(true)` + `AdMixer.setTestDeviceIds(Arrays.asList(...))`.
 - 아동 대상 앱이면 `AdMixer.setTagForChildDirectedTreatment(...)` 설정(Google
   Play Families 정책 — 국가 무관). → [개인정보 / 테스트 설정](privacy.md)
 
