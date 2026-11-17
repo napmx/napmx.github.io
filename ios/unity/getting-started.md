@@ -227,7 +227,7 @@ NAPSSPPluginIOS.initUnityAds("게임 ID");
 
 공통 API는 `AdMixer.Instance`로 호출합니다. Adunit ID는 Inspector 값을 사용하므로 인자로 넘기지 않습니다.
 
-| 광고 타입 | 로드 | 표시 | 제거 |
+| 광고 타입 | 로드 | 노출 | 제거 |
 |-----------|------|------|------|
 | 배너 | `LoadBanner()` | `ShowBanner()` | `DestroyBanner()` |
 | 전면 | `LoadInterstitial()` | `ShowInterstitial()` | `DestroyInterstitial()` |

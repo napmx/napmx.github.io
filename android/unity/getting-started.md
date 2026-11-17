@@ -118,7 +118,7 @@ dependencyResolutionManagement {
 
 ### 2-5. 하드웨어 가속
 
-Unity는 생성하는 매니페스트의 Unity Activity에 `android:hardwareAccelerated="false"`를 넣습니다. 이 상태에서는 하드웨어 비트맵을 쓰는 광고 소재(예: Kakao AdFit 네이티브)가 표시될 때 앱이 종료되므로, 플러그인의 `AdMixerAndroidBuild.cs`가 빌드 시 Unity Activity의 하드웨어 가속을 **자동으로 켭니다**. 별도 설정은 필요 없습니다.
+Unity는 생성하는 매니페스트의 Unity Activity에 `android:hardwareAccelerated="false"`를 넣습니다. 이 상태에서는 하드웨어 비트맵을 쓰는 광고 소재(예: Kakao AdFit 네이티브)가 노출될 때 앱이 종료되므로, 플러그인의 `AdMixerAndroidBuild.cs`가 빌드 시 Unity Activity의 하드웨어 가속을 **자동으로 켭니다**. 별도 설정은 필요 없습니다.
 
 ### 2-6. 네이티브 레이아웃
 
@@ -178,7 +178,7 @@ Unity는 생성하는 매니페스트의 Unity Activity에 `android:hardwareAcce
 |---|---|---|
 | `OnReceivedAd(string param)` | 응답한 네트워크 어댑터명 (예: `"admixer"`) | 광고 로드 성공 |
 | `OnFailedToReceiveAd(string param)` | `"message\|code"` | 광고 로드 실패 |
-| `OnFailedToShowAd(string param)` | `"message\|code"` | 광고 노출(표시) 실패 — 로드는 성공했지만 화면에 띄우지 못함. 전면형은 다시 로드해야 합니다 |
+| `OnFailedToShowAd(string param)` | `"message\|code"` | 광고 노출 실패 — 로드는 성공했지만 화면에 띄우지 못한 경우. 전면형 광고는 다시 로드해야 합니다 |
 | `OnEventAd(string param)` | 이벤트 이름 | 아래 표 참고 |
 
 **`OnEventAd` 이벤트 이름**
@@ -225,7 +225,7 @@ public class AdMixerAdListener : MonoBehaviour
     [Preserve]
     public void OnFailedToShowAd(string param)
     {
-        // 노출(표시) 실패 — 형식: "message|code"
+        // 노출 실패 — 형식: "message|code"
         string[] tokens = (param ?? "").Split('|');
         string message = tokens.Length > 0 ? tokens[0] : "";
         string code    = tokens.Length > 1 ? tokens[1] : "";
@@ -267,7 +267,7 @@ AdMixer.Awake() → AdMixerUnityBridge.initSdk(activity, mediaKey, adUnitIds)
 
 모든 API는 `AdMixer.Instance`로 호출합니다. Adunit ID는 Inspector 값을 사용하므로 인자로 넘기지 않습니다.
 
-| 광고 타입 | 로드 | 표시 | 제거 |
+| 광고 타입 | 로드 | 노출 | 제거 |
 |-----------|------|------|------|
 | 배너 | `LoadBanner()` | `ShowBanner()` | `DestroyBanner()` |
 | 전면 | `LoadInterstitial()` | `ShowInterstitial()` | `DestroyInterstitial()` |

@@ -1,6 +1,6 @@
 # 네이티브 - Unity (Android)
 
-광고를 추가하기 전 [Android SDK 시작하기 - Unity](/android/unity/getting-started) 설정을 완료해주세요.
+네이티브 광고를 추가하기 전에 [Android SDK 시작하기 - Unity](/android/unity/getting-started) 설정을 완료해주세요.
 
 > ⚠️ **에셋 텍스트만 꺼내 Unity UI에 그리면 노출·클릭이 집계되지 않습니다.** 네이티브 광고는 SDK에 **뷰를 등록**해야 임프레션과 클릭이 잡히고, 그래야 수익으로 인정됩니다. 플러그인은 네이티브 레이아웃(`nativeadlayout-release.aar`)을 써서 SDK가 직접 렌더링합니다(네이티브 기준 동작은 [네이티브 광고](/android/native/native-ad) 참고).
 
@@ -59,7 +59,7 @@ AdMixer.Instance.DestroyNativeAd();
 |---|---|
 | `OnReceivedAd` | 네이티브 광고 로드 성공 — 이후 `ShowNativeAd()` 호출 |
 | `OnFailedToReceiveAd` | 네이티브 광고 로드 실패 |
-| `OnFailedToShowAd` | 네이티브 광고 표시 실패 |
+| `OnFailedToShowAd` | 네이티브 광고 노출 실패 |
 | `OnEventAd("DISPLAYED")` | 네이티브 광고 노출 |
 | `OnEventAd("CLICK")` | 네이티브 광고 클릭 |
 | `OnEventAd("NATIVE_DESTROYED")` | 제거 완료 |

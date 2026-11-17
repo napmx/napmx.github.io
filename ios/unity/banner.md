@@ -1,6 +1,6 @@
 # 배너 - Unity (iOS)
 
-배너 광고를 추가하기 전 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
+배너 광고를 추가하기 전에 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
 
 ---
 
@@ -29,7 +29,7 @@ NAPSSPPluginIOS.BannerViewInit(adUnitId, x, y, 320, 50);
 
 ### 1-2. 배너 광고 요청
 
-`LoadBanner()`는 로드만 하며, 노출은 `ShowBanner()`로 따로 합니다.
+`LoadBanner()`는 광고를 로드만 합니다. 화면 노출은 `ShowBanner()`로 합니다.
 
 ```csharp
 AdMixer.Instance.LoadBanner();
@@ -37,7 +37,7 @@ AdMixer.Instance.LoadBanner();
 
 ### 1-3. 배너 광고 노출
 
-`OnSuccessBanner`를 받은 뒤 호출하면 배너가 화면에 붙어 노출됩니다. 로드가 끝나기 전에 호출하면 무시됩니다.
+`OnSuccessBanner`를 받은 뒤 호출하면 배너가 화면에 붙어 노출됩니다. 로드 전이거나 이미 노출 중이면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowBanner();
@@ -106,7 +106,7 @@ AdMixer.Instance.LoadInterstitial();
 
 ### 2-2. 전면 배너 광고 노출
 
-`OnSuccessLoadInterstitial`을 받은 뒤 원하는 시점에 호출합니다.
+`OnSuccessLoadInterstitial`을 받은 뒤 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowInterstitial();

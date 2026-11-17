@@ -1,6 +1,6 @@
 # 네이티브 - Unity (iOS)
 
-네이티브 광고를 추가하기 전 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
+네이티브 광고를 추가하기 전에 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
 
 ---
 

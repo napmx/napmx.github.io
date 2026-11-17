@@ -1,6 +1,6 @@
 # 리워드 동영상 - Unity (iOS)
 
-리워드 동영상 광고를 추가하기 전 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
+리워드 동영상 광고를 추가하기 전에 [iOS SDK 시작하기 - Unity](/ios/unity/getting-started) 설정을 완료해주세요.
 
 ---
 
@@ -16,7 +16,7 @@ AdMixer.Instance.LoadRewardVideo();
 
 ## 2. 리워드 광고 노출
 
-`OnSuccessLoadRewardAd`를 받은 뒤 원하는 시점에 호출합니다.
+`OnSuccessLoadRewardAd`를 받은 뒤 원하는 시점에 호출합니다. 로드 전에 호출하면 무시됩니다.
 
 ```csharp
 AdMixer.Instance.ShowRewardVideo();
@@ -94,16 +94,15 @@ public class RewardedAd : MonoBehaviour
 
 ## 5. Reward Callback (선택사항)
 
-매체사가 정의한 외부 서버로 해당 유저에게 리워드 지급이 완료되었음을 전달하는 기능입니다.  
-콜백 수신까지 몇 분 정도 지연될 수 있습니다.
+사용자에게 리워드가 지급되면 매체사가 지정한 서버로 지급 완료를 알려 주는 기능입니다. 콜백은 수신까지 몇 분 정도 걸릴 수 있습니다.
 
 ### 설정 1: 파트너 사이트에서 콜백 서버 URL 입력
 
 **파트너 사이트 → 미디어 관리 → 애드유닛 광고 설정**에서 매체사의 콜백 서버 URL을 입력합니다.
 
-해당 애드유닛에서 유저에게 리워드 지급이 완료되면 입력한 콜백 서버 URL로 리워드 콜백 데이터를 전송합니다.
+해당 애드유닛에서 리워드가 지급되면 입력한 URL로 콜백 데이터를 전송합니다.
 
-기본 파라미터는 아래와 같습니다.
+기본으로 전달되는 파라미터는 다음과 같습니다.
 
 | 파라미터 | 설명 | 예시 |
 |---------|------|------|
@@ -116,14 +115,13 @@ public class RewardedAd : MonoBehaviour
 
 ### 설정 2: CustomParam 추가
 
-CustomParam으로 콜백에서 추가 데이터를 수집할 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
+CustomParam을 설정하면 콜백으로 원하는 데이터를 함께 받을 수 있습니다. **반드시 `LoadRewardVideo()` 호출 전에** 설정해야 합니다.
 
 ```csharp
 var customParam = new Dictionary<string, string>
 {
-    { "userid", "nas" },
-    { "name", "hdragon" },
-    { "phone", "010-1111-1111" }
+    { "user_id", "user123" },
+    { "reward_type", "coin" }
 };
 AdMixer.Instance.SetRewardVideoCustomParam(customParam);
 AdMixer.Instance.LoadRewardVideo();
