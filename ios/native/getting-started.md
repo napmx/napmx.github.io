@@ -1,9 +1,9 @@
 # SDK 시작하기
 
-iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지원합니다.
+iOS 앱에 연동하기 위한 가이드 문서이며 nap mx Mediation을 지원합니다.
 
 > 최신 버전의 Admixer SDK와 최신 버전의 Xcode 사용을 권장합니다.  
-> Admixer iOS SDK는 **iOS 13.0 이상**, **Xcode 16 이상**(Teads 어댑터 사용 시 Xcode 26 이상) 에서 사용하실 수 있으며, CocoaPods와 SPM을 이용한 설치를 지원합니다.  
+> Admixer iOS SDK는 **iOS 13.0 이상**, **Xcode 16 이상**(Teads 어댑터 사용 시 Xcode 26 이상) 에서 동작하며 CocoaPods와 SPM을 이용한 설치를 지원합니다.  
 > 연동 및 이용 방법 문의: [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)
 
 ---
@@ -11,7 +11,7 @@ iOS 앱에 연동하기 위한 가이드 문서이며, nap mx Mediation을 지�
 ## 📱 실제 연동 서비스 앱 참고
 
 SDK를 연동하기 전, 앱 스토어에 출시된 아래 앱들을 설치하여 SDK를 이용한 실제 광고 소재가 어떻게 송출되고 구동되는지 직접 확인해 보실 수 있습니다.
-*(본 앱들은 테스트용으로 제공하는 데모 앱이 아니며, 실제 상용 서비스 앱에 SDK가 어떻게 적용되어 화면을 구성하는지 참고할 수 있는 실제 연동 사례입니다.)*
+*(본 앱들은 테스트용으로 제공하는 데모 앱이 아니라 실제 상용 서비스 앱입니다. SDK가 어떻게 적용되어 화면을 구성하는지 보여 주는 연동 사례입니다.)*
 
 <table style="border: none; background: transparent;">
   <tr style="border: none; background: transparent;">
@@ -113,13 +113,13 @@ nap mx Mediation과 미디에이션에 추가할 네트워크 SDK를 각각 추�
 | Naver AdManager | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-NAM-SPM` |
 | Teads | 선택 | `https://github.com/Nasmedia-Tech/iOS-SSP-Teads-SPM.git` |
 
-> `iOS-SSP-Mediation-SPM` 패키지는 nap mx Core(`iOS-SSP-SPM`)를 의존성으로 포함하고 있어, Mediation 패키지만 추가하면 Core(`AdMixer`)도 자동으로 설치됩니다. Mediation 2.6.0부터 적용되며, 2.5.x 이하를 사용하는 경우에는 Core 패키지를 직접 추가해야 합니다. CocoaPods도 `pod 'AdMixerMediation'`만 추가하면 `AdMixer`가 함께 설치됩니다.
+> `iOS-SSP-Mediation-SPM` 패키지는 nap mx Core(`iOS-SSP-SPM`)를 의존성으로 포함하므로 Mediation 패키지만 추가하면 Core(`AdMixer`)도 자동으로 설치됩니다. Mediation 2.6.0부터 적용되며 2.5.x 이하를 사용하는 경우에는 Core 패키지를 직접 추가해야 합니다. CocoaPods도 `pod 'AdMixerMediation'`만 추가하면 `AdMixer`가 함께 설치됩니다.
 
-> Unity Ads를 nap mx Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads는 중복 추가가 불가합니다.
+> Unity Ads를 nap mx Mediation과 함께 사용하는 경우, Google SDK 입찰 광고 소스에서 Unity Ads를 중복으로 추가할 수 없습니다.
 
 ### 1-3. Google 네트워크 - SDK 입찰 광고 소스 설정
 
-Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소스 라이브러리를 모두 추가해야 최적 수익화가 가능합니다.
+Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소스 라이브러리를 모두 추가해야 수익을 최대로 낼 수 있습니다.
 
 * [Google 공식 가이드 — 네트워크 선택](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/choose-networks?hl=ko&_gl=1*1mk7mlq*_up*MQ..*_ga*NDk3NjA1MDI0LjE3ODcxODk2MzQ.*_ga_SM8HXJ53K2*czE3ODcxODk2MzMkbzEkZzAkdDE3ODcxODk2MzMkajYwJGwwJGgw)
 **추가해야 할 광고 소스 (모두 추가 권장)**
@@ -191,7 +191,7 @@ Google AdManager를 미디에이션으로 사용하는 경우, 아래 광고 소
 
 SPM은 벤더 패키지의 태그 체계를 사용하므로 일부 범위가 CocoaPods와 다릅니다. Pangle은 `7.4.1-release.1` 이상 `8.2.2-release.0` 미만, NAM은 `8.20.0` 이상 `8.23.0` 미만입니다. UnityAds SPM 패키지는 네트워크 SDK `4.16.4` 바이너리를 고정합니다.
 
-> 호스트 앱과 모든 의존성의 버전 제약을 동시에 만족하는 조합을 선택합니다. 항상 더 낮은 버전이 선택되는 것은 아니며, 허용 범위가 겹치지 않으면 의존성 해결에 실패합니다. 기존 `Podfile.lock`이나 `Package.resolved`가 있으면 잠긴 버전을 유지할 수 있으므로, 업데이트 후 실제 해석 버전을 확인하세요.
+> 호스트 앱과 모든 의존성의 버전 제약을 동시에 만족하는 조합을 선택합니다. 항상 더 낮은 버전이 선택되는 것은 아닙니다. 허용 범위가 겹치지 않으면 의존성 해결에 실패합니다. 기존 `Podfile.lock`이나 `Package.resolved`가 있으면 잠긴 버전을 유지할 수 있으므로 업데이트 후 실제 해석 버전을 확인하세요.
 
 <div class="callout info">
   <strong>중복 사용 가능 네트워크</strong>
@@ -215,7 +215,7 @@ SPM은 벤더 패키지의 태그 체계를 사용하므로 일부 범위가 Coc
 <string>맞춤형 광고 제공을 위해 광고 추적 권한이 필요합니다.</string>
 ```
 
-ATT 요청은 SDK 가 아니라 앱이 직접 수행하며, 응답을 받은 뒤 광고를 요청합니다. 요청 시점은 앱이 활성 상태가 된 직후로 구성합니다.
+ATT 요청은 SDK 가 아니라 앱이 직접 수행하며 응답을 받은 뒤 광고를 요청합니다. 요청 시점은 앱이 활성 상태가 된 직후로 구성합니다.
 
 ```swift
 // SceneDelegate.swift
@@ -251,7 +251,7 @@ Google AdManager 사용 시:
 
 ## Step 3. SDK 초기화
 
-반드시 한 번 초기화 호출이 필요합니다. 광고 호출 전 앱에서 1회 호출해주세요.
+광고를 호출하기 전에 앱에서 초기화를 반드시 1회 호출해주세요.
 
 ### 개인정보/규제 신호 설정 (GDPR · CCPA · COPPA)
 
@@ -268,10 +268,10 @@ AMMediation.shared.setConsent(consent)
 
 **호출 순서 (중요)**
 
-1. **네트워크 SDK 초기화보다 먼저** 호출합니다. AppLovin·UnityAds·Pangle 은 SDK 초기화 시점에 동의 값을 읽으므로, 아래 초기화 코드의 `MobileAds.shared.start()`·`ALSdk.shared().initialize`·`PAGSdk.start`·`UnityAds.initialize` 보다 앞에 두세요. GAM 의 아동 대상 설정도 `MobileAds.shared.start()` 이전이 권장됩니다.
-2. **Naver AdManager**: `GFPAdManager.setup` 이 설정 객체를 교체할 수 있지만, Mediation 2.6.0부터는 광고 로드마다 동의 값을 다시 적용하므로 setup 이후 재호출이 필요 없습니다. **2.5.1 이하**에서는 setup 완료 후 `setConsent` 를 한 번 더 호출하세요 (같은 값 재호출은 무해합니다).
+1. **네트워크 SDK 초기화보다 먼저** 호출합니다. AppLovin·UnityAds·Pangle 은 SDK 초기화 시점에 동의 값을 읽으므로 아래 초기화 코드의 `MobileAds.shared.start()`·`ALSdk.shared().initialize`·`PAGSdk.start`·`UnityAds.initialize` 보다 앞에 두세요. GAM 의 아동 대상 설정도 `MobileAds.shared.start()` 이전이 권장됩니다.
+2. **Naver AdManager**: `GFPAdManager.setup` 이 설정 객체를 교체할 수 있지만 Mediation 2.6.0부터는 광고 로드마다 동의 값을 다시 적용하므로 setup 이후 재호출이 필요 없습니다. **2.5.1 이하**에서는 setup 완료 후 `setConsent` 를 한 번 더 호출하세요 (같은 값 재호출은 무해합니다).
 3. 초기화 시점에만 값을 읽는 벤더(AppLovin 등)는 초기화 이후의 재호출이 다음 앱 실행부터 반영될 수 있습니다.
-4. `setConsent` 는 전달한 값을 복사해 저장합니다. 호출 뒤 같은 `AMMConsent` 객체를 수정해도 반영되지 않으니, 변경은 `setConsent` 를 다시 호출해 전달하세요.
+4. `setConsent` 는 전달한 값을 복사해 저장합니다. 호출 뒤 같은 `AMMConsent` 객체를 수정해도 반영되지 않으니 변경은 `setConsent` 를 다시 호출해 전달하세요.
 
 **한 번 설정한 동의는 미설정으로 되돌릴 수 없습니다** — `.granted`/`.denied` 로 전달한 뒤 `.unspecified` 로 바꿔 다시 호출해도 벤더 SDK 에 이미 전달된 값은 남습니다(AppLovin 은 앱을 재실행해도 유지). 사용자가 동의를 철회하면 `.unspecified` 가 아니라 `.denied` 로 전달하세요.
 
@@ -293,7 +293,7 @@ AMMediation.shared.setConsent(consent)
 | Teads | 자동판독 | ✅ (US Privacy 문자열) | 요청 차단 | — |
 | AdFit | — | — | 요청 차단 | — |
 
-> Teads 의 `usSaleConsent` 는 벤더 SDK 의 custom US Privacy 설정이라, CMP 를 함께 쓰면서 `usSaleConsent` 를 `.granted`/`.denied` 로 설정하면 CMP 가 기록한 값 대신 이 값이 Teads 에 적용될 수 있습니다. CMP 값을 그대로 쓰려면 `usSaleConsent` 를 설정하지 마세요.
+> Teads 의 `usSaleConsent` 는 벤더 SDK 의 custom US Privacy 설정이므로 CMP 를 함께 쓰면서 `usSaleConsent` 를 `.granted`/`.denied` 로 설정하면 CMP 가 기록한 값 대신 이 값이 Teads 에 적용될 수 있습니다. CMP 값을 그대로 쓰려면 `usSaleConsent` 를 설정하지 마세요.
 
 ### 초기화 코드
 
@@ -358,7 +358,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 ## Step 4. 에러 코드
 
 광고 수신에 실패한 경우, delegate 메서드를 통해 nap mx Error 객체를 전달받을 수 있습니다.
-각각의 에러에 대한 설명은 아래 표를 참고해 주세요.
+에러별 설명은 아래 표를 참고해 주세요.
 
 에러는 `NSError` 로 전달되며 `domain` 은 에러가 발생한 광고 뷰 클래스명(예: `AMMBannerView`), `code` 는 아래 표의 값입니다.
 네트워크 SDK 가 넘긴 원인 에러가 있으면 `userInfo[NSUnderlyingErrorKey]` 에 담깁니다.
