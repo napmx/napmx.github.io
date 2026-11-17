@@ -112,7 +112,7 @@ flutter pub get
 flutter run --dart-define-from-file=config/local.json
 ```
 
-Sample에서 확인할 수 있는 항목:
+Sample 앱에서는 다음 항목을 확인할 수 있습니다.
 
 - 포맷별 load/show/dispose 상태와 버튼 활성화
 - 오류 code와 native code

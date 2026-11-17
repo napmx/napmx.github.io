@@ -1,6 +1,6 @@
 # Flutter 설치와 초기화
 
-이 페이지는 빈 Flutter 프로젝트에 플러그인을 설치하고 nap mx 초기화까지 완료하는 순서입니다. Android와 iOS의 발급값 형식과 네트워크 초기화 방식이 다르므로 두 플랫폼 설정을 각각 확인하세요.
+이 페이지에서는 빈 Flutter 프로젝트에 플러그인을 설치하고 nap mx 초기화까지 마치는 순서를 안내합니다. Android와 iOS의 발급값 형식과 네트워크 초기화 방식이 다르므로 두 플랫폼 설정을 각각 확인하세요.
 
 ## 1. 준비할 값
 
@@ -73,7 +73,7 @@ const rewardedId = String.fromEnvironment('NAP_MX_REWARDED_ID');
 
 ## 4. Android 설정
 
-Android 빌드에는 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**이 필요합니다. 플러그인은 AGP·Kotlin 버전을 고정하지 않고 앱의 설정을 따릅니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전은 해당 AGP가 요구하는 Gradle 버전을 맞추세요.
+Android 빌드에는 **AGP 8.10.1 이상, Kotlin 2.1.0 이상(권장 2.2.10), compile SDK 36, Java 17**이 필요합니다. 플러그인은 AGP·Kotlin 버전을 고정하지 않고 앱의 설정을 따릅니다. 예제의 AGP 8.10.1 조합은 Gradle 8.11.1을 사용합니다. 다른 AGP 버전을 쓴다면 그 AGP가 요구하는 Gradle 버전에 맞추세요.
 
 AGP 8 호스트의 `android/settings.gradle.kts`에서 Kotlin 플러그인 버전을 선언합니다. Flutter 로더와 기존 AGP 선언은 유지하세요.
 
@@ -154,7 +154,7 @@ configurations.configureEach {
 }
 ```
 
-실제로 어떤 버전이 선택됐는지는 아래로 확인합니다.
+실제로 선택된 버전은 아래 명령으로 확인합니다.
 
 ```bash
 cd android
@@ -197,7 +197,7 @@ Google Ad Manager를 사용한다면 발급받은 App ID를 `<application>` 안�
 
 `admixer-admanager`를 사용한다면 Google SDK 입찰 광고 소스 어댑터도 추가하세요. 어댑터가 있어야 해당 광고 소스가 입찰에 참여합니다. 대상 광고 소스는 [Android 네이티브 가이드](/android/native/getting-started)의 "Google SDK 입찰 광고 소스 설정"과 같습니다. Dart 코드나 `NapMxConfiguration` 설정은 필요 없고 호스트 앱의 Gradle 의존성만 추가합니다.
 
-위에서 `play-services-ads`를 25.2.0으로 고정했으므로 어댑터도 **25.2.0 이하를 요구하는 버전**으로 명시합니다. 최신 어댑터는 25.3.0 이상을 기대하는데 `force`가 25.2.0으로 낮춰, 빌드는 성공해도 런타임에 입찰이 실패할 수 있습니다.
+위에서 `play-services-ads`를 25.2.0으로 고정했으므로 어댑터도 **25.2.0 이하를 요구하는 버전**으로 명시합니다. 최신 어댑터는 25.3.0 이상을 기대하는데 `force`가 25.2.0으로 낮추므로, 빌드는 성공해도 런타임에 입찰이 실패할 수 있습니다.
 
 ```kotlin
 // android/app/build.gradle.kts — play-services-ads 25.2.0 호환 버전
@@ -325,7 +325,7 @@ override func application(
 
 1. Debug Options Menu를 열 수 있는 테스트 앱을 빌드합니다.
 2. 테스트 앱을 운영 담당자에게 전달합니다.
-3. 운영 담당자가 테스트 기기에서 메뉴를 열고 광고를 요청해 입찰 광고 소스와 어댑터 상태를 확인합니다. 어댑터별 초기화 상태와 SDK 버전은 메뉴에서 **Open ad inspector**를 선택한 뒤 **Adapters** 탭에서 확인합니다. ad inspector는 테스트 기기로 등록된 기기에서만 열립니다. ([Android](https://developers.google.com/ad-manager/mobile-ads-sdk/android/ad-inspector/launch-ad-inspector), [iOS](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/ad-inspector/launch-ad-inspector))
+3. 운영 담당자가 테스트 기기에서 메뉴를 열고 광고를 요청해 입찰 광고 소스와 어댑터 상태를 확인합니다. 어댑터별 초기화 상태와 SDK 버전은 메뉴에서 **Open ad inspector**를 선택한 뒤 **Adapters** 탭에서 확인합니다. ad inspector는 테스트 기기로 등록된 기기에서만 열립니다([Android](https://developers.google.com/ad-manager/mobile-ads-sdk/android/ad-inspector/launch-ad-inspector), [iOS](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/ad-inspector/launch-ad-inspector)).
 
 운영 빌드에서는 디버그 메뉴 진입점을 노출하지 마세요.
 

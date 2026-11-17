@@ -86,7 +86,7 @@ class _InlineAdSlotState extends State<InlineAdSlot> {
 }
 ```
 
-다른 View 포맷은 위 `InlineAdSlot`의 `format`과 높이를 바꿉니다. `onViewCreated`에서 구독·로드하고 화면 해제 시 정리하는 방식은 같습니다.
+다른 View 포맷은 위 `InlineAdSlot`에서 `format`과 높이만 바꾸면 됩니다. `onViewCreated`에서 구독·로드하고 화면 해제 시 정리하는 방식은 같습니다.
 
 ```dart
 // 네이티브 광고: SDK 템플릿의 CTA/AdChoices/미디어 영역을 보존합니다.
@@ -106,7 +106,7 @@ InlineAdSlot(
 
 네이티브 광고의 제목·이미지를 꺼내 Flutter 위젯으로 다시 만들면 SDK가 노출과 클릭을 집계하지 못합니다. SDK 템플릿을 그대로 쓰고, 작은 화면·다크 모드·큰 글자 설정에서 CTA, `광고/Ad` 표시, AdChoices가 잘리지 않는지 확인하세요.
 
-화면은 유지하지만 진행 중 요청만 중단하려면 `controller.cancel()`을 호출할 수 있습니다. 화면에서 제거할 때는 반드시 `dispose()`합니다.
+화면은 그대로 두고 진행 중인 요청만 중단하려면 `controller.cancel()`을 호출합니다. 화면에서 제거할 때는 반드시 `dispose()`를 호출합니다.
 
 ## 전면·아웃스트림 동영상
 
@@ -228,7 +228,7 @@ S2S Reward Callback을 사용하면 nap mx 서버가 매체 서버의 등록된 
 - Android 등록·파라미터·재시도 정책: [Android 리워드 S2S 가이드](/android/native/rewarded-video?id=s2s-reward-callback-서버-간-리워드-검증)
 - iOS 등록·파라미터: [iOS 리워드 S2S 가이드](/ios/native/rewarded-video?id=s2s-reward-callback-선택사항)
 
-필요한 경우 요청별 값을 `customParams`로 전달할 수 있습니다. `transaction_id`는 SDK 예약 키이므로 직접 덮어쓰지 마세요. Android는 전면·아웃스트림·리워드 모두에 전달하고, iOS는 네이티브 SDK가 리워드에만 이 값을 받으므로 전면과 아웃스트림에서는 전달되지 않습니다. 따라서 리워드 이외의 포맷에서는 이 값에 의존하지 마세요.
+필요한 경우 요청별 값을 `customParams`로 전달할 수 있습니다. `transaction_id`는 SDK 예약 키이므로 직접 덮어쓰지 마세요. Android는 전면·아웃스트림·리워드 모두에 전달하고, iOS는 네이티브 SDK가 리워드에만 이 값을 받으므로 전면과 아웃스트림에서는 전달되지 않습니다. 리워드가 아닌 포맷에서는 이 값에 의존하지 마세요.
 
 ```dart
 await rewarded.load(
