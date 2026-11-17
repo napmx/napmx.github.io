@@ -61,7 +61,7 @@ fun MyScreen() {
 val listener = remember {
     object : AdListener() {
         override fun onReceivedAd(networkType: AdNetworkType, ad: Any) {
-            // networkType로 switch: switch(networkType){ case PANGLE: ... }
+            // networkType로 분기: when (networkType) { AdNetworkType.PANGLE -> ... }
         }
         override fun onFailedToReceiveAd(code: Int, msg: String?) {}
         override fun onAdDisplayed() {}
@@ -163,7 +163,7 @@ fun RewardScreen() {
 }
 ```
 
-- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onAdRewarded()`로 통지됩니다.
+- API는 전면과 동일(`load()`/`show()`/`cancelLoad()`/`isLoaded`). 보상 지급은 `listener.onAdRewarded()`로 통지됩니다(아래 `RewardInfo` 오버로드를 구현하면 그쪽으로만 1회 통지).
   Compose 헬퍼는 전용 보상 리스너 없이 노출하므로, 보상은 `AdListener` 경로로 옵니다.
 - **지급 이력 키가 필요하면 `RewardInfo` 오버로드를 구현하세요.** 지급 1건당 고유 `transaction_id`가 전달되며 서버 포스트백과 대조할 수 있습니다.
 
@@ -241,7 +241,7 @@ fun VideoScreen() {
 
 - `–`는 해당 포맷에서 발생하지 않는 이벤트입니다(예: 배너/네이티브는 닫힘·재생완료·스킵 이벤트 없음).
 - `onAdShowFailed`는 **로드 성공 후 표시(show) 단계 실패**로, 인라인(배너/네이티브)에는 해당되지 않습니다.
-- 배너/네이티브는 `listener` 파라미터로, 전면류는 `rememberInterstitialAd`/`rememberVideoInterstitialAd`/`rememberRewardVideoAd`의 `listener` 인자로 위 콜백을 받습니다. 보상 적립은 `onAdRewarded`로 통지됩니다.
+- 배너/네이티브는 `listener` 파라미터로, 전면류는 `rememberInterstitialAd`/`rememberVideoInterstitialAd`/`rememberRewardVideoAd`의 `listener` 인자로 위 콜백을 받습니다. 보상 지급은 `onAdRewarded`로 통지됩니다.
 
 ---
 

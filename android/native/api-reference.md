@@ -74,7 +74,7 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | `stop()` | 리소스 해제 — onDestroy에서 호출 (필수) |
 | `hasAd` | 광고 수신 여부 (boolean 필드) |
 
-> ℹ️ **`isReady()` / `isLoading()` (SDK 2.1.3+)** — 모든 광고 클래스 6종(인라인 3종·풀스크린 3종)에서 동일하게 제공됩니다. `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 콜백만으로 로드 결과를 판정하는 호출자(하이브리드 웹뷰 브릿지 등)는 이 무시를 무응답과 구분할 수 없으므로, **로드 요청 전에 두 메서드로 상태를 사전 판별**하세요 — `isReady()`가 `true`면 재로드 대신 노출하고 `isLoading()`이 `true`면 진행 중인 로드의 콜백을 기다리면 됩니다. `stop()`/`destroy` 이후에는 둘 다 `false`입니다. 하이브리드 연동 예제는 [WebBridge 가이드](webbridge.md)를 참고하세요.
+> ℹ️ **`isReady()` / `isLoading()` (SDK 2.1.3+)** — 모든 광고 클래스 6종(인라인 3종·풀스크린 3종)에서 동일하게 제공됩니다. `loadAd()`는 이미 준비된(READY) 광고를 파기하지 않기 위해, 또 로드 진행 중의 중복 요청을 막기 위해 **재요청을 콜백 없이 무시**할 수 있습니다. 콜백만으로 로드 결과를 판정하는 호출자(하이브리드 웹뷰 브릿지 등)는 이 무시를 무응답과 구분할 수 없으므로, **로드 요청 전에 두 메서드로 상태를 사전 판별**하세요 — `isReady()`가 `true`면 재로드 대신 노출하고 `isLoading()`이 `true`면 진행 중인 로드의 콜백을 기다리면 됩니다. `stop()` 이후에는 둘 다 `false`입니다. 하이브리드 연동 예제는 [WebBridge 가이드](webbridge.md)를 참고하세요.
 
 ---
 
@@ -219,8 +219,8 @@ AdMixer.setTestDeviceIds(List<String> ids)
 | 상황 | 권장 호출 | 효과 |
 |------|----------|------|
 | 호스트 화면 전환·백그라운드 진입 (표시 중 광고는 유지) | `cancelLoad()` | 진행 중인 **로드만** 취소. SHOWING 중이면 no-op이라 광고가 끊기지 않음 |
-| 광고 닫힘/실패 콜백 수신 후 | `stopXxx()` → `onDestroy()` | 미디에이션 컨트롤러 destroy + 서버 config 리스너 해제(재동기화 재로드 대상에서 제외) |
-| 화면 완전 종료 (`Activity#onDestroy`) | `stopXxx()` (필수) | 전체 리소스 해제 |
+| 광고 닫힘/실패 콜백 수신 후 | `stop()` → `onDestroy()` | 미디에이션 컨트롤러 destroy + 서버 config 리스너 해제(재동기화 재로드 대상에서 제외) |
+| 화면 완전 종료 (`Activity#onDestroy`) | `stop()` (필수) | 전체 리소스 해제 |
 
 > `cancelLoad()`는 "로드만 취소", `stop()`은 "전체 정리(리스너 해제 포함)"로 구분됩니다.
 > `media-conf` 재동기화 시 SHOWING/이미-로드 유닛은 SDK가 자동으로 재로드하지 않습니다.
@@ -276,9 +276,9 @@ public abstract class AdListener {
 
 | 구 `AdEvent` | 신 콜백 메서드 | 설명 | 발생 포맷 |
 |--------|------|------|----------|
-| `DISPLAYED` | `onAdDisplayed()` | 광고가 화면에 표시됨 | 배너, 전면, 네이티브, 동영상 |
+| `DISPLAYED` | `onAdDisplayed()` | 광고가 화면에 표시됨 | 배너, 전면, 네이티브, 동영상, 리워드 |
 | `CLICK` | `onAdClicked()` | 광고 소재 또는 링크 클릭 | 전체 |
-| `CLOSE` | `onAdClosed()` | 광고 창 닫힘 | 전면, 동영상 |
+| `CLOSE` | `onAdClosed()` | 광고 창 닫힘 | 전면, 동영상, 리워드 |
 | `COMPLETION` | `onAdCompleted()` | 동영상 재생 완료 | 동영상, 리워드 |
 | `SKIPPED` | `onAdSkipped()` | Skip 버튼 클릭 | 동영상, 리워드 |
 | `EARNEDREWARD` | `onAdRewarded()` | 리워드 획득 (동영상 시청 완료) | 리워드 |

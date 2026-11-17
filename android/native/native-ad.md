@@ -13,7 +13,7 @@
 | Asset | 레이아웃 `android:id` | 설명 | 필수 여부 |
 |-------|---------------------|------|----------|
 | 제목 | `nap_mx_tv_title` | 광고 제목 (TextView) | AdMixer 단독: 1개 이상 필수 |
-| 아이콘 | `nap_mx_iv_icon` | 광고주 아이콘 이미지 (ImageView) | 선택 |
+| 아이콘 | `nap_mx_iv_icon` | 광고주 아이콘 이미지 (ImageView) | AdMixer 단독: 1개 이상 필수 |
 | 광고주 | `nap_mx_tv_adv` | 광고주명 (TextView) | 선택 |
 | 설명 | `nap_mx_tv_desc` | 광고 설명 텍스트 (TextView) | 선택 |
 | 메인 | `nap_mx_iv_main` | 메인 이미지 또는 동영상 슬롯 (빈 `FrameLayout` 등 ViewGroup 컨테이너) | AdMixer 단독: 1개 이상 필수 |
@@ -202,7 +202,7 @@ public class NativeAdActivity extends AppCompatActivity {
         // ② AMMNativeAdView 생성 및 로드
         nativeAdView = new AMMNativeAdView(this); // Activity context 사용 (Adfit 필수)
         nativeAdView.setAdInfo(adInfo);
-        nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·NaverAd 전체 적용
+        nativeAdView.setViewBinder(viewBinder); // ✅ 필수 — AdMixer·AdManager·GMA NextGen·Adfit·Pangle·NaverAd 전체 적용
         nativeAdView.setAdViewListener(adListener);
         nativeAdView.loadAd();
     }
@@ -258,7 +258,7 @@ class NativeAdActivity : AppCompatActivity() {
 
         nativeAdView = AMMNativeAdView(this).apply {
             setAdInfo(adInfo)
-            setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·Adfit·Pangle·NaverAd 전체 적용
+            setViewBinder(viewBinder) // ✅ 필수 — AdMixer·AdManager·GMA NextGen·Adfit·Pangle·NaverAd 전체 적용
             setAdViewListener(adListener)
             loadAd()
         }
@@ -423,7 +423,7 @@ SDK는 네이티브를 지원하는 네트워크(AdMixer 자체 / Google AdManag
 | 네트워크 SDK에 위치 옵션 전달 | Google AdManager · GMA NextGen · Adfit | 광고 요청 시 위치 옵션으로 전달하며, 최종 배치는 각 네트워크 SDK가 결정합니다. |
 
 > ⚠️ **위치 지정은 요청이며 보장이 아닙니다.**
-> 위 표에서 **위치 옵션을 네트워크 SDK에 전달하는 그룹**은 최종 배치를 각 네트워크가 결정하므로, 매체사 SDK
+> 위 표에서 **위치 옵션을 네트워크 SDK에 전달하는 그룹**은 최종 배치를 각 네트워크가 결정하므로, 네트워크 SDK
 > 정책 및 템플릿 규격에 따라 지정한 위치와 다르게 노출될 수 있습니다. 어느 모서리에 아이콘이 놓여도 다른
 > UI를 가리지 않도록 네 모서리 모두에 여백을 확보하세요.
 >
@@ -441,8 +441,8 @@ SDK는 네이티브를 지원하는 네트워크(AdMixer 자체 / Google AdManag
 
 | 항목 | 설명 | 앱에서 권장하는 대응 |
 |------|------|---------------------|
-| **자산 제공 범위** | 제목·본문(body)·아이콘·메인 이미지·CTA·광고주명 중 **일부가 비어 올 수 있습니다.** 어떤 자산이 필수인지는 네트워크마다 다릅니다. | 자산이 비었을 때 해당 뷰를 `GONE` 처리하도록 레이아웃을 설계하세요. 빈 값을 그대로 그리면 빈 칸이 노출됩니다. |
-| **아이콘 / 메인 이미지** | 아이콘만 오거나 메인 이미지만 오는 경우가 있습니다. 이미지 비율도 소재마다 다릅니다. | 고정 비율을 강제하지 말고, 없을 때의 대체 레이아웃을 준비하세요. |
+| **자산 제공 범위** | 제목·본문(body)·아이콘·메인 이미지·CTA·광고주명 중 **일부가 비어 올 수 있습니다.** 어떤 자산이 필수인지는 네트워크마다 다릅니다. | 미디에이션 어댑터는 빈 자산의 뷰를 자동으로 `GONE` 처리하지만, AdMixer 자체 소재는 빈 값을 그대로 그려 빈 칸이 노출됩니다. 자산이 빠져도 자연스럽게 보이도록 레이아웃을 설계하세요(위 [구성 Asset] 참고). |
+| **아이콘 / 메인 이미지** | 아이콘만 오거나 메인 이미지만 오는 경우가 있습니다. 이미지 비율도 소재마다 다릅니다. | 메인 슬롯은 선언한 크기를 유지하므로 소재 비율이 다르면 여백이 생깁니다(위 [슬롯 크기] 참고). 아이콘·메인 이미지가 없을 때의 대체 레이아웃을 준비하세요. |
 | **MediaView(동영상 자산)** | 동영상 자산 지원 여부와 재생 정책(자동재생·음소거·사용자 조작)이 네트워크마다 다를 수 있습니다. | 메인 뷰 영역은 이미지와 동영상 **양쪽이 들어올 수 있는 크기**로 잡으세요. |
 | **CTA 문구** | 제공 여부와 문구("자세히 보기", "설치" 등)가 다릅니다. | 앱에서 CTA 문구를 임의로 바꾸지 마세요. 네트워크 정책 위반이 될 수 있습니다. |
 | **AdChoices / 광고 정보 고지** | 아이콘 모양·위치·클릭 동작이 네트워크마다 다르며, 일부는 **위치 지정을 무시**하고 자체 규칙으로 배치합니다. | `setAdChoicesPosition()`은 **요청**이며 보장이 아닙니다. 네 모서리 어디에 와도 다른 UI를 가리지 않도록 여백을 두세요. |

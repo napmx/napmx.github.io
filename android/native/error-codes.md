@@ -14,7 +14,7 @@
 | `AdMixer.AX_ERR_INIT` | `-2` | `onFailedToReceiveAd` | 초기화 안 됨: Media Key 없이 로드 요청 | `AdMixer.getInstance().initialize()` 호출 여부와 Media Key 확인 |
 | `AdMixer.AX_ERR_NOT_READY` | `-3` | `onAdShowFailed` | 로드가 끝나기 전에 `show()` 호출. 메시지 "Ad is not ready to show." | `onAdReceived` 이후 `show()` |
 | `AdMixer.AX_ERR_PRESENTER_UNAVAILABLE` | `-4` | `onAdShowFailed`(인라인 비디오) | 광고를 표시할 Activity를 찾지 못함 | Activity Context로 뷰 생성 |
-| `AdMixer.AX_ERR_NO_ADAPTER` | `-10` | `onFailedToReceiveAd` | 미디에이션 실행 컴포넌트를 준비하지 못함(예: SDK 초기화 전에 `setAdInfo` 한 뷰) | 초기화 이후 `setAdInfo`. 어댑터 모듈이 빌드에 없는 경우는 이 코드가 아니라 해당 네트워크가 건너뛰어져 최종 `AX_ERR_NO_ADS`로 이어집니다 |
+| `AdMixer.AX_ERR_NO_ADAPTER` | `-10` | `onFailedToReceiveAd` | 미디에이션 실행 컴포넌트를 준비하지 못함(예: SDK 초기화 전에 `setAdInfo` 한 뷰) | 초기화 이후 `setAdInfo`. 어댑터 모듈이 빌드에 없는 경우는 이 코드가 아니라 해당 네트워크를 건너뛰고 최종적으로 `AX_ERR_NO_ADS`가 됩니다 |
 | `AdMixer.AX_ERR_NO_ADS` | `-20` | `onFailedToReceiveAd` | 워터폴의 모든 네트워크가 실패/no-fill로 소진됨 (앱이 가장 자주 받는 코드). **no-fill은 전부 이 코드로 통지됩니다** | 일정 시간 후 재요청 |
 | `AdMixer.AX_ERR_CONFIG_FAIL` | `-21` | `onFailedToReceiveAd` | 서버 config 미수신·타임아웃, 또는 config에 해당 AdUnit이 없음 | Media Key·AdUnit 프로비저닝 및 네트워크 상태 확인 |
 | `AdMixer.AX_ERR_TIMEOUT` | `-22` | `onFailedToReceiveAd` | `loadAd()` 호출부터 30초 안에 결과가 없음 | 재요청 |
@@ -72,7 +72,7 @@ public void onFailedToReceiveAd(int errorCode, @Nullable String errorMsg) {
 
 ## 미디에이션 에러 코드
 
-네트워크 어댑터는 각 네트워크 SDK의 원본 에러 코드를 `AX_ERR_*` 값으로 **매핑해서** 미디에이션에 전달합니다(로드 실패는 흡수, 표시 실패는 앱에 `AX_ERR_SHOW_FAILED`). 네트워크 SDK의 원본 코드·메시지는 `errorCode`가 아니라 **`errorMsg` 문자열**에 담깁니다(예: `"Pangle placement_id is null"`, `"NAM banner error: [3210] ..."`). 매핑 규칙은 네트워크마다 다르며 자세한 원본 코드 의미는 해당 네트워크 공식 문서를 참고하십시오.
+네트워크 어댑터는 각 네트워크 SDK의 원본 에러 코드를 `AX_ERR_*` 값으로 **매핑해서** 미디에이션에 전달합니다(로드 실패는 흡수, 표시 실패는 앱에 `AX_ERR_SHOW_FAILED`). 네트워크 SDK의 원본 코드·메시지는 `errorCode`가 아니라 **`errorMsg` 문자열**에 담깁니다(예: `"Pangle placement_id is null"`, `"NAM banner error: [3210] ..."`). 매핑 규칙은 네트워크마다 다르며 자세한 원본 코드 의미는 해당 네트워크 공식 문서를 참고하세요.
 
 > ℹ️ LogCat 태그는 `AdMixerSDK::<버전>` 형태입니다(하위 태그가 붙으면 `AdMixerSDK::<버전>::<컴포넌트>`). 접두사로 필터링하세요.
 > ```
@@ -101,7 +101,7 @@ LogCat에 `[SKIP] <네트워크> configuration is invalid (Missing Keys).`가 �
 3. Pangle: `placement_id`(필수)와 `app_id`가 media-conf 또는 `setAdapterConfig`로 전달되는지 확인. Pangle SDK가 아직 초기화되지 않았다면 어댑터가 `app_id`로 초기화를 수행하므로 `app_id`도 필요합니다
 4. AppLovin: `zone_id`(필수)가 전달되는지 확인
 5. NaverAdManager: 운영 Ad Unit ID 발급 여부 확인 (`PUBLISHER_CD`는 SDK가 제공)
-6. Adfit: Activity Context 사용 여부 확인
+6. AdFit: Activity Context 사용 여부 확인
 
 키 주입 방법은 [Q&A — 초기화 · 키 / 네트워크 설정](qna.md#초기화-·-키-네트워크-설정)을 참고하세요.
 

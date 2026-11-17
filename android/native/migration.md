@@ -54,7 +54,7 @@
 | `cannot find symbol: method setInterstitialAdType/setPopupAdOption(...)` | 전면 Basic 전용 | 해당 호출 제거 |
 | `cannot find symbol: AdMixer.GAUGE`/`TEXT` | CountDown 상수 제거 | 관련 코드 제거 |
 | 빌드는 되나 네이티브가 비거나 미표시 | View ID prefix 변경 | 레이아웃·바인더에 `nap_mx_` 적용 ([Step 7](#step-7-네이티브-광고-view-id-업데이트-필수)) |
-| `cannot find symbol: method setPrivacyViewId(int)` | **v2.0.x 이후 제거** | `setAdChoicesPosition()`으로 교체 ([v2.0.x → 최신](#v20x-→-최신-버전-업그레이드)) |
+| `cannot find symbol: method setPrivacyViewId(int)` | **v2.1.0에서 제거** | `setAdChoicesPosition()`으로 교체 ([v2.0.x → 최신](#v20x-→-최신-버전-업그레이드)) |
 | `cannot find symbol: method setAdViewBinder(...)` | **v2.0.1에서 제거** | `AMMNativeAdView.setViewBinder()`로 교체 ([v2.0.x → 최신](#v20x-→-최신-버전-업그레이드)) |
 
 > 🚨 **컴파일 오류 없이 조용히 깨지는 변경도 있습니다** — 어댑터 식별자 상수의 **값**이 바뀌어 재컴파일이 필요합니다. [v2.0.x → 최신 버전](#v20x-→-최신-버전-업그레이드)을 반드시 확인하세요.
@@ -153,7 +153,7 @@ repositories {
 
 ### ⚠️ 구버전 클래스 제거 및 AMM* 클래스 전환
 
-v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제거되었습니다. 아래와 같이 새 클래스로 교체해 빌드 오류를 해결하십시오.
+v1.x에서 제공되던 기존 광고 클래스들은 v2.0.0에서 완전히 제거되었습니다. 아래와 같이 새 클래스로 교체해 빌드 오류를 해결하세요.
 
 | 구 클래스 (v1.x) | 신 클래스 (v2.0.0) | 설명 |
 |---|---|---|
@@ -302,7 +302,7 @@ new AdInfo.Builder(ADUNIT_ID)
 | ② 과도기 | `onFailedToReceiveAd(Object ad, AdNetworkType networkType, int code, String msg)` | `@Deprecated` — 3.0 제거 예정 |
 | ③ **현행 표준** | **`onFailedToReceiveAd(int errorCode, String errorMsg)`** | ✅ 정식 |
 
-①·②의 기본 구현은 위임 체인(enum → String → 표준)을 거쳐 ③으로 이어지므로, **표준 콜백 하나만 구현하면 내부 No-Ad(전 네트워크 실패)·SDK 미초기화를 포함한 모든 수신 실패를 받습니다.** 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 매체에 유의미하지 않아 전달하지 않습니다. ①·② 구현이 이미 있다면 지우지 않아도 그대로 동작합니다(override가 위임 체인의 해당 지점을 대체).
+①·②의 기본 구현은 위임 체인(enum → String → 표준)을 거쳐 ③으로 이어지므로, **표준 콜백 하나만 구현하면 내부 No-Ad(전 네트워크 실패)·SDK 미초기화를 포함한 모든 수신 실패를 받습니다.** 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 매체에 유의미하지 않으므로 ③에서는 전달하지 않습니다. ①·② 구현이 이미 있다면 지우지 않아도 그대로 동작합니다(override가 위임 체인의 해당 지점을 대체).
 
 ```java
 // ① Before (v1.x) — onEventAd 제거됨, 컴파일 오류. v1은 네트워크를 String으로 전달했습니다.
@@ -402,7 +402,7 @@ nativeAdView.setViewBinder(viewBinder);
 
 ### setViewIds 제거 (v2.0.0 Breaking Change)
 
-v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. 네이티브 렌더링을 자체 레이아웃으로 수행하는 어댑터(AdMixer 하우스애드·AdManager·Adfit·Pangle·NaverAdManager 등)가 `NativeAdViewBinder`를 직접 읽으므로 `setViewIds()` 호출은 제거하세요. 위의 `NativeAdViewBinder` 설정만으로 동작합니다. 네트워크에 따라 자체 렌더링 규격을 사용하는 경우 일부 슬롯이 적용되지 않을 수 있으니, 표시 결과는 네트워크별로 확인하십시오.
+v2.0.0에서 `setViewIds()`가 **완전히 제거**되었습니다. 네이티브 렌더링을 자체 레이아웃으로 수행하는 어댑터(AdMixer 하우스애드·AdManager·Adfit·Pangle·NaverAdManager 등)가 `NativeAdViewBinder`를 직접 읽으므로 `setViewIds()` 호출은 제거하세요. 위의 `NativeAdViewBinder` 설정만으로 동작합니다. 네트워크에 따라 자체 렌더링 규격을 사용하는 경우 일부 슬롯이 적용되지 않을 수 있으니, 표시 결과는 네트워크별로 확인하세요.
 
 ```java
 // Before (v1.x) — 제거하세요
@@ -493,7 +493,7 @@ v2.0.0의 주요 Public API 변경 여부를 요약한 표입니다. '변경 없
 
 | 증상 | 원인 | 조치 |
 |---|---|---|
-| `cannot find symbol: method setPrivacyViewId(int)` | `NativeAdViewBinder.Builder.setPrivacyViewId()` 제거 | `setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP)`으로 교체. 레이아웃의 `nap_mx_privacy_container` 슬롯도 삭제 가능(SDK가 자동 오버레이) |
+| `cannot find symbol: method setPrivacyViewId(int)` | `NativeAdViewBinder.Builder.setPrivacyViewId()` 제거 **(v2.1.0)** | `setAdChoicesPosition(AdChoicesPosition.RIGHT_TOP)`으로 교체. 레이아웃의 `nap_mx_privacy_container` 슬롯도 삭제 가능(SDK가 자동 오버레이) |
 | `cannot find symbol: method setAdViewBinder(...)` | `AdInfo.Builder.setAdViewBinder()` 제거 **(v2.0.1)** | `AMMNativeAdView.setViewBinder(viewBinder)`로 교체 |
 
 ### 🚨 컴파일 오류 **없이** 조용히 깨지는 변경

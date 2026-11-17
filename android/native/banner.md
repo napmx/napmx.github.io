@@ -11,7 +11,7 @@
 > - 배너 컨테이너는 **너비 `match_parent` + 높이 `wrap_content`** 로 두는 것을
 >   권장합니다(예제 동일). 높이를 고정하면 광고가 잘리거나 여백이 생길 수
 >   있습니다.
-> - **AdManager(GAM) 배너**는 서버 광고단위에 등록된 너비와 높이로 요청됩니다.
+> - **AdManager(GAM) 배너**는 서버 광고 단위에 등록된 너비와 높이로 요청됩니다.
 >   예를 들어 서버 설정이 320×100이면 GAM에도 320×100으로 요청됩니다.
 
 ---
@@ -283,7 +283,9 @@ showAdButton.setOnClickListener {
 
 > ⚠️ **지연 노출 유의사항**
 >
-> - 광고 수신 후 너무 오랜 시간이 지나면 표시 시 정상 노출되지 않을 수 있습니다.
+> - 광고 수신 후 오랜 시간이 지나면 표시 시 정상 노출되지 않을 수 있습니다. SDK가
+>   강제하는 만료 시간은 없으므로 앱에서 신선도 기준(아래 예제는 30분)을 정해
+>   관리하세요.
 > - `adView.loadAd()`만 호출하고 레이아웃에 `addView()`를 하지 않으면 광고가
 >   화면에 표시되지 않습니다.
 > - `addView()`로 화면에 부착하면 자동으로 표시됩니다(`showAd()` 호출 불필요).
@@ -365,9 +367,10 @@ private void releaseExitBanner() {
 
 ---
 
-> **[v2.0.0]** 배너 자동 갱신/실패 재시도는 서버(media-conf) 광고 단위
+> **[v2.0.0]** nap mx SDK의 배너 자동 갱신/실패 재시도는 서버(media-conf) 광고 단위
 > `interval`(초)이 **0보다 클 때만** 동작합니다(서버 0/미설정 → 단발성, 자동
-> 재로드 없음). 기존 클라이언트 `isRetry` 옵션은 제거되었습니다.
+> 재로드 없음). 네트워크 SDK 자체 갱신(예: GAM 서버측 auto-refresh)은 이와 별개로
+> 해당 네트워크 설정을 따릅니다. 기존 클라이언트 `isRetry` 옵션은 제거되었습니다.
 
 ---
 
@@ -420,10 +423,10 @@ nap mx는 미디에이션 SDK입니다. 실제 광고를 만들고 이벤트를 
 
 ---
 
-## Adfit 사용 시 주의사항
+## AdFit 사용 시 주의사항
 
-> ⚠️ Kakao Adfit을 미디에이션으로 사용하는 경우, `AMMBannerView`는 반드시
-> **Activity Context**로 생성해야 합니다. `getApplicationContext()`는 Adfit에서
+> ⚠️ Kakao AdFit을 미디에이션으로 사용하는 경우, `AMMBannerView`는 반드시
+> **Activity Context**로 생성해야 합니다. `getApplicationContext()`는 AdFit에서
 > 지원하지 않습니다.
 >
 > ```java
@@ -431,7 +434,7 @@ nap mx는 미디에이션 SDK입니다. 실제 광고를 만들고 이벤트를 
 > adView = new AMMBannerView(this); // Activity context
 >
 > // ❌ 잘못된 방법
-> adView = new AMMBannerView(getApplicationContext()); // Application context — Adfit 동작 안 함
+> adView = new AMMBannerView(getApplicationContext()); // Application context — AdFit 동작 안 함
 > ```
 
 ---
@@ -443,6 +446,6 @@ nap mx는 미디에이션 SDK입니다. 실제 광고를 만들고 이벤트를 
 
 | v1.x.x (제거됨)                        | v2.0.0                                 |
 | -------------------------------------- | -------------------------------------- |
-| `AdView`                               | `AMMBannerView` (메서드 시그니처 동일) |
+| `AdView`                               | `AMMBannerView` (`setAdInfo`·`loadAd`·`onResume`/`onPause` 등 공통 메서드 유지) |
 | `onEventAd(AdEvent.DISPLAYED / CLICK)` | `onAdDisplayed()` / `onAdClicked()`    |
 | `destroy()` / `onDestroy()`            | `stop()`                               |

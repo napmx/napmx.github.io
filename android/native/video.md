@@ -2,7 +2,7 @@
 
 > ℹ️ 동영상 광고 추가 전, [SDK 시작하기](getting-started.md)의 Step 1~4 설정이 완료되었는지 확인하세요.
 
-> ℹ️ 동영상이 아닌 일반 전면 광고(Interstitial Ad)를 연동하려면 [전면 배너 광고](interstitial.md)를 참고하세요.
+> ℹ️ 동영상이 아닌 일반 전면 광고(Interstitial Ad)를 연동하려면 [전면 광고](interstitial.md)를 참고하세요.
 
 | 포맷 | 클래스 | 설명 |
 |------|--------|------|
@@ -187,7 +187,7 @@ class VideoAdActivity : AppCompatActivity() {
 
 ## 수신 실패 콜백은 **표준 하나만** 구현하면 됩니다
 
-로드 실패의 표준 콜백은 **`onFailedToReceiveAd(int errorCode, String errorMsg)`** 입니다. 이것 하나만 구현하면 전 네트워크 No-Ad("All adapters failed."), SDK 미초기화·AdUnit 누락 등 **내부 실패를 포함한 모든 수신 실패**를 받습니다. 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 의미가 없으므로 전달하지 않습니다.
+로드 실패의 표준 콜백은 **`onFailedToReceiveAd(int errorCode, String errorMsg)`** 입니다. 이것 하나만 구현하면 전 네트워크 No-Ad("All adapters failed."), SDK 미초기화·애드유닛 누락 등 **내부 실패를 포함한 모든 수신 실패**를 받습니다. 실패 경로의 네트워크 식별자는 항상 내부 합성값(`"SDK"`/`"Mediation"`)이라 의미가 없으므로 전달하지 않습니다.
 
 > ℹ️ **구버전 호환** — 기존 4-인자 오버로드(`String adapterName` / `AdNetworkType networkType`)는 둘 다 `@Deprecated`(3.0 제거 예정)이며 기본 구현이 표준 콜백으로 위임하므로 이미 구현해 둔 코드도 동작은 그대로입니다. 신규 코드는 표준 콜백만 구현하세요.
 

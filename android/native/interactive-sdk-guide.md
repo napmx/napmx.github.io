@@ -308,7 +308,7 @@ BUILT_IN < SERVER_REMOTE < MEDIA_GLOBAL < MEDIA_GAME < LAUNCH_OVERRIDE
 | 광고 | 전역 또는 요청별 배너·리워드 지면, 커스텀 Gateway |
 
 0 이하 티켓, 음수 보상, 뒤집힌 범위, 가중치 합 오류, 빈 문제 목록, 제한 범위 밖 시간은
-조용히 적용되지 않습니다. `MiniGameInitializationResult` 또는 콘텐츠 `ConfigApplyResult`에서
+적용되지 않고 검증 이슈로 기록됩니다. `MiniGameInitializationResult` 또는 콘텐츠 `ConfigApplyResult`에서
 진단을 확인하세요.
 
 ## 8. 보상 설정 예제
@@ -844,8 +844,8 @@ MiniGameSdkConfig config = new MiniGameSdkConfig.Builder()
 - 라이브러리 consumer ProGuard 규칙은 enum 이름 계약만 제한적으로 보존하며 공개 이름 계약은
   source `@Keep`를 정본으로 사용합니다. Interactive 전체 패키지 keep은 제공하지 않습니다.
 - 매체 release 빌드에서 R8를 반드시 실제 실행하세요.
-- 앱 테스트용 광고 Gateway 대역(Fake)은 매체 앱의 자체 test source에서 `RewardedAdGateway`를
-  구현해 사용하고 운영 빌드에 남지 않도록 debug 소스셋에만 두세요.
+- 앱 테스트용 광고 Gateway 대역(Fake)은 매체 앱에서 `RewardedAdGateway`를 구현해 사용하고
+  운영 빌드에 남지 않도록 debug 소스셋에만 두세요.
 - 병합 Manifest에 불필요한 권한이나 exported 컴포넌트가 없는지 확인하세요.
 - Sample 광고 그래프의 Google Mobile Ads 25.2.0에서는 Kotlin metadata 2.2.0 경고가 발생할 수
   있습니다. 매체의 Kotlin compiler, GMA, 어댑터 버전을 검증된 조합으로 정렬하세요.
@@ -863,7 +863,7 @@ MiniGameSdkConfig config = new MiniGameSdkConfig.Builder()
 - 동시 게임 실행이 `ALREADY_RUNNING`으로 거부되는지 확인
 - 테스트용 Gateway 대역으로 광고 성공·취소·실패와 티켓 충전 확인
 - 실제 테스트 광고의 Reward/Close 역순·no-fill·네트워크 단절 확인
-- Reward 뒤 Close가 누락되면 10초 fallback으로 게임이 복귀하는지 확인
+- Reward 뒤 Close가 누락되면 SDK가 10초 뒤 게임을 복귀시키는지(fallback) 확인
 - 작은 화면, 가로, 큰 글자, 다크 모드, TalkBack 확인
 - Debug·Release AAR, 앱 Release/R8 빌드 확인
 - 처리한 `eventId`가 앱 재시작 뒤에도 중복 지급되지 않는지 확인

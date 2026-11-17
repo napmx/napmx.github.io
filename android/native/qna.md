@@ -71,9 +71,9 @@ exclude 후 의존성 트리에서 해당 SDK가 1개만 남는지 확인하세�
 
 ---
 
-**Q. Teads/Adfit/Pangle를 추가했더니 의존성을 못 찾습니다(`Failed to resolve`).**
+**Q. Teads/AdFit/Pangle을 추가했더니 의존성을 못 찾습니다(`Failed to resolve`).**
 
-해당 네트워크 전용 Maven 저장소를 `settings.gradle`에 추가해야 합니다(Adfit=`devrepo.kakao.com`, Pangle=`artifact.bytedance.com`, Teads=`sdk.teads.tv`+`teads.jfrog.io`+`developer.huawei.com`). 필요한 저장소는 네트워크·SDK 버전에 따라 달라질 수 있으므로, 전체 목록은 [SDK 시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#_1-3-네트워크별-추가-maven-저장소)를 기준으로 확인하세요. [FAQ — 빌드/Gradle](faq.md#빌드-gradle)도 참고할 수 있습니다.
+해당 네트워크 전용 Maven 저장소를 `settings.gradle`에 추가해야 합니다(AdFit=`devrepo.kakao.com`, Pangle=`artifact.bytedance.com`, Teads=`sdk.teads.tv`+`teads.jfrog.io`+`developer.huawei.com`). 필요한 저장소는 네트워크·SDK 버전에 따라 달라질 수 있으므로, 전체 목록은 [SDK 시작하기 — 네트워크별 추가 Maven 저장소](getting-started.md#_1-3-네트워크별-추가-maven-저장소)를 기준으로 확인하세요. [FAQ — 빌드/Gradle](faq.md#빌드-gradle)도 참고할 수 있습니다.
 
 ---
 
@@ -98,7 +98,7 @@ interstitialAd.stop();        // 전체 리소스 해제 (필수)
 
 **Q. `media-conf` 재동기화 직후 표시 중이던 풀스크린 광고가 다시 로드되거나 중복 노출됩니다.**
 
-v2.0.0에서 수정되었습니다. 표시 중(SHOWING)/이미 로드된 유닛은 config 재동기화로 **자동 재로드되지 않으며**, 미디에이션 컨트롤러 중복 생성도 차단됩니다. 최신 SDK로 업데이트하고, 광고 닫힘/실패/`onDestroy` 시 `stop()` teardown을 호출하면 해당 유닛이 재동기화 대상에서 제외됩니다.
+v2.0.0에서 수정되었습니다. 표시 중(SHOWING)/이미 로드된 유닛은 config 재동기화로 **자동 재로드되지 않으며**, 미디에이션 컨트롤러 중복 생성도 차단됩니다. 최신 SDK로 업데이트하세요. 또한 광고 닫힘/실패/`onDestroy` 시 `stop()` teardown을 호출하면 해당 광고 객체가 재동기화 통지 대상에서 제외됩니다.
 
 ---
 
@@ -132,9 +132,9 @@ adView.setAdViewListener(adListener);
 
 **Q. GDPR/CCPA 동의값을 SSP가 하위 네트워크로 전파하나요?**
 
-국내(한국) 이용자만 대상으로 하는 서비스라면 일반적으로 GDPR(EU)·CCPA(캘리포니아) 적용 대상이 아니어서 별도 설정이 필요하지 않습니다. **해외 서비스로 확장하거나 EU·미국 트래픽이 있다면** 네트워크마다 동의 전달 방식과 지원 범위가 달라 지면 구성에 따라 안내가 달라집니다 — [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요. (적용 여부에 대한 최종 판단은 각 사의 법무 검토를 따르십시오.)
+국내(한국) 이용자만 대상으로 하는 서비스라면 일반적으로 GDPR(EU)·CCPA(캘리포니아) 적용 대상이 아니어서 별도 설정이 필요하지 않습니다. **해외 서비스로 확장하거나 EU·미국 트래픽이 있다면** 네트워크마다 동의 전달 방식과 지원 범위가 다르므로 지면 구성에 따라 안내가 달라집니다 — [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의해 주세요. (적용 여부에 대한 최종 판단은 각 사의 법무 검토를 따르세요.)
 
-참고로 **Google·Pangle·Teads·Naver**는 매체가 IAB **TCF 규격 CMP**를 연동하면 각 네트워크 SDK가 동의 문자열을 자동으로 읽어갑니다(SDK 설정 불요). 그 외 네트워크는 동의 전달 방식이 다르거나 **자동 전파를 지원하지 않을 수 있으므로**, 지원 여부는 해당 네트워크 공식 문서를 참고하십시오. EU 트래픽이 있는데 동의가 반영되지 않는 것 같다면 앱의 CMP(TCF v2) 연동부터 확인하세요.
+참고로 **Google·Pangle·Teads·Naver**는 매체가 IAB **TCF 규격 CMP**를 연동하면 각 네트워크 SDK가 동의 문자열을 자동으로 읽어갑니다(SDK 설정 불요). 그 외 네트워크는 동의 전달 방식이 다르거나 **자동 전파를 지원하지 않을 수 있으므로**, 지원 여부는 해당 네트워크 공식 문서를 참고하세요. EU 트래픽이 있는데 동의가 반영되지 않는 것 같다면 앱의 CMP(TCF v2) 연동부터 확인하세요.
 
 ---
 
@@ -142,13 +142,13 @@ adView.setAdViewListener(adListener);
 
 `AdMixer.setTagForChildDirectedTreatment(...)`를 설정하세요. Google Play **Families 정책**은 국가와 무관하게 적용되므로 국내 서비스도 필수입니다. 이 값은 SDK 자체 광고 요청에 반영되며 하위 네트워크로는 AdManager·GMA NextGen(`setTagForChildDirectedTreatment`), Unity(`user.nonbehavioral`)로 전파됩니다.
 
-> 아동 대상 설정을 노출하는 API는 네트워크마다 다르며, **일부 네트워크는 아동 대상 설정을 지원하지 않을 수 있습니다**(해당 네트워크 SDK가 관련 API를 제공하지 않는 경우). 지원 여부는 각 네트워크 공식 문서를 참고하십시오. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
+> 아동 대상 설정을 노출하는 API는 네트워크마다 다르며, **일부 네트워크는 아동 대상 설정을 지원하지 않을 수 있습니다**(해당 네트워크 SDK가 관련 API를 제공하지 않는 경우). 지원 여부는 각 네트워크 공식 문서를 참고하세요. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 
 **Q. AdManager 배너는 어떤 사이즈로 요청되나요?**
 
-AdManager 배너는 서버 광고단위에 등록된 너비와 높이로 요청됩니다. 예를 들어 서버 설정이 320×100이면 GAM에도 320×100으로 요청됩니다. 서버 크기가 누락된 경우에만 320×50 기본값을 사용합니다.
+AdManager 배너는 서버 광고 단위에 등록된 너비와 높이로 요청됩니다. 예를 들어 서버 설정이 320×100이면 GAM에도 320×100으로 요청됩니다. 서버 크기가 누락된 경우에만 320×50 기본값을 사용합니다.
 
 ---
 
@@ -173,7 +173,7 @@ AdManager 배너는 서버 광고단위에 등록된 너비와 높이로 요청�
 | `setTestDeviceIds(...)` | AdManager, GMA NextGen, AppLovin (각 SDK의 테스트 디바이스 설정) |
 | `setTestMode(true)` | Unity(테스트 모드), Pangle(디버그 로그) |
 
-> 테스트 광고 제공 방식은 네트워크 정책에 따라 달라질 수 있으며 **일부 네트워크는 테스트 디바이스 지정을 지원하지 않을 수 있습니다.** 지원 여부와 테스트 지면 발급 방법은 해당 네트워크 공식 문서를 참고하십시오. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
+> 테스트 광고 제공 방식은 네트워크 정책에 따라 달라질 수 있으며 **일부 네트워크는 테스트 디바이스 지정을 지원하지 않을 수 있습니다.** 지원 여부와 테스트 지면 발급 방법은 해당 네트워크 공식 문서를 참고하세요. 자세한 내용은 [개인정보 / 테스트 설정](privacy.md)을 참고하세요.
 
 ---
 

@@ -104,7 +104,7 @@ BOM `2026.10.02`, AdFit 어댑터 `2.0.6`, Kakao AdFit SDK `3.21.17`을 유지�
 
 | 네트워크 | 추가 저장소 |
 |---------|------------|
-| Kakao Adfit | `https://devrepo.kakao.com/nexus/content/groups/public/` |
+| Kakao AdFit | `https://devrepo.kakao.com/nexus/content/groups/public/` |
 | Pangle | `https://artifact.bytedance.com/repository/pangle/` |
 | Teads | `https://sdk.teads.tv/android/repo`, `https://teads.jfrog.io/artifactory/SDKAndroid-maven-prod`, `https://developer.huawei.com/repo/` |
 
@@ -156,7 +156,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 2. 워터폴 로그에 `[SKIP] ... (Missing Keys)`가 있으면 서버에 네트워크 필수 키(예: Pangle `placement_id`, AppLovin `zone_id`)가 없는 경우입니다 → 운영팀에 키 프로비저닝 요청 또는 `setAdapterConfig`로 주입([Q&A](qna.md) 참고)
 3. Google AdManager: 매니페스트 `APPLICATION_ID` 확인
 4. NaverAdManager: 운영 Ad Unit ID 발급 여부 확인(`PUBLISHER_CD`는 SDK 제공)
-5. Adfit: **Activity Context**로 뷰를 생성했는지 확인
+5. AdFit: **Activity Context**로 뷰를 생성했는지 확인
 
 ---
 
@@ -173,7 +173,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 
 **Q. AdUnit 설정 사이즈와 다른 크기로 노출됩니다.**
 
-광고 네트워크·소재 유형에 따라 실제 노출 사이즈가 달라질 수 있어 설정 사이즈가 보장되지 않습니다. 컨테이너를 **너비 `match_parent` + 높이 `wrap_content`** 로 두면 소재 크기에 맞게 조정됩니다. **AdManager 배너는 서버 광고단위에 등록된 너비와 높이로 요청됩니다.**
+광고 네트워크·소재 유형에 따라 실제 노출 사이즈가 달라질 수 있어 설정 사이즈가 보장되지 않습니다. 컨테이너를 **너비 `match_parent` + 높이 `wrap_content`** 로 두면 소재 크기에 맞게 조정됩니다. **AdManager 배너는 서버 광고 단위에 등록된 너비와 높이로 요청됩니다.**
 
 ---
 
@@ -205,7 +205,7 @@ exclude 후 Gradle 의존성 트리에서 동일 네트워크 SDK가 1개만 남
 
 **Q. Naver 통합형 지면에서 레이아웃 바인딩이 적용되지 않습니다.**
 
-Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플릿으로 렌더링**하므로 `NativeAdViewBinder`의 자산 매핑이 적용되지 않으며 높이는 소재 비율로 자동 결정됩니다. 연동 방법은 일반 네이티브와 동일하고 응답 타입 분기는 SDK가 자동 처리합니다.
+통합형 지면에서 Naver Native Simple(템플릿형) 응답이 내려오면 NAM SDK가 **소재 전체를 템플릿으로 렌더링**하므로 `NativeAdViewBinder`의 자산 매핑이 적용되지 않으며 높이는 소재 비율로 자동 결정됩니다. 연동 방법은 일반 네이티브와 동일하고 응답 타입 분기는 SDK가 자동 처리합니다.
 
 ---
 
@@ -213,7 +213,7 @@ Naver Native Simple(템플릿형) 응답은 NAM SDK가 **소재 전체를 템플
 
 네. **같은 홈 Activity가 생성과 표시를 모두 담당하는 경우** Activity Context로 광고
 뷰를 직접 생성해 부모에 붙이지 않은 채 로드하고, 팝업을 열 때 전용 컨테이너에
-붙이면 됩니다. 기존 부모가 있다면 `addView()` 전에 반드시 선분리하고 앱에서
+붙이면 됩니다. 기존 부모가 있다면 `addView()` 전에 반드시 먼저 분리하고 앱에서
 신선도 기준(권장 30분)과 `stop()` 해제를 관리하세요.
 
 Unity 배너가 포함된 지면은 로드 시점에 네트워크 임프레션이 잡힐 수 있어 엄격한
@@ -264,20 +264,20 @@ S2S Reward Callback을 사용하세요. 파트너 사이트에 콜백 URL을 등
 
 ## 미디에이션 / 네트워크별
 
-**Q. Adfit 상용 광고는 언제부터 응답되나요?**
+**Q. AdFit 상용 광고는 언제부터 응답되나요?**
 
-Adfit은 매체 심사 후 상용 광고가 응답됩니다.
+AdFit은 매체 심사 후 상용 광고가 응답됩니다.
 
 ```
-연동 테스트 → 매체 라이브 → Adfit 매체 심사 신청 → 심사 완료 → 상용 광고 송출
+연동 테스트 → 매체 라이브 → AdFit 매체 심사 신청 → 심사 완료 → 상용 광고 송출
 ```
 심사 신청은 [nap_mx@nasmedia.co.kr](mailto:nap_mx@nasmedia.co.kr)로 문의하세요.
 
 ---
 
-**Q. Adfit 광고가 응답은 되는데 표시가 안 됩니다.**
+**Q. AdFit 광고가 응답은 되는데 표시가 안 됩니다.**
 
-Adfit은 **Activity Context**가 필요합니다. `AMMBannerView`/`AMMNativeAdView`를 `getApplicationContext()`가 아니라 **Activity(`this`)** 로 생성하세요.
+AdFit은 **Activity Context**가 필요합니다. `AMMBannerView`/`AMMNativeAdView`를 `getApplicationContext()`가 아니라 **Activity(`this`)** 로 생성하세요.
 
 ---
 

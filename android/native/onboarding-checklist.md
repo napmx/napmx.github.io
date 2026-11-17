@@ -26,12 +26,12 @@
 | **Pangle**                | `placement_id`(필수), `app_id` | 없음                                                                                            | 키는 media-conf 또는 `setAdapterConfig`                                             |
 | **AppLovin**              | `zone_id`(필수)                | 없음                                                                                            | SDK key는 `setAdapterConfig(ADAPTER_APPLOVIN, Map)`의 `sdkKey`로 전달  |
 | **Unity Ads**             | `game_id`, `placement_id`      | 없음                                                                                            |                                                                                     |
-| **Teads / Adfit**         | placement_id / data-ad-unit    | 없음                                                                                            | 각 광고단위 식별자                                                                  |
-| 🧪 **GMA NextGen (beta)** | `adunit_code`                  | **`com.google.android.gms.ads.APPLICATION_ID`** (호스트 앱 필수)                                | **AdManager·NaverAd와 공존 불가**(택1) · minSdk 24 · [시작하기](getting-started.md) |
+| **Teads / AdFit**         | placement_id / data-ad-unit    | 없음                                                                                            | 각 광고 단위 식별자                                                                  |
+| 🧪 **GMA NextGen (beta)** | `adunit_code`                  | **`com.google.android.gms.ads.APPLICATION_ID`** (호스트 앱 필수)                                | **AdManager·Naver NAM과 공존 불가**(택1) · minSdk 24 · [시작하기](getting-started.md) |
 
 ---
 
-## 3. 키 미제공(`[SKIP] Missing Keys`) 대응
+## 3. 키 미제공(`[SKIP] ... (Missing Keys)`) 대응
 
 서버(media-conf)에 네트워크 필수 키(예: Pangle `placement_id`, AppLovin
 `zone_id`)가 없으면 워터폴에서 조용히 SKIP됩니다.
