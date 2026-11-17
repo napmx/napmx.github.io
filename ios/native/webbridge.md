@@ -2,7 +2,7 @@
 
 > ℹ️ WebBridge 연동 전, [iOS SDK 시작하기](/ios/native/getting-started)의 Step 1~3 설정이 완료되었는지 확인하세요.
 
-WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap mx 네이티브 SDK를 JavaScript Bridge를 통해 호출하여 광고를 표시하는 연동 방식입니다.
+WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap mx 네이티브 SDK를 JavaScript Bridge로 호출하여 광고를 표시하는 연동 방식입니다.
 
 > 💡 **제공 포맷은 전체 화면 광고 3종입니다**  
 > 전면, 리워드 동영상, 전면 동영상만 제공합니다. 배너·네이티브·인라인 동영상은 WebBridge로는 제공하지 않습니다. 해당 포맷은 네이티브 SDK 연동을 사용하세요.
@@ -23,7 +23,7 @@ WebBridge는 하이브리드 앱(WebView 기반) 환경에서 nap mx 네이티�
 [Web JS] ──── NapMxBridge.showInterstitial() ────────→ [SDK show()]
 ```
 
-> 💡 다이어그램의 `NapMxBridge.*`는 Step 2의 `nap-mx-bridge.js` 래퍼입니다. iOS에는 `window.NapMxBridge` 객체가 없고 래퍼가 `window.webkit.messageHandlers.<메서드명>` 호출로 변환하므로, 웹 페이지는 네이티브 객체를 직접 호출하지 않고 항상 래퍼를 통해 호출합니다.
+> 💡 다이어그램의 `NapMxBridge.*`는 Step 2의 `nap-mx-bridge.js` 래퍼입니다. iOS에는 `window.NapMxBridge` 객체가 없고 래퍼가 `window.webkit.messageHandlers.<메서드명>` 호출로 변환하므로, 웹 페이지는 네이티브 객체를 직접 호출하지 않고 항상 래퍼로 호출합니다.
 
 | 계층 | iOS |
 |------|-----|
@@ -99,13 +99,13 @@ final class WebBridgeViewController: UIViewController {
 | `detach()` | 보관 중인 광고 전체 해제 + 핸들러 등록 해제. |
 | `destroyAll()` | 보관 중인 광고만 해제(핸들러 등록은 유지). JS `destroyAll()`과 동일합니다. |
 
-> ⚠️ 생성과 `attach()` / `detach()` / `destroyAll()` 호출은 **메인 스레드**에서 수행해야 합니다.
+> ⚠️ 생성자와 `attach()` / `detach()` / `destroyAll()`는 **메인 스레드**에서 호출해야 합니다.
 
 ---
 
 ## Step 2. 플랫폼 통합 JS 래퍼
 
-Android와 iOS의 호출 방식 차이를 추상화하는 JS 래퍼입니다. 웹 페이지에서는 이 래퍼를 통해 플랫폼을 신경 쓰지 않고 호출할 수 있습니다.
+Android와 iOS의 호출 방식 차이를 추상화하는 JS 래퍼입니다. 웹 페이지에서는 이 래퍼로 플랫폼을 신경 쓰지 않고 호출할 수 있습니다.
 
 #### `nap-mx-bridge.js`
 
@@ -254,7 +254,7 @@ window.NapMxBridgeCallback = {
 
 #### errorCode
 
-`errorCode`는 iOS·Android 공통 값입니다. SDK 원본 오류는 `nativeErrorCode` / `nativeErrorMsg` 필드에 함께 전달되므로 로그·문의용으로만 사용하고, 분기는 `errorCode`로 하세요.
+`errorCode`는 iOS·Android 공통 값입니다. SDK 원본 오류는 `nativeErrorCode` / `nativeErrorMsg` 필드에 함께 전달되므로 로그·문의용으로만 사용하고 분기는 `errorCode`로 하세요.
 
 > ⚠️ `nativeErrorCode`는 플랫폼마다 출처가 다릅니다. iOS는 광고 네트워크 원본 코드(없으면 SDK 코드), Android는 항상 SDK 코드(`AX_ERR_*`)이며 네트워크 원본은 `nativeErrorMsg` 문자열 안에 있습니다. 이 값으로 분기하지 마세요.
 
@@ -371,7 +371,7 @@ NapMxBridge.requestVideoInterstitial({
 - `show*()`는 해당 포맷의 `*Loaded` 콜백을 받은 뒤에 호출하세요. 준비되지 않은 상태에서 호출하면 `errorCode: -1`, `errorMsg: "ad is not ready. request first"` 실패 콜백이 전달됩니다.
 - 로드가 진행 중인 포맷에 다시 `request*()`를 호출하면 중복 요청은 무시됩니다. 이전 요청의 콜백을 기다리세요.
 - 로드가 끝난 뒤 같은 포맷을 다시 요청하면 이전 광고는 해제되고 새 광고로 교체됩니다.
-- 리워드 지급 판정은 `onRewardEarned`로만 하고, 콜백의 `transactionId`로 서버 지급 원장과 대사하세요. `onRewardVideoCompleted`는 광고 네트워크에 따라 발생하지 않을 수 있습니다. `transactionId`는 노출당 1개 발급되며 서버 earned 로그·매체 콜백 URL의 `transaction_id`와 같은 값입니다. `transactionId`가 없는 `onRewardEarned`는 정상 노출 경로에서는 발생하지 않으므로 지급을 보류하고 확인하세요.
+- 리워드 지급 판정은 `onRewardEarned`로만 하고 콜백의 `transactionId`로 서버 지급 원장과 대사하세요. `onRewardVideoCompleted`는 광고 네트워크에 따라 발생하지 않을 수 있습니다. `transactionId`는 노출당 1개 발급되며 서버 earned 로그·매체 콜백 URL의 `transaction_id`와 같은 값입니다. `transactionId`가 없는 `onRewardEarned`는 정상 노출 경로에서는 발생하지 않으므로 지급을 보류하고 확인하세요.
 - `*Failed`는 로드 실패, 표시 실패, 미준비 상태의 `show*()`(-1), `adUnitId` 오류(-1) 모두에서 전달됩니다. 로드 실패는 사용자에게 광고가 보이기 전이므로, 실패를 사용자에게 안내할지는 `*Showed` 수신 여부와 `errorCode`로 구분해 매체 정책으로 결정하세요.
 
 ### Lifecycle 관리
